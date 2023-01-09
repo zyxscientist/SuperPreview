@@ -14,6 +14,7 @@
 		847B7CB2263C0CBD003E5A40 /* Comp_News_Text_Image_Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847B7CB1263C0CBD003E5A40 /* Comp_News_Text_Image_Item.swift */; };
 		847E80AF2644DFE50070A3E2 /* Comp_News_Carousel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847E80AE2644DFE50070A3E2 /* Comp_News_Carousel.swift */; };
 		847E80B12644E8360070A3E2 /* Page_News.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847E80B02644E8360070A3E2 /* Page_News.swift */; };
+		8496DCF2296C1422005E0325 /* SwiftBackToPreviousPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8496DCF1296C1422005E0325 /* SwiftBackToPreviousPage.swift */; };
 		84A1293B2654E44A00229552 /* Comp_News_Brief.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A1293A2654E44A00229552 /* Comp_News_Brief.swift */; };
 		84A1293D2654E49F00229552 /* Comp_News_Writer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A1293C2654E49F00229552 /* Comp_News_Writer.swift */; };
 		84A1293F2654EDEB00229552 /* Comp_News_Quote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A1293E2654EDEB00229552 /* Comp_News_Quote.swift */; };
@@ -87,6 +88,7 @@
 		847B7CB1263C0CBD003E5A40 /* Comp_News_Text_Image_Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comp_News_Text_Image_Item.swift; sourceTree = "<group>"; };
 		847E80AE2644DFE50070A3E2 /* Comp_News_Carousel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comp_News_Carousel.swift; sourceTree = "<group>"; };
 		847E80B02644E8360070A3E2 /* Page_News.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Page_News.swift; sourceTree = "<group>"; };
+		8496DCF1296C1422005E0325 /* SwiftBackToPreviousPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftBackToPreviousPage.swift; sourceTree = "<group>"; };
 		84A1293A2654E44A00229552 /* Comp_News_Brief.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comp_News_Brief.swift; sourceTree = "<group>"; };
 		84A1293C2654E49F00229552 /* Comp_News_Writer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comp_News_Writer.swift; sourceTree = "<group>"; };
 		84A1293E2654EDEB00229552 /* Comp_News_Quote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comp_News_Quote.swift; sourceTree = "<group>"; };
@@ -174,6 +176,14 @@
 				C28CF43826ED9E8D00F75B27 /* Comp_NewChartView.swift */,
 			);
 			path = Charting;
+			sourceTree = "<group>";
+		};
+		8496DCF0296C13F7005E0325 /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				8496DCF1296C1422005E0325 /* SwiftBackToPreviousPage.swift */,
+			);
+			path = Extension;
 			sourceTree = "<group>";
 		};
 		84C195C6263A91E1001B425B /* News */ = {
@@ -271,6 +281,7 @@
 		C2A0247724FB5315004930F0 /* SuperPreview */ = {
 			isa = PBXGroup;
 			children = (
+				8496DCF0296C13F7005E0325 /* Extension */,
 				C2B1096C2751F83B00A58F55 /* View */,
 				C2A69B2E253BE7F900E5933F /* Fake Data */,
 				C2A8846F251F354800443FDC /* Graph */,
@@ -429,6 +440,7 @@
 			files = (
 				C2330E512851DA7A00382AE1 /* CustomFontModifier.swift in Sources */,
 				847B7CAE263C03DC003E5A40 /* Comp_News_Text_Item.swift in Sources */,
+				8496DCF2296C1422005E0325 /* SwiftBackToPreviousPage.swift in Sources */,
 				8467519726D740230063D770 /* Comp_Axis.swift in Sources */,
 				C2D51EB3267DD5D700341982 /* Comp_List_Snapshot_Holdings_Loss.swift in Sources */,
 				C2A88475251F38D700443FDC /* Graph_GradientLineChart_DOWN.swift in Sources */,
@@ -619,6 +631,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"SuperPreview/Preview Content\"";
@@ -642,6 +655,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"SuperPreview/Preview Content\"";

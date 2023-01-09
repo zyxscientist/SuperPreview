@@ -19,10 +19,9 @@ struct Comp_Image_View: View {
                     .resizable()
                     .aspectRatio(contentMode: .fill)
             }
-            .frame(width: .infinity, height: 194)
-            .cornerRadius(6)
+            .frame(width: UIScreen.main.bounds.size.width-30, height: 194)
+            .clipShape(RoundedRectangle(cornerRadius: 6.0, style: .continuous))
             .clipped()
-            .padding(.horizontal, 15)
         }
         .padding(.top, 0)
         .padding(.bottom, 20)

@@ -8,19 +8,6 @@
 
 import SwiftUI
 
-// 隐藏系统的返回按钮需要使用到 .navigationBarBackButtonHidden(true)，但是这将使得滑动返回也失效，所以在这个页面要添加以下拓展保留滑动返回
-extension UINavigationController: UIGestureRecognizerDelegate {
-    override open func viewDidLoad() {
-        super.viewDidLoad()
-        interactivePopGestureRecognizer?.delegate = self
-    }
-
-    public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        return viewControllers.count > 1
-    }
-}
-
-
 struct Page_Stock_Trade: View {
     
     @Environment(\.presentationMode) var presentationMode

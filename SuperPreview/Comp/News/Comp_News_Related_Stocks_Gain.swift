@@ -16,15 +16,15 @@ struct Comp_News_Related_Stocks_Gain: View {
     var body: some View {
         HStack {
             Text(name)
-                .font(.system(size: 12, weight: .semibold))
+                .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
                 .foregroundColor(Color("color-brand-blue"))
             Spacer()
             Text("600.100")
-                .font(.system(size: 12, weight: .semibold))
+                .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
                 .foregroundColor(Color("color-utility-red"))
                 .padding(.trailing,20)
             Text("+1.20%")
-                .font(.system(size: 12, weight: .semibold))
+                .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
                 .foregroundColor(Color("color-utility-red"))
                 .padding(.leading,20)
         }

@@ -16,15 +16,15 @@ struct Comp_Article_Time_Info: View {
                     .font(.system(size: 10, weight: .semibold))
                     .foregroundColor(Color("color-brand-blue"))
                     .frame(minWidth: 0, maxWidth: 28, maxHeight: 16)
-                    .background(Color("color-brand-blue-20"))
+                    .background(Color("color-brand-blue").opacity(0.2))
                     .cornerRadius(2)
                 
                 Text("2021/04/12")
-                    .font(.system(size: 14))
+                    .modifier(CustomFontModifier(size: 14, customFontsStyle: "PlusJakartaSansRoman-Medium"))
                     .foregroundColor(Color("color-text-90"))
                 
                 Text("14:20")
-                    .font(.system(size: 14))
+                    .modifier(CustomFontModifier(size: 14, customFontsStyle: "PlusJakartaSansRoman-Medium"))
                     .foregroundColor(Color("color-text-90"))
                 
                 

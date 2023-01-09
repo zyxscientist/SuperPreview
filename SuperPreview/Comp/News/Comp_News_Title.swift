@@ -17,7 +17,7 @@ struct Comp_News_Title: View {
         HStack(spacing: 0.0) {
             Text(news_title)
                 .lineSpacing(6)
-                .font(.system(size: fontsize, weight: .bold))
+                .modifier(CustomFontModifier(size: fontsize, customFontsStyle: "PlusJakartaSansRoman-Bold"))
                 .foregroundColor(Color("color-text-30"))
             
             Spacer()

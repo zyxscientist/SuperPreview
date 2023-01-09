@@ -12,6 +12,7 @@ struct Page_News_Detail: View {
     
     @State var scrollViewOffset: CGFloat = 0
     @State var startOffset: CGFloat = 0
+    @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
 
@@ -70,6 +71,17 @@ struct Page_News_Detail: View {
                     
                     
                 }
+                .toolbar {
+                    ToolbarItemGroup(placement: .navigationBarLeading) {
+                        HStack(alignment: .top, spacing:0) {
+                            Image("back-Left")
+                                .onTapGesture {
+                                    presentationMode.wrappedValue.dismiss()
+                                }
+                        }
+                    }
+                }
+                .navigationBarBackButtonHidden(true)
                 .navigationTitle("详情")
                 .background(Color("color-base-1"))
                 
