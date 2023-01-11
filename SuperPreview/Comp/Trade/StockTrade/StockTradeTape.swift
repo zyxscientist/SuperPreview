@@ -79,7 +79,7 @@ struct StockTradeTape: View {
                 OtherTape()
             }
             .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
-        }
+        } // 十档盘口
         .padding(.horizontal, 15)
         .padding(.top, 10)
         .padding(.bottom, 10)

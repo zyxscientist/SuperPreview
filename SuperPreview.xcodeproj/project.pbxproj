@@ -20,6 +20,7 @@
 		84A1293B2654E44A00229552 /* Comp_News_Brief.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A1293A2654E44A00229552 /* Comp_News_Brief.swift */; };
 		84A1293D2654E49F00229552 /* Comp_News_Writer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A1293C2654E49F00229552 /* Comp_News_Writer.swift */; };
 		84A1293F2654EDEB00229552 /* Comp_News_Quote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A1293E2654EDEB00229552 /* Comp_News_Quote.swift */; };
+		84A7299C296EB81B0056BA94 /* Quantity_Inputfield.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A7299B296EB81B0056BA94 /* Quantity_Inputfield.swift */; };
 		84AD4639296BE3F1005CCDC8 /* Page_Stock_Trade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AD4638296BE3F1005CCDC8 /* Page_Stock_Trade.swift */; };
 		84C195C8263A9219001B425B /* Comp_News_Title.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C195C7263A9219001B425B /* Comp_News_Title.swift */; };
 		84C195CA263A963E001B425B /* Comp_Article_Time_Info.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C195C9263A963E001B425B /* Comp_Article_Time_Info.swift */; };
@@ -35,6 +36,8 @@
 		84E7BBBF267C6D1D0028407E /* Comp_Snapshot_Stock_US.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E7BBBE267C6D1D0028407E /* Comp_Snapshot_Stock_US.swift */; };
 		84E7BBC1267C6EAE0028407E /* Comp_Snapshot_Stock_Ashare.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E7BBC0267C6EAE0028407E /* Comp_Snapshot_Stock_Ashare.swift */; };
 		84E7BBC3267C749B0028407E /* Comp_Total_Asset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E7BBC2267C749B0028407E /* Comp_Total_Asset.swift */; };
+		84F295CE296E60AA00976F4C /* Price_Inputfield.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F295CD296E60AA00976F4C /* Price_Inputfield.swift */; };
+		84F295D1296E6AB000976F4C /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F295D0296E6AB000976F4C /* HapticManager.swift */; };
 		C205D216250C7AA400F302ED /* Comp_Grid_Snapshot_Shortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = C205D215250C7AA400F302ED /* Comp_Grid_Snapshot_Shortcut.swift */; };
 		C2310CB728F54CF100259834 /* NavigationBarModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2310CB628F54CF100259834 /* NavigationBarModifier.swift */; };
 		C2330E462851CB9100382AE1 /* Page_Compare.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2330E452851CB9100382AE1 /* Page_Compare.swift */; };
@@ -98,6 +101,7 @@
 		84A1293A2654E44A00229552 /* Comp_News_Brief.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comp_News_Brief.swift; sourceTree = "<group>"; };
 		84A1293C2654E49F00229552 /* Comp_News_Writer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comp_News_Writer.swift; sourceTree = "<group>"; };
 		84A1293E2654EDEB00229552 /* Comp_News_Quote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comp_News_Quote.swift; sourceTree = "<group>"; };
+		84A7299B296EB81B0056BA94 /* Quantity_Inputfield.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Quantity_Inputfield.swift; sourceTree = "<group>"; };
 		84AD4638296BE3F1005CCDC8 /* Page_Stock_Trade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Page_Stock_Trade.swift; sourceTree = "<group>"; };
 		84C195C7263A9219001B425B /* Comp_News_Title.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comp_News_Title.swift; sourceTree = "<group>"; };
 		84C195C9263A963E001B425B /* Comp_Article_Time_Info.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comp_Article_Time_Info.swift; sourceTree = "<group>"; };
@@ -113,6 +117,8 @@
 		84E7BBBE267C6D1D0028407E /* Comp_Snapshot_Stock_US.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comp_Snapshot_Stock_US.swift; sourceTree = "<group>"; };
 		84E7BBC0267C6EAE0028407E /* Comp_Snapshot_Stock_Ashare.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comp_Snapshot_Stock_Ashare.swift; sourceTree = "<group>"; };
 		84E7BBC2267C749B0028407E /* Comp_Total_Asset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comp_Total_Asset.swift; sourceTree = "<group>"; };
+		84F295CD296E60AA00976F4C /* Price_Inputfield.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Price_Inputfield.swift; sourceTree = "<group>"; };
+		84F295D0296E6AB000976F4C /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
 		C205D215250C7AA400F302ED /* Comp_Grid_Snapshot_Shortcut.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comp_Grid_Snapshot_Shortcut.swift; sourceTree = "<group>"; };
 		C2310CB628F54CF100259834 /* NavigationBarModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarModifier.swift; sourceTree = "<group>"; };
 		C2330E452851CB9100382AE1 /* Page_Compare.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Page_Compare.swift; sourceTree = "<group>"; };
@@ -179,9 +185,11 @@
 			isa = PBXGroup;
 			children = (
 				840CDDD9296D0C3C0074CCD0 /* Symbol_Inputfield.swift */,
-				84D12D7C296D16D5008D5466 /* Order_Type.swift */,
 				84D12D7E296D1918008D5466 /* Symbol_Quote.swift */,
 				842F182C296D54B200D628C3 /* StockTradeTape.swift */,
+				84D12D7C296D16D5008D5466 /* Order_Type.swift */,
+				84F295CD296E60AA00976F4C /* Price_Inputfield.swift */,
+				84A7299B296EB81B0056BA94 /* Quantity_Inputfield.swift */,
 			);
 			path = StockTrade;
 			sourceTree = "<group>";
@@ -273,6 +281,14 @@
 			path = Watchlist;
 			sourceTree = "<group>";
 		};
+		84F295CF296E6A8F00976F4C /* Singletion */ = {
+			isa = PBXGroup;
+			children = (
+				84F295D0296E6AB000976F4C /* HapticManager.swift */,
+			);
+			path = Singletion;
+			sourceTree = "<group>";
+		};
 		C2330E4D2851D83200382AE1 /* Font */ = {
 			isa = PBXGroup;
 			children = (
@@ -301,6 +317,7 @@
 		C2A0247724FB5315004930F0 /* SuperPreview */ = {
 			isa = PBXGroup;
 			children = (
+				84F295CF296E6A8F00976F4C /* Singletion */,
 				8496DCF0296C13F7005E0325 /* Extension */,
 				C2B1096C2751F83B00A58F55 /* View */,
 				C2A69B2E253BE7F900E5933F /* Fake Data */,
@@ -470,6 +487,7 @@
 				C2330E4A2851D4DC00382AE1 /* Stock_Watchlist_Data_Compare.swift in Sources */,
 				84E7BBC1267C6EAE0028407E /* Comp_Snapshot_Stock_Ashare.swift in Sources */,
 				84A1293B2654E44A00229552 /* Comp_News_Brief.swift in Sources */,
+				84A7299C296EB81B0056BA94 /* Quantity_Inputfield.swift in Sources */,
 				847B7CB2263C0CBD003E5A40 /* Comp_News_Text_Image_Item.swift in Sources */,
 				C2E378992507B54700F01DC1 /* Comp_Header_Tabs.swift in Sources */,
 				C2A8847B251F3BBF00443FDC /* Comp_IndexBox_With_Graph.swift in Sources */,
@@ -497,6 +515,7 @@
 				847E80AF2644DFE50070A3E2 /* Comp_News_Carousel.swift in Sources */,
 				C2D51EB7267DE13700341982 /* Comp_News_Related_Stocks_Loss.swift in Sources */,
 				C2D51EB5267DDDC500341982 /* Comp_News_Related_Stocks_Gain.swift in Sources */,
+				84F295CE296E60AA00976F4C /* Price_Inputfield.swift in Sources */,
 				C25F3BA3250CBE8200D30EAA /* Page_Trade.swift in Sources */,
 				C2A0247924FB5315004930F0 /* AppDelegate.swift in Sources */,
 				C2A0248D24FB80DF004930F0 /* Comp-Asset-Ratio.swift in Sources */,
@@ -521,6 +540,7 @@
 				84D12D7D296D16D5008D5466 /* Order_Type.swift in Sources */,
 				C2C439F626D6741100779DEC /* Comp_LineChart.swift in Sources */,
 				840CDDDA296D0C3C0074CCD0 /* Symbol_Inputfield.swift in Sources */,
+				84F295D1296E6AB000976F4C /* HapticManager.swift in Sources */,
 				84C195CC263A9A7E001B425B /* Comp_Heading_1.swift in Sources */,
 				C2A69B30253BE88E00E5933F /* Stock_Watchist_Data.swift in Sources */,
 				C2405EBE2851F4E500A30210 /* Stock_Watchlist_Data_5.swift in Sources */,

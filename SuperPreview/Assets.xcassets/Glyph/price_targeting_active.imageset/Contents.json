@@ -15,7 +15,7 @@
       "scale" : "1x"
     },
     {
-      "filename" : "graphview@2x.png",
+      "filename" : "price_targeting_active@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
@@ -26,12 +26,12 @@
           "value" : "dark"
         }
       ],
-      "filename" : "编组 3@2x.png",
+      "filename" : "price_targeting_active@2x 1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "graphview@3x.png",
+      "filename" : "price_targeting_active@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     },
@@ -42,7 +42,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "编组 3@3x.png",
+      "filename" : "price_targeting_active@3x 1.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

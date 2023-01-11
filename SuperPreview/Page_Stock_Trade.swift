@@ -13,60 +13,102 @@ struct Page_Stock_Trade: View {
     @Environment(\.presentationMode) var presentationMode
     @State var openGraphView: Bool = false
     @State var openTapeView: Bool = false
+    @State var priceTargetingMenu: Bool = false
+    @State var quantityQuickType: Bool = false
     
     var body: some View {
-            ScrollView {
-                VStack(spacing: 0) {
-                    
-                    Symbol_Inputfield()
-                    
-                    Symbol_Quote(openGraphView: $openGraphView)
-                    
-                    HStack {
-                        Image("graphview")
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                    }
-                    .frame(height: openGraphView ? UIScreen.main.bounds.width * 0.9253333333 : 0)
-                    .opacity(openGraphView ? 1 : 0) // 防止在隐藏时遮盖了其他操作热区
-                    .blur(radius: openGraphView ? 0 : 3)
-                    .clipped()
-                    
-                    StockTradeTape(openTapeView: $openTapeView)
-                        .padding(.top, 5)
-                        .overlay {
-                            VStack {
-                                Spacer()
-                                Rectangle().frame(height: 30)
-                                    .blur(radius: openTapeView ? 2 : 0)
-                                    .opacity(openTapeView ? 0 : 1)
-                                    .foregroundColor(Color("color-base-1"))
-                                    .mask(LinearGradient(
-                                        gradient:
-                                            Gradient(
-                                                stops: [.init(color: .black, location: 0),
-                                                        .init(color: .black, location: 0.4),
-                                                        .init(color: .clear, location: 1)
-                                                ]),
-                                        startPoint: .bottom, endPoint: .top
-                                    ))
-                                    .overlay {
-                                        Image("tape_unfold")
-                                            .frame(minWidth: 320)
-                                            .contentShape(Rectangle()) // 扩大操作热区
-                                            .rotationEffect(.degrees(openTapeView ? -180 : 0))
-                                            .padding(.top, openTapeView ? 10 : 15)
-                                            .onTapGesture {
-                                                withAnimation(.spring(response: 0.4, dampingFraction: 1, blendDuration: 0.8)){
-                                                    openTapeView.toggle()
-                                                }
+        ScrollView {
+            VStack(spacing: 0) {
+                
+                // 搜索框
+                Symbol_Inputfield()
+                
+                // 行情栏
+                Symbol_Quote(openGraphView: $openGraphView)
+                
+                // 图表组件
+                HStack {
+                    Image("graphview")
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                }
+                .frame(height: openGraphView ? UIScreen.main.bounds.width * 0.9253333333 : 0)
+                .opacity(openGraphView ? 1 : 0) // 防止在隐藏时遮盖了其他操作热区
+                .blur(radius: openGraphView ? 0 : 3)
+                .clipped()
+                
+                // 十档报价
+                StockTradeTape(openTapeView: $openTapeView)
+                    .padding(.top, 5)
+                    .overlay {
+                        VStack {
+                            Spacer()
+                            Rectangle().frame(height: 30)
+                                .blur(radius: openTapeView ? 2 : 0)
+                                .opacity(openTapeView ? 0 : 1)
+                                .foregroundColor(Color("color-base-1"))
+                                .mask(LinearGradient(
+                                    gradient:
+                                        Gradient(
+                                            stops: [.init(color: .black, location: 0),
+                                                    .init(color: .black, location: 0.4),
+                                                    .init(color: .clear, location: 1)
+                                            ]),
+                                    startPoint: .bottom, endPoint: .top
+                                ))
+                                .overlay {
+                                    Image("tape_unfold")
+                                        .frame(minWidth: 400)
+                                        .contentShape(Rectangle()) // 扩大操作热区
+                                        .rotationEffect(.degrees(openTapeView ? -180 : 0))
+                                        .padding(.top, openTapeView ? 10 : 15)
+                                        .onTapGesture {
+                                            withAnimation(.spring(response: 0.4, dampingFraction: 1, blendDuration: 0.8)){
+                                                openTapeView.toggle()
                                             }
-                                    }
-                            }
+                                        }
+                                }
                         }
-                    
-                    Order_Type()
-                        .padding(.top, 5)
+                    }
+                
+                // 订单类型
+                Order_Type()
+                    .padding(.top, 5)
+                
+                // 价格输入栏
+                Price_Inputfield(priceTargetingMenu: $priceTargetingMenu)
+                    .zIndex(1)
+                
+                // 数量输入栏
+                Quantity_Inputfield(quantityQuickType: $quantityQuickType)
+                
+                VStack(alignment: .center, spacing:0){
+                    Text("现金可买")
+                        .foregroundColor(Color("color-text-60"))
+                        .font(.system(size: 10, weight: .regular, design: .default))
+                        .padding(.bottom, 5)
+                    VStack(spacing: 15){
+                        Text("1/4")
+                            .foregroundColor(Color("color-utility3-red"))
+                            .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                        Text("1/3")
+                            .foregroundColor(Color("color-utility3-red"))
+                            .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                        Text("1/2")
+                            .foregroundColor(Color("color-utility3-red"))
+                            .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                        Text("全仓")
+                            .foregroundColor(Color("color-utility3-red"))
+                            .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                    }
+                    .frame(width: UIScreen.main.bounds.width/4-7.5)
+                    .padding(.vertical, 10)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8.0, style: .continuous)
+                            .stroke(Color("color-utility3-red"))
+                    )
+                    .background(Color("color-utility3-red").opacity(0.1))
+                    }
                 }
             }
             .frame(width: UIScreen.main.bounds.size.width)
@@ -115,7 +157,7 @@ struct Page_Stock_Trade_Previews: PreviewProvider {
 
 struct StockTradeButtonBar: View {
     var body: some View {
-        
+
         // 背景
         Rectangle()
             .foregroundColor(Color("color-base-1"))
