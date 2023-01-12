@@ -10,7 +10,7 @@ import SwiftUI
 
 struct Quantity_Inputfield: View {
     
-    @State var quantity: Int = 2000
+    @StateObject var priceQuantityViewModel: PriceQuantityViewModel = PriceQuantityViewModel()
     @Binding var quantityQuickType: Bool
     
     var body: some View {
@@ -24,15 +24,16 @@ struct Quantity_Inputfield: View {
                 Image("decrease_normal")
                     .padding(.trailing, 10)
                     .onTapGesture {
-                        if quantity > 0 {
-                            quantity -= 1000
+                        if priceQuantityViewModel.quantity > 0 {
+                            priceQuantityViewModel.decreaseQuan()
+                            priceQuantityViewModel.getAmount()
                             HapticManager.instance.impactHaptic(type: .medium)
                         } else {
                             HapticManager.instance.notificationHaptic(type: .error)
                         }
         
                     }
-                Text("\(quantity)")
+                Text("\(priceQuantityViewModel.quantity)")
                     .foregroundColor(Color("color-text-30"))
                     .modifier(CustomFontModifier(size: 16, customFontsStyle: "PlusJakartaSansRoman-Medium"))
             }.padding(.leading, 65)
@@ -43,7 +44,8 @@ struct Quantity_Inputfield: View {
                 Image("increase_normal")
                     .padding(.trailing, 10)
                     .onTapGesture {
-                        quantity += 1000
+                        priceQuantityViewModel.increaseQuan()
+                        priceQuantityViewModel.getAmount()
                         HapticManager.instance.impactHaptic(type: .medium)
                     }
                 

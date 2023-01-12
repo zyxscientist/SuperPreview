@@ -10,7 +10,7 @@ import SwiftUI
 
 struct Price_Inputfield: View {
     
-    @State var price: Double = 16.43
+    @StateObject var priceQuantityViewModel: PriceQuantityViewModel = PriceQuantityViewModel()
     @Binding var priceTargetingMenu: Bool
     
     var body: some View {
@@ -24,10 +24,11 @@ struct Price_Inputfield: View {
                 Image("decrease_normal")
                     .padding(.trailing, 10)
                     .onTapGesture {
-                        price -= 0.01
+                        priceQuantityViewModel.decreasePrice()
+                        priceQuantityViewModel.getAmount()
                         HapticManager.instance.impactHaptic(type: .medium)
                     }
-                Text("\(price.formatted())")
+                Text("\(priceQuantityViewModel.price.formatted())")
                     .foregroundColor(Color("color-text-30"))
                     .modifier(CustomFontModifier(size: 16, customFontsStyle: "PlusJakartaSansRoman-Medium"))
             }.padding(.leading, 65)
@@ -38,7 +39,8 @@ struct Price_Inputfield: View {
                 Image("increase_normal")
                     .padding(.trailing, 10)
                     .onTapGesture {
-                        price += 0.01
+                        priceQuantityViewModel.increasePrice()
+                        priceQuantityViewModel.getAmount()
                         HapticManager.instance.impactHaptic(type: .medium)
                     }
                 
@@ -99,9 +101,14 @@ struct PriceTargetingMenu: View {
                 .foregroundColor(Color("color-text-30"))
                 .frame(width: 88, height: 40)
         }
-        .background(.regularMaterial)
+        .background(Color("color-base-1"))
         .clipShape(
             RoundedRectangle(cornerRadius: 6, style: .continuous)
         )
+        .overlay( // 再次叠加
+            RoundedRectangle(cornerRadius: 6.0, style: .continuous)
+                .stroke(Color("color-separator-10"), lineWidth: 0.5)
+        )
+        .shadow(color:.black.opacity(0.07),radius: 4)
     }
 }
