@@ -10,7 +10,7 @@ import SwiftUI
 
 struct Quantity_Inputfield: View {
     
-    @StateObject var priceQuantityViewModel: PriceQuantityViewModel = PriceQuantityViewModel()
+    @EnvironmentObject var priceQuantityViewModel: PriceQuantityViewModel
     @Binding var quantityQuickType: Bool
     
     var body: some View {

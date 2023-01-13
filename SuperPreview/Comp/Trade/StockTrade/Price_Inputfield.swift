@@ -10,7 +10,7 @@ import SwiftUI
 
 struct Price_Inputfield: View {
     
-    @StateObject var priceQuantityViewModel: PriceQuantityViewModel = PriceQuantityViewModel()
+    @EnvironmentObject var priceQuantityViewModel: PriceQuantityViewModel
     @Binding var priceTargetingMenu: Bool
     
     var body: some View {

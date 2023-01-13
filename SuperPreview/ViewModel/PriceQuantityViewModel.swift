@@ -13,10 +13,16 @@ class PriceQuantityViewModel: ObservableObject {
     @Published var price: Double = 16.43
     @Published var quantity: Int = 2000
     @Published var amount: Double = 32860.00
+    @Published var predictivePercentage: Double = 0.0318145731*100
+    let totalHoldingAssetAmount: Double = 1000000.00
+    
     
     func getAmount(){
         amount = price * Double(quantity)
-        print(amount)
+        predictivePercentage = amount*100/(totalHoldingAssetAmount+amount)
+        print(predictivePercentage)
+        print(price)
+        print(quantity)
     }
     
     func increasePrice(){

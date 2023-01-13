@@ -10,7 +10,7 @@ import SwiftUI
 
 struct Amount: View {
     
-    @StateObject var priceQuantityViewModel: PriceQuantityViewModel = PriceQuantityViewModel()
+    @EnvironmentObject var priceQuantityViewModel: PriceQuantityViewModel
     @Binding var advanceSetting: Bool
     
     var body: some View {
@@ -21,10 +21,24 @@ struct Amount: View {
                 .font(.system(size: 16, weight: .regular, design: .default))
             
             
-            Text("\(priceQuantityViewModel.amount.formatted())")
-                .padding(.leading, 65)
-                .foregroundColor(Color("color-text-30"))
-                .modifier(CustomFontModifier(size: 16, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+            VStack(alignment: .leading, spacing: 0) {
+                Text(String(format: "%.2f", priceQuantityViewModel.amount)) // 小数位管理
+                    .padding(.leading, 65)
+                    .foregroundColor(Color("color-text-30"))
+                    .modifier(CustomFontModifier(size: 15, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                
+                HStack(spacing: 5) {
+                    
+                    Text("持仓占比预估")
+                        .padding(.leading, 65)
+                        .foregroundColor(Color("color-text-60"))
+                        .font(.system(size: 12, weight: .regular, design: .default))
+                    
+                    Text(String(format: "%.2f", priceQuantityViewModel.predictivePercentage)+"%")
+                        .foregroundColor(Color("color-text-60"))
+                        .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                }
+            }
             Spacer()
         }
         .padding(.horizontal, 15)

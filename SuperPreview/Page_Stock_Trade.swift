@@ -11,6 +11,7 @@ import SwiftUI
 struct Page_Stock_Trade: View {
     
     @Environment(\.presentationMode) var presentationMode
+    @StateObject var priceQuantityViewModel = PriceQuantityViewModel()
     @State var openGraphView: Bool = false
     @State var openTapeView: Bool = false
     @State var priceTargetingMenu: Bool = false
@@ -20,7 +21,7 @@ struct Page_Stock_Trade: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
-
+                
                 // MARK: 一个Stack内不能超过十个元素，所以要打个组
                 Group {
                     // 搜索框
@@ -35,152 +36,153 @@ struct Page_Stock_Trade: View {
                             .resizable()
                             .aspectRatio(contentMode: .fill)
                     }
-                        .frame(height: openGraphView ? UIScreen.main.bounds.width * 0.9253333333 : 0)
-                        .opacity(openGraphView ? 1 : 0) // 防止在隐藏时遮盖了其他操作热区
-                        .blur(radius: openGraphView ? 0 : 3)
-                        .clipped()
+                    .frame(height: openGraphView ? UIScreen.main.bounds.width * 0.9253333333 : 0)
+                    .opacity(openGraphView ? 1 : 0) // 防止在隐藏时遮盖了其他操作热区
+                    .blur(radius: openGraphView ? 0 : 3)
+                    .clipped()
                 }
                 
-                // 十档报价
-                StockTradeTape(openTapeView: $openTapeView)
-                    .padding(.top, 5)
-                    .overlay {
-                        VStack {
-                            Spacer()
-                            Rectangle().frame(height: 30)
-                                .blur(radius: openTapeView ? 2 : 0)
-                                .opacity(openTapeView ? 0 : 1)
-                                .foregroundColor(Color("color-base-1"))
-                                .mask(LinearGradient(
-                                    gradient:
-                                        Gradient(
-                                            stops: [.init(color: .black, location: 0),
-                                                    .init(color: .black, location: 0.4),
-                                                    .init(color: .clear, location: 1)
-                                            ]),
-                                    startPoint: .bottom, endPoint: .top
-                                ))
-                                .overlay {
-                                    Image("tape_unfold")
-                                        .frame(minWidth: 400)
-                                        .contentShape(Rectangle()) // 扩大操作热区
-                                        .rotationEffect(.degrees(openTapeView ? -180 : 0))
-                                        .padding(.top, openTapeView ? 10 : 15)
-                                        .onTapGesture {
-                                            HapticManager.instance.impactHaptic(type: .medium)
-                                            withAnimation(.spring(response: 0.4, dampingFraction: 1, blendDuration: 0.8)){
-                                                openTapeView.toggle()
+                Group{
+                    // 十档报价
+                    StockTradeTape(openTapeView: $openTapeView)
+                        .padding(.top, 5)
+                        .overlay {
+                            VStack {
+                                Spacer()
+                                Rectangle().frame(height: 30)
+                                    .blur(radius: openTapeView ? 2 : 0)
+                                    .opacity(openTapeView ? 0 : 1)
+                                    .foregroundColor(Color("color-base-1"))
+                                    .mask(LinearGradient(
+                                        gradient:
+                                            Gradient(
+                                                stops: [.init(color: .black, location: 0),
+                                                        .init(color: .black, location: 0.4),
+                                                        .init(color: .clear, location: 1)
+                                                ]),
+                                        startPoint: .bottom, endPoint: .top
+                                    ))
+                                    .overlay {
+                                        Image("tape_unfold")
+                                            .frame(minWidth: 400)
+                                            .contentShape(Rectangle()) // 扩大操作热区
+                                            .rotationEffect(.degrees(openTapeView ? -180 : 0))
+                                            .padding(.top, openTapeView ? 10 : 15)
+                                            .onTapGesture {
+                                                HapticManager.instance.impactHaptic(type: .medium)
+                                                withAnimation(.spring(response: 0.4, dampingFraction: 1, blendDuration: 0.8)){
+                                                    openTapeView.toggle()
+                                                }
                                             }
-                                        }
-                                }
+                                    }
+                            }
                         }
+                    
+                    // 订单类型
+                    Order_Type()
+                        .padding(.top, 5)
+                    
+                    // 价格输入栏
+                    Price_Inputfield(priceTargetingMenu: $priceTargetingMenu)
+                        .zIndex(2)
+                    
+                    // 数量输入栏
+                    Quantity_Inputfield(quantityQuickType: $quantityQuickType)
+                    
+                    // 数量快选组件
+                    HStack(spacing: 0) {
+                        
+                        // 现金可买
+                        VStack(alignment: .center, spacing:0){
+                            Text("现金可买")
+                                .foregroundColor(Color("color-text-60"))
+                                .font(.system(size: 10, weight: .regular, design: .default))
+                                .padding(.bottom, 5)
+                            VStack(spacing: 15){
+                                Text("1/4")
+                                    .foregroundColor(Color("color-utility3-red"))
+                                    .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                                Text("1/3")
+                                    .foregroundColor(Color("color-utility3-red"))
+                                    .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                                Text("1/2")
+                                    .foregroundColor(Color("color-utility3-red"))
+                                    .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                                Text("全仓")
+                                    .foregroundColor(Color("color-utility3-red"))
+                                    .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                            }
+                            .frame(width: UIScreen.main.bounds.width/4-15)
+                            .padding(.vertical, 10)
+                            .background(Color("color-utility3-red").opacity(0.1))
+                            .clipShape(RoundedRectangle(cornerRadius: 8.0))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8.0, style: .continuous)
+                                    .stroke(Color("color-utility3-red"), lineWidth: 1)
+                            )
+                        }.padding(.trailing, 5)
+                        
+                        // 最大可买
+                        VStack(alignment: .center, spacing:0){
+                            Text("最大可买")
+                                .foregroundColor(Color("color-text-60"))
+                                .font(.system(size: 10, weight: .regular, design: .default))
+                                .padding(.bottom, 5)
+                            VStack(spacing: 15){
+                                Text("1/4")
+                                    .foregroundColor(Color("color-utility3-red"))
+                                    .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                                Text("1/3")
+                                    .foregroundColor(Color("color-utility3-red"))
+                                    .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                                Text("1/2")
+                                    .foregroundColor(Color("color-utility3-red"))
+                                    .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                                Text("全仓")
+                                    .foregroundColor(Color("color-utility3-red"))
+                                    .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                            }
+                            .frame(width: UIScreen.main.bounds.width/4-15)
+                            .padding(.vertical, 10)
+                            .background(Color("color-utility3-red").opacity(0.1))
+                            .clipShape(RoundedRectangle(cornerRadius: 8.0))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8.0, style: .continuous)
+                                    .stroke(Color("color-utility3-red"), lineWidth: 1)
+                            )
+                        }.padding(.trailing, 10)
+                        
+                        // 持仓可卖
+                        VStack(alignment: .center, spacing:0){
+                            Text("持仓可卖")
+                                .foregroundColor(Color("color-text-60"))
+                                .font(.system(size: 10, weight: .regular, design: .default))
+                                .padding(.bottom, 5)
+                            VStack(spacing: 15){
+                                Text("1/4")
+                                    .foregroundColor(Color("color-utility3-green"))
+                                    .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                                Text("1/3")
+                                    .foregroundColor(Color("color-utility3-green"))
+                                    .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                                Text("1/2")
+                                    .foregroundColor(Color("color-utility3-green"))
+                                    .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                                Text("全仓")
+                                    .foregroundColor(Color("color-utility3-green"))
+                                    .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                            }
+                            .frame(width: UIScreen.main.bounds.width/2-20)
+                            .padding(.vertical, 10)
+                            .background(Color("color-utility3-green").opacity(0.1))
+                            .clipShape(RoundedRectangle(cornerRadius: 8.0))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8.0, style: .continuous)
+                                    .stroke(Color("color-utility3-green"), lineWidth: 1)
+                            )
+                        }
+                        
                     }
-                
-                // 订单类型
-                Order_Type()
-                    .padding(.top, 5)
-                
-                // 价格输入栏
-                Price_Inputfield(priceTargetingMenu: $priceTargetingMenu)
-                    .zIndex(2)
-                
-                // 数量输入栏
-                Quantity_Inputfield(quantityQuickType: $quantityQuickType)
-                
-                // 数量快选组件
-                HStack(spacing: 0) {
-                    
-                    // 现金可买
-                    VStack(alignment: .center, spacing:0){
-                        Text("现金可买")
-                            .foregroundColor(Color("color-text-60"))
-                            .font(.system(size: 10, weight: .regular, design: .default))
-                            .padding(.bottom, 5)
-                        VStack(spacing: 15){
-                            Text("1/4")
-                                .foregroundColor(Color("color-utility3-red"))
-                                .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
-                            Text("1/3")
-                                .foregroundColor(Color("color-utility3-red"))
-                                .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
-                            Text("1/2")
-                                .foregroundColor(Color("color-utility3-red"))
-                                .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
-                            Text("全仓")
-                                .foregroundColor(Color("color-utility3-red"))
-                                .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
-                        }
-                        .frame(width: UIScreen.main.bounds.width/4-15)
-                        .padding(.vertical, 10)
-                        .background(Color("color-utility3-red").opacity(0.1))
-                        .clipShape(RoundedRectangle(cornerRadius: 8.0))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8.0, style: .continuous)
-                                .stroke(Color("color-utility3-red"), lineWidth: 1)
-                        )
-                    }.padding(.trailing, 5)
-                    
-                    // 最大可买
-                    VStack(alignment: .center, spacing:0){
-                        Text("最大可买")
-                            .foregroundColor(Color("color-text-60"))
-                            .font(.system(size: 10, weight: .regular, design: .default))
-                            .padding(.bottom, 5)
-                        VStack(spacing: 15){
-                            Text("1/4")
-                                .foregroundColor(Color("color-utility3-red"))
-                                .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
-                            Text("1/3")
-                                .foregroundColor(Color("color-utility3-red"))
-                                .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
-                            Text("1/2")
-                                .foregroundColor(Color("color-utility3-red"))
-                                .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
-                            Text("全仓")
-                                .foregroundColor(Color("color-utility3-red"))
-                                .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
-                        }
-                        .frame(width: UIScreen.main.bounds.width/4-15)
-                        .padding(.vertical, 10)
-                        .background(Color("color-utility3-red").opacity(0.1))
-                        .clipShape(RoundedRectangle(cornerRadius: 8.0))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8.0, style: .continuous)
-                                .stroke(Color("color-utility3-red"), lineWidth: 1)
-                        )
-                    }.padding(.trailing, 10)
-                    
-                    // 持仓可卖
-                    VStack(alignment: .center, spacing:0){
-                        Text("持仓可卖")
-                            .foregroundColor(Color("color-text-60"))
-                            .font(.system(size: 10, weight: .regular, design: .default))
-                            .padding(.bottom, 5)
-                        VStack(spacing: 15){
-                            Text("1/4")
-                                .foregroundColor(Color("color-utility3-green"))
-                                .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
-                            Text("1/3")
-                                .foregroundColor(Color("color-utility3-green"))
-                                .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
-                            Text("1/2")
-                                .foregroundColor(Color("color-utility3-green"))
-                                .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
-                            Text("全仓")
-                                .foregroundColor(Color("color-utility3-green"))
-                                .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
-                        }
-                        .frame(width: UIScreen.main.bounds.width/2-20)
-                        .padding(.vertical, 10)
-                        .background(Color("color-utility3-green").opacity(0.1))
-                        .clipShape(RoundedRectangle(cornerRadius: 8.0))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8.0, style: .continuous)
-                                .stroke(Color("color-utility3-green"), lineWidth: 1)
-                        )
-                    }
-                    
-                }
                     .padding(.top, 10)
                     .padding(.bottom, 15)
                     .frame(width: UIScreen.main.bounds.size.width, height: quantityQuickType ? nil : 0)
@@ -191,21 +193,23 @@ struct Page_Stock_Trade: View {
                         Comp_Separator_Full()
                     }
                     .clipped()
-                
-                // 金额栏
-                Amount(advanceSetting: $advanceSetting)
-                    .zIndex(1)
-                
-                // MARK: 高级订单设置
-                OrderExpiry()
-                    .frame(width: UIScreen.main.bounds.size.width, height: advanceSetting ? nil : 0)
-                    .opacity(advanceSetting ? 1 : 0)
-                    .blur(radius: advanceSetting ? 0 : 2)
-                
-                MaximumBuyingPower()
-                
+                    
+                    // 金额栏
+                    Amount(advanceSetting: $advanceSetting)
+                        .zIndex(1)
+                    
+                    // MARK: 高级订单设置
+                    OrderExpiry()
+                        .frame(width: UIScreen.main.bounds.size.width, height: advanceSetting ? nil : 0)
+                        .opacity(advanceSetting ? 1 : 0)
+                        .blur(radius: advanceSetting ? 0 : 2)
+                    
+                    MaximumBuyingPower()
+                    BuyAndSellTips()
+                    TradeCompactList()
                 }
             }
+        }
             .frame(width: UIScreen.main.bounds.size.width)
             .background(Color("color-base-0"))
             .overlay(
@@ -240,7 +244,8 @@ struct Page_Stock_Trade: View {
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
                     Image("refresh-Right")
                 }
-            } // 导航栏设置
+            } // 导航栏元素
+            .environmentObject(priceQuantityViewModel) // 环境数据
     }
 }
 

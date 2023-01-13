@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		84086B9C2971328000911F32 /* BuyAndSellTips.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84086B9B2971328000911F32 /* BuyAndSellTips.swift */; };
+		84086B9E297142A700911F32 /* TradeCompactList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84086B9D297142A700911F32 /* TradeCompactList.swift */; };
+		84086BA0297153D800911F32 /* Comp_Today_Order_Table_Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84086B9F297153D800911F32 /* Comp_Today_Order_Table_Header.swift */; };
+		84086BA2297158E100911F32 /* Today_Order_List_Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84086BA1297158E100911F32 /* Today_Order_List_Item.swift */; };
 		840CDDDA296D0C3C0074CCD0 /* Symbol_Inputfield.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840CDDD9296D0C3C0074CCD0 /* Symbol_Inputfield.swift */; };
 		842F182D296D54B200D628C3 /* StockTradeTape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842F182C296D54B200D628C3 /* StockTradeTape.swift */; };
 		8467519726D740230063D770 /* Comp_Axis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8467519626D740230063D770 /* Comp_Axis.swift */; };
@@ -92,6 +96,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		84086B9B2971328000911F32 /* BuyAndSellTips.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuyAndSellTips.swift; sourceTree = "<group>"; };
+		84086B9D297142A700911F32 /* TradeCompactList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeCompactList.swift; sourceTree = "<group>"; };
+		84086B9F297153D800911F32 /* Comp_Today_Order_Table_Header.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comp_Today_Order_Table_Header.swift; sourceTree = "<group>"; };
+		84086BA1297158E100911F32 /* Today_Order_List_Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Today_Order_List_Item.swift; sourceTree = "<group>"; };
 		840CDDD9296D0C3C0074CCD0 /* Symbol_Inputfield.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Symbol_Inputfield.swift; sourceTree = "<group>"; };
 		842F182C296D54B200D628C3 /* StockTradeTape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockTradeTape.swift; sourceTree = "<group>"; };
 		8467519626D740230063D770 /* Comp_Axis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comp_Axis.swift; sourceTree = "<group>"; };
@@ -201,6 +209,9 @@
 				84A7299D296FB23C0056BA94 /* Amount.swift */,
 				84A729A4297000DC0056BA94 /* OrderExpiry.swift */,
 				84A729A6297006570056BA94 /* MaximumBuyingPower.swift */,
+				84086B9B2971328000911F32 /* BuyAndSellTips.swift */,
+				84086B9D297142A700911F32 /* TradeCompactList.swift */,
+				84086BA1297158E100911F32 /* Today_Order_List_Item.swift */,
 			);
 			path = StockTrade;
 			sourceTree = "<group>";
@@ -273,6 +284,7 @@
 				84E7BBC0267C6EAE0028407E /* Comp_Snapshot_Stock_Ashare.swift */,
 				C2A0248C24FB80DF004930F0 /* Comp-Asset-Ratio.swift */,
 				84E7BBC2267C749B0028407E /* Comp_Total_Asset.swift */,
+				84086B9F297153D800911F32 /* Comp_Today_Order_Table_Header.swift */,
 			);
 			path = Trade;
 			sourceTree = "<group>";
@@ -514,6 +526,7 @@
 				84AD4639296BE3F1005CCDC8 /* Page_Stock_Trade.swift in Sources */,
 				847E80B12644E8360070A3E2 /* Page_News.swift in Sources */,
 				84C195D4263A9EDF001B425B /* Comp_Image_View.swift in Sources */,
+				84086BA0297153D800911F32 /* Comp_Today_Order_Table_Header.swift in Sources */,
 				84C195CA263A963E001B425B /* Comp_Article_Time_Info.swift in Sources */,
 				84E7BBC3267C749B0028407E /* Comp_Total_Asset.swift in Sources */,
 				C2A88471251F35A400443FDC /* Graph_GradientLineChart_UP.swift in Sources */,
@@ -542,15 +555,18 @@
 				C25F3BA3250CBE8200D30EAA /* Page_Trade.swift in Sources */,
 				C2A0247924FB5315004930F0 /* AppDelegate.swift in Sources */,
 				C2A0248D24FB80DF004930F0 /* Comp-Asset-Ratio.swift in Sources */,
+				84086B9C2971328000911F32 /* BuyAndSellTips.swift in Sources */,
 				C28CF43926ED9E8D00F75B27 /* Comp_NewChartView.swift in Sources */,
 				C25F3B9D250CAE0B00D30EAA /* Comp_Snapshot_Group_Ttile.swift in Sources */,
 				C205D216250C7AA400F302ED /* Comp_Grid_Snapshot_Shortcut.swift in Sources */,
 				84A1293F2654EDEB00229552 /* Comp_News_Quote.swift in Sources */,
+				84086B9E297142A700911F32 /* TradeCompactList.swift in Sources */,
 				C2A9FC4027463213001E9026 /* Comp_Evening_Sum_Clip.swift in Sources */,
 				C2A0247B24FB5315004930F0 /* SceneDelegate.swift in Sources */,
 				C2330E462851CB9100382AE1 /* Page_Compare.swift in Sources */,
 				C2B67D4A26BF75DC00D52963 /* Page_Headertab.swift in Sources */,
 				C2A0247D24FB5315004930F0 /* ContentView.swift in Sources */,
+				84086BA2297158E100911F32 /* Today_Order_List_Item.swift in Sources */,
 				C25F3B9F250CB17C00D30EAA /* Comp_Snapshot_Stock_HK.swift in Sources */,
 				C2A76F13252028D900DDC561 /* Comp_IndexSnapshot_Box_Pro.swift in Sources */,
 				84A729A7297006570056BA94 /* MaximumBuyingPower.swift in Sources */,
