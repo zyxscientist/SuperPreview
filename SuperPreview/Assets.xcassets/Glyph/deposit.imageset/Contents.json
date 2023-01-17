@@ -1,33 +1,15 @@
 {
   "images" : [
     {
-      "display-gamut" : "sRGB",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "display-gamut" : "display-P3",
-      "idiom" : "universal",
-      "scale" : "1x"
-    },
-    {
-      "display-gamut" : "sRGB",
-      "idiom" : "universal",
-      "scale" : "2x"
-    },
-    {
-      "display-gamut" : "display-P3",
       "filename" : "deposit@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "display-gamut" : "sRGB",
-      "idiom" : "universal",
-      "scale" : "3x"
-    },
-    {
-      "display-gamut" : "display-P3",
       "filename" : "deposit@3x.png",
       "idiom" : "universal",
       "scale" : "3x"

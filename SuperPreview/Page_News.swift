@@ -53,6 +53,7 @@ struct Page_News: View {
                     
                     
                 }
+                .navigationViewStyle(StackNavigationViewStyle())
                 .background(Color("color-base-1"))
         }
     }

@@ -42,7 +42,7 @@ struct Comp_Watchlist_Item: View {
                                 .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
                                 .foregroundColor(Color("color-text-60"))
                                 .padding(.leading, 15)
-                            Image(stock.alert ? "price_alert" : "")
+                            Image(stock.alert ? "price_alert" : "no_any_watchlist_mark_icon")
                             
                         }
                     }

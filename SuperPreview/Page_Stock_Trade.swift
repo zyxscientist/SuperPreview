@@ -2,7 +2,7 @@
 //  Page_Stock_Trade.swift
 //  SuperPreview
 //
-//  Created by admin on 2023/1/9.
+//  Created by admin on 2022/11/9.
 //  Copyright © 2023 PeterZ. All rights reserved.
 //
 
@@ -18,9 +18,11 @@ struct Page_Stock_Trade: View {
     @State var quantityQuickType: Bool = false
     @State var advanceSetting: Bool = false
     
+    @State var showOrderTypeActionSheet: Bool = false
+    
     var body: some View {
         ScrollView {
-            VStack(spacing: 0) {
+            LazyVStack(spacing: 0) {
                 
                 // MARK: 一个Stack内不能超过十个元素，所以要打个组
                 Group {
@@ -80,7 +82,11 @@ struct Page_Stock_Trade: View {
                     
                     // 订单类型
                     Order_Type()
+                        .onTapGesture {
+                            showOrderTypeActionSheet.toggle()
+                        }
                         .padding(.top, 5)
+                        .actionSheet(isPresented: $showOrderTypeActionSheet, content: orderTypeActionSheet)
                     
                     // 价格输入栏
                     Price_Inputfield(priceTargetingMenu: $priceTargetingMenu)
@@ -208,44 +214,46 @@ struct Page_Stock_Trade: View {
                     BuyAndSellTips()
                     TradeCompactList()
                 }
+                Rectangle().fill(Color("color-base-0")).frame(height:120) // 占位元素，使得滚动区域的在下极限时表现正常
             }
         }
-            .frame(width: UIScreen.main.bounds.size.width)
-            .background(Color("color-base-0"))
-            .overlay(
-                // 买卖按钮组
-                StockTradeButtonBar(),alignment: .bottom
-            )
-            .ignoresSafeArea(edges: .bottom)
-            
-            // 导航栏设置
-            .navigationBarBackButtonHidden(true)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItemGroup(placement: .navigationBarLeading) {
-                    HStack(alignment: .top, spacing:0) {
-                        Image("back-Left")
-                            .onTapGesture {
-                                presentationMode.wrappedValue.dismiss()
-                            }
-                        HStack(alignment: .bottom, spacing:3) {
-                            HStack(spacing:1){
-                                Text("港股融资账户")
-                                    .modifier(CustomFontModifier(size: 16, customFontsStyle: "PlusJakartaSansRoman-Medium"))
-                                    .foregroundColor(Color("color-text-30"))
-                                Text("(0168)")
-                                    .modifier(CustomFontModifier(size: 16, customFontsStyle: "PlusJakartaSansRoman-Medium"))
-                                    .foregroundColor(Color("color-text-30"))
-                            }
-                            Image("chevron_down_filled_sm")
+        .frame(width: UIScreen.main.bounds.size.width)
+        .background(Color("color-base-0"))
+        .overlay(
+            // 买卖按钮组
+            StockTradeButtonBar(),alignment: .bottom
+        )
+        .ignoresSafeArea(edges: .bottom)
+        
+        // 导航栏设置
+        .navigationBarBackButtonHidden(true)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItemGroup(placement: .navigationBarLeading) {
+                HStack(alignment: .top, spacing:0) {
+                    Image("back-Left")
+                        .onTapGesture {
+                            presentationMode.wrappedValue.dismiss()
                         }
+                    HStack(alignment: .bottom, spacing:3) {
+                        HStack(spacing:1){
+                            Text("港股融资账户")
+                                .modifier(CustomFontModifier(size: 16, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                                .foregroundColor(Color("color-text-30"))
+                            Text("(0168)")
+                                .modifier(CustomFontModifier(size: 16, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                                .foregroundColor(Color("color-text-30"))
+                        }
+                        Image("chevron_down_filled_sm")
                     }
                 }
-                ToolbarItemGroup(placement: .navigationBarTrailing) {
-                    Image("refresh-Right")
-                }
-            } // 导航栏元素
-            .environmentObject(priceQuantityViewModel) // 环境数据
+            }
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
+                Image("refresh-Right")
+            }
+        } // 导航栏元素
+        .navigationViewStyle(StackNavigationViewStyle())
+        .environmentObject(priceQuantityViewModel) // 环境数据
     }
 }
 
@@ -257,13 +265,13 @@ struct Page_Stock_Trade_Previews: PreviewProvider {
 
 struct StockTradeButtonBar: View {
     var body: some View {
-
+        
         // 背景
         Rectangle()
             .foregroundColor(Color("color-base-1"))
             .frame(width: UIScreen.main.bounds.size.width, height: 94)
         
-            // 按钮组
+        // 按钮组
             .overlay(
                 VStack(spacing: 8) {
                     Comp_Separator_Full()
@@ -303,3 +311,20 @@ struct StockTradeButtonBar: View {
         
     }
 }
+
+private func orderTypeActionSheet() -> ActionSheet {
+    
+    let orderType1: ActionSheet.Button = .default(Text("增强限价交易"))
+    let orderType2: ActionSheet.Button = .default(Text("特别限价交易"))
+    let orderType3: ActionSheet.Button = .default(Text("市价交易"))
+    let orderType4: ActionSheet.Button = .default(Text("条件交易"))
+    let orderType5: ActionSheet.Button = .default(Text("碎股交易"))
+    let buttonCancle: ActionSheet.Button = .cancel()
+    
+    return ActionSheet(
+        title: Text("请选择订单类型"),
+        buttons: [orderType1,orderType2,orderType3,orderType4,orderType5,buttonCancle]
+    )
+}
+
+

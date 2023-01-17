@@ -17,6 +17,7 @@
       "scale" : "1x"
     },
     {
+      "filename" : "logo_slogan_across_blue@4x 1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
@@ -27,10 +28,12 @@
           "value" : "dark"
         }
       ],
+      "filename" : "logo_slogan_across_white@4x 1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "logo_slogan_across_blue@4x 2.png",
       "idiom" : "universal",
       "scale" : "3x"
     },
@@ -41,6 +44,7 @@
           "value" : "dark"
         }
       ],
+      "filename" : "logo_slogan_across_white@4x 2.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

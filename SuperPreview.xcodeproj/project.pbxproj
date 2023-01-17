@@ -13,6 +13,8 @@
 		84086BA2297158E100911F32 /* Today_Order_List_Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84086BA1297158E100911F32 /* Today_Order_List_Item.swift */; };
 		840CDDDA296D0C3C0074CCD0 /* Symbol_Inputfield.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840CDDD9296D0C3C0074CCD0 /* Symbol_Inputfield.swift */; };
 		842F182D296D54B200D628C3 /* StockTradeTape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842F182C296D54B200D628C3 /* StockTradeTape.swift */; };
+		84574C322975503A0062D03D /* OrderStatuManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84574C312975503A0062D03D /* OrderStatuManager.swift */; };
+		84574C342976A0590062D03D /* ImageDebug.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84574C332976A0590062D03D /* ImageDebug.swift */; };
 		8467519726D740230063D770 /* Comp_Axis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8467519626D740230063D770 /* Comp_Axis.swift */; };
 		847B7CAC263BD63B003E5A40 /* Comp_Disclaimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847B7CAB263BD63B003E5A40 /* Comp_Disclaimer.swift */; };
 		847B7CAE263C03DC003E5A40 /* Comp_News_Text_Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847B7CAD263C03DC003E5A40 /* Comp_News_Text_Item.swift */; };
@@ -102,6 +104,8 @@
 		84086BA1297158E100911F32 /* Today_Order_List_Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Today_Order_List_Item.swift; sourceTree = "<group>"; };
 		840CDDD9296D0C3C0074CCD0 /* Symbol_Inputfield.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Symbol_Inputfield.swift; sourceTree = "<group>"; };
 		842F182C296D54B200D628C3 /* StockTradeTape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockTradeTape.swift; sourceTree = "<group>"; };
+		84574C312975503A0062D03D /* OrderStatuManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderStatuManager.swift; sourceTree = "<group>"; };
+		84574C332976A0590062D03D /* ImageDebug.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDebug.swift; sourceTree = "<group>"; };
 		8467519626D740230063D770 /* Comp_Axis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comp_Axis.swift; sourceTree = "<group>"; };
 		847B7CAB263BD63B003E5A40 /* Comp_Disclaimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comp_Disclaimer.swift; sourceTree = "<group>"; };
 		847B7CAD263C03DC003E5A40 /* Comp_News_Text_Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comp_News_Text_Item.swift; sourceTree = "<group>"; };
@@ -216,6 +220,14 @@
 			path = StockTrade;
 			sourceTree = "<group>";
 		};
+		84574C3029754FE10062D03D /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				84574C312975503A0062D03D /* OrderStatuManager.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
 		8467519526D73EB60063D770 /* Charting */ = {
 			isa = PBXGroup;
 			children = (
@@ -231,6 +243,7 @@
 			isa = PBXGroup;
 			children = (
 				8496DCF1296C1422005E0325 /* SwiftBackToPreviousPage.swift */,
+				84574C332976A0590062D03D /* ImageDebug.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -348,6 +361,7 @@
 		C2A0247724FB5315004930F0 /* SuperPreview */ = {
 			isa = PBXGroup;
 			children = (
+				84574C3029754FE10062D03D /* Utilities */,
 				84A729A1296FB4AF0056BA94 /* ViewModel */,
 				84F295CF296E6A8F00976F4C /* Singletion */,
 				8496DCF0296C13F7005E0325 /* Extension */,
@@ -536,6 +550,7 @@
 				C2A69B3A253BF30F00E5933F /* Comp_TableHeader_Watchlist.swift in Sources */,
 				84A729A5297000DC0056BA94 /* OrderExpiry.swift in Sources */,
 				C2A69B3D253BF3AA00E5933F /* Page_Watchlist.swift in Sources */,
+				84574C342976A0590062D03D /* ImageDebug.swift in Sources */,
 				C2A76F10252027DB00DDC561 /* Comp_Indicator.swift in Sources */,
 				C2310CB728F54CF100259834 /* NavigationBarModifier.swift in Sources */,
 				84E7BBBF267C6D1D0028407E /* Comp_Snapshot_Stock_US.swift in Sources */,
@@ -581,6 +596,7 @@
 				C2C439F626D6741100779DEC /* Comp_LineChart.swift in Sources */,
 				840CDDDA296D0C3C0074CCD0 /* Symbol_Inputfield.swift in Sources */,
 				84F295D1296E6AB000976F4C /* HapticManager.swift in Sources */,
+				84574C322975503A0062D03D /* OrderStatuManager.swift in Sources */,
 				84C195CC263A9A7E001B425B /* Comp_Heading_1.swift in Sources */,
 				C2A69B30253BE88E00E5933F /* Stock_Watchist_Data.swift in Sources */,
 				C2405EBE2851F4E500A30210 /* Stock_Watchlist_Data_5.swift in Sources */,

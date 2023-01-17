@@ -19,7 +19,7 @@ class PriceQuantityViewModel: ObservableObject {
     
     func getAmount(){
         amount = price * Double(quantity)
-        predictivePercentage = amount*100/(totalHoldingAssetAmount+amount)
+        predictivePercentage = amount*100/(totalHoldingAssetAmount+amount) // 百分比来的
         print(predictivePercentage)
         print(price)
         print(quantity)

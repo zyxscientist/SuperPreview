@@ -15,6 +15,7 @@
       "scale" : "1x"
     },
     {
+      "filename" : "logo_blue 1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
@@ -25,6 +26,7 @@
           "value" : "dark"
         }
       ],
+      "filename" : "logo_white 1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },

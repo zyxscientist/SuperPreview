@@ -26,7 +26,7 @@ struct TradeCompactList: View {
                         todayOrderList = false
                         conditionalOrderList = false
                     }
-                Text("今日订单(0/3)")
+                Text("今日订单(1/3)")
                     .foregroundColor(todayOrderList ? Color("color-text-30") : Color("color-text-60"))
                     .modifier(CustomFontModifier(size: 14, customFontsStyle: todayOrderList ? "PlusJakartaSansRoman-Semibold" : "PlusJakartaSansRoman-Medium"))
                     .onTapGesture {
@@ -62,9 +62,9 @@ struct TradeCompactList: View {
             // 今日订单
             VStack(spacing: 0) {
                 Comp_Today_Order_Table_Header(horizontalPadding: 15)
-                Today_Order_List_Item()
-                Today_Order_List_Item()
-                Today_Order_List_Item()
+                Today_Order_List_Item(statu: .processing, direction: .buy)
+                Today_Order_List_Item(statu: .processing, direction: .buy)
+                Today_Order_List_Item(statu: .doneDeal, direction: .sell)
             }
             .frame(height: todayOrderList ? nil : 0, alignment: .top)
             .opacity(todayOrderList ? 1 : 0)

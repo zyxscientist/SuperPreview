@@ -30,6 +30,9 @@ struct Comp_Grid_Snapshot_Shortcut: View {
                     .frame(maxWidth: 375, maxHeight: 75)
                 }
                 
+                NavigationLink(destination: EmptyView()) {
+                    EmptyView()
+                }
                 
                 VStack(spacing: 10.0){
                     Image("his_fill")

@@ -15,6 +15,7 @@
       "scale" : "1x"
     },
     {
+      "filename" : "navbar_logo_sc@3x 2.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
@@ -25,6 +26,7 @@
           "value" : "dark"
         }
       ],
+      "filename" : "navbar_logo_sc@3x 3.png",
       "idiom" : "universal",
       "scale" : "2x"
     },

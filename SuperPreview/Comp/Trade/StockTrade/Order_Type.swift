@@ -16,7 +16,7 @@ struct Order_Type: View {
                 .foregroundColor(Color("color-text-60"))
                 .font(.system(size: 16, weight: .regular, design: .default))
             
-            Text("增强限价单")
+            Text("增强限价交易")
                 .padding(.leading, 33)
                 .foregroundColor(Color("color-text-30"))
                 .modifier(CustomFontModifier(size: 16, customFontsStyle: "PlusJakartaSansRoman-Medium"))

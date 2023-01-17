@@ -12,10 +12,10 @@ struct Page_MianView: View {
     
     @State var selectedTab: Tabs = .tab1
     
-
+    
     var body: some View {
-
-    NavigationView {
+        
+        NavigationView {
             if #available(iOS 14.0, *) {
                 TabView(selection: $selectedTab){
                     Page_Compare().tabItem{
@@ -63,7 +63,7 @@ struct Page_MianView: View {
                         }
                     }.tag(Tabs.tab4)
                     
-                Comp_LineChart().tabItem{
+                    Comp_LineChart().tabItem{
                         VStack {
                             if selectedTab == .tab5 {
                                 Image("market_active")
@@ -82,7 +82,7 @@ struct Page_MianView: View {
                         UITabBar.appearance().scrollEdgeAppearance = appearance
                     }
                 }
-           
+                
                 .navigationBarColor(backgroundColor: UIColor(SwiftUI.Color("color-base-1")), titleColor: UIColor(SwiftUI.Color("color-text-30")))
                 .navigationBarTitle(returnNavigationBarTitle(selectedTab: self.selectedTab), displayMode: .inline)
                 .toolbar {
@@ -100,9 +100,10 @@ struct Page_MianView: View {
             } else {
                 // Fallback on earlier versions
             }
-                }
-            .overlay(LaunchScreen())
-            }
+        }
+        .overlay(LaunchScreen())
+        .navigationViewStyle(StackNavigationViewStyle())
+    }
 
 enum Tabs {
     case tab1, tab2, tab3, tab4, tab5
