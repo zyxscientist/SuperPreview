@@ -42,6 +42,7 @@
 		84C195D6263AA4F4001B425B /* Page_News_Detail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C195D5263AA4F4001B425B /* Page_News_Detail.swift */; };
 		84C537BD27201FFD00630E94 /* Comp_MiniChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C537BC27201FFD00630E94 /* Comp_MiniChart.swift */; };
 		84CF754129779A06006728F4 /* Page_Stock_Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CF754029779A06006728F4 /* Page_Stock_Search.swift */; };
+		84CF75432977E2A5006728F4 /* Page_Stock_Quoto_Detail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CF75422977E2A5006728F4 /* Page_Stock_Quoto_Detail.swift */; };
 		84D12D7D296D16D5008D5466 /* Order_Type.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D12D7C296D16D5008D5466 /* Order_Type.swift */; };
 		84D12D7F296D1918008D5466 /* Symbol_Quote.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D12D7E296D1918008D5466 /* Symbol_Quote.swift */; };
 		84E7BBBF267C6D1D0028407E /* Comp_Snapshot_Stock_US.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E7BBBE267C6D1D0028407E /* Comp_Snapshot_Stock_US.swift */; };
@@ -134,6 +135,7 @@
 		84C195D5263AA4F4001B425B /* Page_News_Detail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Page_News_Detail.swift; sourceTree = "<group>"; };
 		84C537BC27201FFD00630E94 /* Comp_MiniChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comp_MiniChart.swift; sourceTree = "<group>"; };
 		84CF754029779A06006728F4 /* Page_Stock_Search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Page_Stock_Search.swift; sourceTree = "<group>"; };
+		84CF75422977E2A5006728F4 /* Page_Stock_Quoto_Detail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Page_Stock_Quoto_Detail.swift; sourceTree = "<group>"; };
 		84D12D7C296D16D5008D5466 /* Order_Type.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Order_Type.swift; sourceTree = "<group>"; };
 		84D12D7E296D1918008D5466 /* Symbol_Quote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Symbol_Quote.swift; sourceTree = "<group>"; };
 		84E7BBBE267C6D1D0028407E /* Comp_Snapshot_Stock_US.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comp_Snapshot_Stock_US.swift; sourceTree = "<group>"; };
@@ -376,6 +378,7 @@
 				C2A0247A24FB5315004930F0 /* SceneDelegate.swift */,
 				C2A0247C24FB5315004930F0 /* ContentView.swift */,
 				C25F3BA2250CBE8200D30EAA /* Page_Trade.swift */,
+				84CF75422977E2A5006728F4 /* Page_Stock_Quoto_Detail.swift */,
 				847E80B02644E8360070A3E2 /* Page_News.swift */,
 				84C195D5263AA4F4001B425B /* Page_News_Detail.swift */,
 				84AD4638296BE3F1005CCDC8 /* Page_Stock_Trade.swift */,
@@ -609,6 +612,7 @@
 				84C195D2263A9CA5001B425B /* Comp_Paragraph.swift in Sources */,
 				84C195D0263A9C11001B425B /* Comp_Heading_3.swift in Sources */,
 				847B7CAC263BD63B003E5A40 /* Comp_Disclaimer.swift in Sources */,
+				84CF75432977E2A5006728F4 /* Page_Stock_Quoto_Detail.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
