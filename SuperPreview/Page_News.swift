@@ -29,6 +29,10 @@ struct Page_News: View {
                                 Comp_News_Text_Item(title:"美联储议息会议前瞻：美联储或延续鸽派基调", source: "有鱼资讯")
                             })
                             
+                        NavigationLink(destination: EmptyView()) {
+                            EmptyView()
+                        }
+                            
                         // #2
                         Comp_News_Text_Image_Item(title: "中国4月官方制造业PMI 51.1，高于2019年和2020年同期水平", source: "有鱼资讯", image_name: "city_view")
                         // #3

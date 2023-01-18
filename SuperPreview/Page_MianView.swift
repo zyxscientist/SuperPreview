@@ -12,10 +12,10 @@ struct Page_MianView: View {
     
     @State var selectedTab: Tabs = .tab1
     
-    
     var body: some View {
         
         NavigationView {
+            
             if #available(iOS 14.0, *) {
                 TabView(selection: $selectedTab){
                     Page_Compare().tabItem{

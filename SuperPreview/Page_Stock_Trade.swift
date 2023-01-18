@@ -27,7 +27,13 @@ struct Page_Stock_Trade: View {
                 // MARK: 一个Stack内不能超过十个元素，所以要打个组
                 Group {
                     // 搜索框
-                    Symbol_Inputfield()
+                    NavigationLink {
+                        Page_Stock_Search()
+                    } label: {
+                        Symbol_Inputfield()
+                    }
+
+                    
                     
                     // 行情栏
                     Symbol_Quote(openGraphView: $openGraphView)
@@ -226,7 +232,7 @@ struct Page_Stock_Trade: View {
         .ignoresSafeArea(edges: .bottom)
         
         // 导航栏设置
-        .navigationBarBackButtonHidden(true)
+        .navigationBarBackButtonHidden(true) // 隐藏返回按钮
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarLeading) {
@@ -319,7 +325,7 @@ private func orderTypeActionSheet() -> ActionSheet {
     let orderType3: ActionSheet.Button = .default(Text("市价交易"))
     let orderType4: ActionSheet.Button = .default(Text("条件交易"))
     let orderType5: ActionSheet.Button = .default(Text("碎股交易"))
-    let buttonCancle: ActionSheet.Button = .cancel()
+    let buttonCancle: ActionSheet.Button = .cancel(Text("取消"))
     
     return ActionSheet(
         title: Text("请选择订单类型"),

@@ -24,8 +24,6 @@ struct Page_Trade: View {
                     }.offset(y:0)
                 }
                 .background(Color("color-base-0"))
-            
-        
     }
 }
 
