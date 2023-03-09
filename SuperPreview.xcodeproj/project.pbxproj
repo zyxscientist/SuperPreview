@@ -20,6 +20,7 @@
 		847B7CAE263C03DC003E5A40 /* Comp_News_Text_Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847B7CAD263C03DC003E5A40 /* Comp_News_Text_Item.swift */; };
 		847B7CB0263C09C0003E5A40 /* Comp_Separator_Justify.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847B7CAF263C09C0003E5A40 /* Comp_Separator_Justify.swift */; };
 		847B7CB2263C0CBD003E5A40 /* Comp_News_Text_Image_Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847B7CB1263C0CBD003E5A40 /* Comp_News_Text_Image_Item.swift */; };
+		847E4C6E29B9DE9C002636CC /* BottomSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847E4C6D29B9DE9C002636CC /* BottomSheetView.swift */; };
 		847E80AF2644DFE50070A3E2 /* Comp_News_Carousel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847E80AE2644DFE50070A3E2 /* Comp_News_Carousel.swift */; };
 		847E80B12644E8360070A3E2 /* Page_News.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847E80B02644E8360070A3E2 /* Page_News.swift */; };
 		8496DCF2296C1422005E0325 /* SwiftBackToPreviousPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8496DCF1296C1422005E0325 /* SwiftBackToPreviousPage.swift */; };
@@ -113,6 +114,7 @@
 		847B7CAD263C03DC003E5A40 /* Comp_News_Text_Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comp_News_Text_Item.swift; sourceTree = "<group>"; };
 		847B7CAF263C09C0003E5A40 /* Comp_Separator_Justify.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comp_Separator_Justify.swift; sourceTree = "<group>"; };
 		847B7CB1263C0CBD003E5A40 /* Comp_News_Text_Image_Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comp_News_Text_Image_Item.swift; sourceTree = "<group>"; };
+		847E4C6D29B9DE9C002636CC /* BottomSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomSheetView.swift; sourceTree = "<group>"; };
 		847E80AE2644DFE50070A3E2 /* Comp_News_Carousel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comp_News_Carousel.swift; sourceTree = "<group>"; };
 		847E80B02644E8360070A3E2 /* Page_News.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Page_News.swift; sourceTree = "<group>"; };
 		8496DCF1296C1422005E0325 /* SwiftBackToPreviousPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftBackToPreviousPage.swift; sourceTree = "<group>"; };
@@ -241,6 +243,14 @@
 				C28CF43826ED9E8D00F75B27 /* Comp_NewChartView.swift */,
 			);
 			path = Charting;
+			sourceTree = "<group>";
+		};
+		847E4C6C29B9DE58002636CC /* MarketBottomSheet */ = {
+			isa = PBXGroup;
+			children = (
+				847E4C6D29B9DE9C002636CC /* BottomSheetView.swift */,
+			);
+			path = MarketBottomSheet;
 			sourceTree = "<group>";
 		};
 		8496DCF0296C13F7005E0325 /* Extension */ = {
@@ -406,6 +416,7 @@
 		C2A0248E24FB8D3C004930F0 /* Comp */ = {
 			isa = PBXGroup;
 			children = (
+				847E4C6C29B9DE58002636CC /* MarketBottomSheet */,
 				8467519526D73EB60063D770 /* Charting */,
 				84E7BBBB267C6BA90028407E /* Trade */,
 				84E7BBBD267C6CD40028407E /* Watchlist */,
@@ -544,6 +555,7 @@
 				C2E378992507B54700F01DC1 /* Comp_Header_Tabs.swift in Sources */,
 				C2A8847B251F3BBF00443FDC /* Comp_IndexBox_With_Graph.swift in Sources */,
 				84AD4639296BE3F1005CCDC8 /* Page_Stock_Trade.swift in Sources */,
+				847E4C6E29B9DE9C002636CC /* BottomSheetView.swift in Sources */,
 				847E80B12644E8360070A3E2 /* Page_News.swift in Sources */,
 				84C195D4263A9EDF001B425B /* Comp_Image_View.swift in Sources */,
 				84086BA0297153D800911F32 /* Comp_Today_Order_Table_Header.swift in Sources */,
