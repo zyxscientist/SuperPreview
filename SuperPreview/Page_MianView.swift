@@ -11,70 +11,71 @@ import SwiftUI
 struct Page_MianView: View {
     
     @State var selectedTab: Tabs = .tab1
+    @State var marketOpen = true
     
     var body: some View {
         
         NavigationView {
-            
             if #available(iOS 14.0, *) {
-                TabView(selection: $selectedTab){
-                    Page_Compare().tabItem{
-                        VStack {
-                            if selectedTab == .tab1 {
-                                Image("warchlist_active")
-                            } else {
-                                Image("warchlist_inactive")
+                ZStack{
+                    TabView(selection: $selectedTab){
+                        Page_Compare().tabItem{
+                            VStack {
+                                if selectedTab == .tab1 {
+                                    Image("warchlist_active")
+                                } else {
+                                    Image("warchlist_inactive")
+                                }
+                                Text("自选")
                             }
-                            Text("自选")
-                        }
-                    }.tag(Tabs.tab1)
-                    
-                    Page_Trade().tabItem{
-                        VStack {
-                            if selectedTab == .tab2 {
-                                Image("trade_active")
-                            } else {
-                                Image("trade_inactive")
+                        }.tag(Tabs.tab1)
+                        
+                        Page_Trade().tabItem{
+                            VStack {
+                                if selectedTab == .tab2 {
+                                    Image("trade_active")
+                                } else {
+                                    Image("trade_inactive")
+                                }
+                                Text("交易")
                             }
-                            Text("交易")
-                        }
-                    }.tag(Tabs.tab2)
-                    
-                    Page_Headertab().tabItem{
-                        VStack {
-                            if selectedTab == .tab3 {
-                                Image("wealth_active")
-                            } else {
-                                Image("wealth_inactive")
+                        }.tag(Tabs.tab2)
+                        
+                        Page_Headertab().tabItem{
+                            VStack {
+                                if selectedTab == .tab3 {
+                                    Image("wealth_active")
+                                } else {
+                                    Image("wealth_inactive")
+                                }
+                                Text("理财")
                             }
-                            Text("理财")
-                        }
-                    }.tag(Tabs.tab3)
-                    
-                    
-                    Page_News().tabItem{
-                        VStack {
-                            if selectedTab == .tab4 {
-                                Image("bookmark_active")
-                            } else {
-                                Image("bookmark_inactive")
+                        }.tag(Tabs.tab3)
+                        
+                        
+                        Page_News().tabItem{
+                            VStack {
+                                if selectedTab == .tab4 {
+                                    Image("bookmark_active")
+                                } else {
+                                    Image("bookmark_inactive")
+                                }
+                                Text("资讯")
                             }
-                            Text("资讯")
-                        }
-                    }.tag(Tabs.tab4)
-                    
-                    Comp_LineChart().tabItem{
-                        VStack {
-                            if selectedTab == .tab5 {
-                                Image("market_active")
-                            } else {
-                                Image("market_inactive")
+                        }.tag(Tabs.tab4)
+                        
+                        Comp_LineChart().tabItem{
+                            VStack {
+                                if selectedTab == .tab5 {
+                                    Image("market_active")
+                                } else {
+                                    Image("market_inactive")
+                                }
+                                Text("市场")
                             }
-                            Text("市场")
-                        }
-                    }.tag(Tabs.tab5)
+                        }.tag(Tabs.tab5)
+                    }
                 }
-                
                 // 解决 iOS 15 TabView 组件背景透明问题
                 .onAppear {
                     if #available(iOS 15.0, *) {
