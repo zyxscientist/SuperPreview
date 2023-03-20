@@ -31,7 +31,7 @@ struct Comp_Total_Asset: View {
                     }
                     HStack(alignment: .bottom) {
                         Text("120,201.12")
-                            .modifier(CustomFontModifier(size: 30, customFontsStyle: "PlusJakartaSansRoman-Bold"))
+                            .modifier(CustomFontModifier(size: 30, font: .medium))
                             .foregroundColor(Color("color-text-30"))
                             .padding(.top,15)
                         
@@ -56,7 +56,7 @@ struct Comp_Total_Asset: View {
                         .font(.system(size: 12, weight: .regular))
                         .foregroundColor(Color("color-text-60"))
                     Text("924,213.11")
-                        .modifier(CustomFontModifier(size: 13, customFontsStyle: "PlusJakartaSansRoman-SemiBold"))
+                        .modifier(CustomFontModifier(size: 13, font: .semibold))
                         .foregroundColor(Color("color-text-30"))
                         .padding(.top, 5)
                 }
@@ -68,7 +68,7 @@ struct Comp_Total_Asset: View {
                         .font(.system(size: 12, weight: .regular))
                         .foregroundColor(Color("color-text-60"))
                     Text("21,129.50")
-                        .modifier(CustomFontModifier(size: 13, customFontsStyle: "PlusJakartaSansRoman-SemiBold"))
+                        .modifier(CustomFontModifier(size: 13, font: .semibold))
                         .foregroundColor(Color("color-text-30"))
                         .padding(.top, 5)
                 }
@@ -80,7 +80,7 @@ struct Comp_Total_Asset: View {
                         .font(.system(size: 12, weight: .regular))
                         .foregroundColor(Color("color-text-60"))
                     Text("+123,200.11")
-                        .modifier(CustomFontModifier(size: 13, customFontsStyle: "PlusJakartaSansRoman-SemiBold"))
+                        .modifier(CustomFontModifier(size: 13, font: .semibold))
                         .foregroundColor(Color("color-utility-red"))
                         .padding(.top, 5)
                 }

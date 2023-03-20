@@ -19,7 +19,7 @@ struct BuyAndSellTips: View {
                     Text("250")
                         .padding(.leading, 10)
                         .foregroundColor(Color("color-utility3-red"))
-                        .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                        .modifier(CustomFontModifier(size: 12, font: .medium))
                 }.frame(width: UIScreen.main.bounds.width/2-20, alignment: .leading)
                 
                 HStack(spacing: 0) {
@@ -29,7 +29,7 @@ struct BuyAndSellTips: View {
                     Text("0")
                         .padding(.leading, 10)
                         .foregroundColor(Color("color-utility3-green"))
-                        .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                        .modifier(CustomFontModifier(size: 12, font: .medium))
                 }.frame(width: UIScreen.main.bounds.width/2-20, alignment: .leading)
             }
             
@@ -40,7 +40,7 @@ struct BuyAndSellTips: View {
                 Text("500")
                     .padding(.leading, 10)
                     .foregroundColor(Color("color-utility3-red"))
-                    .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                    .modifier(CustomFontModifier(size: 12, font: .medium))
             }
             .frame(width: UIScreen.main.bounds.width/2-20, alignment: .leading)
             .padding(.top, 5)

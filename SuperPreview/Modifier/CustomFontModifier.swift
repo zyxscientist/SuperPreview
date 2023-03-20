@@ -11,9 +11,17 @@ import SwiftUI
 struct CustomFontModifier: ViewModifier {
     
     var size: CGFloat = 16
-    var customFontsStyle : String
+    var font: CustomFont
+    
+    enum CustomFont: String {
+        case regular = "PlusJakartaSans-Regular"
+        case medium = "PlusJakartaSansRoman-Medium"
+        case semibold = "PlusJakartaSansRoman-SemiBold"
+        // Add more cases for other font styles if needed
+    }
+    
     
     func body(content: Content) -> some View {
-        content.font(.custom(customFontsStyle, size: size))
+        content.font(.custom(font.rawValue, size: size))
     }
 }

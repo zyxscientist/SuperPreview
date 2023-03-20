@@ -20,7 +20,7 @@ struct TradeCompactList: View {
             HStack(alignment: .center, spacing: 15) {
                 Text("持仓(2)")
                     .foregroundColor(positionList ? Color("color-text-30") : Color("color-text-60"))
-                    .modifier(CustomFontModifier(size: 14, customFontsStyle: positionList ? "PlusJakartaSansRoman-Semibold" : "PlusJakartaSansRoman-Medium"))
+                    .modifier(CustomFontModifier(size: 14, font: positionList ? .semibold : .medium))
                     .onTapGesture {
                         positionList = true
                         todayOrderList = false
@@ -28,7 +28,7 @@ struct TradeCompactList: View {
                     }
                 Text("今日订单(1/3)")
                     .foregroundColor(todayOrderList ? Color("color-text-30") : Color("color-text-60"))
-                    .modifier(CustomFontModifier(size: 14, customFontsStyle: todayOrderList ? "PlusJakartaSansRoman-Semibold" : "PlusJakartaSansRoman-Medium"))
+                    .modifier(CustomFontModifier(size: 14, font: todayOrderList ? .semibold : .medium))
                     .onTapGesture {
                         positionList = false
                         todayOrderList = true
@@ -36,7 +36,7 @@ struct TradeCompactList: View {
                     }
                 Text("条件单(0/0)")
                     .foregroundColor(conditionalOrderList ? Color("color-text-30") : Color("color-text-60"))
-                    .modifier(CustomFontModifier(size: 14, customFontsStyle: conditionalOrderList ? "PlusJakartaSansRoman-Semibold" : "PlusJakartaSansRoman-Medium"))
+                    .modifier(CustomFontModifier(size: 14, font: conditionalOrderList ? .semibold : .medium))
                     .onTapGesture {
                         positionList = false
                         todayOrderList = false

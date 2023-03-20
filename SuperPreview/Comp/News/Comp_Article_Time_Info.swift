@@ -20,11 +20,11 @@ struct Comp_Article_Time_Info: View {
                     .cornerRadius(2)
                 
                 Text("2021/04/12")
-                    .modifier(CustomFontModifier(size: 14, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                    .modifier(CustomFontModifier(size: 14, font: .medium))
                     .foregroundColor(Color("color-text-90"))
                 
                 Text("14:20")
-                    .modifier(CustomFontModifier(size: 14, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                    .modifier(CustomFontModifier(size: 14, font: .medium))
                     .foregroundColor(Color("color-text-90"))
                 
                 

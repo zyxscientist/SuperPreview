@@ -26,7 +26,7 @@ struct Comp_Snapshot_Group_Ttile: View {
             
             HStack(spacing: 5.0){
                  Text("1,600,000.00")
-                    .modifier(CustomFontModifier(size: 14, customFontsStyle: "PlusJakartaSansRoman-Semibold"))
+                    .modifier(CustomFontModifier(size: 14, font: .semibold))
                     .foregroundColor(Color("color-text-30"))
                 Image("chevron_up_sm")
                     .frame(width: 19, height: 13)

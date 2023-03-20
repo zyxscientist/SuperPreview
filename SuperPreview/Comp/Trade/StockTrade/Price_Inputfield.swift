@@ -30,7 +30,7 @@ struct Price_Inputfield: View {
                     }
                 Text("\(priceQuantityViewModel.price.formatted())")
                     .foregroundColor(Color("color-text-30"))
-                    .modifier(CustomFontModifier(size: 16, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                    .modifier(CustomFontModifier(size: 16, font: .medium))
             }.padding(.leading, 65)
             
             Spacer()

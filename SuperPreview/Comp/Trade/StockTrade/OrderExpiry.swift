@@ -19,7 +19,7 @@ struct OrderExpiry: View {
             Text("今日有效")
                 .padding(.leading, 49)
                 .foregroundColor(Color("color-text-30"))
-                .modifier(CustomFontModifier(size: 16, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                .modifier(CustomFontModifier(size: 16, font: .medium))
             
             Spacer()
             

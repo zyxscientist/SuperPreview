@@ -248,32 +248,32 @@ struct Tab_Compare_5: View {
                 
                 Text("1234567890")
                     .lineLimit(1)
-                    .modifier(CustomFontModifier(size: 32, customFontsStyle: "PlusJakartaSansRoman-Bold"))
+                    .modifier(CustomFontModifier(size: 32, font: .medium))
                     .foregroundColor(Color("color-utility3-red"))
                 
                 Text("1212121212")
                     .lineLimit(1)
-                    .modifier(CustomFontModifier(size: 32, customFontsStyle: "PlusJakartaSansRoman-Bold"))
+                    .modifier(CustomFontModifier(size: 32, font: .medium))
                     .foregroundColor(Color("color-utility3-green"))
                 
                 Text("1234567890")
                     .lineLimit(1)
-                    .modifier(CustomFontModifier(size: 20, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                    .modifier(CustomFontModifier(size: 20, font: .medium))
                     .foregroundColor(Color("color-utility3-red"))
                 
                 Text("1234567890")
                     .lineLimit(1)
-                    .modifier(CustomFontModifier(size: 20, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                    .modifier(CustomFontModifier(size: 20, font: .medium))
                     .foregroundColor(Color("color-utility3-green"))
                 
                 Text("1234567890")
                     .lineLimit(1)
-                    .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                    .modifier(CustomFontModifier(size: 12, font: .medium))
                     .foregroundColor(Color("color-utility3-red"))
                 
                 Text("1234567890")
                     .lineLimit(1)
-                    .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                    .modifier(CustomFontModifier(size: 12, font: .medium))
                     .foregroundColor(Color("color-utility3-green"))
                 
                 
@@ -366,17 +366,17 @@ struct ExtractedView: View {
                 .padding(.bottom, 2)
             
             Text("23308.99")
-                .modifier(CustomFontModifier(size: 16, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                .modifier(CustomFontModifier(size: 16, font: .medium))
                 .foregroundColor(Color(utility_color))
                 .padding(.bottom, 4)
             
             HStack(spacing: 10){
                 Text("+195.77")
-                    .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                    .modifier(CustomFontModifier(size: 12, font: .medium))
                     .foregroundColor(Color(utility_color))
                 
                 Text("+1.99%")
-                    .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                    .modifier(CustomFontModifier(size: 12, font: .medium))
                     .foregroundColor(Color(utility_color))
             }.padding(.bottom, 10)
             
@@ -414,13 +414,13 @@ struct VolumeCompare: View {
                 
                 Text("84.22%")
                     .foregroundColor(.white)
-                    .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-SemiBold"))
+                    .modifier(CustomFontModifier(size: 12, font: .semibold))
                 
                 Spacer()
                 
                 Text("15.78%")
                     .foregroundColor(.white)
-                    .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-SemiBold"))
+                    .modifier(CustomFontModifier(size: 12, font: .semibold))
                 
                 
             }
@@ -444,14 +444,14 @@ struct Tape_First: View {
                         HStack{
                             Text("799.980")
                                 .foregroundColor(Color("color-utility3-red"))
-                                .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-SemiBold"))
+                                .modifier(CustomFontModifier(size: 12, font: .semibold))
                                 .padding(.leading, 10)
                             
                             Spacer()
                             
                             Text("100")
                                 .foregroundColor(Color("color-text-30"))
-                                .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-SemiBold"))
+                                .modifier(CustomFontModifier(size: 12, font: .semibold))
                                 .padding(.trailing, 20)
                         }
                     )
@@ -463,14 +463,14 @@ struct Tape_First: View {
                         HStack{
                             Text("799.980")
                                 .foregroundColor(Color("color-utility3-green"))
-                                .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-SemiBold"))
+                                .modifier(CustomFontModifier(size: 12, font: .semibold))
                                 .padding(.leading, 20)
                             
                             Spacer()
                             
                             Text("100")
                                 .foregroundColor(Color("color-text-30"))
-                                .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-SemiBold"))
+                                .modifier(CustomFontModifier(size: 12, font: .semibold))
                                 .padding(.trailing, 10)
                         }
                     )
@@ -483,7 +483,7 @@ struct Tape_First: View {
                 .overlay(
                     Text("1")
                         .foregroundColor(.black)
-                        .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Bold"))
+                        .modifier(CustomFontModifier(size: 12, font: .medium))
                 )
         }
     }
@@ -504,14 +504,14 @@ struct Tape_Other: View {
                         HStack{
                             Text("799.980")
                                 .foregroundColor(Color("color-utility3-red"))
-                                .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-SemiBold"))
+                                .modifier(CustomFontModifier(size: 12, font: .semibold))
                                 .padding(.leading, 10)
                             
                             Spacer()
                             
                             Text("100")
                                 .foregroundColor(Color("color-text-30"))
-                                .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-SemiBold"))
+                                .modifier(CustomFontModifier(size: 12, font: .semibold))
                                 .padding(.trailing, 20)
                         }
                     )
@@ -523,14 +523,14 @@ struct Tape_Other: View {
                         HStack{
                             Text("799.980")
                                 .foregroundColor(Color("color-utility3-green"))
-                                .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-SemiBold"))
+                                .modifier(CustomFontModifier(size: 12, font: .semibold))
                                 .padding(.leading, 20)
                             
                             Spacer()
                             
                             Text("100")
                                 .foregroundColor(Color("color-text-30"))
-                                .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-SemiBold"))
+                                .modifier(CustomFontModifier(size: 12, font: .semibold))
                                 .padding(.trailing, 10)
                         }
                     )
@@ -543,7 +543,7 @@ struct Tape_Other: View {
                 .overlay(
                     Text(tapeIndex)
                         .foregroundColor(.black)
-                        .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Bold"))
+                        .modifier(CustomFontModifier(size: 12, font: .medium))
                 )
         }
     }

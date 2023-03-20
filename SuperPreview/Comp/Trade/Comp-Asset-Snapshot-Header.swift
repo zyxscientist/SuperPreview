@@ -28,14 +28,14 @@ struct Comp_Asset_Snapshot_Header: View {
             HStack(spacing: 0.0) {
                 VStack(alignment: .trailing){
                     Text("HKD 6,600,000.00")
-                        .modifier(CustomFontModifier(size: 16, customFontsStyle: "PlusJakartaSansRoman-Semibold"))
+                        .modifier(CustomFontModifier(size: 16, font: .semibold))
                         .foregroundColor(Color("color-text-30"))
                     HStack(spacing: 10.0) {
                         Text("+1,600,000.00")
-                            .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Semibold"))
+                            .modifier(CustomFontModifier(size: 12, font: .semibold))
                             .foregroundColor(Color("color-utility-red"))
                         Text("+41.83%")
-                            .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Semibold"))
+                            .modifier(CustomFontModifier(size: 12, font: .semibold))
                             .foregroundColor(Color("color-utility-red"))
                         }
                     

@@ -19,7 +19,7 @@ struct Order_Type: View {
             Text("增强限价交易")
                 .padding(.leading, 33)
                 .foregroundColor(Color("color-text-30"))
-                .modifier(CustomFontModifier(size: 16, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                .modifier(CustomFontModifier(size: 16, font: .medium))
             
             Spacer()
             

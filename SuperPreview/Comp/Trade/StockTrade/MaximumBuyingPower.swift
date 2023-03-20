@@ -20,7 +20,7 @@ struct MaximumBuyingPower: View {
                 
                     Text("HKD 20,168,098.00")
                         .foregroundColor(Color("color-text-30"))
-                        .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                        .modifier(CustomFontModifier(size: 12, font: .medium))
                         .padding(.leading, 37)
                 
                 Spacer()

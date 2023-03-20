@@ -23,13 +23,13 @@ struct Symbol_Quote: View {
                 HStack(spacing: 5) {
                     Text("16.990")
                         .foregroundColor(Color("color-utility3-red"))
-                        .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                        .modifier(CustomFontModifier(size: 12, font: .medium))
                     Text("+1.210")
                         .foregroundColor(Color("color-utility3-red"))
-                        .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                        .modifier(CustomFontModifier(size: 12, font: .medium))
                     Text("+8.41%")
                         .foregroundColor(Color("color-utility3-red"))
-                        .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                        .modifier(CustomFontModifier(size: 12, font: .medium))
                 }.padding(.leading, 49)
                 
                 Spacer()

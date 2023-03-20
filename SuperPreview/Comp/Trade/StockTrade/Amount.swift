@@ -25,7 +25,7 @@ struct Amount: View {
                 Text(String(format: "%.2f", priceQuantityViewModel.amount)) // 小数位管理
                     .padding(.leading, 65)
                     .foregroundColor(Color("color-text-30"))
-                    .modifier(CustomFontModifier(size: 15, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                    .modifier(CustomFontModifier(size: 15, font: .medium))
                 
                 HStack(spacing: 5) {
                     
@@ -36,7 +36,7 @@ struct Amount: View {
                     
                     Text(String(format: "%.2f", priceQuantityViewModel.predictivePercentage)+"%")
                         .foregroundColor(Color("color-text-60"))
-                        .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                        .modifier(CustomFontModifier(size: 12, font: .medium))
                 }
             }
             Spacer()

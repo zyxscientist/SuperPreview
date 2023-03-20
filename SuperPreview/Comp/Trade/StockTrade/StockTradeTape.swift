@@ -36,14 +36,14 @@ struct StockTradeTape: View {
                                 HStack{
                                     Text("16.980")
                                         .foregroundColor(Color("color-utility3-red"))
-                                        .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                                        .modifier(CustomFontModifier(size: 12, font: .medium))
                                         .padding(.leading, 10)
                                     
                                     Spacer()
                                     
                                     Text("2K(       1)")
                                         .foregroundColor(Color("color-text-30"))
-                                        .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                                        .modifier(CustomFontModifier(size: 12, font: .medium))
                                         .padding(.trailing, 10)
                                 }
                             )
@@ -55,14 +55,14 @@ struct StockTradeTape: View {
                                 HStack{
                                     Text("15.910")
                                         .foregroundColor(Color("color-utility3-green"))
-                                        .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                                        .modifier(CustomFontModifier(size: 12, font: .medium))
                                         .padding(.leading, 10)
                                     
                                     Spacer()
                                     
                                     Text("33.21K(      33)")
                                         .foregroundColor(Color("color-text-30"))
-                                        .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                                        .modifier(CustomFontModifier(size: 12, font: .medium))
                                         .padding(.trailing, 10)
                                 }
                             )
@@ -109,14 +109,14 @@ struct OtherTape: View {
                         HStack{
                             Text("799.980")
                                 .foregroundColor(Color("color-utility3-red"))
-                                .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                                .modifier(CustomFontModifier(size: 12, font: .medium))
                                 .padding(.leading, 10)
                             
                             Spacer()
                             
                             Text("2K(       1)")
                                 .foregroundColor(Color("color-text-30"))
-                                .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                                .modifier(CustomFontModifier(size: 12, font: .medium))
                                 .padding(.trailing, 10)
                         }
                     )
@@ -128,14 +128,14 @@ struct OtherTape: View {
                         HStack{
                             Text("799.980")
                                 .foregroundColor(Color("color-utility3-green"))
-                                .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                                .modifier(CustomFontModifier(size: 12, font: .medium))
                                 .padding(.leading, 10)
                             
                             Spacer()
                             
                             Text("33.21K(      33)")
                                 .foregroundColor(Color("color-text-30"))
-                                .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                                .modifier(CustomFontModifier(size: 12, font: .medium))
                                 .padding(.trailing, 10)
                         }
                     )

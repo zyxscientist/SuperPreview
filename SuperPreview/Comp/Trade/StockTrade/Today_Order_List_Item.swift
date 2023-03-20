@@ -49,7 +49,7 @@ struct Today_Order_List_Item: View {
                     .font(.system(size: 15, weight: .regular))
                     .foregroundColor(Color("color-text-30"))
                 Text("00376.HK")
-                    .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                    .modifier(CustomFontModifier(size: 12, font: .medium))
                     .foregroundColor(Color("color-text-60"))
                     .multilineTextAlignment(.leading)
             }
@@ -59,7 +59,7 @@ struct Today_Order_List_Item: View {
                 HStack(spacing: 5) {
                     Image(statu.rawValue != 1 ? "TO_price_nudge_minus_invisiable" : "TO_price_nudge_minus") // 根据状态隐藏价格微调按钮
                     Text("16.39")
-                        .modifier(CustomFontModifier(size: 15, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                        .modifier(CustomFontModifier(size: 15, font: .medium))
                         .foregroundColor(Color("color-text-30"))
                     Image(statu.rawValue != 1 ? "TO_price_nudge_minus_invisiable" : "TO_price_nudge_add") // 根据状态隐藏价格微调按钮
                     }
@@ -68,11 +68,11 @@ struct Today_Order_List_Item: View {
             
             VStack(alignment: .trailing, spacing: 1.0) {
                 Text("2,000")
-                    .modifier(CustomFontModifier(size: 15, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                    .modifier(CustomFontModifier(size: 15, font: .medium))
                     .foregroundColor(Color("color-text-30"))
                     .padding(.trailing, 15)
                 Text(statu.rawValue != 1 ? "2000" : "0") // 根据状态显示成交数量
-                    .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                    .modifier(CustomFontModifier(size: 12, font: .medium))
                     .foregroundColor(Color("color-text-60"))
                     .padding(.trailing, 15)
             }

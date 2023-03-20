@@ -39,7 +39,7 @@ struct Comp_Watchlist_Item: View {
                         HStack(alignment: .center, spacing: 2.0) {
                             
                             Text(stock.symbol)
-                                .modifier(CustomFontModifier(size: 12, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                                .modifier(CustomFontModifier(size: 12, font: .medium))
                                 .foregroundColor(Color("color-text-60"))
                                 .padding(.leading, 15)
                             Image(stock.alert ? "price_alert" : "no_any_watchlist_mark_icon")
@@ -69,7 +69,7 @@ struct Comp_Watchlist_Item: View {
                 
                     Text(stock.price)
                         .multilineTextAlignment(.trailing)
-                        .modifier(CustomFontModifier(size: 15, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                        .modifier(CustomFontModifier(size: 15, font: .medium))
     //                    .foregroundColor(Color(stock.direction))
                         .foregroundColor(Color("color-text-30"))
                         .frame(width: 76, alignment: .trailing)
@@ -81,7 +81,7 @@ struct Comp_Watchlist_Item: View {
                         .cornerRadius(4)
                         .overlay(
                             Text(stock.rate)
-                                .modifier(CustomFontModifier(size: 15, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                                .modifier(CustomFontModifier(size: 15, font: .medium))
                                 .foregroundColor(.white)
                         )
                     .padding(.trailing, 10)

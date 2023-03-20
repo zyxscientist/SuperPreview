@@ -19,7 +19,7 @@ struct Symbol_Inputfield: View {
             Text("00376.HK")
                 .padding(.leading, 65)
                 .foregroundColor(Color("color-text-30"))
-                .modifier(CustomFontModifier(size: 16, customFontsStyle: "PlusJakartaSansRoman-Medium"))
+                .modifier(CustomFontModifier(size: 16, font: .medium))
             
             Spacer()
         }
