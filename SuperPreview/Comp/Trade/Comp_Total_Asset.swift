@@ -31,7 +31,7 @@ struct Comp_Total_Asset: View {
                     }
                     HStack(alignment: .bottom) {
                         Text("120,201.12")
-                            .modifier(CustomFontModifier(size: 30, font: .medium))
+                            .modifier(CustomFontModifier(size: 30, font: .semibold))
                             .foregroundColor(Color("color-text-30"))
                             .padding(.top,15)
                         
