@@ -75,6 +75,15 @@ struct Page_MianView: View {
                             }
                         }.tag(Tabs.tab5)
                     }
+                    .safeAreaInset(edge: .bottom){
+                        ZStack {
+                            Rectangle()
+                                .fill(Color.red)
+                                .frame(height: 40)
+                                .cornerRadius(8, corners: [.topLeft, .topRight])
+                            .offset(y: -50)
+                        }
+                    }
                 }
                 // 解决 iOS 15 TabView 组件背景透明问题
                 .onAppear {
@@ -128,3 +137,21 @@ struct Page_MianView_Previews: PreviewProvider {
     }
 }
 
+// 实现改变特定角圆角的方法
+
+extension View {
+    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
+        clipShape( RoundedCorner(radius: radius, corners: corners) )
+    }
+}
+
+struct RoundedCorner: Shape {
+
+    var radius: CGFloat = .infinity
+    var corners: UIRectCorner = .allCorners
+
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+        return Path(path.cgPath)
+    }
+}
