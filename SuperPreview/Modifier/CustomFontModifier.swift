@@ -17,6 +17,7 @@ struct CustomFontModifier: ViewModifier {
         case regular = "PlusJakartaSans-Regular"
         case medium = "PlusJakartaSansRoman-Medium"
         case semibold = "PlusJakartaSansRoman-SemiBold"
+        case bold = "PlusJakartaSansRoman-Bold"
         // Add more cases for other font styles if needed
     }
     

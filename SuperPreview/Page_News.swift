@@ -24,7 +24,7 @@ struct Page_News: View {
                             
                         // #1
                         NavigationLink(
-                            destination: Page_News_Detail(),
+                                destination: Page_News_Detail(),
                             label:{
                                 Comp_News_Text_Item(title:"美联储议息会议前瞻：美联储或延续鸽派基调", source: "有鱼资讯")
                             })

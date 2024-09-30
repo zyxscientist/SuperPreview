@@ -82,12 +82,12 @@ struct Page_News_Detail: View {
                     }
                 }
                 .navigationBarBackButtonHidden(true)
+                .navigationBarTitleDisplayMode(.inline)
                 .navigationTitle("详情")
                 .background(Color("color-base-1"))
                 
                 
-                // scroll to top btn
-                
+                // 滚动至顶部按钮
                 .overlay(
                     Button(action: {
                         withAnimation(.easeOut) {

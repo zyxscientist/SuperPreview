@@ -29,6 +29,7 @@ static var previews: some View {
 }
 
 
+// 顶部Tabber·HeaderTab组件
 
 struct Page_Compare_HeaderTabView: View {
     
@@ -125,7 +126,7 @@ struct Page_Compare_HeaderTabView: View {
             
             
             VStack(alignment: .center, spacing: 5.0)  {
-                Text("其他")
+                Text("组件库")
                     .font(.system(size: 16))
                     .foregroundColor(self.index == 4 ? Color("color-text-30") : Color("color-text-60"))
                     .fontWeight(self.index == 4 ? .semibold : .regular)
@@ -153,6 +154,7 @@ struct Page_Compare_HeaderTabView: View {
         .padding(.leading, 15)
         .padding(.trailing, 11)
         .background(Color("color-base-1"))
+        
         .overlay(
             Comp_Separator_Full()
         )
@@ -243,309 +245,39 @@ struct Tab_Compare_4: View {
 
 struct Tab_Compare_5: View {
     var body: some View{
-        ScrollView{
-            VStack(spacing: 20.0){
-                
-                Text("1234567890")
-                    .lineLimit(1)
-                    .modifier(CustomFontModifier(size: 32, font: .medium))
-                    .foregroundColor(Color("color-utility3-red"))
-                
-                Text("1212121212")
-                    .lineLimit(1)
-                    .modifier(CustomFontModifier(size: 32, font: .medium))
-                    .foregroundColor(Color("color-utility3-green"))
-                
-                Text("1234567890")
-                    .lineLimit(1)
-                    .modifier(CustomFontModifier(size: 20, font: .medium))
-                    .foregroundColor(Color("color-utility3-red"))
-                
-                Text("1234567890")
-                    .lineLimit(1)
-                    .modifier(CustomFontModifier(size: 20, font: .medium))
-                    .foregroundColor(Color("color-utility3-green"))
-                
-                Text("1234567890")
-                    .lineLimit(1)
-                    .modifier(CustomFontModifier(size: 12, font: .medium))
-                    .foregroundColor(Color("color-utility3-red"))
-                
-                Text("1234567890")
-                    .lineLimit(1)
-                    .modifier(CustomFontModifier(size: 12, font: .medium))
-                    .foregroundColor(Color("color-utility3-green"))
-                
-                
-                VStack {
-                    HStack(spacing: 10){
-                        Rectangle()
-                            .foregroundColor(Color("color-utility3-red"))
-                            .frame(width:175, height: 44)
-                            .clipShape(RoundedRectangle(cornerRadius: 8.0, style: .continuous))
-                            .overlay(
-                                Text("买入")
-                                    .fontWeight(.medium)
-                                    .foregroundColor(.white)
-                            )
-                        
-                        Rectangle()
-                            .foregroundColor(Color("color-utility3-green"))
-                            .frame(width:175, height: 44)
-                            .clipShape(RoundedRectangle(cornerRadius: 8.0, style: .continuous))
-                            .overlay(
-                                Text("卖出")
-                                    .fontWeight(.medium)
-                                    .foregroundColor(.white)
-                            )
-                        
-                    }
-                    
-                        Rectangle()
-                            .foregroundColor(Color("color-brand-blue"))
-                            .frame(height: 44)
-                            .clipShape(RoundedRectangle(cornerRadius: 10.0, style: .continuous))
-                            .padding(.horizontal, 15)
-                            .overlay(
-                                Text("解锁交易")
-                                    .fontWeight(.medium)
-                                    .foregroundColor(.white)
-                            )
-                }
-                    
-                
-                HStack {
-                    ExtractedView(index_name: "恒生指数",utility_color: "color-utility3-red")
-                    ExtractedView(index_name: "国企指数",utility_color: "color-utility3-red")
-                    ExtractedView(index_name: "红筹指数",utility_color: "color-utility3-green")
-                }
-                
-                
-                VStack(spacing: 10.0) {
-                    VolumeCompare()
-                    VStack(spacing: 0.0) {
-                        Tape_First()
-                        Tape_Other(tapeIndex: "2")
-                        Tape_Other(tapeIndex: "3")
-                        Tape_Other(tapeIndex: "4")
-                        Tape_Other(tapeIndex: "5")
-                        Tape_Other(tapeIndex: "6")
-                        Tape_Other(tapeIndex: "7")
-                        Tape_Other(tapeIndex: "8")
-                        Tape_Other(tapeIndex: "9")
-                        Tape_Other(tapeIndex: "10")
-                    }
-                    .clipShape(RoundedRectangle(cornerRadius: 6.0, style: .continuous))
-                }
-                .background(Color("color-base-1"))
-
-                
-                
-                
-                
-                
-            }
+        List{
             
+            // 组件列表单元
+            NavigationLink(
+                    destination: IntraDayCardView(),
+                label:{
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("分时走势卡片")
+                            .font(.system(size: 16, weight: .semibold, design: .default))
+                        Text("IntraDayCardView")
+                            .foregroundColor(.gray)
+                            .font(.system(size: 13, weight: .regular, design: .monospaced))
+                    }
+                }
+            )
+            // 结束
             
+            NavigationLink(
+                    destination: Comp_Tape(),
+                label:{
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("买卖盘组件")
+                            .font(.system(size: 16, weight: .semibold, design: .default))
+                        Text("Tape")
+                            .foregroundColor(.gray)
+                            .font(.system(size: 13, weight: .regular, design: .monospaced))
+                    }
+                }
+            )
+            // 结束
         }
         .frame(width: 390) // 整个背景的宽度
         .background(Color("color-base-0"))
-    }
-}
-
-struct ExtractedView: View {
-    
-    var index_name = "恒生指数"
-    var utility_color = "color-utility3-red"
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0.0){
-            Text(index_name)
-                .font(.system(size: 12))
-                .fontWeight(.medium)
-                .padding(.bottom, 2)
-            
-            Text("23308.99")
-                .modifier(CustomFontModifier(size: 16, font: .medium))
-                .foregroundColor(Color(utility_color))
-                .padding(.bottom, 4)
-            
-            HStack(spacing: 10){
-                Text("+195.77")
-                    .modifier(CustomFontModifier(size: 12, font: .medium))
-                    .foregroundColor(Color(utility_color))
-                
-                Text("+1.99%")
-                    .modifier(CustomFontModifier(size: 12, font: .medium))
-                    .foregroundColor(Color(utility_color))
-            }.padding(.bottom, 10)
-            
-            ZStack{
-                Fill_Mini_LineGraph(dataPoints: ChartMockData.miniChart_50_point.normalized, bottomBuffer: 0)
-                    .fill(LinearGradient(gradient: Gradient(colors: [Color(utility_color).opacity(0.2), Color(utility_color).opacity(0.0)]), startPoint: .top, endPoint: .bottom))
-                    .frame(width: 88, height: 44)
-                
-                Mini_LineGraph(dataPoints: ChartMockData.miniChart_50_point.normalized)
-                    .stroke(Color(utility_color), style: StrokeStyle(lineWidth: 1, lineCap: .round, lineJoin: .round))
-                    .frame(width: 88, height: 44)
-                
-            }
-            
-        }
-        .padding(10)
-        .frame(minHeight: 140)
-        .background(Color("color-base-1"))
-        .cornerRadius(10, antialiased: true)
-    }
-}
-
-struct VolumeCompare: View {
-    var body: some View {
-        ZStack(alignment: .leading){
-            Rectangle()
-                .foregroundColor(Color("color-utility3-green"))
-                .frame(width:390, height: 25)
-            
-            Rectangle()
-                .foregroundColor(Color("color-utility3-red"))
-                .frame(width:280, height: 25)
-            
-            HStack{
-                
-                Text("84.22%")
-                    .foregroundColor(.white)
-                    .modifier(CustomFontModifier(size: 12, font: .semibold))
-                
-                Spacer()
-                
-                Text("15.78%")
-                    .foregroundColor(.white)
-                    .modifier(CustomFontModifier(size: 12, font: .semibold))
-                
-                
-            }
-            .padding(.horizontal, 25)
-            
-        }
-        .frame(width: 360)
-        .cornerRadius(6)
-    }
-}
-
-struct Tape_First: View {
-    var body: some View {
-        ZStack {
-            
-            HStack(spacing: 0.0){
-                Rectangle()
-                    .foregroundColor(Color("color-utility3-red").opacity(0.10))
-                    .frame(width:180, height: 35)
-                    .overlay(
-                        HStack{
-                            Text("799.980")
-                                .foregroundColor(Color("color-utility3-red"))
-                                .modifier(CustomFontModifier(size: 12, font: .semibold))
-                                .padding(.leading, 10)
-                            
-                            Spacer()
-                            
-                            Text("100")
-                                .foregroundColor(Color("color-text-30"))
-                                .modifier(CustomFontModifier(size: 12, font: .semibold))
-                                .padding(.trailing, 20)
-                        }
-                    )
-                
-                Rectangle()
-                    .foregroundColor(Color("color-utility3-green").opacity(0.10))
-                    .frame(width:180, height: 35)
-                    .overlay(
-                        HStack{
-                            Text("799.980")
-                                .foregroundColor(Color("color-utility3-green"))
-                                .modifier(CustomFontModifier(size: 12, font: .semibold))
-                                .padding(.leading, 20)
-                            
-                            Spacer()
-                            
-                            Text("100")
-                                .foregroundColor(Color("color-text-30"))
-                                .modifier(CustomFontModifier(size: 12, font: .semibold))
-                                .padding(.trailing, 10)
-                        }
-                    )
-            }
-            
-            Rectangle()
-                .foregroundColor(.white)
-                .frame(width:19, height: 19)
-                .clipShape(RoundedRectangle(cornerRadius: 4.0, style: .continuous))
-                .overlay(
-                    Text("1")
-                        .foregroundColor(.black)
-                        .modifier(CustomFontModifier(size: 12, font: .medium))
-                )
-        }
-    }
-}
-
-
-struct Tape_Other: View {
-    var tapeIndex = "1"
-    
-    var body: some View {
-        ZStack {
-            
-            HStack(spacing: 0.0){
-                Rectangle()
-                    .foregroundColor(Color("color-utility3-red").opacity(0.05))
-                    .frame(width:180, height: 35)
-                    .overlay(
-                        HStack{
-                            Text("799.980")
-                                .foregroundColor(Color("color-utility3-red"))
-                                .modifier(CustomFontModifier(size: 12, font: .semibold))
-                                .padding(.leading, 10)
-                            
-                            Spacer()
-                            
-                            Text("100")
-                                .foregroundColor(Color("color-text-30"))
-                                .modifier(CustomFontModifier(size: 12, font: .semibold))
-                                .padding(.trailing, 20)
-                        }
-                    )
-                
-                Rectangle()
-                    .foregroundColor(Color("color-utility3-green").opacity(0.05))
-                    .frame(width:180, height: 35)
-                    .overlay(
-                        HStack{
-                            Text("799.980")
-                                .foregroundColor(Color("color-utility3-green"))
-                                .modifier(CustomFontModifier(size: 12, font: .semibold))
-                                .padding(.leading, 20)
-                            
-                            Spacer()
-                            
-                            Text("100")
-                                .foregroundColor(Color("color-text-30"))
-                                .modifier(CustomFontModifier(size: 12, font: .semibold))
-                                .padding(.trailing, 10)
-                        }
-                    )
-            }
-            
-            Rectangle()
-                .foregroundColor(.white)
-                .frame(width:19, height: 19)
-                .clipShape(RoundedRectangle(cornerRadius: 4.0, style: .continuous))
-                .overlay(
-                    Text(tapeIndex)
-                        .foregroundColor(.black)
-                        .modifier(CustomFontModifier(size: 12, font: .medium))
-                )
-        }
     }
 }
 
