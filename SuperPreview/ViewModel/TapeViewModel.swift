@@ -50,7 +50,7 @@ class TapeViewModel: ObservableObject {
         TapeCellData(
             price: Double.random(in: 20...22),
             volume: Int.random(in: 100...2000),
-            brokerCount: Int.random(in: 50...300)
+            brokerCount: Int.random(in: 1...400)
         )
     }
     

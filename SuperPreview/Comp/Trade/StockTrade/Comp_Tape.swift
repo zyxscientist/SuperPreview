@@ -63,9 +63,9 @@ struct TapeCellView: View {
             
             Spacer()
             
-            // 成交单量 & 经纪商家数
+            // 单量
             HStack(spacing: 0){
-                Text("1.1K")
+                Text(formatTapeVolume(data?.volume ?? 0))
                     .multilineTextAlignment(.trailing)
                     .foregroundColor(Color(.colorText30))
                     .modifier(CustomFontModifier(size: 13, font: .regular))
@@ -76,7 +76,10 @@ struct TapeCellView: View {
                     .modifier(CustomFontModifier(size: 13, font: .regular))
                     .padding(.leading, 3)
                 
-                Text("211")
+                // 经纪商家数
+                Text(String(data?.brokerCount ?? 0))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
                     .frame(width:25, alignment: .trailing) // 固定宽度并靠右边对齐
                     .multilineTextAlignment(.trailing)
                     .foregroundColor(Color(.colorText30))
