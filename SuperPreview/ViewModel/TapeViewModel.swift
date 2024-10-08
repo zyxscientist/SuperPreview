@@ -28,10 +28,13 @@ class TapeViewModel: ObservableObject {
     }
     
     private func startTimer() {
-        timer = Timer.publish(every: 1, on: .main, in: .common)
+        let randomInterval = Double.random(in: 0.2...3.0) // 随机间隔0.5秒到2秒
+        timer = Timer.publish(every: randomInterval, on: .main, in: .common)
             .autoconnect()
             .sink { [weak self] _ in
                 self?.updateData()
+                self?.startTimer() // 自己跑自己一次，以重新生成时间值
+                print("刷新时间间隔：\(randomInterval)")
             }
     }
     
@@ -49,8 +52,8 @@ class TapeViewModel: ObservableObject {
     private func generateRandomData() -> TapeCellData {
         TapeCellData(
             price: Double.random(in: 20...22),
-            volume: Int.random(in: 100...2000),
-            brokerCount: Int.random(in: 1...400)
+            volume: Int.random(in: 1000...20000),
+            brokerCount: Int.random(in: 1...20)
         )
     }
     
