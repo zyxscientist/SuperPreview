@@ -50,6 +50,7 @@ struct TransactionDetailsCell: View {
     
     let transactionDetailsCellData: TransactionDetailsCellData
     @State private var isHighlighted = false
+    @State private var blurAmount: CGFloat = 2
     
     var body: some View {
         HStack(spacing:0){
@@ -63,6 +64,7 @@ struct TransactionDetailsCell: View {
                     .foregroundStyle(Color(.colorText60))
                     .modifier(CustomFontModifier(size: 11, font: .medium))
                     .padding(.leading, 2)
+                    .blur(radius: blurAmount)
                 
                 // 价格
                 Text(transactionDetailsCellData.price)
@@ -70,6 +72,7 @@ struct TransactionDetailsCell: View {
                     .minimumScaleFactor(0.5)
                     .foregroundStyle(Color(.colorUtility3Red))
                     .modifier(CustomFontModifier(size: 11, font: .medium))
+                    .blur(radius: blurAmount)
             }
             
             Spacer()
@@ -81,21 +84,31 @@ struct TransactionDetailsCell: View {
                     .foregroundStyle(Color(transactionDetailsCellData.typeSymbol.color))
                     .modifier(CustomFontModifier(size: 11, font: .medium))
                     .multilineTextAlignment(.trailing)
+                    .blur(radius: blurAmount)
                 
                 // 主买卖及中性类型标识图标
                 Image(transactionDetailsCellData.typeSymbol.imageName)
                     .resizable()
                     .frame(width:7, height: 6)
                     .padding(.trailing, 2)
+                    .blur(radius: blurAmount)
             }
         }
         .padding(.vertical, 4)
         .background(
-            transactionDetailsCellData.typeSymbol.color.opacity(isHighlighted ? 0.1 : 0)
+            transactionDetailsCellData.typeSymbol.color.opacity(isHighlighted ? 0.05 : 0)
         )
         .animation(.easeOut(duration: 0.2), value: isHighlighted)
+        .animation(.easeInOut(duration: 0.3), value: blurAmount)
         .onAppear {
+            
             isHighlighted = true
+            blurAmount = 2
+            
+            withAnimation(.easeInOut(duration: 0.3)) {
+                blurAmount = 0 // 数字模糊效果
+            }
+            
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                 isHighlighted = false
             }
