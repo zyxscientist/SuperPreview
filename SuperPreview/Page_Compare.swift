@@ -277,12 +277,12 @@ struct Tab_Compare_5: View {
             // 结束
             
             NavigationLink(
-                    destination: Comp_Tape(),
+                    destination: Comp_TransactionDetails(),
                 label:{
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("TransactionDetails")
+                        Text("成交明细")
                             .font(.system(size: 16, weight: .semibold, design: .default))
-                        Text("QuoteStat")
+                        Text("TransactionDetails")
                             .foregroundColor(.gray)
                             .font(.system(size: 13, weight: .regular, design: .monospaced))
                     }
