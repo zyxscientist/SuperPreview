@@ -289,6 +289,21 @@ struct Tab_Compare_5: View {
                 }
             )
             // 结束
+            
+            NavigationLink(
+                destination: Comp_Stock_Price_Stat(stockStats: stockstat),
+                label:{
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("报价区")
+                            .font(.system(size: 16, weight: .semibold, design: .default))
+                        Text("StockPriceStat")
+                            .foregroundColor(.gray)
+                            .font(.system(size: 13, weight: .regular, design: .monospaced))
+                    }
+                }
+            )
+            // 结束
+            
         }
         .frame(width: 390) // 整个背景的宽度
         .background(Color("color-base-0"))

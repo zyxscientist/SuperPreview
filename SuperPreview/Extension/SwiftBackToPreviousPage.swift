@@ -10,7 +10,7 @@ import Foundation
 import SwiftUI
 // 自定义Navigationbar经常需要隐藏系统提供的返回按钮，
 // 隐藏系统的返回按钮需要使用到 .navigationBarBackButtonHidden(true)，但是这将使得滑动返回也失效，所以在这个页面要添加以下拓展保留滑动返回
-extension UINavigationController: UIGestureRecognizerDelegate {
+extension UINavigationController: @retroactive UIGestureRecognizerDelegate {
     override open func viewDidLoad() {
         super.viewDidLoad()
         interactivePopGestureRecognizer?.delegate = self

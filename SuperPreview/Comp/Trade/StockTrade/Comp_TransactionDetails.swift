@@ -41,6 +41,11 @@ struct Comp_TransactionDetails: View {
                 }
         }
         .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+        // 描边
+        .overlay(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .stroke(Color(.colorSeparator10), lineWidth: 0.5)
+        )
         .shadow(color: Color.black.opacity(0.1), radius: 15, x: 0, y: 2)
     }
 }
