@@ -27,9 +27,15 @@ struct Comp_Tape: View {
                     }
                 }
             }
-            .clipShape(RoundedRectangle(cornerRadius: 6.0, style: .continuous))
-            .padding(.horizontal, 15)
             .background(Color(.colorBase1))
+            .clipShape(RoundedRectangle(cornerRadius: 6.0, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    .stroke(Color(.colorSeparator10), lineWidth: 0.5)
+            )
+            .padding(.horizontal, 15)
+            .padding(.top, 40)
+            .shadow(color: Color.black.opacity(0.15), radius: 25, x: 0, y: 2)
         }
         .background(Color(.colorBase1))
     }

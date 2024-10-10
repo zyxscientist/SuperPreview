@@ -65,7 +65,7 @@ struct Comp_Stock_Price_Stat: View {
                 .stroke(Color(.colorSeparator10), lineWidth: 0.5)
         )
         .padding(.horizontal, 10)
-        .shadow(color: Color.black.opacity(0.1), radius: 15, x: 0, y: 2)
+        .shadow(color: Color.black.opacity(0.15), radius: 25, x: 0, y: 2)
         .contentShape(Rectangle()) // 确保整个区域可点击
         .onTapGesture {
             HapticManager.instance.impactHaptic(type: .medium)

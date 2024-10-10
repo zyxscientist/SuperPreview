@@ -46,7 +46,7 @@ struct Comp_TransactionDetails: View {
             RoundedRectangle(cornerRadius: 8, style: .continuous)
                 .stroke(Color(.colorSeparator10), lineWidth: 0.5)
         )
-        .shadow(color: Color.black.opacity(0.1), radius: 15, x: 0, y: 2)
+        .shadow(color: Color.black.opacity(0.15), radius: 25, x: 0, y: 2)
     }
 }
 
