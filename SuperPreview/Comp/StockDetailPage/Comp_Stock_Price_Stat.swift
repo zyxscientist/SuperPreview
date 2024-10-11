@@ -21,7 +21,10 @@ struct Comp_Stock_Price_Stat: View {
     ]
     
     var body: some View {
+        
         VStack(spacing:0){
+            
+            PriceBlock()
             
             // 第一个 LazyVGrid 显示前9个元素
             LazyVGrid(columns: columns, alignment: .leading, spacing: 5) {
@@ -47,12 +50,18 @@ struct Comp_Stock_Price_Stat: View {
                     .frame(height: isExpanded ? nil : 0, alignment: .top)
                 }
             
+            
             Image(.statExpandChevron)
                 .resizable()
                 .padding(.top, 1)
                 .padding(.bottom, 0)
                 .frame(width:16, height: 10)
                 .rotationEffect(.degrees(isExpanded ? 180 : 0))
+            
+            // 关联信息区
+            Comp_AssociatedInfo()
+                .padding(.top, 5)
+                .padding(.bottom, 10)
         }
         
         // 必须在这里顶bottom的距离
@@ -66,6 +75,7 @@ struct Comp_Stock_Price_Stat: View {
         )
         .padding(.horizontal, 10)
         .shadow(color: Color.black.opacity(0.15), radius: 25, x: 0, y: 2)
+        .padding(.top, 150)
         .contentShape(Rectangle()) // 确保整个区域可点击
         .onTapGesture {
             HapticManager.instance.impactHaptic(type: .medium)
@@ -76,6 +86,76 @@ struct Comp_Stock_Price_Stat: View {
         }
         
         Spacer()
+    }
+}
+
+struct PriceBlock: View {
+    var body: some View {
+        
+        HStack(alignment:.lastTextBaseline, spacing:5){
+            
+            HStack(alignment: .firstTextBaseline, spacing: 1){
+                
+                Image(.priceBlockArrow)
+                    .resizable()
+                    .frame(width:9, height: 11)
+                    .foregroundColor(Color(.colorUtility3Red))
+                
+                
+                // 现价
+                Text("16.800")
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+                    .multilineTextAlignment(.leading)
+                    .foregroundColor(Color(.colorUtility3Red))
+                    .modifier(CustomFontModifier(size: 33, font: .bold))
+            }
+            
+            VStack(spacing:0){
+                
+                // 涨跌额
+                Text("+2.400")
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+                    .multilineTextAlignment(.leading)
+                    .foregroundColor(Color(.colorUtility3Red))
+                    .modifier(CustomFontModifier(size: 13, font: .bold))
+                
+                // 涨跌幅
+                Text("+2.22%")
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+                    .multilineTextAlignment(.leading)
+                    .foregroundColor(Color(.colorUtility3Red))
+                    .modifier(CustomFontModifier(size: 13, font: .bold))
+                
+            }
+            
+            Spacer()
+            
+            HStack(spacing: 3){
+                Image(.hongKong)
+                    .resizable()
+                    .frame(width: 16, height: 16)
+                Image(.stockConnection)
+                    .resizable()
+                    .frame(width: 16, height: 16)
+                Image(.margin)
+                    .resizable()
+                    .frame(width: 16, height: 16)
+                Image(.hkLv2)
+                    .resizable()
+                    .frame(width: 16, height: 16)
+            }
+            .padding(3)
+            .background(Color(.colorScale1))
+            .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+            
+        }
+        .padding(.top, 14)
+        .padding(.bottom, 4)
+        .padding(.horizontal, 15)
+        .background(Color(.colorBase1))
     }
 }
 
@@ -117,7 +197,7 @@ struct StockStat: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.5)
                     .multilineTextAlignment(.trailing)
-                // 有可能有红绿黑三种字色
+                    // 有可能有红绿黑三种字色
                     .foregroundColor(Color(data.valueColor))
                     .modifier(CustomFontModifier(size: 13, font: .medium))
                 
