@@ -97,6 +97,7 @@ struct PriceBlock: View {
             HStack(alignment: .firstTextBaseline, spacing: 1){
                 
                 Image(.priceBlockArrow)
+                    .renderingMode(.template)
                     .resizable()
                     .frame(width:9, height: 11)
                     .foregroundColor(Color(.colorUtility3Red))

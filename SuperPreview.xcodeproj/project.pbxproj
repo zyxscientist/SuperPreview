@@ -40,6 +40,7 @@
 		84A729A7297006570056BA94 /* MaximumBuyingPower.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A729A6297006570056BA94 /* MaximumBuyingPower.swift */; };
 		84AD4639296BE3F1005CCDC8 /* Page_Stock_Trade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AD4638296BE3F1005CCDC8 /* Page_Stock_Trade.swift */; };
 		84B893E02CB8FECA00EA5F84 /* Comp_AssociatedInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B893DF2CB8FECA00EA5F84 /* Comp_AssociatedInfo.swift */; };
+		84B893E32CB92E4900EA5F84 /* UXDemo_StockShuffle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B893E22CB92E4800EA5F84 /* UXDemo_StockShuffle.swift */; };
 		84BDAEC22CB655CA001588E7 /* TransactionDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BDAEC12CB655CA001588E7 /* TransactionDetails.swift */; };
 		84BDAEC42CB6566A001588E7 /* TransactionDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BDAEC32CB6566A001588E7 /* TransactionDetailsViewModel.swift */; };
 		84BDAEC72CB7A2D5001588E7 /* Comp_Stock_Price_Stat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BDAEC62CB7A2D5001588E7 /* Comp_Stock_Price_Stat.swift */; };
@@ -147,6 +148,7 @@
 		84A729A6297006570056BA94 /* MaximumBuyingPower.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaximumBuyingPower.swift; sourceTree = "<group>"; };
 		84AD4638296BE3F1005CCDC8 /* Page_Stock_Trade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Page_Stock_Trade.swift; sourceTree = "<group>"; };
 		84B893DF2CB8FECA00EA5F84 /* Comp_AssociatedInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comp_AssociatedInfo.swift; sourceTree = "<group>"; };
+		84B893E22CB92E4800EA5F84 /* UXDemo_StockShuffle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UXDemo_StockShuffle.swift; sourceTree = "<group>"; };
 		84BDAEC12CB655CA001588E7 /* TransactionDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDetails.swift; sourceTree = "<group>"; };
 		84BDAEC32CB6566A001588E7 /* TransactionDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDetailsViewModel.swift; sourceTree = "<group>"; };
 		84BDAEC62CB7A2D5001588E7 /* Comp_Stock_Price_Stat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comp_Stock_Price_Stat.swift; sourceTree = "<group>"; };
@@ -310,6 +312,14 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
+		84B893E12CB92E2C00EA5F84 /* UXDemo */ = {
+			isa = PBXGroup;
+			children = (
+				84B893E22CB92E4800EA5F84 /* UXDemo_StockShuffle.swift */,
+			);
+			path = UXDemo;
+			sourceTree = "<group>";
+		};
 		84BDAEC52CB7A282001588E7 /* StockDetailPage */ = {
 			isa = PBXGroup;
 			children = (
@@ -466,6 +476,7 @@
 		C2A0248E24FB8D3C004930F0 /* Comp */ = {
 			isa = PBXGroup;
 			children = (
+				84B893E12CB92E2C00EA5F84 /* UXDemo */,
 				84BDAEC52CB7A282001588E7 /* StockDetailPage */,
 				846A94A42CAA585D000C1721 /* Market */,
 				847E4C6C29B9DE58002636CC /* MarketBottomSheet */,
@@ -642,6 +653,7 @@
 				84B893E02CB8FECA00EA5F84 /* Comp_AssociatedInfo.swift in Sources */,
 				84A7299E296FB23C0056BA94 /* Amount.swift in Sources */,
 				84D12D7F296D1918008D5466 /* Symbol_Quote.swift in Sources */,
+				84B893E32CB92E4900EA5F84 /* UXDemo_StockShuffle.swift in Sources */,
 				C2F9DE3D259A1637000B5961 /* Comp_Temp_Holdings.swift in Sources */,
 				847E80AF2644DFE50070A3E2 /* Comp_News_Carousel.swift in Sources */,
 				C2D51EB7267DE13700341982 /* Comp_News_Related_Stocks_Loss.swift in Sources */,

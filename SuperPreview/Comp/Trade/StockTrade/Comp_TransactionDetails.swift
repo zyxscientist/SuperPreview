@@ -114,7 +114,7 @@ struct TransactionDetailsCell: View {
                 blurAmount = 0 // 数字模糊效果
             }
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { // 异步倒计时让高亮结束
                 isHighlighted = false
             }
         }
