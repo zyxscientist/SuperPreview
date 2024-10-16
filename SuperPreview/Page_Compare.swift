@@ -318,6 +318,20 @@ struct Tab_Compare_5: View {
             )
             // 结束
             
+            NavigationLink(
+                destination: Comp_Macro_Data_CPI(),
+                label:{
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("数据中心")
+                            .font(.system(size: 16, weight: .semibold, design: .default))
+                        Text("Macro Data Center")
+                            .foregroundColor(.gray)
+                            .font(.system(size: 13, weight: .regular, design: .monospaced))
+                    }
+                }
+            )
+            // 结束
+            
         }
         .frame(width: 390) // 整个背景的宽度
         .background(Color("color-base-0"))
