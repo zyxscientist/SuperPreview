@@ -12,7 +12,6 @@ struct Comp_Macro_Data_CPI: View {
     
     @StateObject private var viewModel = MacroDataCPIViewModel()
     
-    
     var body: some View {
         
         VStack(spacing: 0.0) {
@@ -172,19 +171,21 @@ struct Comp_Macro_Data_CPI: View {
         
     }
     
-    // 月份标签布局方法
+    // 年份标签布局方法
     private func yearLabel(for index: Int, in geometry: GeometryProxy) -> some View {
-        let totalWidth = geometry.size.width - 30
-        let xStep = totalWidth / 4
-        let x: CGFloat
+        
+
+        let totalWidth = geometry.size.width - 30 // 总长
+        let xStep = totalWidth / 4 // 等分横轴空间,并得出每等份的长度,由于是要打五5个点,所以要分四份
+        let x: CGFloat // 日期的X坐标
         
         // 左右两极label定位
         if index == 0 {
-            x = 25 // 左对齐
+            x = 25 // 最左的点
         } else if index == 4 {
-            x = geometry.size.width - 29 // 右对齐
+            x = geometry.size.width - 29 // 最右的点
         } else {
-            x = 15 + CGFloat(index) * xStep // 中间的点
+            x = 15 + CGFloat(index) * xStep // 其余的点
         }
         
         let showIndex = round(Double(index) * Double(viewModel.data_cpi.count - 1) / 4)
@@ -272,21 +273,21 @@ struct Comp_Macro_Data_CPI: View {
 
 
 // 辅助函数：将字符串转换为日期
-func dateFromString(_ dateString: String) -> Date {
+private func dateFromString(_ dateString: String) -> Date {
     let formatter = DateFormatter()
     formatter.dateFormat = "yyyy-MM-dd HH:mm"
     return formatter.date(from: dateString) ?? Date()
 }
 
 // 辅助函数：从日期获取月份字符串
-func monthString(from date: Date) -> String {
+private func monthString(from date: Date) -> String {
     let formatter = DateFormatter()
     formatter.dateFormat = "yyyy"
     return formatter.string(from: date)
 }
 
-// 辅助函数：使得CPI值百分比化
-func pecentageString(_ value: Double) -> String {
+// 辅助函数：值百分比化
+private func pecentageString(_ value: Double) -> String {
     let percentage = (value/100)
     return String(format: "%.2f%%", percentage)
 }

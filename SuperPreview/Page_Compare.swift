@@ -319,7 +319,7 @@ struct Tab_Compare_5: View {
             // 结束
             
             NavigationLink(
-                destination: Comp_Macro_Data_CPI(),
+                destination: Page_Macro_Data_Center(),
                 label:{
                     VStack(alignment: .leading, spacing: 2) {
                         Text("数据中心")

@@ -11,14 +11,14 @@ import Foundation
 class MacroDataCPIViewModel: ObservableObject {
     
     @Published var data_cpi: [CPIData] = []
-    @Published var data_predict_cpi: [CPIData] = []
+    @Published var data_predict_cpi: [CPIData] = [] // 预测值也是使用一样的数据类型
     
     init() {
         generateCPIData(startYear: 2015, endYear: 2024)
         generateCPIPredictData(startYear: 2015, endYear: 2024)
     }
 
-    // 生成过往 10 年的 CPI 数据, 每次都不同
+    // 生成过往 10 年的 CPI 数据
     private func generateCPIData(startYear: Int, endYear: Int){
         
         let baseValue = 299.0 // 初始值
@@ -64,10 +64,9 @@ class MacroDataCPIViewModel: ObservableObject {
                 // 保留三位小数
                 cpiValue = round(cpiValue * 1000) / 1000
                 
-                let cpiDataItem = CPIData(date: dateString, value: cpiValue) // 保留三位小数
+                let cpiDataItem = CPIData(date: dateString, value: cpiValue)
                 data_cpi.append(cpiDataItem)
-                
-                print("\(dateString)")
+
             }
         }
         

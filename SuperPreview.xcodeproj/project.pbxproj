@@ -20,6 +20,10 @@
 		845748CC2CB530C4006C3F75 /* Comp_TransactionDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845748CB2CB530C4006C3F75 /* Comp_TransactionDetails.swift */; };
 		84574C322975503A0062D03D /* OrderStatuManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84574C312975503A0062D03D /* OrderStatuManager.swift */; };
 		84574C342976A0590062D03D /* ImageDebug.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84574C332976A0590062D03D /* ImageDebug.swift */; };
+		8461BFF92CC0B9960014ED60 /* Comp_Macro_Data_PCE.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8461BFF82CC0B9960014ED60 /* Comp_Macro_Data_PCE.swift */; };
+		8461BFFB2CC0BAEC0014ED60 /* MacroData_PCE.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8461BFFA2CC0BAEC0014ED60 /* MacroData_PCE.swift */; };
+		8461BFFD2CC0BB6A0014ED60 /* MacroDataPCEViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8461BFFC2CC0BB6A0014ED60 /* MacroDataPCEViewModel.swift */; };
+		8461BFFF2CC0E4400014ED60 /* Page_Macro_Data_Center.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8461BFFE2CC0E4400014ED60 /* Page_Macro_Data_Center.swift */; };
 		8467519726D740230063D770 /* Comp_Axis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8467519626D740230063D770 /* Comp_Axis.swift */; };
 		846A94A62CAA5887000C1721 /* Comp_IntraDayCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846A94A52CAA5886000C1721 /* Comp_IntraDayCard.swift */; };
 		847296362CBE518800676FE1 /*  MacroData_CPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847296352CBE518800676FE1 /*  MacroData_CPI.swift */; };
@@ -131,6 +135,10 @@
 		845748CB2CB530C4006C3F75 /* Comp_TransactionDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comp_TransactionDetails.swift; sourceTree = "<group>"; };
 		84574C312975503A0062D03D /* OrderStatuManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderStatuManager.swift; sourceTree = "<group>"; };
 		84574C332976A0590062D03D /* ImageDebug.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDebug.swift; sourceTree = "<group>"; };
+		8461BFF82CC0B9960014ED60 /* Comp_Macro_Data_PCE.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comp_Macro_Data_PCE.swift; sourceTree = "<group>"; };
+		8461BFFA2CC0BAEC0014ED60 /* MacroData_PCE.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacroData_PCE.swift; sourceTree = "<group>"; };
+		8461BFFC2CC0BB6A0014ED60 /* MacroDataPCEViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacroDataPCEViewModel.swift; sourceTree = "<group>"; };
+		8461BFFE2CC0E4400014ED60 /* Page_Macro_Data_Center.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Page_Macro_Data_Center.swift; sourceTree = "<group>"; };
 		8467519626D740230063D770 /* Comp_Axis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comp_Axis.swift; sourceTree = "<group>"; };
 		846A94A52CAA5886000C1721 /* Comp_IntraDayCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comp_IntraDayCard.swift; sourceTree = "<group>"; };
 		847296352CBE518800676FE1 /*  MacroData_CPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = " MacroData_CPI.swift"; sourceTree = "<group>"; };
@@ -286,6 +294,7 @@
 			children = (
 				846A94A52CAA5886000C1721 /* Comp_IntraDayCard.swift */,
 				847296392CBE56A500676FE1 /* Comp_Macro_Data_CPI.swift */,
+				8461BFF82CC0B9960014ED60 /* Comp_Macro_Data_PCE.swift */,
 			);
 			path = Market;
 			sourceTree = "<group>";
@@ -313,6 +322,7 @@
 			isa = PBXGroup;
 			children = (
 				847296372CBE541F00676FE1 /* MacroDataCPIViewModel.swift */,
+				8461BFFC2CC0BB6A0014ED60 /* MacroDataPCEViewModel.swift */,
 				84A729A2296FB4DF0056BA94 /* PriceQuantityViewModel.swift */,
 				8433D3002CAAA326007E5EAD /* TapeViewModel.swift */,
 				84BDAEC32CB6566A001588E7 /* TransactionDetailsViewModel.swift */,
@@ -462,6 +472,7 @@
 				C2B67D4926BF75DC00D52963 /* Page_Headertab.swift */,
 				C2A69B3C253BF3AA00E5933F /* Page_Watchlist.swift */,
 				84CF754029779A06006728F4 /* Page_Stock_Search.swift */,
+				8461BFFE2CC0E4400014ED60 /* Page_Macro_Data_Center.swift */,
 				C2330E452851CB9100382AE1 /* Page_Compare.swift */,
 				84008BF12CAA709D0094E05E /* IntraDayCardView.swift */,
 				C2FFC802252216F000B79A40 /* Page_MianView.swift */,
@@ -520,6 +531,7 @@
 				84BDAEC12CB655CA001588E7 /* TransactionDetails.swift */,
 				84BDAEC82CB7ABC5001588E7 /* StockStat.swift */,
 				847296352CBE518800676FE1 /*  MacroData_CPI.swift */,
+				8461BFFA2CC0BAEC0014ED60 /* MacroData_PCE.swift */,
 			);
 			path = "Fake Data";
 			sourceTree = "<group>";
@@ -649,6 +661,7 @@
 				C25F3BA1250CBBDA00D30EAA /* Comp_Snapshot_Group_Table_Header.swift in Sources */,
 				C2FFC803252216F000B79A40 /* Page_MianView.swift in Sources */,
 				C2A69B3A253BF30F00E5933F /* Comp_TableHeader_Watchlist.swift in Sources */,
+				8461BFF92CC0B9960014ED60 /* Comp_Macro_Data_PCE.swift in Sources */,
 				84A729A5297000DC0056BA94 /* OrderExpiry.swift in Sources */,
 				C2A69B3D253BF3AA00E5933F /* Page_Watchlist.swift in Sources */,
 				84574C342976A0590062D03D /* ImageDebug.swift in Sources */,
@@ -657,8 +670,10 @@
 				84E7BBBF267C6D1D0028407E /* Comp_Snapshot_Stock_US.swift in Sources */,
 				C2B1096E2751F85800A58F55 /* LaunchScreen.swift in Sources */,
 				84A1293D2654E49F00229552 /* Comp_News_Writer.swift in Sources */,
+				8461BFFB2CC0BAEC0014ED60 /* MacroData_PCE.swift in Sources */,
 				8433D2FF2CAAA300007E5EAD /* TapeItem.swift in Sources */,
 				C2E3789D2507BEBE00F01DC1 /* Comp-List-Snapshot-Holdings_Gain.swift in Sources */,
+				8461BFFD2CC0BB6A0014ED60 /* MacroDataPCEViewModel.swift in Sources */,
 				C2330E482851D1F300382AE1 /* Stock_Watchlist_Data_2.swift in Sources */,
 				84C195C8263A9219001B425B /* Comp_News_Title.swift in Sources */,
 				84B893E02CB8FECA00EA5F84 /* Comp_AssociatedInfo.swift in Sources */,
@@ -696,6 +711,7 @@
 				C2A69B34253BECE100E5933F /* Comp_Watchlist_Item.swift in Sources */,
 				842F182D296D54B200D628C3 /* StockTradeTape.swift in Sources */,
 				84C537BD27201FFD00630E94 /* Comp_MiniChart.swift in Sources */,
+				8461BFFF2CC0E4400014ED60 /* Page_Macro_Data_Center.swift in Sources */,
 				84C195CE263A9B97001B425B /* Comp_Heading_2.swift in Sources */,
 				C2405EBC2851F41100A30210 /* Stock_Watchlist_Data_4.swift in Sources */,
 				C2F9DE3A259A12F1000B5961 /* Comp_List_Holdings.swift in Sources */,
