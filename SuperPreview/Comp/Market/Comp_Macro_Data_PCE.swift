@@ -174,10 +174,9 @@ struct Comp_Macro_Data_PCE: View {
            let maxValue = viewModel.data_pce.map { $0.value }.max() ?? 0
            let minValue = 0.00
            let normalizedData = viewModel.data_pce.map { CGFloat(($0.value - minValue) / (maxValue - minValue)) }
-           let totalWidth = geometry.size.width - 30
            
+           let totalWidth = geometry.size.width - 30
            let barCount = CGFloat(normalizedData.count)
-
            let barWidth = totalWidth / (barCount+barCount-1)
            
            
@@ -187,8 +186,8 @@ struct Comp_Macro_Data_PCE: View {
                    ForEach(normalizedData.indices, id: \.self) { index in
                        Rectangle()
                            .fill(Color(.colorBrandBlue))
-                           .frame(width: barWidth, height: max(normalizedData[index] * 144, 1))
-                           .padding(.trailing, barWidth)
+                           .frame(width: 2, height: max(normalizedData[index] * 144, 1))
+                           .padding(.trailing, 1)
                    }
                }
                .frame(width: 239, height: 144)
