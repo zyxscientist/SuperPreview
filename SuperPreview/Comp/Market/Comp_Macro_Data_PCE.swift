@@ -41,6 +41,10 @@ struct Comp_Macro_Data_PCE: View {
                            .foregroundStyle(Color(.colorText60))
                            .modifier(CustomFontModifier(size: 13, font: .regular))
                        
+                       Text("月公布")
+                           .foregroundStyle(Color(.colorText60))
+                           .modifier(CustomFontModifier(size: 13, font: .regular))
+                       
                        Spacer()
                    }
                    .padding(.horizontal, 15)
