@@ -89,9 +89,13 @@ struct NotificationView: View {
                         .padding(.vertical, 16)
                     Spacer()
                 }
-                .background(.ultraThickMaterial)
+                .background(.regularMaterial)
                 .frame(maxWidth: .infinity)
                 .clipShape(RoundedRectangle(cornerRadius: 16.0)) // 剪个圆角
+                .overlay( // 再次叠加
+                            RoundedRectangle(cornerRadius: 16.0, style: .continuous)
+                                .stroke(Color(.colorSeparator20), lineWidth: 0.5)
+                         )
                 .shadow(
                     color: Color.black.opacity(0.19), // 阴影颜色和透明度
                     radius: 11, // 阴影半径
