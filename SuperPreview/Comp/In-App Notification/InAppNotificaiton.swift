@@ -78,26 +78,27 @@ struct InAppNotificaiton: View {
 
 struct NotificationView: View {
     var body: some View {
+        
         VStack {
             HStack{
                 HStack{
-                    Text("您已成功使用港股佣金券额度88HKD。这笔佣金券可用于抵扣您在港股交易中产生的佣金费用，帮助您降低交易成本，提升投资回报。请确保在有效期内使用该额度，以免错过优惠。如果您有任何疑问或需要进一步了解佣金券的使用规则，可以随时联系您的客户经理或查看相关说明。祝您投资顺利！")
+                    Text("尊敬的客户:[港股免佣券-100港元]已存入阁下之账户, 在进行港股交易时免佣券将自动抵扣, 最高可减免100港元,该免佣券的有效期为[2025/01/01], 请在有效期内使用.")
                         .lineLimit(3)
-                        .modifier(CustomFontModifier(size: 16, font: .medium))
-                        .foregroundColor(Color(.colorText30))
+                        .modifier(CustomFontModifier(size: 14, font: .medium))
+                        .foregroundColor(Color.black)
                         .padding(.leading, 15)
                         .padding(.vertical, 16)
                     Spacer()
                 }
-                .background(.regularMaterial)
+                .background(Color(.gold)).opacity(1)
                 .frame(maxWidth: .infinity)
                 .clipShape(RoundedRectangle(cornerRadius: 16.0)) // 剪个圆角
                 .overlay( // 再次叠加
                             RoundedRectangle(cornerRadius: 16.0, style: .continuous)
-                                .stroke(Color(.colorSeparator20), lineWidth: 0.5)
+                                .stroke(Color(.colorSeparator20), lineWidth: 0.8)
                          )
                 .shadow(
-                    color: Color.black.opacity(0.19), // 阴影颜色和透明度
+                    color: Color.black.opacity(0.05), // 阴影颜色和透明度
                     radius: 11, // 阴影半径
                     x: 0, // 水平偏移
                     y: 0 // 垂直偏移
