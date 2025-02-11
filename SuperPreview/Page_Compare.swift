@@ -245,6 +245,7 @@ struct Tab_Compare_4: View {
 
 struct Tab_Compare_5: View {
     var body: some View{
+        
         List{
             
             // 组件列表单元
@@ -259,7 +260,7 @@ struct Tab_Compare_5: View {
                             .font(.system(size: 13, weight: .regular, design: .monospaced))
                     }
                 }
-            )
+            ).navigationViewStyle(.stack)
             // 结束
             
             NavigationLink(
