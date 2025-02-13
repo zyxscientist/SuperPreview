@@ -21,8 +21,8 @@ struct Comp_TransactionDetails: View {
                     ForEach(viewModel.transactions) { transaction in
                         TransactionDetailsCell(transactionDetailsCellData: transaction)
                             .transition(.move(edge: .top))
-                    }
-                }.animation(.easeInOut(duration: 0.2), value: viewModel.transactions)
+                    }.animation(.easeInOut(duration: 0.2), value: viewModel.transactions)
+                }
                 
             }
             .background(Color(.colorBase1))

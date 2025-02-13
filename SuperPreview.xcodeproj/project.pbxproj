@@ -254,6 +254,7 @@
 		840CDDD8296D0BEF0074CCD0 /* StockTrade */ = {
 			isa = PBXGroup;
 			children = (
+				845748CB2CB530C4006C3F75 /* Comp_TransactionDetails.swift */,
 				84008BF42CAA89250094E05E /* Comp_Tape.swift */,
 				840CDDD9296D0C3C0074CCD0 /* Symbol_Inputfield.swift */,
 				84D12D7E296D1918008D5466 /* Symbol_Quote.swift */,
@@ -267,7 +268,6 @@
 				84086B9B2971328000911F32 /* BuyAndSellTips.swift */,
 				84086B9D297142A700911F32 /* TradeCompactList.swift */,
 				84086BA1297158E100911F32 /* Today_Order_List_Item.swift */,
-				845748CB2CB530C4006C3F75 /* Comp_TransactionDetails.swift */,
 			);
 			path = StockTrade;
 			sourceTree = "<group>";
