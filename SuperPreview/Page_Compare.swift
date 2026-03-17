@@ -348,6 +348,23 @@ struct Tab_Compare_5: View {
             
             // 结束
             
+            // 结束
+            
+            NavigationLink(
+                destination: PriceRefreshAnimation(),
+                label:{
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("价格刷新")
+                            .font(.system(size: 16, weight: .semibold, design: .default))
+                        Text("Price Refresh Animation")
+                            .foregroundColor(.gray)
+                            .font(.system(size: 13, weight: .regular, design: .monospaced))
+                    }
+                }
+            )
+            
+            // 结束
+            
         }
         .frame(width: 390) // 整个背景的宽度
         .background(Color("color-base-0"))
