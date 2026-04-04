@@ -16,7 +16,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        RunLoop.current.run(until: Date(timeIntervalSinceNow: 1.0))
+        if !PreviewRuntime.isRunning {
+            RunLoop.current.run(until: Date(timeIntervalSinceNow: 1.0))
+        }
         return true
     }
 
@@ -36,4 +38,3 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
 }
-

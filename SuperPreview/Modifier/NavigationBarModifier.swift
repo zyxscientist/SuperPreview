@@ -22,9 +22,11 @@ struct NavigationBarModifier: ViewModifier {
         coloredAppearance.titleTextAttributes = [.foregroundColor: titleColor ?? .white]
         coloredAppearance.largeTitleTextAttributes = [.foregroundColor: titleColor ?? .white]
 
-        UINavigationBar.appearance().standardAppearance = coloredAppearance
-        UINavigationBar.appearance().compactAppearance = coloredAppearance
-        UINavigationBar.appearance().scrollEdgeAppearance = coloredAppearance
+        if !PreviewRuntime.isRunning {
+            UINavigationBar.appearance().standardAppearance = coloredAppearance
+            UINavigationBar.appearance().compactAppearance = coloredAppearance
+            UINavigationBar.appearance().scrollEdgeAppearance = coloredAppearance
+        }
     }
 
     func body(content: Content) -> some View {

@@ -12,6 +12,7 @@ struct Page_MianView: View {
     
     @State var selectedTab: Tabs = .tab1
     @State var marketOpen = true
+    private let isPreview = PreviewRuntime.isRunning
     
     var body: some View {
         
@@ -78,6 +79,7 @@ struct Page_MianView: View {
                 }
                 // 解决 iOS 15 TabView 组件背景透明问题
                 .onAppear {
+                    guard !isPreview else { return }
                     if #available(iOS 15.0, *) {
                         let appearance = UITabBarAppearance()
                         UITabBar.appearance().scrollEdgeAppearance = appearance
@@ -102,7 +104,11 @@ struct Page_MianView: View {
                 // Fallback on earlier versions
             }
         }
-        .overlay(LaunchScreen())
+        .overlay {
+            if !isPreview {
+                LaunchScreen()
+            }
+        }
         .navigationViewStyle(StackNavigationViewStyle())
     }
 
