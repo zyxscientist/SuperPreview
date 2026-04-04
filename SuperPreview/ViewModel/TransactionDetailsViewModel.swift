@@ -14,10 +14,15 @@ class TransactionViewModel: ObservableObject {
     @Published var transactions: [TransactionDetailsCellData] = []
     
     private var lastTransactionTime: Date?
+    private var timer: Timer?
     
     init() {
         generateInitialData()
         startSimulatingDataPush()
+    }
+    
+    deinit {
+        timer?.invalidate()
     }
     
     
@@ -37,8 +42,8 @@ class TransactionViewModel: ObservableObject {
         }
     
     func startSimulatingDataPush() {
-        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
-            self.addNewTransaction()
+        timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
+            self?.addNewTransaction()
         }
     }
     

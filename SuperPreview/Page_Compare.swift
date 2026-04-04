@@ -260,7 +260,7 @@ struct Tab_Compare_5: View {
                             .font(.system(size: 13, weight: .regular, design: .monospaced))
                     }
                 }
-            ).navigationViewStyle(.stack)
+            )
             // 结束
             
             NavigationLink(
