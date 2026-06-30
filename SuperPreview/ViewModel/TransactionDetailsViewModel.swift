@@ -12,6 +12,7 @@ enum TransactionPushFrequency: CaseIterable, Hashable, Identifiable {
     case low
     case medium
     case high
+    case ultraFast
 
     var id: Self { self }
 
@@ -23,6 +24,8 @@ enum TransactionPushFrequency: CaseIterable, Hashable, Identifiable {
             return "中"
         case .high:
             return "高"
+        case .ultraFast:
+            return "极快"
         }
     }
 
@@ -34,6 +37,8 @@ enum TransactionPushFrequency: CaseIterable, Hashable, Identifiable {
             return 0.5
         case .high:
             return 0.1
+        case .ultraFast:
+            return 0.03
         }
     }
 }
@@ -43,16 +48,20 @@ class TransactionViewModel: ObservableObject {
     @Published var transactions: [TransactionDetailsCellData] = []
     @Published var pushFrequency: TransactionPushFrequency = .medium {
         didSet {
-            startSimulatingDataPush()
+            if isPlaying {
+                startSimulationTimer()
+            }
         }
     }
+    @Published private(set) var isPlaying = false
 
     private var lastTransactionTime: Date?
     private var simulationTimer: Timer?
+    private var simulatedPushCount = 0
+    private let simulatedPushLimit = 200
 
     init() {
         generateInitialData()
-        startSimulatingDataPush()
     }
 
 
@@ -72,11 +81,23 @@ class TransactionViewModel: ObservableObject {
         }
 
     func startSimulatingDataPush() {
+        simulatedPushCount = 0
+        isPlaying = true
+        startSimulationTimer()
+    }
+
+    private func startSimulationTimer() {
         simulationTimer?.invalidate()
 
         simulationTimer = Timer.scheduledTimer(withTimeInterval: pushFrequency.timeInterval, repeats: true) { [weak self] _ in
             self?.addNewTransaction()
         }
+    }
+
+    private func stopSimulatingDataPush() {
+        simulationTimer?.invalidate()
+        simulationTimer = nil
+        isPlaying = false
     }
 
     deinit {
@@ -121,6 +142,7 @@ class TransactionViewModel: ObservableObject {
 
         // 主线程上异步执行排序
         DispatchQueue.main.async {
+            guard self.isPlaying else { return }
 
 
             if let lastTime = self.lastTransactionTime, currentTime <= lastTime {
@@ -137,6 +159,12 @@ class TransactionViewModel: ObservableObject {
             // 删除60条以外的数据
             if self.transactions.count > 60 {
                 self.transactions.removeLast()
+            }
+
+            self.simulatedPushCount += 1
+
+            if self.simulatedPushCount >= self.simulatedPushLimit {
+                self.stopSimulatingDataPush()
             }
         }
     }

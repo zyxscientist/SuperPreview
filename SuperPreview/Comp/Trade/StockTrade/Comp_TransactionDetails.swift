@@ -14,15 +14,34 @@ struct Comp_TransactionDetails: View {
 
     var body: some View {
         VStack(spacing: 32) {
-            Picker("推送频率", selection: $viewModel.pushFrequency) {
-                ForEach(TransactionPushFrequency.allCases) { frequency in
-                    Text(frequency.title)
-                        .tag(frequency)
+            HStack(spacing: 8) {
+                Picker("推送频率", selection: $viewModel.pushFrequency) {
+                    ForEach(TransactionPushFrequency.allCases) { frequency in
+                        Text(frequency.title)
+                            .tag(frequency)
+                    }
                 }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+                .frame(width: 220)
+
+                Button {
+                    viewModel.startSimulatingDataPush()
+                } label: {
+                    Image(systemName: "play.fill")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(Color(.colorText90))
+                        .frame(width: 28, height: 28)
+                        .background(
+                            Circle()
+                                .fill(Color(.colorBase1))
+                        )
+                }
+                .buttonStyle(.plain)
+                .opacity(viewModel.isPlaying ? 0.35 : 1)
+                .disabled(viewModel.isPlaying)
+                .accessibilityLabel("播放推送")
             }
-            .pickerStyle(.segmented)
-            .labelsHidden()
-            .frame(width: 160)
 
             ZStack(alignment:.bottom) {
                 ScrollView {
@@ -71,7 +90,6 @@ struct TransactionDetailsCell: View {
     let transactionDetailsCellData: TransactionDetailsCellData
     let isFirst: Bool
     @State private var isHighlighted = false
-    @State private var blurAmount: CGFloat = 1
 
     var body: some View {
         HStack(spacing:0){
@@ -111,21 +129,14 @@ struct TransactionDetailsCell: View {
                     .padding(.trailing, 2)
             }
         }
-        .blur(radius: blurAmount)
         .padding(.vertical, 4)
         .background(
             transactionDetailsCellData.typeSymbol.color.opacity(isFirst && isHighlighted ? 0.05 : 0)
         )
         .animation(.easeOut(duration: 0.2), value: isHighlighted)
-        .animation(.easeInOut(duration: 0.2), value: blurAmount)
         .onAppear {
 
             isHighlighted = isFirst
-            blurAmount = 1
-
-            withAnimation(.easeOut(duration: 0.5)) {
-                blurAmount = 0 // 数字模糊效果
-            }
 
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { // 异步倒计时让高亮结束
                 isHighlighted = false
