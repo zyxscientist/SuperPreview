@@ -318,6 +318,20 @@ struct Tab_Compare_5: View {
                 }
             )
             // 结束
+
+            NavigationLink(
+                destination: Page_Watchlist_Redesign(),
+                label:{
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("新自选")
+                            .font(.system(size: 16, weight: .semibold, design: .default))
+                        Text("Watchlist Redesign")
+                            .foregroundColor(.gray)
+                            .font(.system(size: 13, weight: .regular, design: .monospaced))
+                    }
+                }
+            )
+            // 结束
             
             NavigationLink(
                 destination: Page_Macro_Data_Center(),
@@ -371,3 +385,8 @@ struct Tab_Compare_5: View {
     }
 }
 
+struct Page_Watchlist_Redesign: View {
+    var body: some View {
+        DemoView()
+    }
+}

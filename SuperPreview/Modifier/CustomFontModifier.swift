@@ -12,17 +12,24 @@ struct CustomFontModifier: ViewModifier {
     
     var size: CGFloat = 16
     var font: CustomFont
+    var lineHeight: CGFloat?
     
     enum CustomFont: String {
         case regular = "PlusJakartaSans-Regular"
-        case medium = "PlusJakartaSansRoman-Medium"
-        case semibold = "PlusJakartaSansRoman-SemiBold"
-        case bold = "PlusJakartaSansRoman-Bold"
+        case medium = "PlusJakartaSans-Medium"
+        case semibold = "PlusJakartaSans-SemiBold"
+        case bold = "PlusJakartaSans-Bold"
         // Add more cases for other font styles if needed
     }
     
-    
+    @ViewBuilder
     func body(content: Content) -> some View {
-        content.font(.custom(font.rawValue, size: size))
+        if let lineHeight = lineHeight {
+            content
+                .font(.custom(font.rawValue, size: size))
+                .lineSpacing(max(lineHeight - size, 0))
+        } else {
+            content.font(.custom(font.rawValue, size: size))
+        }
     }
 }
