@@ -29,16 +29,64 @@ enum WatchlistRedesignSession {
     case afterHours(label: String, change: String)
 }
 
+enum WatchlistRedesignPriceSimulationSpeed: String, CaseIterable, Identifiable {
+    case slow
+    case medium
+    case fast
+    case mixed
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .slow:
+            return "慢"
+        case .medium:
+            return "中"
+        case .fast:
+            return "快"
+        case .mixed:
+            return "混合"
+        }
+    }
+
+    var nextInterval: TimeInterval {
+        switch self {
+        case .slow:
+            return Double.random(in: 1.4...2.4)
+        case .medium:
+            return Double.random(in: 0.6...1.2)
+        case .fast:
+            return Double.random(in: 0.18...0.45)
+        case .mixed:
+            return [WatchlistRedesignPriceSimulationSpeed.slow, .medium, .fast].randomElement()?.nextInterval ?? WatchlistRedesignPriceSimulationSpeed.medium.nextInterval
+        }
+    }
+
+    var initialDelay: TimeInterval {
+        switch self {
+        case .slow:
+            return Double.random(in: 0...1.4)
+        case .medium:
+            return Double.random(in: 0...0.6)
+        case .fast:
+            return Double.random(in: 0...0.25)
+        case .mixed:
+            return Double.random(in: 0...1.2)
+        }
+    }
+}
+
 struct WatchlistRedesignItem: Identifiable {
     let id = UUID()
     let name: String
     let symbol: String
     let market: WatchlistRedesignMarket
-    let price: String
-    let secondaryPrice: String?
-    let changePercent: String
-    let trend: WatchlistRedesignTrend
-    let session: WatchlistRedesignSession
+    var price: String
+    var secondaryPrice: String?
+    var changePercent: String
+    var trend: WatchlistRedesignTrend
+    var session: WatchlistRedesignSession
     let miniKPoints: [CGFloat]
     let tagAssets: [String]
     let isTinted: Bool
@@ -46,9 +94,9 @@ struct WatchlistRedesignItem: Identifiable {
 
 class WatchlistRedesignViewModel: ObservableObject {
     @Published var selectedTab = "全部"
+    @Published private var groupedItems: [String: [WatchlistRedesignItem]] = [:]
 
     let tabs = ["全部", "港股", "沪深", "美股", "ETFs", "自定义"]
-    private let groupedItems: [String: [WatchlistRedesignItem]]
 
     var items: [WatchlistRedesignItem] {
         items(for: selectedTab)
@@ -201,7 +249,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 symbol: "TSLA",
                 market: .us,
                 price: "179.240",
-                secondaryPrice: "179.240",
+                secondaryPrice: nil,
                 changePercent: "4.18%",
                 trend: .down,
                 session: .regular,
@@ -214,7 +262,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 symbol: "MSFT",
                 market: .us,
                 price: "428.020",
-                secondaryPrice: "428.020",
+                secondaryPrice: nil,
                 changePercent: "0.00%",
                 trend: .flat,
                 session: .regular,
@@ -272,8 +320,21 @@ class WatchlistRedesignViewModel: ObservableObject {
                 secondaryPrice: "512.330",
                 changePercent: "0.38%",
                 trend: .down,
-                session: .regular,
+                session: .afterHours(label: "盘后", change: "-0.04%"),
                 miniKPoints: downLine,
+                tagAssets: [],
+                isTinted: false
+            ),
+            WatchlistRedesignItem(
+                name: "纳指100ETF",
+                symbol: "QQQ",
+                market: .us,
+                price: "473.180",
+                secondaryPrice: "473.180",
+                changePercent: "0.52%",
+                trend: .up,
+                session: .preMarket(label: "盘前", change: "+0.07%"),
+                miniKPoints: upLine,
                 tagAssets: [],
                 isTinted: false
             )
@@ -326,9 +387,9 @@ class WatchlistRedesignViewModel: ObservableObject {
                 price: "27.650",
                 secondaryPrice: "27.650",
                 changePercent: "0.00%",
-                trend: .flat,
-                session: .regular,
-                miniKPoints: flatLine,
+                trend: .up,
+                session: .preMarket(label: "盘前", change: "+0.03%"),
+                miniKPoints: upLine,
                 tagAssets: [],
                 isTinted: false
             )
@@ -346,6 +407,36 @@ class WatchlistRedesignViewModel: ObservableObject {
 
     func items(for tab: String) -> [WatchlistRedesignItem] {
         groupedItems[tab] ?? []
+    }
+
+    var priceSimulationSymbols: [String] {
+        (groupedItems["全部"] ?? []).reduce(into: [String]()) { symbols, item in
+            guard item.market != .fund, !symbols.contains(item.symbol) else { return }
+            symbols.append(item.symbol)
+        }
+    }
+
+    func simulatePriceRefresh(for symbol: String) {
+        guard let currentItem = groupedItems["全部"]?.first(where: { $0.symbol == symbol && $0.market != .fund }) else {
+            return
+        }
+
+        let tick = WatchlistRedesignPriceTick(item: currentItem)
+        groupedItems = groupedItems.mapValues { items in
+            items.map { item in
+                guard item.symbol == symbol, item.market != .fund else {
+                    return item
+                }
+
+                var updatedItem = item
+                updatedItem.price = tick.price
+                updatedItem.secondaryPrice = tick.secondaryPrice
+                updatedItem.changePercent = tick.changePercent
+                updatedItem.trend = tick.trend
+                updatedItem.session = tick.session
+                return updatedItem
+            }
+        }
     }
 
     private static func makeMiniKPoints(rising: Bool) -> [CGFloat] {
@@ -377,6 +468,146 @@ class WatchlistRedesignViewModel: ObservableObject {
             return upPoints
         } else {
             return downPoints
+        }
+    }
+}
+
+private struct WatchlistRedesignPriceTick {
+    let price: String
+    let secondaryPrice: String?
+    let changePercent: String
+    let trend: WatchlistRedesignTrend
+    let session: WatchlistRedesignSession
+
+    init(item: WatchlistRedesignItem) {
+        let previousPrice = item.price.numericPrice
+        let direction = WatchlistRedesignPriceTick.priceDirection(for: item.trend)
+        let volatility = item.market == .crypto ? 0.0012 : 0.0007
+        let changeRate = Double.random(in: 0.00003...volatility) * direction
+        let nextPrice = max(previousPrice * (1 + changeRate), 0.001)
+        let formattedPrice = item.price.formattedPrice(nextPrice)
+        let signedChange = WatchlistRedesignPriceTick.nextSignedChangePercent(for: item, priceDirection: direction)
+        let formattedChange = String(format: "%.2f%%", abs(signedChange))
+        let nextTrend = WatchlistRedesignPriceTick.trend(for: signedChange)
+
+        price = formattedPrice
+        secondaryPrice = item.showsExtendedHoursPrice ? item.extendedHoursPriceSource.formattedPrice(nextPrice) : nil
+        changePercent = formattedChange
+        trend = nextTrend
+        session = item.session.updating(changePercent: formattedChange, trend: nextTrend)
+    }
+
+    private static func priceDirection(for trend: WatchlistRedesignTrend) -> Double {
+        switch trend {
+        case .up:
+            return Double.random(in: 0...1) < 0.7 ? 1.0 : -1.0
+        case .down:
+            return Double.random(in: 0...1) < 0.7 ? -1.0 : 1.0
+        case .flat:
+            return Bool.random() ? 1.0 : -1.0
+        }
+    }
+
+    private static func nextSignedChangePercent(for item: WatchlistRedesignItem, priceDirection: Double) -> Double {
+        let previousChange = item.signedChangePercent
+        let deltaRange = item.market == .crypto ? 0.004...0.025 : 0.002...0.012
+        let delta = Double.random(in: deltaRange) * priceDirection
+        let candidate = previousChange + delta
+
+        guard previousChange != 0, candidate.sign != previousChange.sign else {
+            return candidate
+        }
+
+        return previousChange.sign == .plus ? Double.random(in: 0.02...0.06) : -Double.random(in: 0.02...0.06)
+    }
+
+    private static func trend(for signedChangePercent: Double) -> WatchlistRedesignTrend {
+        if abs(signedChangePercent) < 0.005 {
+            return .flat
+        }
+
+        return signedChangePercent > 0 ? .up : .down
+    }
+}
+
+private extension WatchlistRedesignItem {
+    var showsExtendedHoursPrice: Bool {
+        guard market == .us else {
+            return false
+        }
+
+        switch session {
+        case .regular:
+            return false
+        case .preMarket, .afterHours:
+            return true
+        }
+    }
+
+    var extendedHoursPriceSource: String {
+        secondaryPrice ?? price
+    }
+
+    var signedChangePercent: Double {
+        let value = changePercent.percentValue
+
+        switch trend {
+        case .up:
+            return max(value, 0.02)
+        case .down:
+            return -max(value, 0.02)
+        case .flat:
+            return 0
+        }
+    }
+}
+
+private extension String {
+    var numericPrice: Double {
+        Double(replacingOccurrences(of: ",", with: "")) ?? 0
+    }
+
+    var percentValue: Double {
+        Double(
+            replacingOccurrences(of: "%", with: "")
+                .replacingOccurrences(of: "+", with: "")
+                .replacingOccurrences(of: "-", with: "")
+        ) ?? 0
+    }
+
+    func formattedPrice(_ value: Double) -> String {
+        String(format: "%.\(decimalPlaces)f", value)
+    }
+
+    private var decimalPlaces: Int {
+        guard let decimalIndex = firstIndex(of: ".") else {
+            return 0
+        }
+
+        return distance(from: index(after: decimalIndex), to: endIndex)
+    }
+}
+
+private extension WatchlistRedesignSession {
+    func updating(changePercent: String, trend: WatchlistRedesignTrend) -> WatchlistRedesignSession {
+        let signedChangePercent: String
+
+        switch trend {
+        case .up:
+            signedChangePercent = "+\(changePercent)"
+        case .down:
+            signedChangePercent = "-\(changePercent)"
+        case .flat:
+            signedChangePercent = changePercent
+        }
+
+        switch self {
+        case .regular:
+            return .regular
+        case .preMarket(let label, _):
+            return .preMarket(label: label, change: signedChangePercent)
+        case .afterHours(let label, _):
+            return .afterHours(label: label, change: signedChangePercent)
         }
     }
 }

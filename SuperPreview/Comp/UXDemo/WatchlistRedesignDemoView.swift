@@ -13,12 +13,20 @@ struct DemoView: View {
     @State private var isShowingDebugPanel = false
     @State private var shouldNavigateOnRowTap = true
     @State private var isMiniKVisible = true
+    @State private var tabBarFontSize: CGFloat = 14
+    @State private var isPriceSimulationEnabled = false
+    @State private var priceSimulationSpeed: WatchlistRedesignPriceSimulationSpeed = .medium
+
+    private var priceSimulationTaskID: String {
+        "\(isPriceSimulationEnabled)-\(priceSimulationSpeed.rawValue)"
+    }
 
     var body: some View {
         VStack(spacing: 0) {
             WatchlistRedesignTabs(
                 tabs: viewModel.tabs,
-                selectedTab: $viewModel.selectedTab
+                selectedTab: $viewModel.selectedTab,
+                fontSize: tabBarFontSize
             )
             WatchlistRedesignTableHeader(isMiniKVisible: $isMiniKVisible)
 
@@ -46,7 +54,40 @@ struct DemoView: View {
             }
         )
         .sheet(isPresented: $isShowingDebugPanel) {
-            WatchlistRedesignDebugPanel(shouldNavigateOnRowTap: $shouldNavigateOnRowTap)
+            WatchlistRedesignDebugPanel(
+                shouldNavigateOnRowTap: $shouldNavigateOnRowTap,
+                tabBarFontSize: $tabBarFontSize,
+                isPriceSimulationEnabled: $isPriceSimulationEnabled,
+                priceSimulationSpeed: $priceSimulationSpeed
+            )
+        }
+        .task(id: priceSimulationTaskID) {
+            guard isPriceSimulationEnabled else { return }
+            let symbols = viewModel.priceSimulationSymbols
+
+            await withTaskGroup(of: Void.self) { group in
+                for symbol in symbols {
+                    group.addTask {
+                        do {
+                            try await Task.sleep(nanoseconds: UInt64(priceSimulationSpeed.initialDelay * 1_000_000_000))
+                        } catch {
+                            return
+                        }
+
+                        while !Task.isCancelled {
+                            await MainActor.run {
+                                viewModel.simulatePriceRefresh(for: symbol)
+                            }
+
+                            do {
+                                try await Task.sleep(nanoseconds: UInt64(priceSimulationSpeed.nextInterval * 1_000_000_000))
+                            } catch {
+                                return
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -167,6 +208,9 @@ struct WatchlistRedesignDetailPlaceholder: View {
 
 struct WatchlistRedesignDebugPanel: View {
     @Binding var shouldNavigateOnRowTap: Bool
+    @Binding var tabBarFontSize: CGFloat
+    @Binding var isPriceSimulationEnabled: Bool
+    @Binding var priceSimulationSpeed: WatchlistRedesignPriceSimulationSpeed
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -186,6 +230,43 @@ struct WatchlistRedesignDebugPanel: View {
                 }
             }
 
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Tabbar 字号")
+                    .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
+                    .foregroundColor(Color("color-text-30"))
+
+                Picker("Tabbar 字号", selection: $tabBarFontSize) {
+                    Text("14").tag(CGFloat(14))
+                    Text("16").tag(CGFloat(16))
+                }
+                .pickerStyle(.segmented)
+            }
+
+            Toggle(isOn: $isPriceSimulationEnabled) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("模拟行情刷新")
+                        .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
+                        .foregroundColor(Color("color-text-30"))
+
+                    Text(isPriceSimulationEnabled ? "股票价格和涨跌幅会持续变化" : "基金不会参与模拟刷新")
+                        .modifier(CustomFontModifier(size: 13, font: .regular, lineHeight: 16))
+                        .foregroundColor(Color("color-text-60"))
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("刷新速度")
+                    .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
+                    .foregroundColor(Color("color-text-30"))
+
+                Picker("刷新速度", selection: $priceSimulationSpeed) {
+                    ForEach(WatchlistRedesignPriceSimulationSpeed.allCases) { speed in
+                        Text(speed.title).tag(speed)
+                    }
+                }
+                .pickerStyle(.segmented)
+            }
+
             Spacer()
         }
         .padding(.horizontal, 20)
@@ -197,6 +278,7 @@ struct WatchlistRedesignDebugPanel: View {
 struct WatchlistRedesignTabs: View {
     let tabs: [String]
     @Binding var selectedTab: String
+    let fontSize: CGFloat
 
     var body: some View {
         HStack(spacing: 0) {
@@ -211,7 +293,7 @@ struct WatchlistRedesignTabs: View {
                             }
                         }) {
                             Text(tab)
-                                .modifier(CustomFontModifier(size: 16, font: selectedTab == tab ? .bold : .regular, lineHeight: 24))
+                                .modifier(CustomFontModifier(size: fontSize, font: selectedTab == tab ? .bold : .regular, lineHeight: 24))
                                 .foregroundColor(selectedTab == tab ? Color("color-text-r") : Color("color-text-60"))
                                 .padding(.horizontal, 14)
                                 .frame(height: 32)
@@ -261,7 +343,9 @@ struct WatchlistRedesignTableHeader: View {
                         .fill(Color("color-separator-20"))
                         .frame(width: 1, height: 11)
                     Button(action: {
-                        isMiniKVisible.toggle()
+                        withAnimation(.easeInOut(duration: 0.1)) {
+                            isMiniKVisible.toggle()
+                        }
                         HapticManager.instance.impactHaptic(type: .medium)
                     }) {
                         Image(isMiniKVisible ? "sparkline_on" : "sparkline_off")
@@ -309,6 +393,10 @@ struct WatchlistRedesignRow: View {
     let item: WatchlistRedesignItem
     let isMiniKVisible: Bool
 
+    @State private var flashColor = Color.clear
+    @State private var isFlashVisible = false
+    @State private var flashWorkItem: DispatchWorkItem?
+
     var body: some View {
         GeometryReader { proxy in
             let nameWidth = max(CGFloat(110), proxy.size.width - 252)
@@ -326,6 +414,7 @@ struct WatchlistRedesignRow: View {
                     )
                     .frame(width: 52, height: 28)
                     .position(x: proxy.size.width - 200 - 26, y: 33)
+                    .transition(.opacity)
                 }
 
                 WatchlistRedesignPriceCell(item: item)
@@ -340,6 +429,35 @@ struct WatchlistRedesignRow: View {
         }
         .frame(height: 66)
         .frame(maxWidth: .infinity)
+        .background(
+            flashColor
+                .opacity(isFlashVisible ? 0.05 : 0)
+                .allowsHitTesting(false)
+        )
+        .onChange(of: item.price) { oldPrice, newPrice in
+            playPriceFlash(oldPrice: oldPrice, newPrice: newPrice)
+        }
+        .onDisappear {
+            flashWorkItem?.cancel()
+        }
+    }
+
+    private func playPriceFlash(oldPrice: String, newPrice: String) {
+        let oldValue = oldPrice.numericWatchlistPrice
+        let newValue = newPrice.numericWatchlistPrice
+
+        guard oldValue != newValue else { return }
+
+        flashWorkItem?.cancel()
+        flashColor = oldValue < newValue ? Color("color-utility3-red") : Color("color-utility3-green")
+        isFlashVisible = true
+
+        let workItem = DispatchWorkItem {
+            isFlashVisible = false
+        }
+
+        flashWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: workItem)
     }
 }
 
@@ -350,6 +468,12 @@ private extension WatchlistRedesignItem {
 
     var supportsMiniK: Bool {
         market != .fund
+    }
+}
+
+private extension String {
+    var numericWatchlistPrice: Double {
+        Double(replacingOccurrences(of: ",", with: "")) ?? 0
     }
 }
 
@@ -445,12 +569,12 @@ struct WatchlistRedesignChangeCell: View {
             Text(item.changePercent)
                 .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 20))
                 .monospacedDigit()
-                .foregroundColor(.white)
+                .foregroundColor(regularForegroundColor)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
         }
         .frame(width: 82, height: 28)
-        .background(tileColor)
+        .background(regularBackgroundColor)
         .cornerRadius(8)
         .padding(.trailing, 8)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .trailing)
@@ -510,14 +634,26 @@ struct WatchlistRedesignChangeCell: View {
         case (.down, .white):
             Image("watchlistItem_down_white").resizable()
         case (.flat, .white):
-            Image("watchlistItem_flat_white").resizable()
+            Circle()
+                .fill(.white)
+                .frame(width: 5, height: 5)
         case (.up, .tinted):
             Image("watchlistItem_up_red").resizable()
         case (.down, .tinted):
             Image("watchlistItem_down_green").resizable()
         case (.flat, .tinted):
-            Image("watchlistItem_flat_white").resizable()
+            Circle()
+                .fill(Color("color-text-90"))
+                .frame(width: 5, height: 5)
         }
+    }
+
+    private var regularForegroundColor: Color {
+        item.trend == .flat ? Color("color-text-30") : .white
+    }
+
+    private var regularBackgroundColor: Color {
+        item.trend == .flat ? Color("color-text-90") : tileColor
     }
 
     private var tileColor: Color {
