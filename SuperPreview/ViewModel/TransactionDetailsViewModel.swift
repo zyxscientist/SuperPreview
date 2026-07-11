@@ -59,6 +59,8 @@ class TransactionViewModel: ObservableObject {
     private var simulationTimer: Timer?
     private var simulatedPushCount = 0
     private let simulatedPushLimit = 200
+    private let maximumTransactionCount = 60
+    private var isHistoryBrowsing = false
 
     init() {
         generateInitialData()
@@ -84,6 +86,16 @@ class TransactionViewModel: ObservableObject {
         simulatedPushCount = 0
         isPlaying = true
         startSimulationTimer()
+    }
+
+    func setHistoryBrowsing(_ isBrowsing: Bool) {
+        guard isHistoryBrowsing != isBrowsing else { return }
+
+        isHistoryBrowsing = isBrowsing
+
+        if !isBrowsing {
+            trimTransactionsToMaximumCount()
+        }
     }
 
     private func startSimulationTimer() {
@@ -156,9 +168,9 @@ class TransactionViewModel: ObservableObject {
 
             self.lastTransactionTime = currentTime
 
-            // 删除60条以外的数据
-            if self.transactions.count > 60 {
-                self.transactions.removeLast()
+            // 浏览历史时保留旧记录，避免当前查看的数据被尾部淘汰。
+            if !self.isHistoryBrowsing {
+                self.trimTransactionsToMaximumCount()
             }
 
             self.simulatedPushCount += 1
@@ -167,6 +179,11 @@ class TransactionViewModel: ObservableObject {
                 self.stopSimulatingDataPush()
             }
         }
+    }
+
+    private func trimTransactionsToMaximumCount() {
+        guard transactions.count > maximumTransactionCount else { return }
+        transactions.removeLast(transactions.count - maximumTransactionCount)
     }
 
     // 默认生成数据撑满视图

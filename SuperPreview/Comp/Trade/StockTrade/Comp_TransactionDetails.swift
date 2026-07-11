@@ -11,8 +11,13 @@ import SwiftUI
 struct Comp_TransactionDetails: View {
 
     @StateObject private var viewModel = TransactionViewModel()
+    @State private var scrollPosition = ScrollPosition(idType: UUID.self, edge: .top)
+    @State private var isBrowsingHistory = false
+    @State private var isAtTop = true
 
     var body: some View {
+        let newestTransactionID = viewModel.transactions.first?.id
+
         VStack(spacing: 32) {
             HStack(spacing: 8) {
                 Picker("推送频率", selection: $viewModel.pushFrequency) {
@@ -54,14 +59,55 @@ struct Comp_TransactionDetails: View {
                                 isFirst: transaction.id == viewModel.transactions.first?.id
                             )
                                 .transition(.move(edge: .top))
-                        }.animation(.linear(duration: 0.2), value: viewModel.transactions.first?.id)
+                        }
                     }
+                    .scrollTargetLayout()
+                    .animation(
+                        isBrowsingHistory ? nil : .linear(duration: 0.2),
+                        value: newestTransactionID
+                    )
 
                 }
                 .background(Color(.colorBase1))
+                .scrollIndicators(.hidden)
 
                 //固定尺寸
                 .frame(minWidth: 130, maxWidth: 130, maxHeight: 315)
+                .scrollPosition($scrollPosition, anchor: .top)
+                .onScrollGeometryChange(for: Bool.self) { geometry in
+                    geometry.contentOffset.y <= geometry.contentInsets.top + 1
+                } action: { _, isAtTop in
+                    self.isAtTop = isAtTop
+                }
+                .onScrollPhaseChange { _, newPhase in
+                    if newPhase == .interacting {
+                        beginHistoryBrowsing()
+                    } else if newPhase == .idle, isAtTop {
+                        resumeFollowingLatest()
+                    }
+                }
+                .overlay(alignment: .top) {
+                    if isBrowsingHistory {
+                        Button(action: resumeFollowingLatest) {
+                            Text("回到最新")
+                                .foregroundStyle(Color(.colorText90))
+                                .modifier(CustomFontModifier(size: 10, font: .medium))
+                                .padding(.horizontal, 8)
+                                .frame(height: 20)
+                                .background(
+                                    Capsule()
+                                        .fill(Color(.colorBase1))
+                                )
+                                .overlay(
+                                    Capsule()
+                                        .stroke(Color(.colorSeparator10), lineWidth: 0.5)
+                                )
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.top, 4)
+                        .accessibilityLabel("回到最新")
+                    }
+                }
 
                 Text("成交明细")
                     .foregroundStyle(Color(.colorText90))
@@ -80,6 +126,26 @@ struct Comp_TransactionDetails: View {
                     .stroke(Color(.colorSeparator10), lineWidth: 0.5)
             )
             .shadow(color: Color.black.opacity(0.15), radius: 25, x: 0, y: 2)
+        }
+    }
+
+    private func beginHistoryBrowsing() {
+        guard !isBrowsingHistory else { return }
+
+        isBrowsingHistory = true
+        viewModel.setHistoryBrowsing(true)
+    }
+
+    private func resumeFollowingLatest() {
+        guard isBrowsingHistory else { return }
+
+        var transaction = Transaction()
+        transaction.disablesAnimations = true
+
+        withTransaction(transaction) {
+            isBrowsingHistory = false
+            viewModel.setHistoryBrowsing(false)
+            scrollPosition.scrollTo(edge: .top)
         }
     }
 }
