@@ -463,7 +463,7 @@ struct WatchlistRedesignRow: View {
 
 private extension WatchlistRedesignItem {
     var backgroundColor: Color {
-        isTinted ? Color("color-scale-1") : Color("color-base-1")
+        isPinned ? Color("color-scale-1") : Color("color-base-1")
     }
 
     var supportsMiniK: Bool {

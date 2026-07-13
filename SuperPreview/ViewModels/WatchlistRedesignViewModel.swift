@@ -89,7 +89,7 @@ struct WatchlistRedesignItem: Identifiable {
     var session: WatchlistRedesignSession
     let miniKPoints: [CGFloat]
     let tagAssets: [String]
-    let isTinted: Bool
+    let isPinned: Bool
 }
 
 class WatchlistRedesignViewModel: ObservableObject {
@@ -119,7 +119,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 session: .regular,
                 miniKPoints: upLine,
                 tagAssets: ["price_alert"],
-                isTinted: true
+                isPinned: true
             ),
             WatchlistRedesignItem(
                 name: "腾讯控股",
@@ -132,7 +132,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 session: .regular,
                 miniKPoints: downLine,
                 tagAssets: [],
-                isTinted: true
+                isPinned: true
             ),
             WatchlistRedesignItem(
                 name: "小米集团-W",
@@ -145,7 +145,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 session: .regular,
                 miniKPoints: flatLine,
                 tagAssets: [],
-                isTinted: true
+                isPinned: true
             ),
             WatchlistRedesignItem(
                 name: "美团-W",
@@ -158,7 +158,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 session: .regular,
                 miniKPoints: upLine,
                 tagAssets: [],
-                isTinted: false
+                isPinned: false
             )
         ]
 
@@ -174,7 +174,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 session: .regular,
                 miniKPoints: upLine,
                 tagAssets: [],
-                isTinted: true
+                isPinned: false
             ),
             WatchlistRedesignItem(
                 name: "贵州茅台",
@@ -187,7 +187,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 session: .regular,
                 miniKPoints: downLine,
                 tagAssets: [],
-                isTinted: true
+                isPinned: false
             ),
             WatchlistRedesignItem(
                 name: "比亚迪",
@@ -200,7 +200,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 session: .regular,
                 miniKPoints: upLine,
                 tagAssets: [],
-                isTinted: false
+                isPinned: false
             ),
             WatchlistRedesignItem(
                 name: "招商银行",
@@ -213,7 +213,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 session: .regular,
                 miniKPoints: flatLine,
                 tagAssets: [],
-                isTinted: false
+                isPinned: false
             )
         ]
 
@@ -229,7 +229,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 session: .afterHours(label: "盘后", change: "+0.23%"),
                 miniKPoints: upLine,
                 tagAssets: [],
-                isTinted: false
+                isPinned: false
             ),
             WatchlistRedesignItem(
                 name: "苹果",
@@ -242,7 +242,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 session: .preMarket(label: "盘前", change: "+0.23%"),
                 miniKPoints: upLine,
                 tagAssets: [],
-                isTinted: false
+                isPinned: false
             ),
             WatchlistRedesignItem(
                 name: "特斯拉",
@@ -255,7 +255,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 session: .regular,
                 miniKPoints: downLine,
                 tagAssets: [],
-                isTinted: false
+                isPinned: false
             ),
             WatchlistRedesignItem(
                 name: "微软",
@@ -268,7 +268,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 session: .regular,
                 miniKPoints: flatLine,
                 tagAssets: [],
-                isTinted: false
+                isPinned: false
             )
         ]
 
@@ -284,7 +284,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 session: .regular,
                 miniKPoints: upLine,
                 tagAssets: [],
-                isTinted: false
+                isPinned: false
             ),
             WatchlistRedesignItem(
                 name: "纳指100ETF",
@@ -297,7 +297,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 session: .regular,
                 miniKPoints: upLine,
                 tagAssets: [],
-                isTinted: false
+                isPinned: false
             ),
             WatchlistRedesignItem(
                 name: "贝莱德世界能源基金",
@@ -310,7 +310,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 session: .regular,
                 miniKPoints: upLine,
                 tagAssets: [],
-                isTinted: false
+                isPinned: false
             ),
             WatchlistRedesignItem(
                 name: "先锋标普500ETF",
@@ -323,7 +323,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 session: .afterHours(label: "盘后", change: "-0.04%"),
                 miniKPoints: downLine,
                 tagAssets: [],
-                isTinted: false
+                isPinned: false
             ),
             WatchlistRedesignItem(
                 name: "纳指100ETF",
@@ -336,7 +336,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 session: .preMarket(label: "盘前", change: "+0.07%"),
                 miniKPoints: upLine,
                 tagAssets: [],
-                isTinted: false
+                isPinned: false
             )
         ]
 
@@ -352,7 +352,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 session: .regular,
                 miniKPoints: upLine,
                 tagAssets: [],
-                isTinted: true
+                isPinned: false
             ),
             WatchlistRedesignItem(
                 name: "以太坊/美元",
@@ -365,7 +365,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 session: .regular,
                 miniKPoints: downLine,
                 tagAssets: [],
-                isTinted: true
+                isPinned: false
             ),
             WatchlistRedesignItem(
                 name: "阿里巴巴",
@@ -378,7 +378,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 session: .afterHours(label: "盘后", change: "+0.08%"),
                 miniKPoints: upLine,
                 tagAssets: ["price_alert"],
-                isTinted: false
+                isPinned: false
             ),
             WatchlistRedesignItem(
                 name: "安硕中国大盘ETF",
@@ -391,7 +391,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 session: .preMarket(label: "盘前", change: "+0.03%"),
                 miniKPoints: upLine,
                 tagAssets: [],
-                isTinted: false
+                isPinned: false
             )
         ]
 
