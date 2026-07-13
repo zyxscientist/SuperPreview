@@ -649,7 +649,7 @@ struct WatchlistRedesignChangeCell: View {
     }
 
     private var regularForegroundColor: Color {
-        item.trend == .flat ? Color("color-text-30") : .white
+        .white
     }
 
     private var regularBackgroundColor: Color {
