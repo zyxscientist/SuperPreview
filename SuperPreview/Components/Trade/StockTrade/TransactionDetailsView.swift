@@ -1,0 +1,221 @@
+//
+//  TransactionDetailsView.swift
+//  SuperPreview
+//
+//  Created by admin on 2024/10/8.
+//  Copyright © 2024 PeterZ. All rights reserved.
+//
+
+import SwiftUI
+
+struct TransactionDetailsView: View {
+
+    @StateObject private var viewModel = TransactionViewModel()
+    @State private var scrollPosition = ScrollPosition(idType: UUID.self, edge: .top)
+    @State private var isBrowsingHistory = false
+    @State private var isAtTop = true
+
+    var body: some View {
+        let newestTransactionID = viewModel.transactions.first?.id
+
+        VStack(spacing: 32) {
+            HStack(spacing: 8) {
+                Picker("推送频率", selection: $viewModel.pushFrequency) {
+                    ForEach(TransactionPushFrequency.allCases) { frequency in
+                        Text(frequency.title)
+                            .tag(frequency)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+                .frame(width: 220)
+
+                Button {
+                    viewModel.startSimulatingDataPush()
+                } label: {
+                    Image(systemName: "play.fill")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(Color(.colorText90))
+                        .frame(width: 28, height: 28)
+                        .background(
+                            Circle()
+                                .fill(Color(.colorBase1))
+                        )
+                }
+                .buttonStyle(.plain)
+                .opacity(viewModel.isPlaying ? 0.35 : 1)
+                .disabled(viewModel.isPlaying)
+                .accessibilityLabel("播放推送")
+            }
+
+            ZStack(alignment:.bottom) {
+                ScrollView {
+
+                    // 成交明细视图
+                    LazyVStack(spacing: 0){
+                        ForEach(viewModel.transactions) { transaction in
+                            TransactionDetailsCell(
+                                transactionDetailsCellData: transaction,
+                                isFirst: transaction.id == viewModel.transactions.first?.id
+                            )
+                                .transition(.move(edge: .top))
+                        }
+                    }
+                    .scrollTargetLayout()
+                    .animation(
+                        isBrowsingHistory ? nil : .linear(duration: 0.2),
+                        value: newestTransactionID
+                    )
+
+                }
+                .background(Color(.colorBase1))
+                .scrollIndicators(.hidden)
+
+                //固定尺寸
+                .frame(minWidth: 130, maxWidth: 130, maxHeight: 315)
+                .scrollPosition($scrollPosition, anchor: .top)
+                .onScrollGeometryChange(for: Bool.self) { geometry in
+                    geometry.contentOffset.y <= geometry.contentInsets.top + 1
+                } action: { _, isAtTop in
+                    self.isAtTop = isAtTop
+                }
+                .onScrollPhaseChange { _, newPhase in
+                    if newPhase == .interacting {
+                        beginHistoryBrowsing()
+                    } else if newPhase == .idle, isAtTop {
+                        resumeFollowingLatest()
+                    }
+                }
+                .overlay(alignment: .top) {
+                    if isBrowsingHistory {
+                        Button(action: resumeFollowingLatest) {
+                            Text("回到最新")
+                                .foregroundStyle(Color(.colorText90))
+                                .modifier(CustomFontModifier(size: 10, font: .medium))
+                                .padding(.horizontal, 8)
+                                .frame(height: 20)
+                                .background(
+                                    Capsule()
+                                        .fill(Color(.colorBase1))
+                                )
+                                .overlay(
+                                    Capsule()
+                                        .stroke(Color(.colorSeparator10), lineWidth: 0.5)
+                                )
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.top, 4)
+                        .accessibilityLabel("回到最新")
+                    }
+                }
+
+                Text("成交明细")
+                    .foregroundStyle(Color(.colorText90))
+                    .modifier(CustomFontModifier(size: 11, font: .medium))
+                    .frame(minWidth: 130, maxWidth: 130, maxHeight: 24)
+                    .background(Color(.colorBase1))
+                    .overlay {
+                        FullWidthSeparatorView()
+                            .rotationEffect(.degrees(180))
+                    }
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+            // 描边
+            .overlay(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .stroke(Color(.colorSeparator10), lineWidth: 0.5)
+            )
+            .shadow(color: Color.black.opacity(0.15), radius: 25, x: 0, y: 2)
+        }
+    }
+
+    private func beginHistoryBrowsing() {
+        guard !isBrowsingHistory else { return }
+
+        isBrowsingHistory = true
+        viewModel.setHistoryBrowsing(true)
+    }
+
+    private func resumeFollowingLatest() {
+        guard isBrowsingHistory else { return }
+
+        var transaction = Transaction()
+        transaction.disablesAnimations = true
+
+        withTransaction(transaction) {
+            isBrowsingHistory = false
+            viewModel.setHistoryBrowsing(false)
+            scrollPosition.scrollTo(edge: .top)
+        }
+    }
+}
+
+// 成交明细单元视图
+struct TransactionDetailsCell: View {
+
+    let transactionDetailsCellData: TransactionDetailsCellData
+    let isFirst: Bool
+    @State private var isHighlighted = false
+
+    var body: some View {
+        HStack(spacing:0){
+            HStack(spacing:3){
+
+                // 时间
+                Text(transactionDetailsCellData.time)
+                    .lineLimit(1)
+                    .frame(width:30)
+                    .minimumScaleFactor(0.5)
+                    .foregroundStyle(Color(.colorText60))
+                    .modifier(CustomFontModifier(size: 11, font: .medium))
+                    .padding(.leading, 2)
+
+                // 价格
+                Text(transactionDetailsCellData.price)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+                    .foregroundStyle(Color(.colorUtility3Red))
+                    .modifier(CustomFontModifier(size: 11, font: .medium))
+            }
+
+            Spacer()
+
+            HStack(spacing:1){
+
+                // 成交量，字的颜色与类型标同步
+                Text(transactionDetailsCellData.volume)
+                    .foregroundStyle(Color(transactionDetailsCellData.typeSymbol.color))
+                    .modifier(CustomFontModifier(size: 11, font: .medium))
+                    .multilineTextAlignment(.trailing)
+
+                // 主买卖及中性类型标识图标
+                Image(transactionDetailsCellData.typeSymbol.imageName)
+                    .resizable()
+                    .frame(width:7, height: 6)
+                    .padding(.trailing, 2)
+            }
+        }
+        .padding(.vertical, 4)
+        .background(
+            transactionDetailsCellData.typeSymbol.color.opacity(isFirst && isHighlighted ? 0.05 : 0)
+        )
+        .animation(.easeOut(duration: 0.2), value: isHighlighted)
+        .onAppear {
+
+            isHighlighted = isFirst
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { // 异步倒计时让高亮结束
+                isHighlighted = false
+            }
+        }
+        .onChange(of: isFirst) { _, newValue in
+            if !newValue {
+                isHighlighted = false
+            }
+        }
+    }
+}
+
+#Preview {
+    TransactionDetailsView()
+}
