@@ -14,6 +14,8 @@ struct TransactionDetailsView: View {
     @State private var scrollPosition = ScrollPosition(idType: UUID.self, edge: .bottom)
     @State private var isBrowsingHistory = false
     @State private var isAtBottom = true
+    @State private var contentPushOffset: CGFloat = 0
+    @State private var pushAnimationTask: Task<Void, Never>?
 
     var body: some View {
         let newestTransactionID = viewModel.transactions.last?.id
@@ -55,7 +57,7 @@ struct TransactionDetailsView: View {
                 ScrollView {
 
                     // 成交明细视图
-                    LazyVStack(spacing: 0){
+                    VStack(spacing: 0){
                         ForEach(viewModel.transactions) { transaction in
                             TransactionDetailsCell(
                                 transactionDetailsCellData: transaction,
@@ -63,7 +65,12 @@ struct TransactionDetailsView: View {
                             )
                         }
                     }
+                    .transaction { transaction in
+                        // 行集合的增删必须瞬时完成；唯一允许的位移动画由外层 offset 驱动。
+                        transaction.animation = nil
+                    }
                     .scrollTargetLayout()
+                    .offset(y: contentPushOffset)
 
                 }
                 .background(Color(.colorBase1))
@@ -88,10 +95,10 @@ struct TransactionDetailsView: View {
                 }
                 .onChange(of: newestTransactionID) { _, newValue in
                     guard let newValue, !isBrowsingHistory else { return }
-
-                    withAnimation(refreshAnimation) {
-                        scrollPosition.scrollTo(id: newValue, anchor: .bottom)
-                    }
+                    animateNewTransactions(
+                        toward: newValue,
+                        animation: refreshAnimation
+                    )
                 }
                 .overlay(alignment: .bottom) {
                     if isBrowsingHistory {
@@ -134,13 +141,53 @@ struct TransactionDetailsView: View {
             )
             .shadow(color: Color.black.opacity(0.15), radius: 25, x: 0, y: 2)
         }
+        .onDisappear {
+            pushAnimationTask?.cancel()
+        }
     }
 
     private func beginHistoryBrowsing() {
         guard !isBrowsingHistory else { return }
 
+        pushAnimationTask?.cancel()
+
+        var transaction = Transaction()
+        transaction.disablesAnimations = true
+        withTransaction(transaction) {
+            contentPushOffset = 0
+        }
+
         isBrowsingHistory = true
         viewModel.setHistoryBrowsing(true)
+    }
+
+    private func animateNewTransactions(
+        toward newestTransactionID: UUID,
+        animation: Animation
+    ) {
+        pushAnimationTask?.cancel()
+
+        let presentationCount = max(viewModel.latestPresentationCount, 1)
+        let pushDistance = TransactionDetailsCell.rowHeight * CGFloat(presentationCount)
+
+        // 数据已写入后先反向补偿同等高度，使保留下来的行停留在旧位置。
+        // 随后只动画这一份 offset，整列便会线性上移，新行也会从底部进入。
+        var transaction = Transaction()
+        transaction.disablesAnimations = true
+        withTransaction(transaction) {
+            contentPushOffset = pushDistance
+            scrollPosition.scrollTo(id: newestTransactionID, anchor: .bottom)
+        }
+
+        pushAnimationTask = Task { @MainActor in
+            // 留出一个显示帧提交“新数据 + 等高补偿”，防止结构 diff 被并入位移动画。
+            try? await Task.sleep(for: .milliseconds(16))
+            guard !Task.isCancelled else { return }
+
+            withAnimation(animation) {
+                contentPushOffset = 0
+            }
+        }
     }
 
     private func resumeFollowingLatest() {
@@ -150,6 +197,7 @@ struct TransactionDetailsView: View {
         transaction.disablesAnimations = true
 
         withTransaction(transaction) {
+            contentPushOffset = 0
             isBrowsingHistory = false
             viewModel.setHistoryBrowsing(false)
             if let newestTransactionID = viewModel.transactions.last?.id {
@@ -163,6 +211,8 @@ struct TransactionDetailsView: View {
 
 // 成交明细单元视图
 struct TransactionDetailsCell: View {
+
+    static let rowHeight: CGFloat = 20
 
     let transactionDetailsCellData: TransactionDetailsCellData
     let isLatest: Bool
@@ -206,7 +256,7 @@ struct TransactionDetailsCell: View {
                     .padding(.trailing, 2)
             }
         }
-        .padding(.vertical, 4)
+        .frame(height: Self.rowHeight)
         .background(
             transactionDetailsCellData.typeSymbol.color.opacity(isLatest && isHighlighted ? 0.05 : 0)
         )

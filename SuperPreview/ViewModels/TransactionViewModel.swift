@@ -83,6 +83,7 @@ class TransactionViewModel: ObservableObject {
         }
     }
     @Published private(set) var isPlaying = false
+    private(set) var latestPresentationCount = 0
 
     private var simulationTask: Task<Void, Never>?
     private var simulatedPushCount = 0
@@ -111,6 +112,7 @@ class TransactionViewModel: ObservableObject {
 
     func startSimulatingDataPush() {
         simulatedPushCount = 0
+        latestPresentationCount = 0
         isPlaying = true
         startSimulationTimer()
     }
@@ -183,6 +185,7 @@ class TransactionViewModel: ObservableObject {
             updatedTransactions.removeFirst(updatedTransactions.count - maximumTransactionCount)
         }
 
+        latestPresentationCount = batchCount
         transactions = updatedTransactions
         simulatedPushCount += batchCount
 
