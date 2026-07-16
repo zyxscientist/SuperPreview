@@ -41,8 +41,37 @@ enum TransactionPushFrequency: CaseIterable, Hashable, Identifiable {
             return 0.03
         }
     }
+
+    var refreshAnimationDuration: TimeInterval {
+        min(0.28, presentationInterval * 0.9)
+    }
+
+    var presentationInterval: TimeInterval {
+        switch self {
+        case .low:
+            return 1.0
+        case .medium:
+            return 0.5
+        case .high:
+            return 0.2
+        case .ultraFast:
+            return 0.12
+        }
+    }
+
+    var transactionsPerPresentation: Int {
+        switch self {
+        case .low, .medium:
+            return 1
+        case .high:
+            return 2
+        case .ultraFast:
+            return 4
+        }
+    }
 }
 
+@MainActor
 class TransactionViewModel: ObservableObject {
 
     @Published var transactions: [TransactionDetailsCellData] = []
@@ -55,8 +84,7 @@ class TransactionViewModel: ObservableObject {
     }
     @Published private(set) var isPlaying = false
 
-    private var lastTransactionTime: Date?
-    private var simulationTimer: Timer?
+    private var simulationTask: Task<Void, Never>?
     private var simulatedPushCount = 0
     private let simulatedPushLimit = 200
     private let maximumTransactionCount = 60
@@ -72,14 +100,13 @@ class TransactionViewModel: ObservableObject {
         let initialCount = 20 // 初始数据数量
             let currentTime = Date()
 
-            for i in 0..<initialCount {
+            for i in (0..<initialCount).reversed() {
                 let timeOffset = TimeInterval(-i * 60) // 每条数据间隔1分钟
                 let transactionTime = currentTime.addingTimeInterval(timeOffset)
                 let transaction = generateTransaction(at: transactionTime)
                 transactions.append(transaction)
             }
 
-            lastTransactionTime = currentTime
         }
 
     func startSimulatingDataPush() {
@@ -99,91 +126,74 @@ class TransactionViewModel: ObservableObject {
     }
 
     private func startSimulationTimer() {
-        simulationTimer?.invalidate()
+        simulationTask?.cancel()
 
-        simulationTimer = Timer.scheduledTimer(withTimeInterval: pushFrequency.timeInterval, repeats: true) { [weak self] _ in
-            self?.addNewTransaction()
+        let frequency = pushFrequency
+        let nanoseconds = UInt64(frequency.presentationInterval * 1_000_000_000)
+
+        simulationTask = Task { [weak self] in
+            while !Task.isCancelled {
+                do {
+                    try await Task.sleep(nanoseconds: nanoseconds)
+                } catch {
+                    return
+                }
+
+                guard let self, self.isPlaying, !Task.isCancelled else { return }
+                self.addNewTransactions(count: frequency.transactionsPerPresentation)
+            }
         }
     }
 
     private func stopSimulatingDataPush() {
-        simulationTimer?.invalidate()
-        simulationTimer = nil
+        simulationTask?.cancel()
+        simulationTask = nil
         isPlaying = false
     }
 
     deinit {
-        simulationTimer?.invalidate()
+        simulationTask?.cancel()
     }
 
+    private func addNewTransactions(count: Int) {
+        guard isPlaying else { return }
 
-    func addNewTransaction() {
+        let remainingCount = simulatedPushLimit - simulatedPushCount
+        let batchCount = min(count, remainingCount)
+        guard batchCount > 0 else {
+            stopSimulatingDataPush()
+            return
+        }
 
-        // 生成时间，且用DispatchQueue.main.async排序
-        let currentTime = Date()
-        let timeString = formatTime(currentTime)
-
-        // 生成价格, 确保第三位小数为0
-        let basePrice = Double.random(in: 15...18)
-        let roundedPrice = (basePrice * 100).rounded() / 100  // 四舍五入到两位小数
-        let priceString = String(format: "%.3f", roundedPrice)
-
-        //生成成交量，且只有四位数以上用K修饰
-        let volume = Int.random(in: 100...5000)
-        let volumeString = formatVolume(volume)
-
-        //生成类型
-        let typeSymbol: TransactionTypeSymbol
-            switch Int.random(in: 0...2) {
-            case 0:
-                typeSymbol = .buy
-            case 1:
-                typeSymbol = .sell
-            default:
-                typeSymbol = .neutral
-            }
-
-
-        // 数据汇总
-        let newTransaction = TransactionDetailsCellData(
-            time: timeString,
-            price: priceString,
-            volume: volumeString,
-            typeSymbol: typeSymbol
+        let latestDate = Date()
+        let firstDate = latestDate.addingTimeInterval(
+            -pushFrequency.timeInterval * Double(batchCount - 1)
         )
+        let newTransactions = (0..<batchCount).map { index in
+            generateTransaction(
+                at: firstDate.addingTimeInterval(pushFrequency.timeInterval * Double(index))
+            )
+        }
 
-        // 主线程上异步执行排序
-        DispatchQueue.main.async {
-            guard self.isPlaying else { return }
+        // 一次性提交完整数组，避免 append 和 trim 分别触发两轮 SwiftUI diff。
+        var updatedTransactions = transactions
+        updatedTransactions.append(contentsOf: newTransactions)
 
+        if !isHistoryBrowsing, updatedTransactions.count > maximumTransactionCount {
+            updatedTransactions.removeFirst(updatedTransactions.count - maximumTransactionCount)
+        }
 
-            if let lastTime = self.lastTransactionTime, currentTime <= lastTime {
-                // 如果新生成的时间小于或等于上一条记录的时间,则将其插入到合适的位置
-                let index = self.transactions.firstIndex { $0.time <= timeString } ?? 0
-                self.transactions.insert(newTransaction, at: index)
-            } else {
-                // 如果新生成的时间大于上一条记录的时间,则插入到列表开头
-                self.transactions.insert(newTransaction, at: 0)
-            }
+        transactions = updatedTransactions
+        simulatedPushCount += batchCount
 
-            self.lastTransactionTime = currentTime
-
-            // 浏览历史时保留旧记录，避免当前查看的数据被尾部淘汰。
-            if !self.isHistoryBrowsing {
-                self.trimTransactionsToMaximumCount()
-            }
-
-            self.simulatedPushCount += 1
-
-            if self.simulatedPushCount >= self.simulatedPushLimit {
-                self.stopSimulatingDataPush()
-            }
+        if simulatedPushCount >= simulatedPushLimit {
+            stopSimulatingDataPush()
         }
     }
 
     private func trimTransactionsToMaximumCount() {
         guard transactions.count > maximumTransactionCount else { return }
-        transactions.removeLast(transactions.count - maximumTransactionCount)
+        transactions = Array(transactions.suffix(maximumTransactionCount))
     }
 
     // 默认生成数据撑满视图

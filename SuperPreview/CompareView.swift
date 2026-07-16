@@ -376,6 +376,19 @@ struct CompareTab5View: View {
                     }
                 }
             )
+
+            NavigationLink(
+                destination: TapticEngineDemoView(),
+                label:{
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Taptic Engine 触感实验室")
+                            .font(.system(size: 16, weight: .semibold, design: .default))
+                        Text("UIKit Feedback + Core Haptics")
+                            .foregroundColor(.gray)
+                            .font(.system(size: 13, weight: .regular, design: .monospaced))
+                    }
+                }
+            )
             
             // 结束
             

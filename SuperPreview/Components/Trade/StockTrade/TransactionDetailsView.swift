@@ -11,12 +11,15 @@ import SwiftUI
 struct TransactionDetailsView: View {
 
     @StateObject private var viewModel = TransactionViewModel()
-    @State private var scrollPosition = ScrollPosition(idType: UUID.self, edge: .top)
+    @State private var scrollPosition = ScrollPosition(idType: UUID.self, edge: .bottom)
     @State private var isBrowsingHistory = false
-    @State private var isAtTop = true
+    @State private var isAtBottom = true
 
     var body: some View {
-        let newestTransactionID = viewModel.transactions.first?.id
+        let newestTransactionID = viewModel.transactions.last?.id
+        let refreshAnimation = Animation.linear(
+            duration: viewModel.pushFrequency.refreshAnimationDuration
+        )
 
         VStack(spacing: 32) {
             HStack(spacing: 8) {
@@ -56,37 +59,41 @@ struct TransactionDetailsView: View {
                         ForEach(viewModel.transactions) { transaction in
                             TransactionDetailsCell(
                                 transactionDetailsCellData: transaction,
-                                isFirst: transaction.id == viewModel.transactions.first?.id
+                                isLatest: transaction.id == newestTransactionID
                             )
-                                .transition(.move(edge: .top))
                         }
                     }
                     .scrollTargetLayout()
-                    .animation(
-                        isBrowsingHistory ? nil : .linear(duration: 0.2),
-                        value: newestTransactionID
-                    )
 
                 }
                 .background(Color(.colorBase1))
                 .scrollIndicators(.hidden)
+                .contentMargins(.bottom, 24, for: .scrollContent)
 
                 //固定尺寸
                 .frame(minWidth: 130, maxWidth: 130, maxHeight: 315)
-                .scrollPosition($scrollPosition, anchor: .top)
+                .scrollPosition($scrollPosition, anchor: .bottom)
                 .onScrollGeometryChange(for: Bool.self) { geometry in
-                    geometry.contentOffset.y <= geometry.contentInsets.top + 1
-                } action: { _, isAtTop in
-                    self.isAtTop = isAtTop
+                    geometry.contentOffset.y + geometry.containerSize.height >=
+                        geometry.contentSize.height + geometry.contentInsets.bottom - 1
+                } action: { _, isAtBottom in
+                    self.isAtBottom = isAtBottom
                 }
                 .onScrollPhaseChange { _, newPhase in
                     if newPhase == .interacting {
                         beginHistoryBrowsing()
-                    } else if newPhase == .idle, isAtTop {
+                    } else if newPhase == .idle, isAtBottom {
                         resumeFollowingLatest()
                     }
                 }
-                .overlay(alignment: .top) {
+                .onChange(of: newestTransactionID) { _, newValue in
+                    guard let newValue, !isBrowsingHistory else { return }
+
+                    withAnimation(refreshAnimation) {
+                        scrollPosition.scrollTo(id: newValue, anchor: .bottom)
+                    }
+                }
+                .overlay(alignment: .bottom) {
                     if isBrowsingHistory {
                         Button(action: resumeFollowingLatest) {
                             Text("回到最新")
@@ -104,7 +111,7 @@ struct TransactionDetailsView: View {
                                 )
                         }
                         .buttonStyle(.plain)
-                        .padding(.top, 4)
+                        .padding(.bottom, 28)
                         .accessibilityLabel("回到最新")
                     }
                 }
@@ -145,7 +152,11 @@ struct TransactionDetailsView: View {
         withTransaction(transaction) {
             isBrowsingHistory = false
             viewModel.setHistoryBrowsing(false)
-            scrollPosition.scrollTo(edge: .top)
+            if let newestTransactionID = viewModel.transactions.last?.id {
+                scrollPosition.scrollTo(id: newestTransactionID, anchor: .bottom)
+            } else {
+                scrollPosition.scrollTo(edge: .bottom)
+            }
         }
     }
 }
@@ -154,7 +165,7 @@ struct TransactionDetailsView: View {
 struct TransactionDetailsCell: View {
 
     let transactionDetailsCellData: TransactionDetailsCellData
-    let isFirst: Bool
+    let isLatest: Bool
     @State private var isHighlighted = false
 
     var body: some View {
@@ -197,18 +208,19 @@ struct TransactionDetailsCell: View {
         }
         .padding(.vertical, 4)
         .background(
-            transactionDetailsCellData.typeSymbol.color.opacity(isFirst && isHighlighted ? 0.05 : 0)
+            transactionDetailsCellData.typeSymbol.color.opacity(isLatest && isHighlighted ? 0.05 : 0)
         )
         .animation(.easeOut(duration: 0.2), value: isHighlighted)
         .onAppear {
+            guard isLatest else { return }
 
-            isHighlighted = isFirst
+            isHighlighted = true
 
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { // 异步倒计时让高亮结束
                 isHighlighted = false
             }
         }
-        .onChange(of: isFirst) { _, newValue in
+        .onChange(of: isLatest) { _, newValue in
             if !newValue {
                 isHighlighted = false
             }
