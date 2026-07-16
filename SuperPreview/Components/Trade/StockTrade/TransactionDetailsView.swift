@@ -8,21 +8,31 @@
 
 import SwiftUI
 
+private struct TransactionPushAnimationState {
+    let newestTransactionID: UUID
+    let distance: CGFloat
+    let startDate: Date
+    let duration: TimeInterval
+
+    func offset(at date: Date) -> CGFloat {
+        let elapsed = max(date.timeIntervalSince(startDate), 0)
+        let progress = min(elapsed / duration, 1)
+        return distance * CGFloat(1 - progress)
+    }
+}
+
 struct TransactionDetailsView: View {
 
     @StateObject private var viewModel = TransactionViewModel()
     @State private var scrollPosition = ScrollPosition(idType: UUID.self, edge: .bottom)
     @State private var isBrowsingHistory = false
     @State private var isAtBottom = true
-    @State private var contentPushOffset: CGFloat = 0
+    @State private var pushAnimationState: TransactionPushAnimationState?
     @State private var pushAnimationTask: Task<Void, Never>?
 
     var body: some View {
         let newestTransactionID = viewModel.transactions.last?.id
         let refreshAnimationDuration = viewModel.pushFrequency.refreshAnimationDuration
-        let refreshAnimation = Animation.linear(
-            duration: refreshAnimationDuration
-        )
 
         VStack(spacing: 32) {
             HStack(spacing: 8) {
@@ -58,23 +68,30 @@ struct TransactionDetailsView: View {
                 ScrollView {
 
                     // 成交明细视图
-                    ZStack(alignment: .top) {
-                        VStack(spacing: 0){
-                            ForEach(viewModel.transactions) { transaction in
-                                TransactionDetailsCell(
-                                    transactionDetailsCellData: transaction,
-                                    isLatest: transaction.id == newestTransactionID
-                                )
+                    TimelineView(
+                        .animation(
+                            minimumInterval: 1.0 / 60.0,
+                            paused: pushAnimationState == nil
+                        )
+                    ) { timeline in
+                        ZStack(alignment: .top) {
+                            VStack(spacing: 0){
+                                ForEach(viewModel.transactions) { transaction in
+                                    TransactionDetailsCell(
+                                        transactionDetailsCellData: transaction,
+                                        isLatest: transaction.id == newestTransactionID
+                                    )
+                                }
                             }
+                            .transaction { transaction in
+                                // 内层只更新行结构，绝不参与位移动画。
+                                transaction.animation = nil
+                            }
+                            .scrollTargetLayout()
                         }
-                        .transaction { transaction in
-                            // 内层只更新行结构，绝不参与位移动画。
-                            transaction.animation = nil
-                        }
-                        .scrollTargetLayout()
+                        // 位移由时间轴逐帧计算，不依赖 SwiftUI 是否提交了某个预置帧。
+                        .offset(y: pushAnimationState?.offset(at: timeline.date) ?? 0)
                     }
-                    // 外层是唯一的动画节点，整列按同一个 offset 同步上移。
-                    .offset(y: contentPushOffset)
 
                 }
                 .background(Color(.colorBase1))
@@ -101,7 +118,6 @@ struct TransactionDetailsView: View {
                     guard let newValue, !isBrowsingHistory else { return }
                     animateNewTransactions(
                         toward: newValue,
-                        animation: refreshAnimation,
                         duration: refreshAnimationDuration
                     )
                 }
@@ -160,7 +176,7 @@ struct TransactionDetailsView: View {
         var transaction = Transaction()
         transaction.disablesAnimations = true
         withTransaction(transaction) {
-            contentPushOffset = 0
+            pushAnimationState = nil
         }
 
         isBrowsingHistory = true
@@ -169,7 +185,6 @@ struct TransactionDetailsView: View {
 
     private func animateNewTransactions(
         toward newestTransactionID: UUID,
-        animation: Animation,
         duration: TimeInterval
     ) {
         pushAnimationTask?.cancel()
@@ -177,32 +192,41 @@ struct TransactionDetailsView: View {
         let presentationCount = max(viewModel.latestPresentationCount, 1)
         let pushDistance = TransactionDetailsCell.rowHeight * CGFloat(presentationCount)
 
-        // 数据已写入后先反向补偿同等高度，使保留下来的行停留在旧位置。
-        // 随后只动画这一份 offset，整列便会线性上移，新行也会从底部进入。
+        // 数据写入后按相同行高反向补偿。时间轴会从补偿位置线性推进到零，
+        // 因此保留行整体上移，新行同时从底部进入。
+        let leadInDuration = 1.0 / 60.0
         var transaction = Transaction()
         transaction.disablesAnimations = true
         withTransaction(transaction) {
-            contentPushOffset = pushDistance
+            pushAnimationState = TransactionPushAnimationState(
+                newestTransactionID: newestTransactionID,
+                distance: pushDistance,
+                startDate: Date().addingTimeInterval(leadInDuration),
+                duration: duration
+            )
             scrollPosition.scrollTo(id: newestTransactionID, anchor: .bottom)
         }
 
         pushAnimationTask = Task { @MainActor in
-            // 等待两个 60Hz 显示帧，确保补偿位置已经实际绘制，再启动整体上移动画。
-            try? await Task.sleep(for: .milliseconds(34))
-            guard !Task.isCancelled else { return }
-
-            withAnimation(animation) {
-                contentPushOffset = 0
-            }
-
             do {
-                try await Task.sleep(nanoseconds: UInt64(duration * 1_000_000_000))
+                try await Task.sleep(
+                    nanoseconds: UInt64((leadInDuration + duration) * 1_000_000_000)
+                )
             } catch {
                 return
             }
 
             guard !Task.isCancelled else { return }
-            viewModel.finishPresentation()
+
+            var transaction = Transaction()
+            transaction.disablesAnimations = true
+            withTransaction(transaction) {
+                guard pushAnimationState?.newestTransactionID == newestTransactionID else {
+                    return
+                }
+                pushAnimationState = nil
+                viewModel.finishPresentation()
+            }
         }
     }
 
@@ -213,7 +237,7 @@ struct TransactionDetailsView: View {
         transaction.disablesAnimations = true
 
         withTransaction(transaction) {
-            contentPushOffset = 0
+            pushAnimationState = nil
             isBrowsingHistory = false
             viewModel.setHistoryBrowsing(false)
             if let newestTransactionID = viewModel.transactions.last?.id {

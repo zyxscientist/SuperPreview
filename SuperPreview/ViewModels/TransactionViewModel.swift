@@ -43,7 +43,7 @@ enum TransactionPushFrequency: CaseIterable, Hashable, Identifiable {
     }
 
     var refreshAnimationDuration: TimeInterval {
-        // 给数据落位预留 34ms，并在下一批到达前留出少量缓冲，避免动画重叠。
+        // 给首帧落位与批次切换留出缓冲，避免相邻上移动画重叠。
         min(0.32, presentationInterval - 0.045)
     }
 
