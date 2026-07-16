@@ -19,8 +19,9 @@ struct TransactionDetailsView: View {
 
     var body: some View {
         let newestTransactionID = viewModel.transactions.last?.id
+        let refreshAnimationDuration = viewModel.pushFrequency.refreshAnimationDuration
         let refreshAnimation = Animation.linear(
-            duration: viewModel.pushFrequency.refreshAnimationDuration
+            duration: refreshAnimationDuration
         )
 
         VStack(spacing: 32) {
@@ -57,19 +58,22 @@ struct TransactionDetailsView: View {
                 ScrollView {
 
                     // 成交明细视图
-                    VStack(spacing: 0){
-                        ForEach(viewModel.transactions) { transaction in
-                            TransactionDetailsCell(
-                                transactionDetailsCellData: transaction,
-                                isLatest: transaction.id == newestTransactionID
-                            )
+                    ZStack(alignment: .top) {
+                        VStack(spacing: 0){
+                            ForEach(viewModel.transactions) { transaction in
+                                TransactionDetailsCell(
+                                    transactionDetailsCellData: transaction,
+                                    isLatest: transaction.id == newestTransactionID
+                                )
+                            }
                         }
+                        .transaction { transaction in
+                            // 内层只更新行结构，绝不参与位移动画。
+                            transaction.animation = nil
+                        }
+                        .scrollTargetLayout()
                     }
-                    .transaction { transaction in
-                        // 行集合的增删必须瞬时完成；唯一允许的位移动画由外层 offset 驱动。
-                        transaction.animation = nil
-                    }
-                    .scrollTargetLayout()
+                    // 外层是唯一的动画节点，整列按同一个 offset 同步上移。
                     .offset(y: contentPushOffset)
 
                 }
@@ -97,7 +101,8 @@ struct TransactionDetailsView: View {
                     guard let newValue, !isBrowsingHistory else { return }
                     animateNewTransactions(
                         toward: newValue,
-                        animation: refreshAnimation
+                        animation: refreshAnimation,
+                        duration: refreshAnimationDuration
                     )
                 }
                 .overlay(alignment: .bottom) {
@@ -143,6 +148,7 @@ struct TransactionDetailsView: View {
         }
         .onDisappear {
             pushAnimationTask?.cancel()
+            viewModel.finishPresentation()
         }
     }
 
@@ -163,7 +169,8 @@ struct TransactionDetailsView: View {
 
     private func animateNewTransactions(
         toward newestTransactionID: UUID,
-        animation: Animation
+        animation: Animation,
+        duration: TimeInterval
     ) {
         pushAnimationTask?.cancel()
 
@@ -180,13 +187,22 @@ struct TransactionDetailsView: View {
         }
 
         pushAnimationTask = Task { @MainActor in
-            // 留出一个显示帧提交“新数据 + 等高补偿”，防止结构 diff 被并入位移动画。
-            try? await Task.sleep(for: .milliseconds(16))
+            // 等待两个 60Hz 显示帧，确保补偿位置已经实际绘制，再启动整体上移动画。
+            try? await Task.sleep(for: .milliseconds(34))
             guard !Task.isCancelled else { return }
 
             withAnimation(animation) {
                 contentPushOffset = 0
             }
+
+            do {
+                try await Task.sleep(nanoseconds: UInt64(duration * 1_000_000_000))
+            } catch {
+                return
+            }
+
+            guard !Task.isCancelled else { return }
+            viewModel.finishPresentation()
         }
     }
 

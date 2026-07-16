@@ -43,7 +43,8 @@ enum TransactionPushFrequency: CaseIterable, Hashable, Identifiable {
     }
 
     var refreshAnimationDuration: TimeInterval {
-        min(0.28, presentationInterval * 0.9)
+        // 给数据落位预留 34ms，并在下一批到达前留出少量缓冲，避免动画重叠。
+        min(0.32, presentationInterval - 0.045)
     }
 
     var presentationInterval: TimeInterval {
@@ -55,7 +56,7 @@ enum TransactionPushFrequency: CaseIterable, Hashable, Identifiable {
         case .high:
             return 0.2
         case .ultraFast:
-            return 0.12
+            return 0.18
         }
     }
 
@@ -66,7 +67,7 @@ enum TransactionPushFrequency: CaseIterable, Hashable, Identifiable {
         case .high:
             return 2
         case .ultraFast:
-            return 4
+            return 6
         }
     }
 }
@@ -127,6 +128,11 @@ class TransactionViewModel: ObservableObject {
         }
     }
 
+    func finishPresentation() {
+        guard !isHistoryBrowsing else { return }
+        trimTransactionsToMaximumCount()
+    }
+
     private func startSimulationTimer() {
         simulationTask?.cancel()
 
@@ -177,13 +183,9 @@ class TransactionViewModel: ObservableObject {
             )
         }
 
-        // 一次性提交完整数组，避免 append 和 trim 分别触发两轮 SwiftUI diff。
+        // 本批数据一次性写入；顶部旧数据会在上移动画完成后再从屏幕外裁剪。
         var updatedTransactions = transactions
         updatedTransactions.append(contentsOf: newTransactions)
-
-        if !isHistoryBrowsing, updatedTransactions.count > maximumTransactionCount {
-            updatedTransactions.removeFirst(updatedTransactions.count - maximumTransactionCount)
-        }
 
         latestPresentationCount = batchCount
         transactions = updatedTransactions
