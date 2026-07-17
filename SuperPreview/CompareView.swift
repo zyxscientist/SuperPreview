@@ -332,6 +332,20 @@ struct CompareTab5View: View {
                 }
             )
             // 结束
+
+            NavigationLink(
+                destination: TradeAggregationDemoView(),
+                label:{
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("新交易")
+                            .font(.system(size: 16, weight: .semibold, design: .default))
+                        Text("Trade Aggregation")
+                            .foregroundColor(.gray)
+                            .font(.system(size: 13, weight: .regular, design: .monospaced))
+                    }
+                }
+            )
+            // 结束
             
             NavigationLink(
                 destination: MacroDataCenterView(),

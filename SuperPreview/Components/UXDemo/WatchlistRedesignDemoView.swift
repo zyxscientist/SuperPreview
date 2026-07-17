@@ -362,6 +362,9 @@ struct WatchlistRedesignTableHeader: View {
                     Text("价格")
                         .modifier(CustomFontModifier(size: 14, font: .regular, lineHeight: 20))
                     Image("Glyph_Sort")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 8, height: 16)
                 }
                 .foregroundColor(Color("color-text-90"))
                 .frame(width: 90, alignment: .trailing)
@@ -371,6 +374,9 @@ struct WatchlistRedesignTableHeader: View {
                     Text("涨跌幅")
                         .modifier(CustomFontModifier(size: 14, font: .regular, lineHeight: 20))
                     Image("Glyph_Sort")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 8, height: 16)
                 }
                 .foregroundColor(Color("color-text-90"))
                 .frame(width: 90, alignment: .trailing)
@@ -430,8 +436,15 @@ struct WatchlistRedesignRow: View {
         .frame(height: 66)
         .frame(maxWidth: .infinity)
         .background(
-            flashColor
-                .opacity(isFlashVisible ? 0.05 : 0)
+            LinearGradient(
+                stops: [
+                    .init(color: flashColor.opacity(0), location: 0),
+                    .init(color: flashColor.opacity(0.08), location: 1)
+                ],
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+                .opacity(isFlashVisible ? 1 : 0)
                 .allowsHitTesting(false)
         )
         .onChange(of: item.price) { oldPrice, newPrice in
