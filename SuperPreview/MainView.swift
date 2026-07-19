@@ -77,10 +77,13 @@ struct MainView: View {
                         }.tag(AppTab.tab5)
                     }
                 }
-                // 解决 iOS 15 TabView 组件背景透明问题
+                // iOS 26 的 TabView 会自动使用 Liquid Glass 和柔和的滚动边缘效果。
+                // 旧系统继续保留原有的 TabBar 背景兼容设置。
                 .onAppear {
                     guard !isPreview else { return }
-                    if #available(iOS 15.0, *) {
+                    if #available(iOS 26.0, *) {
+                        // Do not override the system-provided Liquid Glass appearance.
+                    } else if #available(iOS 15.0, *) {
                         let appearance = UITabBarAppearance()
                         UITabBar.appearance().scrollEdgeAppearance = appearance
                     }

@@ -32,148 +32,67 @@ static var previews: some View {
 // 顶部Tabber·HeaderTab组件
 
 struct CompareHeaderTabsView: View {
-    
-    @State var index = 0
-    
+    private let tabTitles = ["组件库", "对比", "全涨", "全跌", "涨跌"]
+
+    @State private var index = 0
+
     var body: some View {
-        
-        HStack(spacing: 0.0){
-            VStack(alignment: .center, spacing: 5.0)  {
-                Text("对比")
-                    .font(.system(size: 16))
-                    .foregroundColor(self.index == 0 ? Color("color-text-30") : Color("color-text-60"))
-                    .fontWeight(self.index == 0 ? .semibold : .regular)
-                    .onTapGesture {
-                        withAnimation(.none){
-                            self.index = 0
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
+                ForEach(tabTitles.indices, id: \.self) { tabIndex in
+                    Button {
+                        index = tabIndex
+                    } label: {
+                        VStack(spacing: 5) {
+                            Text(tabTitles[tabIndex])
+                                .font(.system(size: 16))
+                                .foregroundColor(index == tabIndex ? Color("color-text-30") : Color("color-text-60"))
+                                .fontWeight(index == tabIndex ? .semibold : .regular)
+
+                            Capsule()
+                                .fill(Color("color-brand-blue"))
+                                .frame(width: 30, height: 2)
+                                .opacity(index == tabIndex ? 1 : 0)
                         }
                     }
-                
-                Capsule()
-                    .frame(width:30  ,height: 2)
-                    .foregroundColor(Color("color-brand-blue").opacity(self.index == 0 ? 1 : 0))
-                
+                    .buttonStyle(.plain)
+                    .fixedSize()
+                    .padding(.trailing, 20)
+                    .padding(.top, 11)
+                }
+
+                Spacer()
+
+                Image("headertab_sort")
+                    .padding(.top, 4)
             }
-            .fixedSize()
-            .padding(.trailing, 20)
-            .padding(.leading, 0)
-            .padding(.top, 11)
-            
-            VStack(alignment: .center, spacing: 5.0)  {
-                Text("全涨")
-                    .font(.system(size: 16))
-                    .foregroundColor(self.index == 1 ? Color("color-text-30") : Color("color-text-60"))
-                    .fontWeight(self.index == 1 ? .semibold : .regular)
-                    .onTapGesture {
-                        withAnimation(.none){
-                            self.index = 1
-                        }
-                    }
-                
-                Capsule()
-                    .frame(height: 2)
-                    .foregroundColor(Color("color-brand-blue").opacity(self.index == 1 ? 1 : 0))
-                
-            }
-            .fixedSize()
-            .padding(.trailing, 20)
-            .padding(.leading, 0)
-            .padding(.top, 11)
-            
-            
-            VStack(alignment: .center, spacing: 5.0)  {
-                Text("全跌")
-                    .font(.system(size: 16))
-                    .foregroundColor(self.index == 2 ? Color("color-text-30") : Color("color-text-60"))
-                    .fontWeight(self.index == 2 ? .semibold : .regular)
-                    .onTapGesture {
-                        withAnimation(.none){
-                            self.index = 2
-                        }
-                    }
-                
-                Capsule()
-                    .frame(height: 2)
-                    .foregroundColor(Color("color-brand-blue").opacity(self.index == 2 ? 1 : 0))
-                
-            }
-            .fixedSize()
-            .padding(.trailing, 20)
-            .padding(.leading, 0)
-            .padding(.top, 11)
-            
-            
-            VStack(alignment: .center, spacing: 5.0)  {
-                Text("涨跌")
-                    .font(.system(size: 16))
-                    .foregroundColor(self.index == 3 ? Color("color-text-30") : Color("color-text-60"))
-                    .fontWeight(self.index == 3 ? .semibold : .regular)
-                    .onTapGesture {
-                        withAnimation(.none){
-                            self.index = 3
-                        }
-                    }
-                
-                Capsule()
-                .frame(height: 2)
-                    .foregroundColor(Color("color-brand-blue").opacity(self.index == 3 ? 1 : 0))
-                
-            }
-            .fixedSize()
-            .padding(.trailing, 20)
-            .padding(.leading, 0)
-            .padding(.top, 11)
-            
-            
-            VStack(alignment: .center, spacing: 5.0)  {
-                Text("组件库")
-                    .font(.system(size: 16))
-                    .foregroundColor(self.index == 4 ? Color("color-text-30") : Color("color-text-60"))
-                    .fontWeight(self.index == 4 ? .semibold : .regular)
-                    .onTapGesture {
-                        withAnimation(.none){
-                            self.index = 4
-                        }
-                    }
-                
-                Capsule()
-                    .frame(height: 2)
-                    .foregroundColor(Color("color-brand-blue").opacity(self.index == 4 ? 1 : 0))
-                
-            }
-            .fixedSize()
-            .padding(.trailing, 20)
-            .padding(.leading, 0)
-            .padding(.top, 11)
-            
-            Spacer()
-            
-            Image("headertab_sort")
-                .padding(.top, 4)
+            .padding(.leading, 15)
+            .padding(.trailing, 11)
+            .background(Color("color-base-1"))
+            .overlay(FullWidthSeparatorView())
+
+            // Keep the selected vertical scroller directly under the app's TabView,
+            // matching the News tab so iOS can apply its native scroll-edge effect.
+            selectedTabContent
+                .id(index)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
-        .padding(.leading, 15)
-        .padding(.trailing, 11)
-        .background(Color("color-base-1"))
-        
-        .overlay(
-            FullWidthSeparatorView()
-        )
-        
-        
-        // The under view group by headertab
-        
-        if #available(iOS 14.0, *) {
-            TabView(selection: self.$index){
-                CompareTab1View().tag(0)
-                CompareTab2View().tag(1)
-                CompareTab3View().tag(2)
-                CompareTab4View().tag(3)
-                CompareTab5View().tag(4)
-            }
-            .edgesIgnoringSafeArea(.all)
-            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-        } else {
-            // Fallback on earlier versions
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+    }
+
+    @ViewBuilder
+    private var selectedTabContent: some View {
+        switch index {
+        case 0:
+            CompareTab5View()
+        case 1:
+            CompareTab1View()
+        case 2:
+            CompareTab2View()
+        case 3:
+            CompareTab3View()
+        default:
+            CompareTab4View()
         }
     }
 }
