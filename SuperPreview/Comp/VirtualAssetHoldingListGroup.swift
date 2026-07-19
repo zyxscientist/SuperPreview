@@ -942,7 +942,7 @@ private struct VirtualAssetHoldingActionBar: View {
                             )
                         )
                 }
-                .buttonStyle(PlainButtonStyle())
+                .buttonStyle(WatchlistRedesignActionPressStyle())
                 .accessibilityLabel("\(holding.name)\(action.title)")
             }
         }

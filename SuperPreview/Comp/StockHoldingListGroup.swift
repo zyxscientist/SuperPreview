@@ -814,7 +814,7 @@ private struct StockHoldingActionBar: View {
                     )
                 )
         }
-        .buttonStyle(PlainButtonStyle())
+        .buttonStyle(WatchlistRedesignActionPressStyle())
         .accessibilityLabel("\(holding.name)\(title)")
     }
 }
