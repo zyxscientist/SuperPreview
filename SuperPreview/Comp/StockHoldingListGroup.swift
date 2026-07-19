@@ -267,7 +267,12 @@ struct StockHoldingListGroup: View {
         self.onQuote = onQuote
         self.onOrder = onOrder
         self.onDetails = onDetails
-        _collapsedMarkets = State(initialValue: initiallyCollapsedMarkets)
+        _collapsedMarkets = State(
+            initialValue: TradeAggregationExpansionState.restoredCollapsed(
+                for: TradeAggregationExpansionStorageKey.stockHoldingGroups,
+                fallback: initiallyCollapsedMarkets
+            )
+        )
         _expandedHoldingID = State(initialValue: initiallyExpandedHoldingID)
     }
 
@@ -382,6 +387,11 @@ struct StockHoldingListGroup: View {
                 expandedHoldingID = nil
             }
         }
+
+        TradeAggregationExpansionState.saveCollapsed(
+            collapsedMarkets,
+            for: TradeAggregationExpansionStorageKey.stockHoldingGroups
+        )
     }
 
     private func toggleHolding(_ holding: StockHoldingItem) {

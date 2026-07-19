@@ -30,7 +30,8 @@ struct FundSubAssetCard: View {
     let isNumberHidden: Bool
 
     @Environment(\.accessibilityReduceMotion) private var accessibilityReduceMotion
-    @State private var isExpanded: Bool
+    @AppStorage(TradeAggregationExpansionStorageKey.fundSubAssetCard)
+    private var isExpanded = false
     @State private var expansionBlurRadius: CGFloat
 
     init(
@@ -40,7 +41,10 @@ struct FundSubAssetCard: View {
     ) {
         self.model = model
         self.isNumberHidden = isNumberHidden
-        _isExpanded = State(initialValue: initiallyExpanded)
+        _isExpanded = AppStorage(
+            wrappedValue: initiallyExpanded,
+            TradeAggregationExpansionStorageKey.fundSubAssetCard
+        )
         _expansionBlurRadius = State(initialValue: initiallyExpanded ? 0 : 7)
     }
 
@@ -94,7 +98,7 @@ struct FundSubAssetCard: View {
             .padding(.top, 16)
             .subAssetExpansion(
                 isExpanded: isExpanded,
-                blurRadius: expansionBlurRadius
+                blurRadius: isExpanded ? 0 : expansionBlurRadius
             )
         }
     }

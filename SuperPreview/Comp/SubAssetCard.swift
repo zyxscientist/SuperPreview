@@ -3,7 +3,37 @@
 //  SuperPreview
 //
 
+import Foundation
 import SwiftUI
+
+enum TradeAggregationExpansionStorageKey {
+    static let stockSubAssetCard = "tradeAggregation.subAssetCard.stock.isExpanded"
+    static let fundSubAssetCard = "tradeAggregation.subAssetCard.fund.isExpanded"
+    static let virtualAssetSubAssetCard = "tradeAggregation.subAssetCard.virtualAsset.isExpanded"
+    static let stockHoldingGroups = "tradeAggregation.holdingGroups.stock.collapsedMarkets"
+    static let fundHoldingGroups = "tradeAggregation.holdingGroups.fund.collapsedCurrencies"
+    static let virtualAssetHoldingGroups = "tradeAggregation.holdingGroups.virtualAsset.collapsedCategories"
+}
+
+enum TradeAggregationExpansionState {
+    static func restoredCollapsed<Value: Hashable & RawRepresentable>(
+        for key: String,
+        fallback: Set<Value>
+    ) -> Set<Value> where Value.RawValue == String {
+        guard let rawValues = UserDefaults.standard.stringArray(forKey: key) else {
+            return fallback
+        }
+
+        return Set(rawValues.compactMap { Value(rawValue: $0) })
+    }
+
+    static func saveCollapsed<Value: Hashable & RawRepresentable>(
+        _ values: Set<Value>,
+        for key: String
+    ) where Value.RawValue == String {
+        UserDefaults.standard.set(values.map(\.rawValue).sorted(), forKey: key)
+    }
+}
 
 struct SubAssetCurrencyBalance: Identifiable {
     let currency: String
@@ -156,18 +186,37 @@ struct SubAssetCardHeader: View {
             Spacer(minLength: 0)
 
             Button(action: toggleExpansion) {
-                Image("subasset_expand_chevron")
-                    .resizable()
-                    .frame(width: 20, height: 20)
-                    .rotationEffect(.degrees(isExpanded ? 180 : 0))
-                    .frame(width: 24, height: 24)
-                    .background(Color("color-base-1"), in: Circle())
+                SubAssetCardExpansionIcon(isExpanded: isExpanded)
             }
             .buttonStyle(PlainButtonStyle())
             .sensoryFeedback(.impact(weight: .medium), trigger: isExpanded)
             .accessibilityLabel(isExpanded ? "收起资产详情" : "展开资产详情")
         }
         .frame(width: 346, height: 84, alignment: .top)
+    }
+}
+
+private struct SubAssetCardExpansionIcon: View {
+    let isExpanded: Bool
+
+    var body: some View {
+        Group {
+            if #available(iOS 26, *) {
+                icon
+                    .glassEffect(.regular.interactive(), in: .circle)
+            } else {
+                icon
+                    .background(.ultraThinMaterial, in: Circle())
+            }
+        }
+    }
+
+    private var icon: some View {
+        Image("subasset_expand_chevron")
+            .resizable()
+            .frame(width: 20, height: 20)
+            .rotationEffect(.degrees(isExpanded ? 180 : 0))
+            .frame(width: 24, height: 24)
     }
 }
 

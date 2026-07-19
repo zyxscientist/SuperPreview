@@ -66,7 +66,7 @@ struct TradeAggregationDemoView: View {
         }
         .onChange(of: isQuickMenuPinned) { wasPinned, isPinned in
             guard !wasPinned, isPinned else { return }
-            HapticManager.instance.impactHaptic(type: .medium)
+            HapticManager.instance.impactHaptic(type: .light)
         }
         .task(id: isLiveDataEnabled) {
             guard isLiveDataEnabled else { return }

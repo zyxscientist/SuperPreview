@@ -45,7 +45,8 @@ struct VirtualAssetsSubAssetCard: View {
     let isNumberHidden: Bool
 
     @Environment(\.accessibilityReduceMotion) private var accessibilityReduceMotion
-    @State private var isExpanded: Bool
+    @AppStorage(TradeAggregationExpansionStorageKey.virtualAssetSubAssetCard)
+    private var isExpanded = false
     @State private var expansionBlurRadius: CGFloat
 
     init(
@@ -55,7 +56,10 @@ struct VirtualAssetsSubAssetCard: View {
     ) {
         self.model = model
         self.isNumberHidden = isNumberHidden
-        _isExpanded = State(initialValue: initiallyExpanded)
+        _isExpanded = AppStorage(
+            wrappedValue: initiallyExpanded,
+            TradeAggregationExpansionStorageKey.virtualAssetSubAssetCard
+        )
         _expansionBlurRadius = State(initialValue: initiallyExpanded ? 0 : 7)
     }
 
@@ -106,7 +110,7 @@ struct VirtualAssetsSubAssetCard: View {
             .padding(.top, 16)
             .subAssetExpansion(
                 isExpanded: isExpanded,
-                blurRadius: expansionBlurRadius
+                blurRadius: isExpanded ? 0 : expansionBlurRadius
             )
         }
     }

@@ -174,7 +174,12 @@ struct FundHoldingListGroup: View {
     ) {
         self.sections = sections
         self.isNumberHidden = isNumberHidden
-        _collapsedCurrencies = State(initialValue: initiallyCollapsedCurrencies)
+        _collapsedCurrencies = State(
+            initialValue: TradeAggregationExpansionState.restoredCollapsed(
+                for: TradeAggregationExpansionStorageKey.fundHoldingGroups,
+                fallback: initiallyCollapsedCurrencies
+            )
+        )
     }
 
     var body: some View {
@@ -271,6 +276,11 @@ struct FundHoldingListGroup: View {
         } else {
             collapsedCurrencies.insert(currency)
         }
+
+        TradeAggregationExpansionState.saveCollapsed(
+            collapsedCurrencies,
+            for: TradeAggregationExpansionStorageKey.fundHoldingGroups
+        )
     }
 }
 

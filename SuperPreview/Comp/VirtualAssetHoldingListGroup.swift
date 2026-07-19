@@ -210,7 +210,12 @@ struct VirtualAssetHoldingListGroup: View {
         self.sections = sections
         self.isNumberHidden = isNumberHidden
         self.onAction = onAction
-        _collapsedCategories = State(initialValue: initiallyCollapsedCategories)
+        _collapsedCategories = State(
+            initialValue: TradeAggregationExpansionState.restoredCollapsed(
+                for: TradeAggregationExpansionStorageKey.virtualAssetHoldingGroups,
+                fallback: initiallyCollapsedCategories
+            )
+        )
         _expandedHoldingID = State(initialValue: initiallyExpandedHoldingID)
         _infoPlacement = State(initialValue: initialInfoPlacement)
     }
@@ -376,6 +381,11 @@ struct VirtualAssetHoldingListGroup: View {
                 expandedHoldingID = nil
             }
         }
+
+        TradeAggregationExpansionState.saveCollapsed(
+            collapsedCategories,
+            for: TradeAggregationExpansionStorageKey.virtualAssetHoldingGroups
+        )
     }
 
     private func toggleHolding(_ holding: VirtualAssetHoldingItem) {
