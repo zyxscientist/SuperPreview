@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		84F2001E2F7D000000ABC001 /* TradeAggregationDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F2001D2F7D000000ABC001 /* TradeAggregationDemoView.swift */; };
+		84F300032F76000000ABC001 /* TradeAggregationDemoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F300022F76000000ABC001 /* TradeAggregationDemoViewModel.swift */; };
 		84F2001C2F7C000000ABC001 /* VirtualAssetHoldingListGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F2001B2F7C000000ABC001 /* VirtualAssetHoldingListGroup.swift */; };
 		84F2001A2F7B000000ABC001 /* FundHoldingListGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F200192F7B000000ABC001 /* FundHoldingListGroup.swift */; };
 		84F200182F7A000000ABC001 /* StockHoldingListGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F200172F7A000000ABC001 /* StockHoldingListGroup.swift */; };
@@ -206,6 +207,7 @@
 		84B893DF2CB8FECA00EA5F84 /* AssociatedInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssociatedInfoView.swift; sourceTree = "<group>"; };
 		84B893E22CB92E4800EA5F84 /* StockShuffleDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockShuffleDemoView.swift; sourceTree = "<group>"; };
 		84F000002F76000000ABC001 /* WatchlistRedesignViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchlistRedesignViewModel.swift; sourceTree = "<group>"; };
+		84F300022F76000000ABC001 /* TradeAggregationDemoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeAggregationDemoViewModel.swift; sourceTree = "<group>"; };
 		84F000022F76000000ABC001 /* WatchlistRedesignDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchlistRedesignDemoView.swift; sourceTree = "<group>"; };
 		84BDAEC12CB655CA001588E7 /* TransactionDetailsModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDetailsModels.swift; sourceTree = "<group>"; };
 		84BDAEC32CB6566A001588E7 /* TransactionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionViewModel.swift; sourceTree = "<group>"; };
@@ -386,6 +388,7 @@
 		84A729A1296FB4AF0056BA94 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				84F300022F76000000ABC001 /* TradeAggregationDemoViewModel.swift */,
 				847296372CBE541F00676FE1 /* MacroDataCPIViewModel.swift */,
 				8461BFFC2CC0BB6A0014ED60 /* MacroDataPCEViewModel.swift */,
 				84A729A2296FB4DF0056BA94 /* PriceQuantityViewModel.swift */,
@@ -726,6 +729,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				84F2001E2F7D000000ABC001 /* TradeAggregationDemoView.swift in Sources */,
+				84F300032F76000000ABC001 /* TradeAggregationDemoViewModel.swift in Sources */,
 				84F2001C2F7C000000ABC001 /* VirtualAssetHoldingListGroup.swift in Sources */,
 				84F2001A2F7B000000ABC001 /* FundHoldingListGroup.swift in Sources */,
 				84F200182F7A000000ABC001 /* StockHoldingListGroup.swift in Sources */,

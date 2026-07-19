@@ -81,7 +81,8 @@ struct StockSubAssetCard: View {
                 profitLoss: model.todayProfitLoss,
                 isNumberHidden: isNumberHidden,
                 isExpanded: isExpanded,
-                toggleExpansion: toggleExpansion
+                toggleExpansion: toggleExpansion,
+                contentWidth: 248
             )
 
             SubAssetMetricRow(

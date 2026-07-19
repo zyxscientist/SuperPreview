@@ -81,6 +81,48 @@ struct SubAssetCardHeader: View {
     let isNumberHidden: Bool
     let isExpanded: Bool
     let toggleExpansion: () -> Void
+    let contentWidth: CGFloat
+
+    init(
+        currency: String,
+        netAsset: String,
+        profitLossTitle: String,
+        profitLoss: String,
+        isNumberHidden: Bool,
+        isExpanded: Bool,
+        toggleExpansion: @escaping () -> Void
+    ) {
+        self.init(
+            currency: currency,
+            netAsset: netAsset,
+            profitLossTitle: profitLossTitle,
+            profitLoss: profitLoss,
+            isNumberHidden: isNumberHidden,
+            isExpanded: isExpanded,
+            toggleExpansion: toggleExpansion,
+            contentWidth: 183
+        )
+    }
+
+    init(
+        currency: String,
+        netAsset: String,
+        profitLossTitle: String,
+        profitLoss: String,
+        isNumberHidden: Bool,
+        isExpanded: Bool,
+        toggleExpansion: @escaping () -> Void,
+        contentWidth: CGFloat = 183
+    ) {
+        self.currency = currency
+        self.netAsset = netAsset
+        self.profitLossTitle = profitLossTitle
+        self.profitLoss = profitLoss
+        self.isNumberHidden = isNumberHidden
+        self.isExpanded = isExpanded
+        self.toggleExpansion = toggleExpansion
+        self.contentWidth = contentWidth
+    }
 
     var body: some View {
         HStack(alignment: .top, spacing: 0) {
@@ -109,7 +151,7 @@ struct SubAssetCardHeader: View {
                 .frame(height: 20)
                 .lineLimit(1)
             }
-            .frame(width: 183, height: 84, alignment: .topLeading)
+            .frame(width: contentWidth, height: 84, alignment: .topLeading)
 
             Spacer(minLength: 0)
 

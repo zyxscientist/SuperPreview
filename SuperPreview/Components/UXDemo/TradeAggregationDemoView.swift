@@ -6,9 +6,12 @@
 import SwiftUI
 
 struct TradeAggregationDemoView: View {
+    @StateObject private var viewModel = TradeAggregationDemoViewModel()
     @State private var selectedCategory: AssetCategory = .stocks
     @State private var isNumberHidden = false
     @State private var quickMenuTopPositions: [AssetCategory: CGFloat] = [:]
+    @State private var isShowingDebugPanel = false
+    @State private var isLiveDataEnabled = false
 
     var body: some View {
         ZStack(alignment: .top) {
@@ -20,7 +23,12 @@ struct TradeAggregationDemoView: View {
                     Color.clear
                         .frame(height: TradeAggregationLayout.topInset)
 
-                    TotalAsset(isNumberHidden: $isNumberHidden)
+                    TotalAsset(
+                        currency: "USD",
+                        totalAmount: viewModel.snapshot.totalAmount,
+                        totalProfitLoss: viewModel.snapshot.totalProfitLoss,
+                        isNumberHidden: $isNumberHidden
+                    )
 
                     Color.clear
                         .frame(height: TradeAggregationLayout.totalAssetBottomSpacing)
@@ -39,17 +47,57 @@ struct TradeAggregationDemoView: View {
         .coordinateSpace(name: TradeAggregationLayout.stickyCoordinateSpace)
         .background(Color("color-base-1").ignoresSafeArea())
         .navigationBarTitle("新交易", displayMode: .inline)
+        .navigationBarItems(
+            trailing: Button(action: {
+                isShowingDebugPanel = true
+            }) {
+                Text("Debug")
+                    .modifier(CustomFontModifier(size: 13, font: .medium, lineHeight: 16))
+                    .foregroundColor(Color("color-text-30"))
+            }
+        )
         .toolbarBackground(Color("color-base-1"), for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
+        .sheet(isPresented: $isShowingDebugPanel) {
+            TradeAggregationDebugPanel(isLiveDataEnabled: $isLiveDataEnabled)
+        }
         .onPreferenceChange(TradeAggregationQuickMenuTopPreferenceKey.self) {
             quickMenuTopPositions.merge($0) { _, newValue in newValue }
+        }
+        .onChange(of: isQuickMenuPinned) { wasPinned, isPinned in
+            guard !wasPinned, isPinned else { return }
+            HapticManager.instance.impactHaptic(type: .medium)
+        }
+        .task(id: isLiveDataEnabled) {
+            guard isLiveDataEnabled else { return }
+
+            while !Task.isCancelled {
+                do {
+                    try await Task.sleep(
+                        nanoseconds: UInt64(
+                            Double.random(in: 4.5...5.5) * 1_000_000_000
+                        )
+                    )
+                } catch {
+                    return
+                }
+
+                await MainActor.run {
+                    var transaction = Transaction()
+                    transaction.disablesAnimations = true
+                    withTransaction(transaction) {
+                        viewModel.simulateRandomRefresh()
+                    }
+                }
+            }
         }
     }
 
     private var selectedCategoryPage: some View {
         TradeAggregationCategoryPage(
             category: selectedCategory,
-            isNumberHidden: isNumberHidden
+            isNumberHidden: isNumberHidden,
+            snapshot: viewModel.snapshot
         )
         .id(selectedCategory)
     }
@@ -109,6 +157,7 @@ private enum TradeAggregationLayout {
 private struct TradeAggregationCategoryPage: View {
     let category: AssetCategory
     let isNumberHidden: Bool
+    let snapshot: TradeAggregationDemoSnapshot
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -145,11 +194,20 @@ private struct TradeAggregationCategoryPage: View {
     private var subAssetCard: some View {
         switch category {
         case .stocks:
-            StockSubAssetCard(isNumberHidden: isNumberHidden)
+            StockSubAssetCard(
+                model: snapshot.stockCard,
+                isNumberHidden: isNumberHidden
+            )
         case .funds:
-            FundSubAssetCard(isNumberHidden: isNumberHidden)
+            FundSubAssetCard(
+                model: snapshot.fundCard,
+                isNumberHidden: isNumberHidden
+            )
         case .virtualAssets:
-            VirtualAssetsSubAssetCard(isNumberHidden: isNumberHidden)
+            VirtualAssetsSubAssetCard(
+                model: snapshot.virtualAssetCard,
+                isNumberHidden: isNumberHidden
+            )
         }
     }
 
@@ -187,11 +245,20 @@ private struct TradeAggregationCategoryPage: View {
     private var holdingList: some View {
         switch category {
         case .stocks:
-            StockHoldingListGroup(isNumberHidden: isNumberHidden)
+            StockHoldingListGroup(
+                sections: snapshot.stockSections,
+                isNumberHidden: isNumberHidden
+            )
         case .funds:
-            FundHoldingListGroup(isNumberHidden: isNumberHidden)
+            FundHoldingListGroup(
+                sections: snapshot.fundSections,
+                isNumberHidden: isNumberHidden
+            )
         case .virtualAssets:
-            VirtualAssetHoldingListGroup(isNumberHidden: isNumberHidden)
+            VirtualAssetHoldingListGroup(
+                sections: snapshot.virtualAssetSections,
+                isNumberHidden: isNumberHidden
+            )
         }
     }
 
@@ -218,6 +285,39 @@ private struct TradeAggregationQuickMenuTopPreferenceKey: PreferenceKey {
         nextValue: () -> [AssetCategory: CGFloat]
     ) {
         value.merge(nextValue()) { _, newValue in newValue }
+    }
+}
+
+private struct TradeAggregationDebugPanel: View {
+    @Binding var isLiveDataEnabled: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            Text("调试")
+                .modifier(CustomFontModifier(size: 20, font: .bold, lineHeight: 28))
+                .foregroundColor(Color("color-text-30"))
+
+            Toggle(isOn: $isLiveDataEnabled) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("模拟实时数据")
+                        .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
+                        .foregroundColor(Color("color-text-30"))
+
+                    Text(
+                        isLiveDataEnabled
+                            ? "不同资产会以各自节奏持续刷新"
+                            : "开启后模拟推送，数字会小幅变化"
+                    )
+                    .modifier(CustomFontModifier(size: 13, font: .regular, lineHeight: 16))
+                    .foregroundColor(Color("color-text-60"))
+                }
+            }
+
+            Spacer()
+        }
+        .padding(.horizontal, 20)
+        .padding(.top, 24)
+        .background(Color("color-base-1").edgesIgnoringSafeArea(.all))
     }
 }
 
