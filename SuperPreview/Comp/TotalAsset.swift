@@ -101,7 +101,7 @@ struct TotalAsset: View {
 
             Text(numberIsHidden ? "***" : totalProfitLoss)
                 .font(.custom("PlusJakartaSans-Medium", size: 16, relativeTo: .body))
-                .foregroundColor(Color(numberIsHidden ? "color-text-30" : "color-utility-red"))
+                .foregroundColor(totalProfitLossColor)
         }
         .frame(maxWidth: .infinity, minHeight: 24, maxHeight: 24, alignment: .leading)
         .lineLimit(1)
@@ -109,6 +109,13 @@ struct TotalAsset: View {
 
     private var numberIsHidden: Bool {
         numberVisibilityBinding?.wrappedValue ?? localIsNumberHidden
+    }
+
+    private var totalProfitLossColor: Color {
+        guard !numberIsHidden else { return Color("color-text-30") }
+        return totalProfitLoss.hasPrefix("-")
+            ? Color("color-utility3-green")
+            : Color("color-utility2-red")
     }
 
     private func toggleNumberVisibility() {
