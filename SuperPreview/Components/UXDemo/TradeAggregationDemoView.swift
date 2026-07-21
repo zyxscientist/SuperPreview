@@ -12,6 +12,7 @@ struct TradeAggregationDemoView: View {
     @State private var quickMenuTopPositions: [AssetCategory: CGFloat] = [:]
     @State private var isShowingDebugPanel = false
     @State private var isLiveDataEnabled = false
+    @State private var isMRTestingEnabled = false
 
     var body: some View {
         ZStack(alignment: .top) {
@@ -20,6 +21,10 @@ struct TradeAggregationDemoView: View {
                     alignment: .leading,
                     spacing: 0
                 ) {
+                    if isMRTestingEnabled {
+                        TradeAggregationMRNoticeBar()
+                    }
+
                     Color.clear
                         .frame(height: TradeAggregationLayout.topInset)
 
@@ -27,6 +32,7 @@ struct TradeAggregationDemoView: View {
                         currency: "USD",
                         totalAmount: viewModel.snapshot.totalAmount,
                         totalProfitLoss: viewModel.snapshot.totalProfitLoss,
+                        isDataAvailable: !isMRTestingEnabled,
                         isNumberHidden: $isNumberHidden
                     )
 
@@ -59,7 +65,10 @@ struct TradeAggregationDemoView: View {
         .toolbarBackground(Color("color-base-1"), for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .sheet(isPresented: $isShowingDebugPanel) {
-            TradeAggregationDebugPanel(isLiveDataEnabled: $isLiveDataEnabled)
+            TradeAggregationDebugPanel(
+                isLiveDataEnabled: $isLiveDataEnabled,
+                isMRTestingEnabled: $isMRTestingEnabled
+            )
         }
         .onPreferenceChange(TradeAggregationQuickMenuTopPreferenceKey.self) {
             quickMenuTopPositions.merge($0) { _, newValue in newValue }
@@ -94,19 +103,30 @@ struct TradeAggregationDemoView: View {
     }
 
     private var selectedCategoryPage: some View {
-        TradeAggregationCategoryPage(
-            category: selectedCategory,
-            isNumberHidden: isNumberHidden,
-            snapshot: viewModel.snapshot
-        )
-        .id(selectedCategory)
+        Group {
+            if isMRTestingActive {
+                TradeAggregationMRMaintenanceStateView()
+            } else {
+                TradeAggregationCategoryPage(
+                    category: selectedCategory,
+                    isNumberHidden: isNumberHidden,
+                    snapshot: viewModel.snapshot
+                )
+            }
+        }
+        .id("\(selectedCategory.rawValue)-\(isMRTestingActive)")
     }
 
     private var isQuickMenuPinned: Bool {
+        guard !isMRTestingActive else { return false }
         guard let top = quickMenuTopPositions[selectedCategory] else {
             return false
         }
         return top <= 0
+    }
+
+    private var isMRTestingActive: Bool {
+        isMRTestingEnabled && selectedCategory != .virtualAssets
     }
 
     @ViewBuilder
@@ -288,8 +308,47 @@ private struct TradeAggregationQuickMenuTopPreferenceKey: PreferenceKey {
     }
 }
 
+private struct TradeAggregationMRNoticeBar: View {
+    var body: some View {
+        Text("系统维护期间无法获取总资产数据，完成后将恢复正常")
+            .modifier(CustomFontModifier(size: 14, font: .regular, lineHeight: 20))
+            .foregroundColor(Color("color-utility6-orange"))
+            .frame(maxWidth: .infinity, minHeight: 36, maxHeight: 36, alignment: .leading)
+            .padding(.horizontal, 16)
+            .background(Color(red: 1, green: 243 / 255, blue: 231 / 255))
+            .accessibilityLabel("系统维护提示：系统维护期间无法获取总资产数据，完成后将恢复正常")
+    }
+}
+
+private struct TradeAggregationMRMaintenanceStateView: View {
+    var body: some View {
+        VStack(spacing: 12) {
+            Image("mr_testing")
+                .resizable()
+                .frame(width: 70, height: 70)
+
+            Text("正在升级系统")
+                .modifier(CustomFontModifier(size: 18, font: .medium, lineHeight: 24))
+                .foregroundColor(Color("color-text-30"))
+                .frame(maxWidth: .infinity)
+
+            Text("升级时间：YYYY/MM/DD HH:MM 至 YYYY/MM/DD HH:MM，升级期间可能影响的交易与数据展示，升级完成后系统将恢复正常")
+                .modifier(CustomFontModifier(size: 14, font: .regular, lineHeight: 20))
+                .foregroundColor(Color("color-text-60"))
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 60)
+        .frame(width: TradeAggregationLayout.viewportWidth, alignment: .top)
+        .background(Color("color-base-1"))
+        .accessibilityElement(children: .combine)
+    }
+}
+
 private struct TradeAggregationDebugPanel: View {
     @Binding var isLiveDataEnabled: Bool
+    @Binding var isMRTestingEnabled: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -310,6 +369,18 @@ private struct TradeAggregationDebugPanel: View {
                     )
                     .modifier(CustomFontModifier(size: 13, font: .regular, lineHeight: 16))
                     .foregroundColor(Color("color-text-60"))
+                }
+            }
+
+            Toggle(isOn: $isMRTestingEnabled) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("MR 测试状态")
+                        .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
+                        .foregroundColor(Color("color-text-30"))
+
+                    Text("股票和基金显示系统升级状态，虚拟资产保持正常")
+                        .modifier(CustomFontModifier(size: 13, font: .regular, lineHeight: 16))
+                        .foregroundColor(Color("color-text-60"))
                 }
             }
 

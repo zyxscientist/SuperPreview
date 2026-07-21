@@ -9,6 +9,7 @@ struct TotalAsset: View {
     let currency: String
     let totalAmount: String
     let totalProfitLoss: String
+    let isDataAvailable: Bool
 
     private let numberVisibilityBinding: Binding<Bool>?
     @State private var localIsNumberHidden: Bool
@@ -17,11 +18,13 @@ struct TotalAsset: View {
         currency: String = "USD",
         totalAmount: String = "9,123,090.12",
         totalProfitLoss: String = "+9,123,090.12",
+        isDataAvailable: Bool = true,
         isNumberHidden: Bool = false
     ) {
         self.currency = currency
         self.totalAmount = totalAmount
         self.totalProfitLoss = totalProfitLoss
+        self.isDataAvailable = isDataAvailable
         numberVisibilityBinding = nil
         _localIsNumberHidden = State(initialValue: isNumberHidden)
     }
@@ -30,11 +33,13 @@ struct TotalAsset: View {
         currency: String = "USD",
         totalAmount: String = "9,123,090.12",
         totalProfitLoss: String = "+9,123,090.12",
+        isDataAvailable: Bool = true,
         isNumberHidden: Binding<Bool>
     ) {
         self.currency = currency
         self.totalAmount = totalAmount
         self.totalProfitLoss = totalProfitLoss
+        self.isDataAvailable = isDataAvailable
         numberVisibilityBinding = isNumberHidden
         _localIsNumberHidden = State(initialValue: isNumberHidden.wrappedValue)
     }
@@ -44,7 +49,7 @@ struct TotalAsset: View {
             VStack(alignment: .leading, spacing: 8) {
                 title
 
-                Text(numberIsHidden ? "***" : totalAmount)
+                Text(numberIsHidden ? "***" : displayedTotalAmount)
                     .font(.custom("PlusJakartaSans-Bold", size: 30, relativeTo: .largeTitle))
                     .foregroundColor(Color("color-text-30"))
                     .frame(maxWidth: .infinity, minHeight: 40, maxHeight: 40, alignment: .leading)
@@ -57,7 +62,7 @@ struct TotalAsset: View {
 
             Spacer(minLength: 0)
 
-            if !numberIsHidden {
+            if !numberIsHidden && isDataAvailable {
                 AssetChart()
             }
         }
@@ -99,7 +104,7 @@ struct TotalAsset: View {
                 .font(.custom("PlusJakartaSans-Medium", size: 16, relativeTo: .body))
                 .foregroundColor(Color("color-text-30"))
 
-            Text(numberIsHidden ? "***" : totalProfitLoss)
+            Text(numberIsHidden ? "***" : displayedTotalProfitLoss)
                 .font(.custom("PlusJakartaSans-Medium", size: 16, relativeTo: .body))
                 .foregroundColor(totalProfitLossColor)
         }
@@ -111,7 +116,16 @@ struct TotalAsset: View {
         numberVisibilityBinding?.wrappedValue ?? localIsNumberHidden
     }
 
+    private var displayedTotalAmount: String {
+        isDataAvailable ? totalAmount : "--"
+    }
+
+    private var displayedTotalProfitLoss: String {
+        isDataAvailable ? totalProfitLoss : "--"
+    }
+
     private var totalProfitLossColor: Color {
+        guard isDataAvailable else { return Color("color-text-30") }
         guard !numberIsHidden else { return Color("color-text-30") }
         return totalProfitLoss.hasPrefix("-")
             ? Color("color-utility3-green")

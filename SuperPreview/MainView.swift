@@ -18,66 +18,32 @@ struct MainView: View {
         
         NavigationView {
             if #available(iOS 14.0, *) {
-                ZStack{
-                    TabView(selection: $selectedTab){
-                        CompareView().tabItem{
-                            VStack {
-                                if selectedTab == .tab1 {
-                                    Image("warchlist_active")
-                                } else {
-                                    Image("warchlist_inactive")
-                                }
-                                Text("自选")
-                            }
-                        }.tag(AppTab.tab1)
-                        
-                        TradeView().tabItem{
-                            VStack {
-                                if selectedTab == .tab2 {
-                                    Image("trade_active")
-                                } else {
-                                    Image("trade_inactive")
-                                }
-                                Text("交易")
-                            }
-                        }.tag(AppTab.tab2)
-                        
-                        WealthView().tabItem{
-                            VStack {
-                                if selectedTab == .tab3 {
-                                    Image("wealth_active")
-                                } else {
-                                    Image("wealth_inactive")
-                                }
-                                Text("理财")
-                            }
-                        }.tag(AppTab.tab3)
-                        
-                        
-                        NewsView().tabItem{
-                            VStack {
-                                if selectedTab == .tab4 {
-                                    Image("bookmark_active")
-                                } else {
-                                    Image("bookmark_inactive")
-                                }
-                                Text("资讯")
-                            }
-                        }.tag(AppTab.tab4)
-                        
-                        LineChartView().tabItem{
-                            VStack {
-                                if selectedTab == .tab5 {
-                                    Image("market_active")
-                                } else {
-                                    Image("market_inactive")
-                                }
-                                Text("市场")
-                            }
-                        }.tag(AppTab.tab5)
+                ZStack {
+                    tabLayer(.tab1) {
+                        CompareView()
+                    }
+                    tabLayer(.tab2) {
+                        TradeView()
+                    }
+                    tabLayer(.tab3) {
+                        WealthView()
+                    }
+                    tabLayer(.tab4) {
+                        NewsView()
+                    }
+                    tabLayer(.tab5) {
+                        LineChartView()
+                    }
+                    tabLayer(.tab6) {
+                        Color("color-base-1")
+                            .ignoresSafeArea()
                     }
                 }
-                // iOS 26 的 TabView 会自动使用 Liquid Glass 和柔和的滚动边缘效果。
+                .safeAreaInset(edge: .bottom, spacing: 0) {
+                    MainTabBar(selectedTab: $selectedTab)
+                        .frame(height: 49)
+                }
+                // iOS 26 的系统 UITabBar 会自动使用 Liquid Glass。
                 // 旧系统继续保留原有的 TabBar 背景兼容设置。
                 .onAppear {
                     guard !isPreview else { return }
@@ -115,18 +81,26 @@ struct MainView: View {
         .navigationViewStyle(StackNavigationViewStyle())
     }
 
-enum AppTab {
-    case tab1, tab2, tab3, tab4, tab5
-}
+    @ViewBuilder
+    private func tabLayer<Content: View>(
+        _ tab: AppTab,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        content()
+            .opacity(selectedTab == tab ? 1 : 0)
+            .allowsHitTesting(selectedTab == tab)
+            .accessibilityHidden(selectedTab != tab)
+            .zIndex(selectedTab == tab ? 1 : 0)
+    }
 
-
-func navigationBarTitle(selectedTab :AppTab) -> String {
-    switch selectedTab {
+    func navigationBarTitle(selectedTab :AppTab) -> String {
+        switch selectedTab {
         case .tab1: return ""
         case .tab2: return "交易"
         case .tab3: return "理财"
         case .tab4: return "资讯"
         case .tab5: return "市场"
+        case .tab6: return "我的"
         }
     }
 }

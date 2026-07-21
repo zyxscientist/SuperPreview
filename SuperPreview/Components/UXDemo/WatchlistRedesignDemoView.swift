@@ -729,8 +729,8 @@ struct WatchlistRedesignActions: View {
             Button(action: {}) {
                 WatchlistRedesignActionButtonLabel(
                     title: "添加自选",
-                    leftRadius: 100,
-                    rightRadius: 6
+                    leftRadius: 12,
+                    rightRadius: 4
                 )
             }
             .buttonStyle(WatchlistRedesignActionPressStyle())
@@ -738,8 +738,8 @@ struct WatchlistRedesignActions: View {
             Button(action: {}) {
                 WatchlistRedesignActionButtonLabel(
                     title: "编辑自选",
-                    leftRadius: 6,
-                    rightRadius: 100
+                    leftRadius: 4,
+                    rightRadius: 12
                 )
             }
             .buttonStyle(WatchlistRedesignActionPressStyle())

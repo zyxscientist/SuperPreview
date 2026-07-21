@@ -144,10 +144,12 @@
 		C2F9DE3A259A12F1000B5961 /* HoldingRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2F9DE39259A12F1000B5961 /* HoldingRowView.swift */; };
 		C2F9DE3D259A1637000B5961 /* TemporaryHoldingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2F9DE3C259A1637000B5961 /* TemporaryHoldingsView.swift */; };
 		C2FFC803252216F000B79A40 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2FFC802252216F000B79A40 /* MainView.swift */; };
+		84F300012F80000000ABC001 /* MainTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F300002F80000000ABC001 /* MainTabBar.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		84F2001D2F7D000000ABC001 /* TradeAggregationDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeAggregationDemoView.swift; sourceTree = "<group>"; };
+		84F300002F80000000ABC001 /* MainTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBar.swift; sourceTree = "<group>"; };
 		84F2001B2F7C000000ABC001 /* VirtualAssetHoldingListGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualAssetHoldingListGroup.swift; sourceTree = "<group>"; };
 		84F200192F7B000000ABC001 /* FundHoldingListGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FundHoldingListGroup.swift; sourceTree = "<group>"; };
 		84F200172F7A000000ABC001 /* StockHoldingListGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockHoldingListGroup.swift; sourceTree = "<group>"; };
@@ -563,6 +565,7 @@
 		84F200022F78000000ABC001 /* Comp */ = {
 			isa = PBXGroup;
 			children = (
+				84F300002F80000000ABC001 /* MainTabBar.swift */,
 				84F2001B2F7C000000ABC001 /* VirtualAssetHoldingListGroup.swift */,
 				84F200192F7B000000ABC001 /* FundHoldingListGroup.swift */,
 				84F200172F7A000000ABC001 /* StockHoldingListGroup.swift */,
@@ -728,6 +731,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				84F300012F80000000ABC001 /* MainTabBar.swift in Sources */,
 				84F2001E2F7D000000ABC001 /* TradeAggregationDemoView.swift in Sources */,
 				84F300032F76000000ABC001 /* TradeAggregationDemoViewModel.swift in Sources */,
 				84F2001C2F7C000000ABC001 /* VirtualAssetHoldingListGroup.swift in Sources */,
