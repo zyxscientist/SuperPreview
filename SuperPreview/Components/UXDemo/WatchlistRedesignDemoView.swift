@@ -16,33 +16,39 @@ struct WatchlistRedesignDemoView: View {
     @State private var tabBarFontSize: CGFloat = 14
     @State private var isPriceSimulationEnabled = false
     @State private var priceSimulationSpeed: WatchlistRedesignPriceSimulationSpeed = .medium
+    @State private var selectedMainTab: AppTab = .tab1
 
     private var priceSimulationTaskID: String {
         "\(isPriceSimulationEnabled)-\(priceSimulationSpeed.rawValue)"
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            WatchlistRedesignTabs(
-                tabs: viewModel.tabs,
-                selectedTab: $viewModel.selectedTab,
-                fontSize: tabBarFontSize
-            )
-            WatchlistRedesignTableHeader(isMiniKVisible: $isMiniKVisible)
+        GeometryReader { geometry in
+            VStack(spacing: 0) {
+                WatchlistRedesignTabs(
+                    tabs: viewModel.tabs,
+                    selectedTab: $viewModel.selectedTab,
+                    fontSize: tabBarFontSize
+                )
+                WatchlistRedesignTableHeader(isMiniKVisible: $isMiniKVisible)
 
-            TabView(selection: $viewModel.selectedTab) {
-                ForEach(viewModel.tabs, id: \.self) { tab in
-                    WatchlistRedesignListPage(
-                        items: viewModel.items(for: tab),
-                        shouldNavigateOnRowTap: shouldNavigateOnRowTap,
-                        isMiniKVisible: isMiniKVisible
-                    )
-                    .tag(tab)
+                TabView(selection: $viewModel.selectedTab) {
+                    ForEach(viewModel.tabs, id: \.self) { tab in
+                        WatchlistRedesignListPage(
+                            items: viewModel.items(for: tab),
+                            shouldNavigateOnRowTap: shouldNavigateOnRowTap,
+                            isMiniKVisible: isMiniKVisible,
+                            bottomContentClearance: geometry.safeAreaInsets.bottom + 28
+                        )
+                        .tag(tab)
+                    }
                 }
+                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
             }
-            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+            .background(Color("color-base-1").edgesIgnoringSafeArea(.all))
+            .ignoresSafeArea(.container, edges: .bottom)
         }
-        .background(Color("color-base-1").edgesIgnoringSafeArea(.all))
+        .mainTabBar(selectedTab: $selectedMainTab)
         .navigationBarTitle("新自选", displayMode: .inline)
         .navigationBarItems(
             trailing: Button(action: {
@@ -96,6 +102,7 @@ struct WatchlistRedesignListPage: View {
     let items: [WatchlistRedesignItem]
     let shouldNavigateOnRowTap: Bool
     let isMiniKVisible: Bool
+    let bottomContentClearance: CGFloat
 
     var body: some View {
         ScrollView(showsIndicators: false) {
@@ -110,7 +117,10 @@ struct WatchlistRedesignListPage: View {
 
                 WatchlistRedesignActions()
                     .padding(.top, 4)
-                    .padding(.bottom, 28)
+
+                Color.clear
+                    .frame(height: bottomContentClearance)
+                    .accessibilityHidden(true)
             }
             .frame(maxWidth: .infinity)
         }

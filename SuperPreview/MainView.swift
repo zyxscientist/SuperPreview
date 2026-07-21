@@ -39,10 +39,7 @@ struct MainView: View {
                             .ignoresSafeArea()
                     }
                 }
-                .safeAreaInset(edge: .bottom, spacing: 0) {
-                    MainTabBar(selectedTab: $selectedTab)
-                        .frame(height: 49)
-                }
+                .mainTabBar(selectedTab: $selectedTab)
                 // iOS 26 的系统 UITabBar 会自动使用 Liquid Glass。
                 // 旧系统继续保留原有的 TabBar 背景兼容设置。
                 .onAppear {

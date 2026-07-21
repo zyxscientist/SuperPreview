@@ -13,6 +13,7 @@ struct TradeAggregationDemoView: View {
     @State private var isShowingDebugPanel = false
     @State private var isLiveDataEnabled = false
     @State private var isMRTestingEnabled = false
+    @State private var selectedMainTab: AppTab = .tab2
 
     var body: some View {
         ZStack(alignment: .top) {
@@ -52,6 +53,7 @@ struct TradeAggregationDemoView: View {
         }
         .coordinateSpace(name: TradeAggregationLayout.stickyCoordinateSpace)
         .background(Color("color-base-1").ignoresSafeArea())
+        .mainTabBar(selectedTab: $selectedMainTab)
         .navigationBarTitle("新交易", displayMode: .inline)
         .navigationBarItems(
             trailing: Button(action: {

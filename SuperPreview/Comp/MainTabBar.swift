@@ -51,6 +51,8 @@ enum AppTab: Int, CaseIterable {
 }
 
 struct MainTabBar: UIViewRepresentable {
+    static let height: CGFloat = 49
+
     @Binding var selectedTab: AppTab
 
     func makeCoordinator() -> Coordinator {
@@ -59,6 +61,7 @@ struct MainTabBar: UIViewRepresentable {
 
     func makeUIView(context: Context) -> UITabBar {
         let tabBar = UITabBar()
+        tabBar.isTranslucent = true
         tabBar.delegate = context.coordinator
         tabBar.itemPositioning = .fill
         tabBar.items = AppTab.allCases.map(makeItem)
@@ -92,5 +95,33 @@ struct MainTabBar: UIViewRepresentable {
             guard let tab = AppTab(rawValue: item.tag) else { return }
             parent.selectedTab = tab
         }
+    }
+}
+
+private struct MainTabBarContainerModifier: ViewModifier {
+    @Binding var selectedTab: AppTab
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content
+                .safeAreaBar(edge: .bottom, spacing: 0) {
+                    MainTabBar(selectedTab: $selectedTab)
+                        .frame(height: MainTabBar.height)
+                }
+                .scrollEdgeEffectStyle(.soft, for: .bottom)
+        } else {
+            content
+                .safeAreaInset(edge: .bottom, spacing: 0) {
+                    MainTabBar(selectedTab: $selectedTab)
+                        .frame(height: MainTabBar.height)
+                }
+        }
+    }
+}
+
+extension View {
+    func mainTabBar(selectedTab: Binding<AppTab>) -> some View {
+        modifier(MainTabBarContainerModifier(selectedTab: selectedTab))
     }
 }
