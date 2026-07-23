@@ -13,6 +13,7 @@ struct TradeAggregationDemoView: View {
     @State private var isShowingDebugPanel = false
     @State private var isLiveDataEnabled = false
     @State private var isMRTestingEnabled = false
+    @State private var isSummerAdvertisementEnabled = false
     @State private var selectedMainTab: AppTab = .tab2
 
     var body: some View {
@@ -39,6 +40,13 @@ struct TradeAggregationDemoView: View {
 
                     Color.clear
                         .frame(height: TradeAggregationLayout.totalAssetBottomSpacing)
+
+                    if isSummerAdvertisementEnabled {
+                        TradeAggregationSummerAdvertisement()
+
+                        Color.clear
+                            .frame(height: TradeAggregationLayout.standardVerticalSpacing)
+                    }
 
                     AssetCategoryTabBar(selection: $selectedCategory)
 
@@ -69,7 +77,8 @@ struct TradeAggregationDemoView: View {
         .sheet(isPresented: $isShowingDebugPanel) {
             TradeAggregationDebugPanel(
                 isLiveDataEnabled: $isLiveDataEnabled,
-                isMRTestingEnabled: $isMRTestingEnabled
+                isMRTestingEnabled: $isMRTestingEnabled,
+                isSummerAdvertisementEnabled: $isSummerAdvertisementEnabled
             )
         }
         .onPreferenceChange(TradeAggregationQuickMenuTopPreferenceKey.self) {
@@ -165,6 +174,7 @@ private enum TradeAggregationLayout {
     static let viewportWidth: CGFloat = 402
     static let topInset: CGFloat = 12
     static let totalAssetBottomSpacing: CGFloat = 12
+    static let standardVerticalSpacing: CGFloat = 12
     static let cardToQuickMenuSpacing: CGFloat = 22
     static let quickMenuHeight: CGFloat = 74
     static let quickMenuSeparatorAreaHeight: CGFloat = 1
@@ -174,6 +184,34 @@ private enum TradeAggregationLayout {
     static let titleToHoldingsSpacing: CGFloat = 22
     static let bottomSpacing: CGFloat = 20
     static let stickyCoordinateSpace = "TradeAggregationStickyViewport"
+}
+
+private struct TradeAggregationSummerAdvertisement: View {
+    var body: some View {
+        Image("summeradv")
+            .resizable()
+            .scaledToFit()
+            .frame(maxWidth: .infinity)
+            .clipShape(
+                RoundedRectangle(
+                    cornerRadius: TradeAggregationSummerAdvertisementStyle.cornerRadius,
+                    style: .continuous
+                )
+            )
+            .overlay {
+                RoundedRectangle(
+                    cornerRadius: TradeAggregationSummerAdvertisementStyle.cornerRadius,
+                    style: .continuous
+                )
+                    .stroke(Color("color-separator-10"), lineWidth: 0.5)
+            }
+            .padding(.horizontal, 16)
+            .accessibilityLabel("夏季新客开户礼遇活动")
+    }
+}
+
+private enum TradeAggregationSummerAdvertisementStyle {
+    static let cornerRadius: CGFloat = 16
 }
 
 private struct TradeAggregationCategoryPage: View {
@@ -351,6 +389,7 @@ private struct TradeAggregationMRMaintenanceStateView: View {
 private struct TradeAggregationDebugPanel: View {
     @Binding var isLiveDataEnabled: Bool
     @Binding var isMRTestingEnabled: Bool
+    @Binding var isSummerAdvertisementEnabled: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -381,6 +420,18 @@ private struct TradeAggregationDebugPanel: View {
                         .foregroundColor(Color("color-text-30"))
 
                     Text("股票和基金显示系统升级状态，虚拟资产保持正常")
+                        .modifier(CustomFontModifier(size: 13, font: .regular, lineHeight: 16))
+                        .foregroundColor(Color("color-text-60"))
+                }
+            }
+
+            Toggle(isOn: $isSummerAdvertisementEnabled) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("显示夏季运营广告")
+                        .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
+                        .foregroundColor(Color("color-text-30"))
+
+                    Text("在总资产下方展示夏季新客活动图")
                         .modifier(CustomFontModifier(size: 13, font: .regular, lineHeight: 16))
                         .foregroundColor(Color("color-text-60"))
                 }
