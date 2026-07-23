@@ -166,7 +166,6 @@ struct CompareTab5View: View {
     var body: some View{
         
         List{
-            
             // 组件列表单元
             NavigationLink(
                     destination: IntradayCardsView(),
@@ -317,6 +316,19 @@ struct CompareTab5View: View {
                         Text("Taptic Engine 触感实验室")
                             .font(.system(size: 16, weight: .semibold, design: .default))
                         Text("UIKit Feedback + Core Haptics")
+                            .foregroundColor(.gray)
+                            .font(.system(size: 13, weight: .regular, design: .monospaced))
+                    }
+                }
+            )
+
+            NavigationLink(
+                destination: JakartaMonospacedComparisonView(),
+                label: {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Jakarta 数字等宽对比")
+                            .font(.system(size: 16, weight: .semibold, design: .default))
+                        Text("Plus Jakarta Sans · monospacedDigit()")
                             .foregroundColor(.gray)
                             .font(.system(size: 13, weight: .regular, design: .monospaced))
                     }
