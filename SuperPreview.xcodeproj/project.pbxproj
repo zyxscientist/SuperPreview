@@ -24,6 +24,7 @@
 		84F200042F78000000ABC001 /* AssetChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F200032F78000000ABC001 /* AssetChart.swift */; };
 		84F200012F78000000ABC001 /* TotalAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F200002F78000000ABC001 /* TotalAsset.swift */; };
 		84F100012F77000000ABC001 /* TapticEngineDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F100002F77000000ABC001 /* TapticEngineDemoView.swift */; };
+		84F400012F81000000ABC001 /* JakartaMonospacedComparisonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F400002F81000000ABC001 /* JakartaMonospacedComparisonView.swift */; };
 		83571D872F6943F3004C4213 /* PriceRefreshAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83571D862F6943F3004C4213 /* PriceRefreshAnimationView.swift */; };
 		84008BF22CAA709E0094E05E /* IntradayCardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84008BF12CAA709D0094E05E /* IntradayCardsView.swift */; };
 		84008BF52CAA89250094E05E /* OrderBookTapeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84008BF42CAA89250094E05E /* OrderBookTapeView.swift */; };
@@ -165,6 +166,7 @@
 		84F200032F78000000ABC001 /* AssetChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetChart.swift; sourceTree = "<group>"; };
 		84F200002F78000000ABC001 /* TotalAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalAsset.swift; sourceTree = "<group>"; };
 		84F100002F77000000ABC001 /* TapticEngineDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapticEngineDemoView.swift; sourceTree = "<group>"; };
+		84F400002F81000000ABC001 /* JakartaMonospacedComparisonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JakartaMonospacedComparisonView.swift; sourceTree = "<group>"; };
 		83571D862F6943F3004C4213 /* PriceRefreshAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceRefreshAnimationView.swift; sourceTree = "<group>"; };
 		84008BF12CAA709D0094E05E /* IntradayCardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntradayCardsView.swift; sourceTree = "<group>"; };
 		84008BF42CAA89250094E05E /* OrderBookTapeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderBookTapeView.swift; sourceTree = "<group>"; };
@@ -408,6 +410,7 @@
 				84B893E22CB92E4800EA5F84 /* StockShuffleDemoView.swift */,
 				84F000022F76000000ABC001 /* WatchlistRedesignDemoView.swift */,
 				84F100002F77000000ABC001 /* TapticEngineDemoView.swift */,
+				84F400002F81000000ABC001 /* JakartaMonospacedComparisonView.swift */,
 			);
 			path = UXDemo;
 			sourceTree = "<group>";
@@ -749,6 +752,7 @@
 				84F200042F78000000ABC001 /* AssetChart.swift in Sources */,
 				84F200012F78000000ABC001 /* TotalAsset.swift in Sources */,
 				84F100012F77000000ABC001 /* TapticEngineDemoView.swift in Sources */,
+				84F400012F81000000ABC001 /* JakartaMonospacedComparisonView.swift in Sources */,
 				C2330E512851DA7A00382AE1 /* CustomFontModifier.swift in Sources */,
 				847B7CAE263C03DC003E5A40 /* NewsTextItemView.swift in Sources */,
 				8496DCF2296C1422005E0325 /* SwiftBackToPreviousPage.swift in Sources */,
