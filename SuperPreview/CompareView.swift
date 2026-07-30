@@ -334,6 +334,19 @@ struct CompareTab5View: View {
                     }
                 }
             )
+
+            NavigationLink(
+                destination: LiquidGlassResearchView(),
+                label: {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Liquid Glass 调研")
+                            .font(.system(size: 16, weight: .semibold, design: .default))
+                        Text("买卖按钮 · 涨跌色 tint")
+                            .foregroundColor(.gray)
+                            .font(.system(size: 13, weight: .regular, design: .monospaced))
+                    }
+                }
+            )
             
             // 结束
             

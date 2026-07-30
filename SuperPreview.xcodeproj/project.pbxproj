@@ -94,6 +94,7 @@
 		84F300012F80000000ABC001 /* MainTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F300002F80000000ABC001 /* MainTabBar.swift */; };
 		84F300032F76000000ABC001 /* TradeAggregationDemoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F300022F76000000ABC001 /* TradeAggregationDemoViewModel.swift */; };
 		84F400012F81000000ABC001 /* JakartaMonospacedComparisonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F400002F81000000ABC001 /* JakartaMonospacedComparisonView.swift */; };
+		84F500012F82000000ABC001 /* LiquidGlassResearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F500002F82000000ABC001 /* LiquidGlassResearchView.swift */; };
 		C205D216250C7AA400F302ED /* SnapshotShortcutGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C205D215250C7AA400F302ED /* SnapshotShortcutGridView.swift */; };
 		C2310CB728F54CF100259834 /* NavigationBarModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2310CB628F54CF100259834 /* NavigationBarModifier.swift */; };
 		C2330E462851CB9100382AE1 /* CompareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2330E452851CB9100382AE1 /* CompareView.swift */; };
@@ -236,6 +237,7 @@
 		84F300002F80000000ABC001 /* MainTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBar.swift; sourceTree = "<group>"; };
 		84F300022F76000000ABC001 /* TradeAggregationDemoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeAggregationDemoViewModel.swift; sourceTree = "<group>"; };
 		84F400002F81000000ABC001 /* JakartaMonospacedComparisonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JakartaMonospacedComparisonView.swift; sourceTree = "<group>"; };
+		84F500002F82000000ABC001 /* LiquidGlassResearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassResearchView.swift; sourceTree = "<group>"; };
 		C205D215250C7AA400F302ED /* SnapshotShortcutGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotShortcutGridView.swift; sourceTree = "<group>"; };
 		C2310CB628F54CF100259834 /* NavigationBarModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarModifier.swift; sourceTree = "<group>"; };
 		C2330E452851CB9100382AE1 /* CompareView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompareView.swift; sourceTree = "<group>"; };
@@ -411,6 +413,7 @@
 				84F000022F76000000ABC001 /* WatchlistRedesignDemoView.swift */,
 				84F100002F77000000ABC001 /* TapticEngineDemoView.swift */,
 				84F400002F81000000ABC001 /* JakartaMonospacedComparisonView.swift */,
+				84F500002F82000000ABC001 /* LiquidGlassResearchView.swift */,
 			);
 			path = UXDemo;
 			sourceTree = "<group>";
@@ -753,6 +756,7 @@
 				84F200012F78000000ABC001 /* TotalAsset.swift in Sources */,
 				84F100012F77000000ABC001 /* TapticEngineDemoView.swift in Sources */,
 				84F400012F81000000ABC001 /* JakartaMonospacedComparisonView.swift in Sources */,
+				84F500012F82000000ABC001 /* LiquidGlassResearchView.swift in Sources */,
 				C2330E512851DA7A00382AE1 /* CustomFontModifier.swift in Sources */,
 				847B7CAE263C03DC003E5A40 /* NewsTextItemView.swift in Sources */,
 				8496DCF2296C1422005E0325 /* SwiftBackToPreviousPage.swift in Sources */,
@@ -1004,6 +1008,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"SuperPreview/Preview Content\"";
+				DEVELOPMENT_TEAM = S5458AA7DS;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = SuperPreview/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
@@ -1027,6 +1032,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"SuperPreview/Preview Content\"";
+				DEVELOPMENT_TEAM = S5458AA7DS;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = SuperPreview/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
