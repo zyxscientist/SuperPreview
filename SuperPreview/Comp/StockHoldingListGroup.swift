@@ -243,6 +243,7 @@ extension Array where Element == StockHoldingMarketSection {
 }
 
 struct StockHoldingListGroup: View {
+    let viewportWidth: CGFloat
     let sections: [StockHoldingMarketSection]
     let isNumberHidden: Bool
     let onQuote: (StockHoldingItem) -> Void
@@ -254,6 +255,7 @@ struct StockHoldingListGroup: View {
     @State private var expandedHoldingID: StockHoldingItem.ID?
 
     init(
+        viewportWidth: CGFloat,
         sections: [StockHoldingMarketSection] = .preview,
         isNumberHidden: Bool = false,
         initiallyCollapsedMarkets: Set<StockHoldingMarket> = [],
@@ -262,6 +264,7 @@ struct StockHoldingListGroup: View {
         onOrder: @escaping (StockHoldingItem) -> Void = { _ in },
         onDetails: @escaping (StockHoldingItem) -> Void = { _ in }
     ) {
+        self.viewportWidth = viewportWidth
         self.sections = sections
         self.isNumberHidden = isNumberHidden
         self.onQuote = onQuote
@@ -281,18 +284,21 @@ struct StockHoldingListGroup: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 scrollableContent
             }
-            .frame(width: StockHoldingLayout.viewportWidth, height: contentHeight)
+            .frame(width: viewportWidth, height: contentHeight)
             .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
 
             fixedContent
         }
         .frame(
-            width: StockHoldingLayout.viewportWidth,
+            width: viewportWidth,
             height: contentHeight,
             alignment: .topLeading
         )
         .background(Color("color-base-1"))
         .clipped()
+        .environment(\.tradeAggregationViewportWidth, viewportWidth)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("trade.holdingsViewport")
     }
 
     private var scrollableContent: some View {
@@ -340,7 +346,7 @@ struct StockHoldingListGroup: View {
                 )
             }
         }
-        .frame(width: StockHoldingLayout.viewportWidth, alignment: .topLeading)
+        .frame(width: viewportWidth, alignment: .topLeading)
     }
 
     private var contentHeight: CGFloat {
@@ -406,7 +412,6 @@ struct StockHoldingListGroup: View {
 }
 
 private enum StockHoldingLayout {
-    static let viewportWidth: CGFloat = 402
     static let contentWidth: CGFloat = 622
     static let sectionSpacing: CGFloat = 10
     static let marketHeaderHeight: CGFloat = 20
@@ -427,6 +432,8 @@ private enum StockHoldingLayout {
 }
 
 private struct StockHoldingMarketHeader: View {
+    @Environment(\.tradeAggregationViewportWidth) private var viewportWidth
+
     let market: StockHoldingMarket
     let isExpanded: Bool
     let action: () -> Void
@@ -454,7 +461,7 @@ private struct StockHoldingMarketHeader: View {
             }
             .padding(.horizontal, 16)
             .frame(
-                width: StockHoldingLayout.viewportWidth,
+                width: viewportWidth,
                 height: StockHoldingLayout.marketHeaderHeight
             )
             .contentShape(Rectangle())
@@ -550,6 +557,8 @@ private struct StockHoldingFixedMarketSection: View {
 }
 
 private struct StockHoldingFixedMarketTable: View {
+    @Environment(\.tradeAggregationViewportWidth) private var viewportWidth
+
     let holdings: [StockHoldingItem]
     let isNumberHidden: Bool
     let expandedHoldingID: StockHoldingItem.ID?
@@ -579,7 +588,7 @@ private struct StockHoldingFixedMarketTable: View {
                     .padding(.horizontal, 16)
                     .padding(.bottom, 16)
                     .frame(
-                        width: StockHoldingLayout.viewportWidth,
+                        width: viewportWidth,
                         height: StockHoldingLayout.actionAreaHeight,
                         alignment: .topLeading
                     )
@@ -588,10 +597,10 @@ private struct StockHoldingFixedMarketTable: View {
                         blurRadius: expandedHoldingID == holding.id ? 0 : 5
                     )
                 }
-                .frame(width: StockHoldingLayout.viewportWidth, alignment: .topLeading)
+                .frame(width: viewportWidth, alignment: .topLeading)
             }
         }
-        .frame(width: StockHoldingLayout.viewportWidth, alignment: .topLeading)
+        .frame(width: viewportWidth, alignment: .topLeading)
     }
 }
 
@@ -774,6 +783,8 @@ private struct StockHoldingValuePairCell: View {
 }
 
 private struct StockHoldingActionBar: View {
+    @Environment(\.tradeAggregationViewportWidth) private var viewportWidth
+
     let holding: StockHoldingItem
     let onQuote: (StockHoldingItem) -> Void
     let onOrder: (StockHoldingItem) -> Void
@@ -793,7 +804,7 @@ private struct StockHoldingActionBar: View {
                 onDetails(holding)
             }
         }
-        .frame(width: 370, height: StockHoldingLayout.actionHeight)
+        .frame(width: max(viewportWidth - 32, 0), height: StockHoldingLayout.actionHeight)
     }
 
     private func actionButton(
@@ -805,7 +816,7 @@ private struct StockHoldingActionBar: View {
             Text(title)
                 .font(.custom("PlusJakartaSans-Medium", size: 16, relativeTo: .body))
                 .foregroundColor(Color("color-text-30"))
-                .frame(width: 122, height: StockHoldingLayout.actionHeight)
+                .frame(maxWidth: .infinity, minHeight: StockHoldingLayout.actionHeight, maxHeight: StockHoldingLayout.actionHeight)
                 .background(Color("color-scale-2"))
                 .clipShape(
                     UnevenRoundedRectangle(
@@ -852,12 +863,14 @@ private enum StockHoldingActionPosition {
 }
 
 private struct StockHoldingSeparator: View {
+    @Environment(\.tradeAggregationViewportWidth) private var viewportWidth
+
     var body: some View {
         Rectangle()
             .fill(Color("color-separator-10"))
-            .frame(width: 370, height: 0.5)
+            .frame(width: max(viewportWidth - 32, 0), height: 0.5)
             .frame(
-                width: StockHoldingLayout.viewportWidth,
+                width: viewportWidth,
                 height: StockHoldingLayout.separatorAreaHeight
             )
     }
@@ -867,17 +880,18 @@ struct StockHoldingListGroup_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             StockHoldingListGroupPreviewContainer {
-                StockHoldingListGroup()
+                StockHoldingListGroup(viewportWidth: 402)
             }
                 .previewDisplayName("Default")
 
             StockHoldingListGroupPreviewContainer {
-                StockHoldingListGroup(isNumberHidden: true)
+                StockHoldingListGroup(viewportWidth: 402, isNumberHidden: true)
             }
                 .previewDisplayName("Numbers Hidden")
 
             StockHoldingListGroupPreviewContainer {
                 StockHoldingListGroup(
+                    viewportWidth: 402,
                     initiallyCollapsedMarkets: Set(StockHoldingMarket.allCases)
                 )
             }
@@ -885,6 +899,7 @@ struct StockHoldingListGroup_Previews: PreviewProvider {
 
             StockHoldingListGroupPreviewContainer {
                 StockHoldingListGroup(
+                    viewportWidth: 402,
                     initiallyCollapsedMarkets: [.chinaA]
                 )
             }
@@ -907,7 +922,7 @@ private struct StockHoldingListGroupPreviewContainer<Content: View>: View {
             Spacer(minLength: 0)
         }
         .frame(
-            width: StockHoldingLayout.viewportWidth,
+            width: 402,
             height: 880,
             alignment: .top
         )

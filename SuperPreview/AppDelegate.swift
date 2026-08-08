@@ -16,10 +16,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        if !PreviewRuntime.isRunning {
+        if PreviewRuntime.isUITesting {
+            resetTradeAggregationStateForUITests()
+        } else if !PreviewRuntime.isRunning {
             RunLoop.current.run(until: Date(timeIntervalSinceNow: 1.0))
         }
         return true
+    }
+
+    private func resetTradeAggregationStateForUITests() {
+        let keys = [
+            TradeAggregationExpansionStorageKey.stockSubAssetCard,
+            TradeAggregationExpansionStorageKey.fundSubAssetCard,
+            TradeAggregationExpansionStorageKey.virtualAssetSubAssetCard,
+            TradeAggregationExpansionStorageKey.stockHoldingGroups,
+            TradeAggregationExpansionStorageKey.fundHoldingGroups,
+            TradeAggregationExpansionStorageKey.virtualAssetHoldingGroups
+        ]
+
+        for key in keys {
+            UserDefaults.standard.removeObject(forKey: key)
+        }
     }
 
     // MARK: UISceneSession Lifecycle

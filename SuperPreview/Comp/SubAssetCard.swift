@@ -6,6 +6,17 @@
 import Foundation
 import SwiftUI
 
+private struct TradeAggregationViewportWidthKey: EnvironmentKey {
+    static let defaultValue: CGFloat = 402
+}
+
+extension EnvironmentValues {
+    var tradeAggregationViewportWidth: CGFloat {
+        get { self[TradeAggregationViewportWidthKey.self] }
+        set { self[TradeAggregationViewportWidthKey.self] = newValue }
+    }
+}
+
 enum TradeAggregationExpansionStorageKey {
     static let stockSubAssetCard = "tradeAggregation.subAssetCard.stock.isExpanded"
     static let fundSubAssetCard = "tradeAggregation.subAssetCard.fund.isExpanded"
@@ -70,10 +81,12 @@ struct SubAssetCardContainer<Content: View>: View {
         VStack(alignment: .leading, spacing: 0) {
             content
         }
-        .frame(width: 346, alignment: .topLeading)
+        .frame(maxWidth: .infinity, alignment: .topLeading)
         .padding(12)
         .background(Color("color-scale-1"))
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("trade.subAssetCard")
     }
 }
 
@@ -111,48 +124,6 @@ struct SubAssetCardHeader: View {
     let isNumberHidden: Bool
     let isExpanded: Bool
     let toggleExpansion: () -> Void
-    let contentWidth: CGFloat
-
-    init(
-        currency: String,
-        netAsset: String,
-        profitLossTitle: String,
-        profitLoss: String,
-        isNumberHidden: Bool,
-        isExpanded: Bool,
-        toggleExpansion: @escaping () -> Void
-    ) {
-        self.init(
-            currency: currency,
-            netAsset: netAsset,
-            profitLossTitle: profitLossTitle,
-            profitLoss: profitLoss,
-            isNumberHidden: isNumberHidden,
-            isExpanded: isExpanded,
-            toggleExpansion: toggleExpansion,
-            contentWidth: 183
-        )
-    }
-
-    init(
-        currency: String,
-        netAsset: String,
-        profitLossTitle: String,
-        profitLoss: String,
-        isNumberHidden: Bool,
-        isExpanded: Bool,
-        toggleExpansion: @escaping () -> Void,
-        contentWidth: CGFloat = 183
-    ) {
-        self.currency = currency
-        self.netAsset = netAsset
-        self.profitLossTitle = profitLossTitle
-        self.profitLoss = profitLoss
-        self.isNumberHidden = isNumberHidden
-        self.isExpanded = isExpanded
-        self.toggleExpansion = toggleExpansion
-        self.contentWidth = contentWidth
-    }
 
     var body: some View {
         HStack(alignment: .top, spacing: 0) {
@@ -181,7 +152,7 @@ struct SubAssetCardHeader: View {
                 .frame(height: 20)
                 .lineLimit(1)
             }
-            .frame(width: contentWidth, height: 84, alignment: .topLeading)
+            .frame(maxWidth: .infinity, minHeight: 84, maxHeight: 84, alignment: .topLeading)
 
             Spacer(minLength: 0)
 
@@ -192,7 +163,7 @@ struct SubAssetCardHeader: View {
             .sensoryFeedback(.impact(weight: .medium), trigger: isExpanded)
             .accessibilityLabel(isExpanded ? "收起资产详情" : "展开资产详情")
         }
-        .frame(width: 346, height: 84, alignment: .top)
+        .frame(maxWidth: .infinity, minHeight: 84, maxHeight: 84, alignment: .top)
     }
 }
 
@@ -278,7 +249,7 @@ struct SubAssetMetricRow: View {
                 .frame(maxWidth: .infinity, minHeight: 44, maxHeight: 44, alignment: item.alignment)
             }
         }
-        .frame(width: 346, height: 44)
+        .frame(maxWidth: .infinity, minHeight: 44, maxHeight: 44)
     }
 
     private func valueColor(for item: SubAssetMetricItem) -> Color {
@@ -293,7 +264,7 @@ struct SubAssetCardSeparator: View {
     var body: some View {
         Rectangle()
             .fill(Color("color-separator-10"))
-            .frame(width: 346, height: 0.5)
+            .frame(maxWidth: .infinity, minHeight: 0.5, maxHeight: 0.5)
             .frame(height: 1, alignment: .bottom)
     }
 }

@@ -146,7 +146,7 @@ private struct VirtualAssetsCashBreakdown: View {
             }
             .frame(height: 20)
         }
-        .frame(width: 346, height: 44, alignment: .leading)
+        .frame(maxWidth: .infinity, minHeight: 44, maxHeight: 44, alignment: .leading)
     }
 }
 

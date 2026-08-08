@@ -12,7 +12,7 @@ struct MainView: View {
     
     @State var selectedTab: AppTab = .tab1
     @State var marketOpen = true
-    private let isPreview = PreviewRuntime.isRunning
+    private let isPreview = PreviewRuntime.isRunning || PreviewRuntime.isUITesting
     
     var body: some View {
         

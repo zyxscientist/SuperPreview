@@ -85,8 +85,7 @@ struct StockSubAssetCard: View {
                 profitLoss: model.todayProfitLoss,
                 isNumberHidden: isNumberHidden,
                 isExpanded: isExpanded,
-                toggleExpansion: toggleExpansion,
-                contentWidth: 248
+                toggleExpansion: toggleExpansion
             )
 
             SubAssetMetricRow(
@@ -201,7 +200,7 @@ private struct StockSubAssetCashBreakdown: View {
             }
             .frame(maxWidth: .infinity, alignment: .trailing)
         }
-        .frame(width: 346, height: 100, alignment: .top)
+        .frame(maxWidth: .infinity, minHeight: 100, maxHeight: 100, alignment: .top)
     }
 
     private func title(_ text: String, alignment: Alignment) -> some View {

@@ -187,6 +187,7 @@ extension Array where Element == VirtualAssetHoldingSection {
 }
 
 struct VirtualAssetHoldingListGroup: View {
+    let viewportWidth: CGFloat
     let sections: [VirtualAssetHoldingSection]
     let isNumberHidden: Bool
     let onAction: (VirtualAssetHoldingAction, VirtualAssetHoldingItem) -> Void
@@ -197,6 +198,7 @@ struct VirtualAssetHoldingListGroup: View {
     @State private var infoPlacement: VirtualAssetHoldingInfoPlacement
 
     init(
+        viewportWidth: CGFloat,
         sections: [VirtualAssetHoldingSection] = .virtualAssetHoldingPreview,
         isNumberHidden: Bool = false,
         initialInfoPlacement: VirtualAssetHoldingInfoPlacement = .head,
@@ -207,6 +209,7 @@ struct VirtualAssetHoldingListGroup: View {
             VirtualAssetHoldingItem
         ) -> Void = { _, _ in }
     ) {
+        self.viewportWidth = viewportWidth
         self.sections = sections
         self.isNumberHidden = isNumberHidden
         self.onAction = onAction
@@ -226,7 +229,7 @@ struct VirtualAssetHoldingListGroup: View {
                 scrollableContent
             }
             .frame(
-                width: VirtualAssetHoldingLayout.viewportWidth,
+                width: viewportWidth,
                 height: contentHeight,
                 alignment: .topLeading
             )
@@ -238,12 +241,15 @@ struct VirtualAssetHoldingListGroup: View {
                 .zIndex(1)
         }
         .frame(
-            width: VirtualAssetHoldingLayout.viewportWidth,
+            width: viewportWidth,
             height: contentHeight,
             alignment: .topLeading
         )
         .background(Color("color-base-1"))
         .clipped()
+        .environment(\.tradeAggregationViewportWidth, viewportWidth)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("trade.holdingsViewport")
     }
 
     private var scrollableContent: some View {
@@ -292,7 +298,7 @@ struct VirtualAssetHoldingListGroup: View {
             }
         }
         .frame(
-            width: VirtualAssetHoldingLayout.viewportWidth,
+            width: viewportWidth,
             height: contentHeight,
             alignment: .topLeading
         )
@@ -404,7 +410,6 @@ struct VirtualAssetHoldingListGroup: View {
 }
 
 private enum VirtualAssetHoldingLayout {
-    static let viewportWidth: CGFloat = 402
     static let contentWidth: CGFloat = 622
     static let sectionSpacing: CGFloat = 10
     static let sectionContentSpacing: CGFloat = 10
@@ -470,6 +475,8 @@ private struct VirtualAssetHoldingScrollableSection: View {
 }
 
 private struct VirtualAssetHoldingFixedSection: View {
+    @Environment(\.tradeAggregationViewportWidth) private var viewportWidth
+
     let section: VirtualAssetHoldingSection
     let isExpanded: Bool
     let showsHeadInfo: Bool
@@ -487,7 +494,7 @@ private struct VirtualAssetHoldingFixedSection: View {
         ) {
             Color.clear
                 .frame(
-                    width: VirtualAssetHoldingLayout.viewportWidth,
+                    width: viewportWidth,
                     height: VirtualAssetHoldingLayout.marketHeaderHeight
                 )
                 .allowsHitTesting(false)
@@ -525,6 +532,8 @@ private struct VirtualAssetHoldingFixedSection: View {
 }
 
 private struct VirtualAssetHoldingMarketHeader: View {
+    @Environment(\.tradeAggregationViewportWidth) private var viewportWidth
+
     let category: VirtualAssetHoldingCategory
     let isExpanded: Bool
     let action: () -> Void
@@ -552,7 +561,7 @@ private struct VirtualAssetHoldingMarketHeader: View {
             }
             .padding(.horizontal, 16)
             .frame(
-                width: VirtualAssetHoldingLayout.viewportWidth,
+                width: viewportWidth,
                 height: VirtualAssetHoldingLayout.marketHeaderHeight
             )
             .contentShape(Rectangle())
@@ -565,6 +574,8 @@ private struct VirtualAssetHoldingMarketHeader: View {
 }
 
 private struct VirtualAssetHoldingHeadInfo: View {
+    @Environment(\.tradeAggregationViewportWidth) private var viewportWidth
+
     let action: () -> Void
 
     var body: some View {
@@ -572,7 +583,7 @@ private struct VirtualAssetHoldingHeadInfo: View {
             Text(VirtualAssetHoldingCopy.pricingInfo)
                 .font(.custom("PlusJakartaSans-Regular", size: 14, relativeTo: .subheadline))
                 .foregroundColor(Color("color-text-60"))
-                .frame(width: 329, height: 40, alignment: .leading)
+                .frame(width: max(viewportWidth - 72, 0), height: 40, alignment: .leading)
                 .lineLimit(2)
 
             Button(action: action) {
@@ -585,7 +596,7 @@ private struct VirtualAssetHoldingHeadInfo: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
-        .frame(width: 369, height: VirtualAssetHoldingLayout.headInfoHeight)
+        .frame(width: max(viewportWidth - 32, 0), height: VirtualAssetHoldingLayout.headInfoHeight)
         .background(Color("color-scale-1"))
         .overlay {
             RoundedRectangle(cornerRadius: 8, style: .continuous)
@@ -593,25 +604,27 @@ private struct VirtualAssetHoldingHeadInfo: View {
         }
         .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
         .frame(
-            width: VirtualAssetHoldingLayout.viewportWidth,
+            width: viewportWidth,
             height: VirtualAssetHoldingLayout.headInfoHeight
         )
     }
 }
 
 private struct VirtualAssetHoldingFooterInfo: View {
+    @Environment(\.tradeAggregationViewportWidth) private var viewportWidth
+
     var body: some View {
         Text(VirtualAssetHoldingCopy.pricingInfo)
             .font(.custom("PlusJakartaSans-Regular", size: 12, relativeTo: .caption))
             .foregroundColor(Color("color-text-60"))
             .frame(
-                width: 370,
+                width: max(viewportWidth - 32, 0),
                 height: VirtualAssetHoldingLayout.footerInfoHeight,
                 alignment: .leading
             )
             .lineLimit(2)
             .frame(
-                width: VirtualAssetHoldingLayout.viewportWidth,
+                width: viewportWidth,
                 height: VirtualAssetHoldingLayout.footerInfoHeight
             )
     }
@@ -675,6 +688,8 @@ private struct VirtualAssetHoldingScrollableTable: View {
 }
 
 private struct VirtualAssetHoldingFixedTable: View {
+    @Environment(\.tradeAggregationViewportWidth) private var viewportWidth
+
     let section: VirtualAssetHoldingSection
     let isNumberHidden: Bool
     let expandedHoldingID: VirtualAssetHoldingItem.ID?
@@ -701,7 +716,7 @@ private struct VirtualAssetHoldingFixedTable: View {
                     .padding(.horizontal, 16)
                     .padding(.bottom, 16)
                     .frame(
-                        width: VirtualAssetHoldingLayout.viewportWidth,
+                        width: viewportWidth,
                         height: VirtualAssetHoldingLayout.actionAreaHeight,
                         alignment: .topLeading
                     )
@@ -711,13 +726,13 @@ private struct VirtualAssetHoldingFixedTable: View {
                     )
                 }
                 .frame(
-                    width: VirtualAssetHoldingLayout.viewportWidth,
+                    width: viewportWidth,
                     alignment: .topLeading
                 )
             }
         }
         .frame(
-            width: VirtualAssetHoldingLayout.viewportWidth,
+            width: viewportWidth,
             alignment: .topLeading
         )
     }
@@ -920,6 +935,8 @@ private struct VirtualAssetHoldingValuePairCell: View {
 }
 
 private struct VirtualAssetHoldingActionBar: View {
+    @Environment(\.tradeAggregationViewportWidth) private var viewportWidth
+
     let holding: VirtualAssetHoldingItem
     let actions: [VirtualAssetHoldingAction]
     let onAction: (VirtualAssetHoldingAction, VirtualAssetHoldingItem) -> Void
@@ -933,7 +950,7 @@ private struct VirtualAssetHoldingActionBar: View {
                     Text(action.title)
                         .font(.custom("PlusJakartaSans-Medium", size: 16, relativeTo: .body))
                         .foregroundColor(Color("color-text-30"))
-                        .frame(width: 122, height: VirtualAssetHoldingLayout.actionHeight)
+                        .frame(maxWidth: .infinity, minHeight: VirtualAssetHoldingLayout.actionHeight, maxHeight: VirtualAssetHoldingLayout.actionHeight)
                         .background(Color("color-scale-2"))
                         .clipShape(
                             UnevenRoundedRectangle(
@@ -946,7 +963,7 @@ private struct VirtualAssetHoldingActionBar: View {
                 .accessibilityLabel("\(holding.name)\(action.title)")
             }
         }
-        .frame(width: 370, height: VirtualAssetHoldingLayout.actionHeight)
+        .frame(width: max(viewportWidth - 32, 0), height: VirtualAssetHoldingLayout.actionHeight)
     }
 
     private func cornerRadii(at index: Int) -> RectangleCornerRadii {
@@ -978,12 +995,14 @@ private struct VirtualAssetHoldingActionBar: View {
 }
 
 private struct VirtualAssetHoldingSeparator: View {
+    @Environment(\.tradeAggregationViewportWidth) private var viewportWidth
+
     var body: some View {
         Rectangle()
             .fill(Color("color-separator-10"))
-            .frame(width: 370, height: 0.5)
+            .frame(width: max(viewportWidth - 32, 0), height: 0.5)
             .frame(
-                width: VirtualAssetHoldingLayout.viewportWidth,
+                width: viewportWidth,
                 height: VirtualAssetHoldingLayout.separatorAreaHeight
             )
     }
@@ -993,17 +1012,18 @@ struct VirtualAssetHoldingListGroup_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             VirtualAssetHoldingPreviewContainer {
-                VirtualAssetHoldingListGroup()
+                VirtualAssetHoldingListGroup(viewportWidth: 402)
             }
             .previewDisplayName("Default")
 
             VirtualAssetHoldingPreviewContainer {
-                VirtualAssetHoldingListGroup(isNumberHidden: true)
+                VirtualAssetHoldingListGroup(viewportWidth: 402, isNumberHidden: true)
             }
             .previewDisplayName("Numbers Hidden")
 
             VirtualAssetHoldingPreviewContainer {
                 VirtualAssetHoldingListGroup(
+                    viewportWidth: 402,
                     initialInfoPlacement: .footer,
                     initiallyCollapsedCategories: [.cryptocurrency]
                 )
@@ -1012,6 +1032,7 @@ struct VirtualAssetHoldingListGroup_Previews: PreviewProvider {
 
             VirtualAssetHoldingPreviewContainer {
                 VirtualAssetHoldingListGroup(
+                    viewportWidth: 402,
                     initialInfoPlacement: .footer
                 )
             }
@@ -1034,7 +1055,7 @@ private struct VirtualAssetHoldingPreviewContainer<Content: View>: View {
             Spacer(minLength: 0)
         }
         .frame(
-            width: VirtualAssetHoldingLayout.viewportWidth,
+            width: 402,
             height: 880,
             alignment: .top
         )

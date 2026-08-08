@@ -249,6 +249,7 @@ struct CompareTab5View: View {
                     }
                 }
             )
+            .accessibilityIdentifier("compare.newWatchlist")
             // 结束
 
             NavigationLink(
@@ -263,6 +264,7 @@ struct CompareTab5View: View {
                     }
                 }
             )
+            .accessibilityIdentifier("compare.newTrade")
             // 结束
             
             NavigationLink(
@@ -351,7 +353,9 @@ struct CompareTab5View: View {
             // 结束
             
         }
-        .frame(width: 390) // 整个背景的宽度
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("compare.componentLibrary")
         .background(Color("color-base-0"))
     }
 }

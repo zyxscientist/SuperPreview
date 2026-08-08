@@ -1,0 +1,34 @@
+{
+  "configurations" : [
+    {
+      "id" : "A1700100-0000-0000-0000-000000000001",
+      "name" : "Layout",
+      "options" : {
+        "testTimeoutsEnabled" : true
+      },
+      "testTargets" : [
+        {
+          "target" : {
+            "containerPath" : "container:SuperPreview.xcodeproj",
+            "identifier" : "AA1700080000000000000001",
+            "name" : "SuperPreviewUITests"
+          }
+        }
+      ]
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false,
+    "disableAppThinning" : true
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:SuperPreview.xcodeproj",
+        "identifier" : "AA1700080000000000000001",
+        "name" : "SuperPreviewUITests"
+      }
+    }
+  ],
+  "version" : 1
+}

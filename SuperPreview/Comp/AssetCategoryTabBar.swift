@@ -34,6 +34,8 @@ struct AssetCategoryTabBar: View {
         .frame(maxWidth: .infinity)
         .frame(height: 48)
         .background(Color("color-base-1"))
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("trade.categoryTabs")
     }
 
     private func categoryButton(_ category: AssetCategory) -> some View {
@@ -63,6 +65,7 @@ struct AssetCategoryTabBar: View {
         .frame(height: 48)
         .contentShape(Rectangle())
         .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .accessibilityIdentifier("trade.categoryTab.\(category.rawValue)")
     }
 
     private var sortMenu: some View {

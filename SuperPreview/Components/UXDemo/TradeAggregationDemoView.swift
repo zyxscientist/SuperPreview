@@ -17,47 +17,71 @@ struct TradeAggregationDemoView: View {
     @State private var selectedMainTab: AppTab = .tab2
 
     var body: some View {
-        ZStack(alignment: .top) {
-            ScrollView(.vertical, showsIndicators: false) {
-                VStack(
-                    alignment: .leading,
-                    spacing: 0
-                ) {
-                    if isMRTestingEnabled {
-                        TradeAggregationMRNoticeBar()
-                    }
-
-                    Color.clear
-                        .frame(height: TradeAggregationLayout.topInset)
-
-                    TotalAsset(
-                        currency: "USD",
-                        totalAmount: viewModel.snapshot.totalAmount,
-                        totalProfitLoss: viewModel.snapshot.totalProfitLoss,
-                        isDataAvailable: !isMRTestingEnabled,
-                        isNumberHidden: $isNumberHidden
-                    )
-
-                    Color.clear
-                        .frame(height: TradeAggregationLayout.totalAssetBottomSpacing)
-
-                    if isSummerAdvertisementEnabled {
-                        TradeAggregationSummerAdvertisement()
+        GeometryReader { geometry in
+            ZStack(alignment: .topLeading) {
+                ScrollView(.vertical, showsIndicators: false) {
+                    VStack(
+                        alignment: .leading,
+                        spacing: 0
+                    ) {
+                        if isMRTestingEnabled {
+                            TradeAggregationMRNoticeBar()
+                        }
 
                         Color.clear
-                            .frame(height: TradeAggregationLayout.standardVerticalSpacing)
+                            .frame(height: TradeAggregationLayout.topInset)
+
+                        TotalAsset(
+                            currency: "USD",
+                            totalAmount: viewModel.snapshot.totalAmount,
+                            totalProfitLoss: viewModel.snapshot.totalProfitLoss,
+                            isDataAvailable: !isMRTestingEnabled,
+                            isNumberHidden: $isNumberHidden
+                        )
+
+                        Color.clear
+                            .frame(height: TradeAggregationLayout.totalAssetBottomSpacing)
+
+                        if isSummerAdvertisementEnabled {
+                            TradeAggregationSummerAdvertisement()
+
+                            Color.clear
+                                .frame(height: TradeAggregationLayout.standardVerticalSpacing)
+                        }
+
+                        AssetCategoryTabBar(selection: $selectedCategory)
+
+                        selectedCategoryPage(viewportWidth: geometry.size.width)
                     }
-
-                    AssetCategoryTabBar(selection: $selectedCategory)
-
-                    selectedCategoryPage
                 }
-            }
-            if isQuickMenuPinned {
-                pinnedQuickMenu(for: selectedCategory)
+                .accessibilityElement(children: .contain)
+                .accessibilityIdentifier("trade.scroll")
+
+                if isQuickMenuPinned {
+                    pinnedQuickMenu(
+                        for: selectedCategory,
+                        viewportWidth: geometry.size.width
+                    )
                     .transition(.identity)
                     .zIndex(2)
+                }
+
+                if PreviewRuntime.isUITesting {
+                    HStack(spacing: 0) {
+                        Text(isMRTestingEnabled ? "MR_ENABLED" : "MR_DISABLED")
+                            .accessibilityIdentifier("trade.debug.status.mr")
+                        Text(isSummerAdvertisementEnabled ? "SUMMER_ENABLED" : "SUMMER_DISABLED")
+                            .accessibilityIdentifier("trade.debug.status.summerAd")
+                        Text(isLiveDataEnabled ? "LIVE_ENABLED" : "LIVE_DISABLED")
+                            .accessibilityIdentifier("trade.debug.status.liveData")
+                    }
+                    .frame(width: 1, height: 1)
+                    .accessibilityElement(children: .contain)
+                    .allowsHitTesting(false)
+                }
             }
+            .accessibilityElement(children: .contain)
+            .accessibilityIdentifier("trade.root")
         }
         .coordinateSpace(name: TradeAggregationLayout.stickyCoordinateSpace)
         .background(Color("color-base-1").ignoresSafeArea())
@@ -113,15 +137,16 @@ struct TradeAggregationDemoView: View {
         }
     }
 
-    private var selectedCategoryPage: some View {
+    private func selectedCategoryPage(viewportWidth: CGFloat) -> some View {
         Group {
             if isMRTestingActive {
-                TradeAggregationMRMaintenanceStateView()
+                TradeAggregationMRMaintenanceStateView(viewportWidth: viewportWidth)
             } else {
                 TradeAggregationCategoryPage(
                     category: selectedCategory,
                     isNumberHidden: isNumberHidden,
-                    snapshot: viewModel.snapshot
+                    snapshot: viewModel.snapshot,
+                    viewportWidth: viewportWidth
                 )
             }
         }
@@ -152,9 +177,13 @@ struct TradeAggregationDemoView: View {
         }
     }
 
-    private func pinnedQuickMenu(for category: AssetCategory) -> some View {
+    private func pinnedQuickMenu(
+        for category: AssetCategory,
+        viewportWidth: CGFloat
+    ) -> some View {
         VStack(spacing: 0) {
             quickMenu(for: category)
+                .frame(width: viewportWidth, height: TradeAggregationLayout.quickMenuHeight)
 
             Color.clear
                 .frame(height: TradeAggregationLayout.quickMenuSeparatorAreaHeight)
@@ -165,13 +194,15 @@ struct TradeAggregationDemoView: View {
                 }
                 .accessibilityHidden(true)
         }
+        .frame(width: viewportWidth)
         .background(Color("color-base-1"))
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("trade.quickMenu.pinned")
     }
 
 }
 
 private enum TradeAggregationLayout {
-    static let viewportWidth: CGFloat = 402
     static let topInset: CGFloat = 12
     static let totalAssetBottomSpacing: CGFloat = 12
     static let standardVerticalSpacing: CGFloat = 12
@@ -206,6 +237,7 @@ private struct TradeAggregationSummerAdvertisement: View {
                     .stroke(Color("color-separator-10"), lineWidth: 0.5)
             }
             .padding(.horizontal, 16)
+            .accessibilityIdentifier("trade.summerAd")
             .accessibilityLabel("夏季新客开户礼遇活动")
     }
 }
@@ -218,6 +250,7 @@ private struct TradeAggregationCategoryPage: View {
     let category: AssetCategory
     let isNumberHidden: Bool
     let snapshot: TradeAggregationDemoSnapshot
+    let viewportWidth: CGFloat
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -228,8 +261,11 @@ private struct TradeAggregationCategoryPage: View {
                 .frame(height: TradeAggregationLayout.cardToQuickMenuSpacing)
 
             quickMenu
+                .frame(width: viewportWidth)
                 .frame(height: TradeAggregationLayout.quickMenuHeight)
                 .background(quickMenuPositionReader)
+                .accessibilityElement(children: .contain)
+                .accessibilityIdentifier("trade.quickMenu.inline")
 
             Color.clear
                 .frame(height: TradeAggregationLayout.quickMenuToTitleSpacing)
@@ -245,9 +281,11 @@ private struct TradeAggregationCategoryPage: View {
                 .frame(height: TradeAggregationLayout.bottomSpacing)
         }
         .frame(
-            width: TradeAggregationLayout.viewportWidth,
+            width: viewportWidth,
             alignment: .topLeading
         )
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("trade.categoryPage")
     }
 
     @ViewBuilder
@@ -293,11 +331,7 @@ private struct TradeAggregationCategoryPage: View {
                 )
             )
             .foregroundColor(Color("color-text-30"))
-            .frame(
-                width: TradeAggregationLayout.viewportWidth - 16,
-                height: TradeAggregationLayout.holdingsTitleHeight,
-                alignment: .leading
-            )
+            .frame(maxWidth: .infinity, minHeight: TradeAggregationLayout.holdingsTitleHeight, maxHeight: TradeAggregationLayout.holdingsTitleHeight, alignment: .leading)
             .padding(.leading, 16)
     }
 
@@ -306,16 +340,19 @@ private struct TradeAggregationCategoryPage: View {
         switch category {
         case .stocks:
             StockHoldingListGroup(
+                viewportWidth: viewportWidth,
                 sections: snapshot.stockSections,
                 isNumberHidden: isNumberHidden
             )
         case .funds:
             FundHoldingListGroup(
+                viewportWidth: viewportWidth,
                 sections: snapshot.fundSections,
                 isNumberHidden: isNumberHidden
             )
         case .virtualAssets:
             VirtualAssetHoldingListGroup(
+                viewportWidth: viewportWidth,
                 sections: snapshot.virtualAssetSections,
                 isNumberHidden: isNumberHidden
             )
@@ -356,11 +393,15 @@ private struct TradeAggregationMRNoticeBar: View {
             .frame(maxWidth: .infinity, minHeight: 36, maxHeight: 36, alignment: .leading)
             .padding(.horizontal, 16)
             .background(Color(red: 1, green: 243 / 255, blue: 231 / 255))
+            .accessibilityElement(children: .ignore)
+            .accessibilityIdentifier("trade.mrNotice")
             .accessibilityLabel("系统维护提示：系统维护期间无法获取总资产数据，完成后将恢复正常")
     }
 }
 
 private struct TradeAggregationMRMaintenanceStateView: View {
+    let viewportWidth: CGFloat
+
     var body: some View {
         VStack(spacing: 12) {
             Image("mr_testing")
@@ -380,9 +421,10 @@ private struct TradeAggregationMRMaintenanceStateView: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 60)
-        .frame(width: TradeAggregationLayout.viewportWidth, alignment: .top)
+        .frame(width: viewportWidth, alignment: .top)
         .background(Color("color-base-1"))
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: .ignore)
+        .accessibilityIdentifier("trade.mrMaintenance")
     }
 }
 
@@ -390,12 +432,22 @@ private struct TradeAggregationDebugPanel: View {
     @Binding var isLiveDataEnabled: Bool
     @Binding var isMRTestingEnabled: Bool
     @Binding var isSummerAdvertisementEnabled: Bool
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("调试")
-                .modifier(CustomFontModifier(size: 20, font: .bold, lineHeight: 28))
-                .foregroundColor(Color("color-text-30"))
+            HStack {
+                Text("调试")
+                    .modifier(CustomFontModifier(size: 20, font: .bold, lineHeight: 28))
+                    .foregroundColor(Color("color-text-30"))
+
+                Spacer()
+
+                Button("完成") {
+                    dismiss()
+                }
+                .accessibilityIdentifier("trade.debug.close")
+            }
 
             Toggle(isOn: $isLiveDataEnabled) {
                 VStack(alignment: .leading, spacing: 4) {
@@ -412,6 +464,7 @@ private struct TradeAggregationDebugPanel: View {
                     .foregroundColor(Color("color-text-60"))
                 }
             }
+            .accessibilityIdentifier("trade.debug.liveData")
 
             Toggle(isOn: $isMRTestingEnabled) {
                 VStack(alignment: .leading, spacing: 4) {
@@ -424,6 +477,7 @@ private struct TradeAggregationDebugPanel: View {
                         .foregroundColor(Color("color-text-60"))
                 }
             }
+            .accessibilityIdentifier("trade.debug.mr")
 
             Toggle(isOn: $isSummerAdvertisementEnabled) {
                 VStack(alignment: .leading, spacing: 4) {
@@ -436,6 +490,22 @@ private struct TradeAggregationDebugPanel: View {
                         .foregroundColor(Color("color-text-60"))
                 }
             }
+            .accessibilityIdentifier("trade.debug.summerAd")
+
+            if PreviewRuntime.isUITesting {
+                Button("启用调试状态矩阵") {
+                    isLiveDataEnabled = true
+                    isMRTestingEnabled = true
+                    isSummerAdvertisementEnabled = true
+                }
+                .accessibilityIdentifier("trade.debug.enableStateMatrix")
+
+                Button("恢复正常并启用实时数据") {
+                    isMRTestingEnabled = false
+                    isLiveDataEnabled = true
+                }
+                .accessibilityIdentifier("trade.debug.enableLiveData")
+            }
 
             Spacer()
         }
@@ -447,10 +517,20 @@ private struct TradeAggregationDebugPanel: View {
 
 struct TradeAggregationDemoView_Previews: PreviewProvider {
     static var previews: some View {
-        NavigationView {
-            TradeAggregationDemoView()
+        Group {
+            NavigationView {
+                TradeAggregationDemoView()
+            }
+            .navigationViewStyle(StackNavigationViewStyle())
+            .previewLayout(.fixed(width: 402, height: 874))
+            .previewDisplayName("iPhone 17 Pro · 402×874")
+
+            NavigationView {
+                TradeAggregationDemoView()
+            }
+            .navigationViewStyle(StackNavigationViewStyle())
+            .previewLayout(.fixed(width: 440, height: 956))
+            .previewDisplayName("iPhone 17 Pro Max · 440×956")
         }
-        .navigationViewStyle(StackNavigationViewStyle())
-        .previewLayout(.fixed(width: 402, height: 874))
     }
 }

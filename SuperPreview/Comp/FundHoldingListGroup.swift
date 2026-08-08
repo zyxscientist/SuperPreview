@@ -162,16 +162,19 @@ extension Array where Element == FundHoldingCurrencySection {
 }
 
 struct FundHoldingListGroup: View {
+    let viewportWidth: CGFloat
     let sections: [FundHoldingCurrencySection]
     let isNumberHidden: Bool
 
     @State private var collapsedCurrencies: Set<FundHoldingCurrency>
 
     init(
+        viewportWidth: CGFloat,
         sections: [FundHoldingCurrencySection] = .fundHoldingPreview,
         isNumberHidden: Bool = false,
         initiallyCollapsedCurrencies: Set<FundHoldingCurrency> = []
     ) {
+        self.viewportWidth = viewportWidth
         self.sections = sections
         self.isNumberHidden = isNumberHidden
         _collapsedCurrencies = State(
@@ -188,7 +191,7 @@ struct FundHoldingListGroup: View {
                 scrollableContent
             }
             .frame(
-                width: FundHoldingLayout.viewportWidth,
+                width: viewportWidth,
                 height: contentHeight,
                 alignment: .topLeading
             )
@@ -197,12 +200,15 @@ struct FundHoldingListGroup: View {
             fixedContent
         }
         .frame(
-            width: FundHoldingLayout.viewportWidth,
+            width: viewportWidth,
             height: contentHeight,
             alignment: .topLeading
         )
         .background(Color("color-base-1"))
         .clipped()
+        .environment(\.tradeAggregationViewportWidth, viewportWidth)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("trade.holdingsViewport")
     }
 
     private var scrollableContent: some View {
@@ -243,7 +249,7 @@ struct FundHoldingListGroup: View {
                 )
             }
         }
-        .frame(width: FundHoldingLayout.viewportWidth, alignment: .topLeading)
+        .frame(width: viewportWidth, alignment: .topLeading)
     }
 
     private var contentHeight: CGFloat {
@@ -285,7 +291,6 @@ struct FundHoldingListGroup: View {
 }
 
 private enum FundHoldingLayout {
-    static let viewportWidth: CGFloat = 402
     static let contentWidth: CGFloat = 502
     static let nameWidth: CGFloat = 190
     static let metricsLeadingInset: CGFloat = 206
@@ -301,6 +306,8 @@ private enum FundHoldingLayout {
 }
 
 private struct FundHoldingCurrencyHeader: View {
+    @Environment(\.tradeAggregationViewportWidth) private var viewportWidth
+
     let currency: FundHoldingCurrency
     let isExpanded: Bool
     let action: () -> Void
@@ -328,7 +335,7 @@ private struct FundHoldingCurrencyHeader: View {
             }
             .padding(.horizontal, 16)
             .frame(
-                width: FundHoldingLayout.viewportWidth,
+                width: viewportWidth,
                 height: FundHoldingLayout.marketHeaderHeight
             )
             .contentShape(Rectangle())
@@ -388,6 +395,8 @@ private struct FundHoldingFixedCurrencySection: View {
 }
 
 private struct FundHoldingFixedTable: View {
+    @Environment(\.tradeAggregationViewportWidth) private var viewportWidth
+
     let holdings: [FundHoldingItem]
     let isNumberHidden: Bool
 
@@ -404,7 +413,7 @@ private struct FundHoldingFixedTable: View {
                 .allowsHitTesting(false)
             }
         }
-        .frame(width: FundHoldingLayout.viewportWidth, alignment: .topLeading)
+        .frame(width: viewportWidth, alignment: .topLeading)
     }
 }
 
@@ -641,11 +650,13 @@ private struct FundHoldingValuePairCell: View {
 }
 
 private struct FundHoldingSeparator: View {
+    @Environment(\.tradeAggregationViewportWidth) private var viewportWidth
+
     var body: some View {
         Rectangle()
             .fill(Color("color-separator-10"))
-            .frame(width: 370, height: 0.5)
-            .frame(width: FundHoldingLayout.viewportWidth, height: 1)
+            .frame(width: max(viewportWidth - 32, 0), height: 0.5)
+            .frame(width: viewportWidth, height: 1)
     }
 }
 
@@ -653,17 +664,18 @@ struct FundHoldingListGroup_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             FundHoldingListGroupPreviewContainer {
-                FundHoldingListGroup()
+                FundHoldingListGroup(viewportWidth: 402)
             }
             .previewDisplayName("Default")
 
             FundHoldingListGroupPreviewContainer {
-                FundHoldingListGroup(isNumberHidden: true)
+                FundHoldingListGroup(viewportWidth: 402, isNumberHidden: true)
             }
             .previewDisplayName("Numbers Hidden")
 
             FundHoldingListGroupPreviewContainer {
                 FundHoldingListGroup(
+                    viewportWidth: 402,
                     initiallyCollapsedCurrencies: Set(FundHoldingCurrency.allCases)
                 )
             }
@@ -686,7 +698,7 @@ private struct FundHoldingListGroupPreviewContainer<Content: View>: View {
             Spacer(minLength: 0)
         }
         .frame(
-            width: FundHoldingLayout.viewportWidth,
+            width: 402,
             height: 1015,
             alignment: .top
         )
