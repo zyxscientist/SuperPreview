@@ -48,7 +48,7 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
     func testTradeCategoryCardsMenusAndHoldingViewports() throws {
         enterTrade()
 
-        for category in ["股票", "基金", "虚拟资产"] {
+        for category in ["stocks", "funds", "virtualAssets"] {
             let tab = waitFor("trade.categoryTab.\(category)")
             tab.tap()
             let page = waitFor("trade.categoryPage")
@@ -71,7 +71,7 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         XCTAssertTrue(waitForButton("显示资产数字").exists)
 
         let holdings = waitFor("trade.holdingsViewport")
-        let fixedMarketHeader = waitForButton("港股· HKD")
+        let fixedMarketHeader = waitFor("trade.market.hongKong")
         let fixedNameCell = waitForButton("腾讯控股，00700")
         holdings.swipeLeft()
         XCTAssertTrue(fixedMarketHeader.exists)
@@ -95,17 +95,17 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         XCTAssertEqual(pinnedMenu.frame.minX, inlineFrame.minX, accuracy: 1)
         XCTAssertEqual(pinnedMenu.frame.width, inlineFrame.width, accuracy: 1)
 
-        let holding = waitForButton("腾讯控股，00700")
+        let holding = waitFor("trade.holding.hk-tencent")
         holding.tap()
-        XCTAssertTrue(waitForButton("腾讯控股行情").isHittable)
+        XCTAssertTrue(waitFor("trade.holding.hk-tencent.quote").isHittable)
 
-        let lastHolding = waitForButton("特斯拉，TSLA")
+        let lastHolding = waitFor("trade.holding.us-tesla")
         for _ in 0..<12 where !lastHolding.isHittable {
             scroll.swipeUp()
         }
         XCTAssertTrue(lastHolding.isHittable)
         lastHolding.tap()
-        XCTAssertTrue(waitForButton("特斯拉行情").isHittable)
+        XCTAssertTrue(waitFor("trade.holding.us-tesla.quote").isHittable)
     }
 
     func testTradeDebugStatesAndLiveRefreshKeepFramesStable() throws {
@@ -115,8 +115,8 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         let baselineMenu = waitFor("trade.quickMenu.inline").frame
         let baselineHoldings = waitFor("trade.holdingsViewport").frame
 
-        app.buttons["Debug"].tap()
-        XCTAssertTrue(app.staticTexts["调试"].waitForExistence(timeout: 5))
+        waitFor("trade.debug.open").tap()
+        XCTAssertTrue(waitFor("trade.debug.title").exists)
         waitFor("trade.debug.enableStateMatrix").tap()
         dismissDebugPanel()
 
@@ -124,7 +124,7 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         XCTAssertEqual(waitFor("trade.debug.status.mr").label, "MR_ENABLED")
         XCTAssertTrue(waitFor("trade.mrNotice").exists)
         XCTAssertTrue(waitFor("trade.summerAd").exists)
-        waitFor("trade.categoryTab.虚拟资产").tap()
+        waitFor("trade.categoryTab.virtualAssets").tap()
         assertWidth(of: waitFor("trade.categoryPage"), equals: expectedViewportWidth)
         assertWidth(of: waitFor("trade.subAssetCard"), equals: expectedViewportWidth - 32)
         assertWidth(of: waitFor("trade.quickMenu.inline"), equals: expectedViewportWidth)
@@ -132,11 +132,11 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         XCTAssertTrue(waitFor("trade.mrNotice").exists)
         XCTAssertTrue(waitFor("trade.summerAd").exists)
 
-        waitFor("trade.categoryTab.股票").tap()
+        waitFor("trade.categoryTab.stocks").tap()
         XCTAssertEqual(waitFor("trade.debug.status.mr").label, "MR_ENABLED")
         XCTAssertTrue(waitFor("trade.mrMaintenance").exists)
 
-        app.buttons["Debug"].tap()
+        waitFor("trade.debug.open").tap()
         waitFor("trade.debug.enableLiveData").tap()
         XCTAssertEqual(waitFor("trade.debug.status.mr").label, "MR_DISABLED")
         XCTAssertEqual(waitFor("trade.debug.status.liveData").label, "LIVE_ENABLED")
@@ -156,6 +156,36 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         XCTAssertEqual(waitFor("trade.holdingsViewport").frame.width, holdingsAfterToggle.width, accuracy: 1)
     }
 
+    func testTradeAndWatchlistShareThreeLanguageSelection() throws {
+        enterTrade()
+
+        openDebugAndSelectLanguage("English")
+        XCTAssertTrue(app.navigationBars["New Trade"].waitForExistence(timeout: 5))
+        XCTAssertEqual(waitFor("trade.categoryTab.stocks").label, "Stocks")
+        XCTAssertEqual(waitFor("trade.metric.securitiesMarketValue").label, "Securities Market Value")
+        XCTAssertEqual(waitFor("trade.header.marketValueQuantityHeader").label, "Market Value and Quantity")
+        XCTAssertEqual(waitFor("trade.debug.status.marketValueHeader").label, "MKV/Qty")
+        XCTAssertTrue(app.staticTexts["Position Details"].exists)
+
+        openDebugAndSelectLanguage("繁體中文")
+        XCTAssertTrue(app.navigationBars["新交易"].waitForExistence(timeout: 5))
+        XCTAssertEqual(waitFor("trade.categoryTab.virtualAssets").label, "虛擬資產")
+        XCTAssertTrue(app.staticTexts["持倉明細"].exists)
+
+        openDebugAndSelectLanguage("简体中文")
+        XCTAssertEqual(waitFor("trade.categoryTab.stocks").label, "股票")
+
+        openDebugAndSelectLanguage("English")
+        let backButton = app.navigationBars["New Trade"].buttons.element(boundBy: 0)
+        XCTAssertTrue(backButton.waitForExistence(timeout: 5))
+        backButton.tap()
+        waitFor("compare.newWatchlist").tap()
+        XCTAssertTrue(waitFor("watchlist.root").exists)
+        XCTAssertTrue(app.navigationBars["New Watchlist"].waitForExistence(timeout: 5))
+        XCTAssertEqual(waitFor("watchlist.header.changePercent").label, "Percentage Change")
+        XCTAssertEqual(waitFor("watchlist.debug.status.changeHeader").label, "Chg%")
+    }
+
     private func enterTrade() {
         waitFor("compare.newTrade").tap()
         XCTAssertTrue(waitFor("trade.root").exists)
@@ -166,6 +196,15 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         XCTAssertTrue(close.waitForExistence(timeout: 5), "Missing debug close button")
         close.tap()
         _ = waitFor("trade.root", timeout: 5)
+    }
+
+    private func openDebugAndSelectLanguage(_ language: String) {
+        waitFor("trade.debug.open").tap()
+        XCTAssertTrue(waitFor("demo.language.picker").exists)
+        let option = app.buttons[language].firstMatch
+        XCTAssertTrue(option.waitForExistence(timeout: 5), "Missing language option: \(language)")
+        option.tap()
+        dismissDebugPanel()
     }
 
     @discardableResult

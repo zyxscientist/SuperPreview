@@ -15,6 +15,7 @@ struct TradeAggregationDemoView: View {
     @State private var isMRTestingEnabled = false
     @State private var isSummerAdvertisementEnabled = false
     @State private var selectedMainTab: AppTab = .tab2
+    @AppStorage(DemoLanguage.storageKey) private var demoLanguage = DemoLanguage.simplifiedChinese
 
     var body: some View {
         GeometryReader { geometry in
@@ -74,6 +75,10 @@ struct TradeAggregationDemoView: View {
                             .accessibilityIdentifier("trade.debug.status.summerAd")
                         Text(isLiveDataEnabled ? "LIVE_ENABLED" : "LIVE_DISABLED")
                             .accessibilityIdentifier("trade.debug.status.liveData")
+                        Text(demoLanguage.rawValue)
+                            .accessibilityIdentifier("trade.debug.status.language")
+                        Text(demoLanguage.text(.marketValueQuantityHeader))
+                            .accessibilityIdentifier("trade.debug.status.marketValueHeader")
                     }
                     .frame(width: 1, height: 1)
                     .accessibilityElement(children: .contain)
@@ -86,20 +91,22 @@ struct TradeAggregationDemoView: View {
         .coordinateSpace(name: TradeAggregationLayout.stickyCoordinateSpace)
         .background(Color("color-base-1").ignoresSafeArea())
         .mainTabBar(selectedTab: $selectedMainTab)
-        .navigationBarTitle("新交易", displayMode: .inline)
+        .navigationBarTitle(demoLanguage.text(.newTrade), displayMode: .inline)
         .navigationBarItems(
             trailing: Button(action: {
                 isShowingDebugPanel = true
             }) {
-                Text("Debug")
+                Text(demoLanguage.text(.debug))
                     .modifier(CustomFontModifier(size: 13, font: .medium, lineHeight: 16))
                     .foregroundColor(Color("color-text-30"))
             }
+            .accessibilityIdentifier("trade.debug.open")
         )
         .toolbarBackground(Color("color-base-1"), for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .sheet(isPresented: $isShowingDebugPanel) {
             TradeAggregationDebugPanel(
+                language: $demoLanguage,
                 isLiveDataEnabled: $isLiveDataEnabled,
                 isMRTestingEnabled: $isMRTestingEnabled,
                 isSummerAdvertisementEnabled: $isSummerAdvertisementEnabled
@@ -135,6 +142,7 @@ struct TradeAggregationDemoView: View {
                 }
             }
         }
+        .environment(\.demoLanguage, demoLanguage)
     }
 
     private func selectedCategoryPage(viewportWidth: CGFloat) -> some View {
@@ -218,27 +226,65 @@ private enum TradeAggregationLayout {
 }
 
 private struct TradeAggregationSummerAdvertisement: View {
+    @Environment(\.demoLanguage) private var language
+
     var body: some View {
-        Image("summeradv")
-            .resizable()
-            .scaledToFit()
-            .frame(maxWidth: .infinity)
-            .clipShape(
-                RoundedRectangle(
-                    cornerRadius: TradeAggregationSummerAdvertisementStyle.cornerRadius,
-                    style: .continuous
-                )
+        ZStack(alignment: .leading) {
+            Image("summeradv")
+                .resizable()
+                .scaledToFill()
+                .accessibilityHidden(true)
+
+            LinearGradient(
+                stops: [
+                    .init(color: Color(red: 0.87, green: 0.96, blue: 1), location: 0),
+                    .init(color: Color(red: 0.87, green: 0.96, blue: 1), location: 0.58),
+                    .init(color: Color(red: 0.87, green: 0.96, blue: 1).opacity(0), location: 0.74)
+                ],
+                startPoint: .leading,
+                endPoint: .trailing
             )
-            .overlay {
-                RoundedRectangle(
-                    cornerRadius: TradeAggregationSummerAdvertisementStyle.cornerRadius,
-                    style: .continuous
-                )
-                    .stroke(Color("color-separator-10"), lineWidth: 0.5)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(language.text(.limitedTime))
+                    .font(.system(size: 9, weight: .bold))
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 7)
+                    .padding(.vertical, 3)
+                    .background(Color(red: 1, green: 0.34, blue: 0.38), in: Capsule())
+
+                Text(language.text(.summerCampaignHeadline))
+                    .font(.system(size: language == .english ? 15 : 20, weight: .heavy))
+                    .foregroundColor(Color(red: 0.04, green: 0.47, blue: 0.87))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+
+                Text(language.text(.summerCampaignPeriod))
+                    .font(.system(size: 9, weight: .semibold))
+                    .foregroundColor(Color(red: 0.12, green: 0.35, blue: 0.56))
             }
-            .padding(.horizontal, 16)
-            .accessibilityIdentifier("trade.summerAd")
-            .accessibilityLabel("夏季新客开户礼遇活动")
+            .padding(.leading, 14)
+            .padding(.vertical, 8)
+            .frame(maxWidth: 238, alignment: .leading)
+        }
+        .frame(maxWidth: .infinity, minHeight: 92, maxHeight: 92)
+        .clipShape(RoundedRectangle(cornerRadius: TradeAggregationSummerAdvertisementStyle.cornerRadius, style: .continuous))
+        .overlay {
+            RoundedRectangle(
+                cornerRadius: TradeAggregationSummerAdvertisementStyle.cornerRadius,
+                style: .continuous
+            )
+                .stroke(Color("color-separator-10"), lineWidth: 0.5)
+        }
+        .padding(.horizontal, 16)
+        .accessibilityElement(children: .ignore)
+        .accessibilityIdentifier("trade.summerAd")
+        .accessibilityLabel(
+            language.actionAccessibilityLabel(
+                name: language.text(.summerCampaignAccessibility),
+                action: language.text(.summerCampaignPeriod)
+            )
+        )
     }
 }
 
@@ -251,6 +297,7 @@ private struct TradeAggregationCategoryPage: View {
     let isNumberHidden: Bool
     let snapshot: TradeAggregationDemoSnapshot
     let viewportWidth: CGFloat
+    @Environment(\.demoLanguage) private var language
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -322,7 +369,7 @@ private struct TradeAggregationCategoryPage: View {
     }
 
     private var holdingsTitle: some View {
-        Text("持仓明细")
+        Text(language.text(.positionDetails))
             .font(
                 .custom(
                     "PlusJakartaSans-SemiBold",
@@ -333,6 +380,7 @@ private struct TradeAggregationCategoryPage: View {
             .foregroundColor(Color("color-text-30"))
             .frame(maxWidth: .infinity, minHeight: TradeAggregationLayout.holdingsTitleHeight, maxHeight: TradeAggregationLayout.holdingsTitleHeight, alignment: .leading)
             .padding(.leading, 16)
+            .accessibilityIdentifier("trade.positionDetails")
     }
 
     @ViewBuilder
@@ -386,21 +434,26 @@ private struct TradeAggregationQuickMenuTopPreferenceKey: PreferenceKey {
 }
 
 private struct TradeAggregationMRNoticeBar: View {
+    @Environment(\.demoLanguage) private var language
+
     var body: some View {
-        Text("系统维护期间无法获取总资产数据，完成后将恢复正常")
+        Text(language.text(.mrNotice))
             .modifier(CustomFontModifier(size: 14, font: .regular, lineHeight: 20))
             .foregroundColor(Color("color-utility6-orange"))
             .frame(maxWidth: .infinity, minHeight: 36, maxHeight: 36, alignment: .leading)
             .padding(.horizontal, 16)
+            .lineLimit(1)
+            .minimumScaleFactor(0.72)
             .background(Color(red: 1, green: 243 / 255, blue: 231 / 255))
             .accessibilityElement(children: .ignore)
             .accessibilityIdentifier("trade.mrNotice")
-            .accessibilityLabel("系统维护提示：系统维护期间无法获取总资产数据，完成后将恢复正常")
+            .accessibilityLabel(language.text(.mrNoticeAccessibility))
     }
 }
 
 private struct TradeAggregationMRMaintenanceStateView: View {
     let viewportWidth: CGFloat
+    @Environment(\.demoLanguage) private var language
 
     var body: some View {
         VStack(spacing: 12) {
@@ -408,12 +461,12 @@ private struct TradeAggregationMRMaintenanceStateView: View {
                 .resizable()
                 .frame(width: 70, height: 70)
 
-            Text("正在升级系统")
+            Text(language.text(.systemUpgrade))
                 .modifier(CustomFontModifier(size: 18, font: .medium, lineHeight: 24))
                 .foregroundColor(Color("color-text-30"))
                 .frame(maxWidth: .infinity)
 
-            Text("升级时间：YYYY/MM/DD HH:MM 至 YYYY/MM/DD HH:MM，升级期间可能影响的交易与数据展示，升级完成后系统将恢复正常")
+            Text(language.text(.maintenanceDetails))
                 .modifier(CustomFontModifier(size: 14, font: .regular, lineHeight: 20))
                 .foregroundColor(Color("color-text-60"))
                 .multilineTextAlignment(.center)
@@ -429,36 +482,39 @@ private struct TradeAggregationMRMaintenanceStateView: View {
 }
 
 private struct TradeAggregationDebugPanel: View {
+    @Binding var language: DemoLanguage
     @Binding var isLiveDataEnabled: Bool
     @Binding var isMRTestingEnabled: Bool
     @Binding var isSummerAdvertisementEnabled: Bool
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.demoLanguage) private var interfaceLanguage
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             HStack {
-                Text("调试")
+                Text(interfaceLanguage.text(.debug))
                     .modifier(CustomFontModifier(size: 20, font: .bold, lineHeight: 28))
                     .foregroundColor(Color("color-text-30"))
+                    .accessibilityIdentifier("trade.debug.title")
 
                 Spacer()
 
-                Button("完成") {
+                Button(interfaceLanguage.text(.done)) {
                     dismiss()
                 }
                 .accessibilityIdentifier("trade.debug.close")
             }
 
+            DemoLanguagePicker(language: $language)
+
             Toggle(isOn: $isLiveDataEnabled) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("模拟实时数据")
+                    Text(interfaceLanguage.text(.simulateLiveData))
                         .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
                         .foregroundColor(Color("color-text-30"))
 
                     Text(
-                        isLiveDataEnabled
-                            ? "不同资产会以各自节奏持续刷新"
-                            : "开启后模拟推送，数字会小幅变化"
+                        interfaceLanguage.text(isLiveDataEnabled ? .liveDataOn : .liveDataOff)
                     )
                     .modifier(CustomFontModifier(size: 13, font: .regular, lineHeight: 16))
                     .foregroundColor(Color("color-text-60"))
@@ -468,11 +524,11 @@ private struct TradeAggregationDebugPanel: View {
 
             Toggle(isOn: $isMRTestingEnabled) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("MR 测试状态")
+                    Text(interfaceLanguage.text(.mrTestMode))
                         .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
                         .foregroundColor(Color("color-text-30"))
 
-                    Text("股票和基金显示系统升级状态，虚拟资产保持正常")
+                    Text(interfaceLanguage.text(.mrTestDetails))
                         .modifier(CustomFontModifier(size: 13, font: .regular, lineHeight: 16))
                         .foregroundColor(Color("color-text-60"))
                 }
@@ -481,11 +537,11 @@ private struct TradeAggregationDebugPanel: View {
 
             Toggle(isOn: $isSummerAdvertisementEnabled) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("显示夏季运营广告")
+                    Text(interfaceLanguage.text(.showSummerCampaign))
                         .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
                         .foregroundColor(Color("color-text-30"))
 
-                    Text("在总资产下方展示夏季新客活动图")
+                    Text(interfaceLanguage.text(.summerCampaignDetails))
                         .modifier(CustomFontModifier(size: 13, font: .regular, lineHeight: 16))
                         .foregroundColor(Color("color-text-60"))
                 }
@@ -493,14 +549,14 @@ private struct TradeAggregationDebugPanel: View {
             .accessibilityIdentifier("trade.debug.summerAd")
 
             if PreviewRuntime.isUITesting {
-                Button("启用调试状态矩阵") {
+                Button(interfaceLanguage.text(.enableDebugStateMatrix)) {
                     isLiveDataEnabled = true
                     isMRTestingEnabled = true
                     isSummerAdvertisementEnabled = true
                 }
                 .accessibilityIdentifier("trade.debug.enableStateMatrix")
 
-                Button("恢复正常并启用实时数据") {
+                Button(interfaceLanguage.text(.restoreNormalAndLiveData)) {
                     isMRTestingEnabled = false
                     isLiveDataEnabled = true
                 }

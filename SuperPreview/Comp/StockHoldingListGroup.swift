@@ -12,14 +12,14 @@ enum StockHoldingMarket: String, CaseIterable, Identifiable {
 
     var id: Self { self }
 
-    var title: String {
+    func title(language: DemoLanguage) -> String {
         switch self {
         case .hongKong:
-            return "港股· HKD"
+            return language.text(.hkStockGroup)
         case .chinaA:
-            return "A股·CNY"
+            return language.text(.chinaStockGroup)
         case .unitedStates:
-            return "美股·USD"
+            return language.text(.usStockGroup)
         }
     }
 
@@ -433,6 +433,7 @@ private enum StockHoldingLayout {
 
 private struct StockHoldingMarketHeader: View {
     @Environment(\.tradeAggregationViewportWidth) private var viewportWidth
+    @Environment(\.demoLanguage) private var language
 
     let market: StockHoldingMarket
     let isExpanded: Bool
@@ -446,7 +447,7 @@ private struct StockHoldingMarketHeader: View {
                     .frame(width: 16, height: 16)
                     .accessibilityHidden(true)
 
-                Text(market.title)
+                Text(market.title(language: language))
                     .font(.custom("PlusJakartaSans-Medium", size: 16, relativeTo: .body))
                     .foregroundColor(Color("color-text-30"))
                     .frame(height: 20)
@@ -467,9 +468,10 @@ private struct StockHoldingMarketHeader: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(PlainButtonStyle())
-        .accessibilityLabel(market.title)
-        .accessibilityValue(isExpanded ? "已展开" : "已收起")
-        .accessibilityHint(isExpanded ? "双击收起持仓" : "双击展开持仓")
+        .accessibilityLabel(market.title(language: language))
+        .accessibilityValue(language.text(isExpanded ? .expanded : .collapsed))
+        .accessibilityHint(language.text(isExpanded ? .collapsePositions : .expandPositions))
+        .accessibilityIdentifier("trade.market.\(market.rawValue)")
     }
 }
 
@@ -478,6 +480,7 @@ private struct StockHoldingScrollableMarketTable: View {
     let isNumberHidden: Bool
     let expandedHoldingID: StockHoldingItem.ID?
     let onHoldingTap: (StockHoldingItem) -> Void
+    @Environment(\.demoLanguage) private var language
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -495,13 +498,17 @@ private struct StockHoldingScrollableMarketTable: View {
                         .contentShape(Rectangle())
                     }
                     .buttonStyle(PlainButtonStyle())
-                    .accessibilityLabel("\(holding.name)，\(holding.symbol)")
-                    .accessibilityValue(isNumberHidden ? "数值已隐藏" : "持仓数据已显示")
-                    .accessibilityHint(
-                        expandedHoldingID == holding.id
-                            ? "双击收起快捷操作"
-                            : "双击展开快捷操作"
+                    .accessibilityLabel(
+                        language.actionAccessibilityLabel(
+                            name: language.securityName(id: holding.id, fallback: holding.name),
+                            action: holding.symbol
+                        )
                     )
+                    .accessibilityValue(language.text(isNumberHidden ? .valuesHidden : .positionDataShown))
+                    .accessibilityHint(
+                        language.text(expandedHoldingID == holding.id ? .collapseQuickActions : .expandQuickActions)
+                    )
+                    .accessibilityIdentifier("trade.holding.\(holding.id)")
 
                     Color.clear
                         .frame(
@@ -605,22 +612,27 @@ private struct StockHoldingFixedMarketTable: View {
 }
 
 private struct StockHoldingScrollableHeader: View {
-    private let columns: [(title: String, imageName: String)] = [
-        ("市值/持有", "holding_sort_descending"),
-        ("现价/成本", "holding_sort_default"),
-        ("今日盈亏", "holding_sort_default"),
-        ("持仓盈亏", "holding_sort_default"),
-        ("持仓占比", "holding_sort_default")
+    @Environment(\.demoLanguage) private var language
+    private let columns: [(key: DemoCopyKey, imageName: String)] = [
+        (.marketValueQuantityHeader, "holding_sort_descending"),
+        (.lastCostHeader, "holding_sort_default"),
+        (.dayProfitLossHeader, "holding_sort_default"),
+        (.positionProfitLossHeader, "holding_sort_default"),
+        (.portfolioWeightHeader, "holding_sort_default")
     ]
 
     var body: some View {
         HStack(spacing: StockHoldingLayout.metricSpacing) {
             ForEach(Array(columns.enumerated()), id: \.offset) { _, column in
                 HStack(spacing: 2) {
-                    Text(column.title)
+                    Text(language.text(column.key))
                         .font(.custom("PlusJakartaSans-Regular", size: 12, relativeTo: .caption))
                         .foregroundColor(Color("color-text-60"))
                         .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                        .allowsTightening(true)
+                        .accessibilityLabel(language.accessibilityText(column.key))
+                        .accessibilityIdentifier("trade.header.\(String(describing: column.key))")
 
                     Image(column.imageName)
                         .resizable()
@@ -643,8 +655,10 @@ private struct StockHoldingScrollableHeader: View {
 }
 
 private struct StockHoldingNameHeader: View {
+    @Environment(\.demoLanguage) private var language
+
     var body: some View {
-        Text("名称")
+        Text(language.text(.name))
             .font(.custom("PlusJakartaSans-Regular", size: 12, relativeTo: .caption))
             .foregroundColor(Color("color-text-60"))
             .frame(width: 110, height: 16, alignment: .leading)
@@ -662,10 +676,11 @@ private struct StockHoldingNameHeader: View {
 private struct StockHoldingNameCell: View {
     let holding: StockHoldingItem
     let isNumberHidden: Bool
+    @Environment(\.demoLanguage) private var language
 
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(display(holding.name))
+            Text(display(language.securityName(id: holding.id, fallback: holding.name)))
                 .font(.custom("PlusJakartaSans-Regular", size: 16, relativeTo: .body))
                 .foregroundColor(Color("color-text-30"))
                 .frame(width: 110, height: 24, alignment: .leading)
@@ -784,6 +799,7 @@ private struct StockHoldingValuePairCell: View {
 
 private struct StockHoldingActionBar: View {
     @Environment(\.tradeAggregationViewportWidth) private var viewportWidth
+    @Environment(\.demoLanguage) private var language
 
     let holding: StockHoldingItem
     let onQuote: (StockHoldingItem) -> Void
@@ -792,15 +808,15 @@ private struct StockHoldingActionBar: View {
 
     var body: some View {
         HStack(spacing: 2) {
-            actionButton("行情", position: .leading) {
+            actionButton(language.text(.quote), id: "quote", position: .leading) {
                 onQuote(holding)
             }
 
-            actionButton("下单", position: .middle) {
+            actionButton(language.text(.order), id: "order", position: .middle) {
                 onOrder(holding)
             }
 
-            actionButton("详情", position: .trailing) {
+            actionButton(language.text(.details), id: "details", position: .trailing) {
                 onDetails(holding)
             }
         }
@@ -809,6 +825,7 @@ private struct StockHoldingActionBar: View {
 
     private func actionButton(
         _ title: String,
+        id: String,
         position: StockHoldingActionPosition,
         action: @escaping () -> Void
     ) -> some View {
@@ -826,7 +843,13 @@ private struct StockHoldingActionBar: View {
                 )
         }
         .buttonStyle(WatchlistRedesignActionPressStyle())
-        .accessibilityLabel("\(holding.name)\(title)")
+        .accessibilityLabel(
+            language.actionAccessibilityLabel(
+                name: language.securityName(id: holding.id, fallback: holding.name),
+                action: title
+            )
+        )
+        .accessibilityIdentifier("trade.holding.\(holding.id).\(id)")
     }
 }
 

@@ -48,6 +48,7 @@ struct VirtualAssetsSubAssetCard: View {
     @AppStorage(TradeAggregationExpansionStorageKey.virtualAssetSubAssetCard)
     private var isExpanded = false
     @State private var expansionBlurRadius: CGFloat
+    @Environment(\.demoLanguage) private var language
 
     init(
         model: VirtualAssetsSubAssetCardModel = .preview,
@@ -68,7 +69,7 @@ struct VirtualAssetsSubAssetCard: View {
             SubAssetCardHeader(
                 currency: model.currency,
                 netAsset: model.netAsset,
-                profitLossTitle: "今日盈亏",
+                profitLossTitle: language.text(.todayProfitLoss),
                 profitLoss: model.todayProfitLoss,
                 isNumberHidden: isNumberHidden,
                 isExpanded: isExpanded,
@@ -78,21 +79,27 @@ struct VirtualAssetsSubAssetCard: View {
             SubAssetMetricRow(
                 items: [
                     SubAssetMetricItem(
-                        title: "虚拟资产市值",
+                        id: "virtualAssetMarketValue",
+                        title: language.text(.virtualAssetMarketValue),
                         value: model.marketValue,
-                        alignment: .leading
+                        alignment: .leading,
+                        accessibilityLabel: language.accessibilityText(.virtualAssetMarketValue)
                     ),
                     SubAssetMetricItem(
-                        title: "现金可用",
+                        id: "cashAvailable",
+                        title: language.text(.cashAvailable),
                         value: model.availableCash,
                         alignment: .center,
-                        showsDisclosure: true
+                        showsDisclosure: true,
+                        accessibilityLabel: language.accessibilityText(.cashAvailable)
                     ),
                     SubAssetMetricItem(
-                        title: "持仓盈亏",
+                        id: "positionProfitLoss",
+                        title: language.text(.positionProfitLoss),
                         value: model.positionProfitLoss,
                         alignment: .trailing,
-                        isGain: true
+                        isGain: true,
+                        accessibilityLabel: language.accessibilityText(.positionProfitLoss)
                     )
                 ],
                 isNumberHidden: isNumberHidden
@@ -126,13 +133,15 @@ struct VirtualAssetsSubAssetCard: View {
 private struct VirtualAssetsCashBreakdown: View {
     let balances: [SubAssetCurrencyBalance]
     let isNumberHidden: Bool
+    @Environment(\.demoLanguage) private var language
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text("现金可用")
+            Text(language.text(.cashAvailable))
                 .font(.custom("PlusJakartaSans-Regular", size: 14, relativeTo: .subheadline))
                 .foregroundColor(Color("color-text-60"))
                 .frame(height: 20)
+                .accessibilityLabel(language.accessibilityText(.cashAvailable))
 
             HStack(spacing: 0) {
                 ForEach(balances) { balance in

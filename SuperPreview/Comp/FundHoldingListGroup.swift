@@ -12,14 +12,14 @@ enum FundHoldingCurrency: String, CaseIterable, Identifiable {
 
     var id: Self { self }
 
-    var title: String {
+    func title(language: DemoLanguage) -> String {
         switch self {
         case .hongKongDollar:
-            return "港币基金"
+            return language.text(.hkdFundGroup)
         case .unitedStatesDollar:
-            return "美元基金"
+            return language.text(.usdFundGroup)
         case .renminbi:
-            return "人民币基金"
+            return language.text(.cnyFundGroup)
         }
     }
 
@@ -307,6 +307,7 @@ private enum FundHoldingLayout {
 
 private struct FundHoldingCurrencyHeader: View {
     @Environment(\.tradeAggregationViewportWidth) private var viewportWidth
+    @Environment(\.demoLanguage) private var language
 
     let currency: FundHoldingCurrency
     let isExpanded: Bool
@@ -320,7 +321,7 @@ private struct FundHoldingCurrencyHeader: View {
                     .frame(width: 16, height: 16)
                     .accessibilityHidden(true)
 
-                Text(currency.title)
+                Text(currency.title(language: language))
                     .font(.custom("PlusJakartaSans-Medium", size: 16, relativeTo: .body))
                     .foregroundColor(Color("color-text-30"))
                     .frame(height: FundHoldingLayout.marketHeaderHeight)
@@ -341,9 +342,10 @@ private struct FundHoldingCurrencyHeader: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(PlainButtonStyle())
-        .accessibilityLabel(currency.title)
-        .accessibilityValue(isExpanded ? "已展开" : "已收起")
-        .accessibilityHint(isExpanded ? "双击收起基金持仓" : "双击展开基金持仓")
+        .accessibilityLabel(currency.title(language: language))
+        .accessibilityValue(language.text(isExpanded ? .expanded : .collapsed))
+        .accessibilityHint(language.text(isExpanded ? .collapseFundPositions : .expandFundPositions))
+        .accessibilityIdentifier("trade.fundGroup.\(currency.rawValue)")
     }
 }
 
@@ -418,20 +420,25 @@ private struct FundHoldingFixedTable: View {
 }
 
 private struct FundHoldingScrollableHeader: View {
-    private let columns: [(title: String, imageName: String)] = [
-        ("市值/昨日收益", "holding_sort_descending"),
-        ("持仓收益", "holding_sort_default"),
-        ("持仓占比", "holding_sort_default")
+    @Environment(\.demoLanguage) private var language
+    private let columns: [(key: DemoCopyKey, imageName: String)] = [
+        (.marketValueYesterdayHeader, "holding_sort_descending"),
+        (.positionIncomeHeader, "holding_sort_default"),
+        (.portfolioWeightHeader, "holding_sort_default")
     ]
 
     var body: some View {
         HStack(spacing: FundHoldingLayout.metricSpacing) {
             ForEach(Array(columns.enumerated()), id: \.offset) { _, column in
                 HStack(spacing: 2) {
-                    Text(column.title)
+                    Text(language.text(column.key))
                         .font(.custom("PlusJakartaSans-Regular", size: 12, relativeTo: .caption))
                         .foregroundColor(Color("color-text-60"))
                         .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                        .allowsTightening(true)
+                        .accessibilityLabel(language.accessibilityText(column.key))
+                        .accessibilityIdentifier("trade.header.\(String(describing: column.key))")
 
                     Image(column.imageName)
                         .resizable()
@@ -458,8 +465,10 @@ private struct FundHoldingScrollableHeader: View {
 }
 
 private struct FundHoldingNameHeader: View {
+    @Environment(\.demoLanguage) private var language
+
     var body: some View {
-        Text("名称")
+        Text(language.text(.name))
             .font(.custom("PlusJakartaSans-Regular", size: 12, relativeTo: .caption))
             .foregroundColor(Color("color-text-60"))
             .frame(height: 16)
@@ -477,6 +486,7 @@ private struct FundHoldingNameHeader: View {
 private struct FundHoldingNameCell: View {
     let holding: FundHoldingItem
     let isNumberHidden: Bool
+    @Environment(\.demoLanguage) private var language
 
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
@@ -499,7 +509,7 @@ private struct FundHoldingNameCell: View {
 
     private var titleRow: some View {
         HStack(spacing: 2) {
-            Text(display(holding.name))
+            Text(display(language.securityName(id: holding.id, fallback: holding.name)))
                 .font(.custom("PlusJakartaSans-Regular", size: 16, relativeTo: .body))
                 .foregroundColor(Color("color-text-30"))
                 .lineLimit(1)
@@ -515,7 +525,7 @@ private struct FundHoldingNameCell: View {
                     Image("fund_holding_info")
                         .resizable()
                         .frame(width: 16, height: 16)
-                        .accessibilityLabel("旧基金说明")
+                        .accessibilityLabel(language.text(.legacyFundInformation))
                 }
             }
         }
@@ -540,6 +550,8 @@ private struct FundHoldingNameCell: View {
 }
 
 private struct FundHoldingTPlusZeroTag: View {
+    @Environment(\.demoLanguage) private var language
+
     var body: some View {
         HStack(spacing: 0) {
             Text("T+0")
@@ -558,13 +570,15 @@ private struct FundHoldingTPlusZeroTag: View {
         .clipShape(RoundedRectangle(cornerRadius: 2, style: .continuous))
         .fixedSize()
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("支持T加零")
+        .accessibilityLabel(language.text(.supportsTPlusZero))
     }
 }
 
 private struct FundHoldingAIPTag: View {
+    @Environment(\.demoLanguage) private var language
+
     var body: some View {
-        Text("定投")
+        Text(language.text(.recurringInvestmentTag))
             .font(.custom("PlusJakartaSans-Regular", size: 10, relativeTo: .caption2))
             .foregroundColor(Color("color-brand-blue"))
             .frame(height: 12)
@@ -573,6 +587,7 @@ private struct FundHoldingAIPTag: View {
             .background(Color("color-brand-blue").opacity(0.1))
             .clipShape(RoundedRectangle(cornerRadius: 2, style: .continuous))
             .fixedSize()
+            .accessibilityLabel(language.accessibilityText(.recurringInvestmentTag))
     }
 }
 

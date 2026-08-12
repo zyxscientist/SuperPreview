@@ -11,6 +11,7 @@ struct VirtualAssetsQuickMenu: View {
     let onInternalTransfer: () -> Void
     let onFundRecords: () -> Void
     let onMore: () -> Void
+    @Environment(\.demoLanguage) private var language
 
     init(
         onTrade: @escaping () -> Void = {},
@@ -30,27 +31,29 @@ struct VirtualAssetsQuickMenu: View {
         AssetQuickMenu(
             items: [
                 AssetQuickMenuItem(
-                    title: "交易",
+                    title: language.text(.trade),
                     imageName: "stock_trade_outline",
                     action: onTrade
                 ),
                 AssetQuickMenuItem(
-                    title: "今日订单",
+                    title: language.text(.todayOrders),
                     imageName: "today_order_outline",
+                    accessibilityLabel: language.accessibilityText(.todayOrders),
                     action: onTodayOrders
                 ),
                 AssetQuickMenuItem(
-                    title: "资金内转",
+                    title: language.text(.internalTransfer),
                     imageName: "internal_transfer",
+                    accessibilityLabel: language.accessibilityText(.internalTransfer),
                     action: onInternalTransfer
                 ),
                 AssetQuickMenuItem(
-                    title: "资金记录",
+                    title: language.text(.cashHistory),
                     imageName: "fund_record",
                     action: onFundRecords
                 ),
                 AssetQuickMenuItem(
-                    title: "更多",
+                    title: language.text(.more),
                     imageName: "more_outline",
                     action: onMore
                 )

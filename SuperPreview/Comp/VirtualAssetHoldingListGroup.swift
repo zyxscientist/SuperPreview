@@ -11,12 +11,12 @@ enum VirtualAssetHoldingCategory: String, CaseIterable, Identifiable {
 
     var id: Self { self }
 
-    var title: String {
+    func title(language: DemoLanguage) -> String {
         switch self {
         case .cryptocurrency:
-            return "加密货币·USD"
+            return language.text(.cryptoGroup)
         case .rwa:
-            return "RWA·USD"
+            return language.text(.rwaGroup)
         }
     }
 
@@ -51,18 +51,18 @@ enum VirtualAssetHoldingAction: String, Identifiable {
 
     var id: Self { self }
 
-    var title: String {
+    func title(language: DemoLanguage) -> String {
         switch self {
         case .quote:
-            return "行情"
+            return language.text(.quote)
         case .order:
-            return "下单"
+            return language.text(.order)
         case .details:
-            return "详情"
+            return language.text(.details)
         case .subscribe:
-            return "申购"
+            return language.text(.subscribe)
         case .redeem:
-            return "赎回"
+            return language.text(.redeem)
         }
     }
 }
@@ -533,6 +533,7 @@ private struct VirtualAssetHoldingFixedSection: View {
 
 private struct VirtualAssetHoldingMarketHeader: View {
     @Environment(\.tradeAggregationViewportWidth) private var viewportWidth
+    @Environment(\.demoLanguage) private var language
 
     let category: VirtualAssetHoldingCategory
     let isExpanded: Bool
@@ -546,7 +547,7 @@ private struct VirtualAssetHoldingMarketHeader: View {
                     .frame(width: 16, height: 16)
                     .accessibilityHidden(true)
 
-                Text(category.title)
+                Text(category.title(language: language))
                     .font(.custom("PlusJakartaSans-Medium", size: 16, relativeTo: .body))
                     .foregroundColor(Color("color-text-30"))
                     .frame(height: 20)
@@ -567,9 +568,10 @@ private struct VirtualAssetHoldingMarketHeader: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(PlainButtonStyle())
-        .accessibilityLabel(category.title)
-        .accessibilityValue(isExpanded ? "已展开" : "已收起")
-        .accessibilityHint(isExpanded ? "双击收起持仓" : "双击展开持仓")
+        .accessibilityLabel(category.title(language: language))
+        .accessibilityValue(language.text(isExpanded ? .expanded : .collapsed))
+        .accessibilityHint(language.text(isExpanded ? .collapsePositions : .expandPositions))
+        .accessibilityIdentifier("trade.virtualGroup.\(category.rawValue)")
     }
 }
 
@@ -577,10 +579,11 @@ private struct VirtualAssetHoldingHeadInfo: View {
     @Environment(\.tradeAggregationViewportWidth) private var viewportWidth
 
     let action: () -> Void
+    @Environment(\.demoLanguage) private var language
 
     var body: some View {
         HStack(spacing: 0) {
-            Text(VirtualAssetHoldingCopy.pricingInfo)
+            Text(language.text(.cryptoPricingInfo))
                 .font(.custom("PlusJakartaSans-Regular", size: 14, relativeTo: .subheadline))
                 .foregroundColor(Color("color-text-60"))
                 .frame(width: max(viewportWidth - 72, 0), height: 40, alignment: .leading)
@@ -592,7 +595,7 @@ private struct VirtualAssetHoldingHeadInfo: View {
                     .frame(width: 16, height: 16)
             }
             .buttonStyle(PlainButtonStyle())
-            .accessibilityLabel("关闭计价说明")
+            .accessibilityLabel(language.text(.closePricingInformation))
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
@@ -612,9 +615,10 @@ private struct VirtualAssetHoldingHeadInfo: View {
 
 private struct VirtualAssetHoldingFooterInfo: View {
     @Environment(\.tradeAggregationViewportWidth) private var viewportWidth
+    @Environment(\.demoLanguage) private var language
 
     var body: some View {
-        Text(VirtualAssetHoldingCopy.pricingInfo)
+        Text(language.text(.cryptoPricingInfo))
             .font(.custom("PlusJakartaSans-Regular", size: 12, relativeTo: .caption))
             .foregroundColor(Color("color-text-60"))
             .frame(
@@ -630,15 +634,12 @@ private struct VirtualAssetHoldingFooterInfo: View {
     }
 }
 
-private enum VirtualAssetHoldingCopy {
-    static let pricingInfo = "您可以以港币或美元直接买卖加密货币，在成交后，加密货币的持仓明细会以美元计价"
-}
-
 private struct VirtualAssetHoldingScrollableTable: View {
     let holdings: [VirtualAssetHoldingItem]
     let isNumberHidden: Bool
     let expandedHoldingID: VirtualAssetHoldingItem.ID?
     let onHoldingTap: (VirtualAssetHoldingItem) -> Void
+    @Environment(\.demoLanguage) private var language
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -656,15 +657,19 @@ private struct VirtualAssetHoldingScrollableTable: View {
                         .contentShape(Rectangle())
                     }
                     .buttonStyle(PlainButtonStyle())
-                    .accessibilityLabel("\(holding.name)，\(holding.symbol)")
+                    .accessibilityLabel(
+                        language.actionAccessibilityLabel(
+                            name: language.securityName(id: holding.id, fallback: holding.name),
+                            action: holding.symbol
+                        )
+                    )
                     .accessibilityValue(
-                        isNumberHidden ? "数值已隐藏" : "持仓数据已显示"
+                        language.text(isNumberHidden ? .valuesHidden : .positionDataShown)
                     )
                     .accessibilityHint(
-                        expandedHoldingID == holding.id
-                            ? "双击收起快捷操作"
-                            : "双击展开快捷操作"
+                        language.text(expandedHoldingID == holding.id ? .collapseQuickActions : .expandQuickActions)
                     )
+                    .accessibilityIdentifier("trade.holding.\(holding.id)")
 
                     Color.clear
                         .frame(
@@ -739,22 +744,27 @@ private struct VirtualAssetHoldingFixedTable: View {
 }
 
 private struct VirtualAssetHoldingScrollableHeader: View {
-    private let columns: [(title: String, imageName: String)] = [
-        ("市值/持有", "holding_sort_descending"),
-        ("现价/成本", "holding_sort_default"),
-        ("今日盈亏", "holding_sort_default"),
-        ("持仓盈亏", "holding_sort_default"),
-        ("持仓占比", "holding_sort_default")
+    @Environment(\.demoLanguage) private var language
+    private let columns: [(key: DemoCopyKey, imageName: String)] = [
+        (.marketValueQuantityHeader, "holding_sort_descending"),
+        (.lastCostHeader, "holding_sort_default"),
+        (.dayProfitLossHeader, "holding_sort_default"),
+        (.positionProfitLossHeader, "holding_sort_default"),
+        (.portfolioWeightHeader, "holding_sort_default")
     ]
 
     var body: some View {
         HStack(spacing: VirtualAssetHoldingLayout.metricSpacing) {
             ForEach(Array(columns.enumerated()), id: \.offset) { _, column in
                 HStack(spacing: 2) {
-                    Text(column.title)
+                    Text(language.text(column.key))
                         .font(.custom("PlusJakartaSans-Regular", size: 12, relativeTo: .caption))
                         .foregroundColor(Color("color-text-60"))
                         .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                        .allowsTightening(true)
+                        .accessibilityLabel(language.accessibilityText(column.key))
+                        .accessibilityIdentifier("trade.header.\(String(describing: column.key))")
 
                     Image(column.imageName)
                         .resizable()
@@ -781,8 +791,10 @@ private struct VirtualAssetHoldingScrollableHeader: View {
 }
 
 private struct VirtualAssetHoldingNameHeader: View {
+    @Environment(\.demoLanguage) private var language
+
     var body: some View {
-        Text("名称")
+        Text(language.text(.name))
             .font(.custom("PlusJakartaSans-Regular", size: 12, relativeTo: .caption))
             .foregroundColor(Color("color-text-60"))
             .frame(width: 110, height: 16, alignment: .leading)
@@ -800,10 +812,11 @@ private struct VirtualAssetHoldingNameHeader: View {
 private struct VirtualAssetHoldingNameCell: View {
     let holding: VirtualAssetHoldingItem
     let isNumberHidden: Bool
+    @Environment(\.demoLanguage) private var language
 
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(display(holding.name))
+            Text(display(language.securityName(id: holding.id, fallback: holding.name)))
                 .font(.custom("PlusJakartaSans-Regular", size: 16, relativeTo: .body))
                 .foregroundColor(Color("color-text-30"))
                 .frame(width: 110, height: 24, alignment: .leading)
@@ -936,6 +949,7 @@ private struct VirtualAssetHoldingValuePairCell: View {
 
 private struct VirtualAssetHoldingActionBar: View {
     @Environment(\.tradeAggregationViewportWidth) private var viewportWidth
+    @Environment(\.demoLanguage) private var language
 
     let holding: VirtualAssetHoldingItem
     let actions: [VirtualAssetHoldingAction]
@@ -947,7 +961,7 @@ private struct VirtualAssetHoldingActionBar: View {
                 Button {
                     onAction(action, holding)
                 } label: {
-                    Text(action.title)
+                    Text(action.title(language: language))
                         .font(.custom("PlusJakartaSans-Medium", size: 16, relativeTo: .body))
                         .foregroundColor(Color("color-text-30"))
                         .frame(maxWidth: .infinity, minHeight: VirtualAssetHoldingLayout.actionHeight, maxHeight: VirtualAssetHoldingLayout.actionHeight)
@@ -960,7 +974,13 @@ private struct VirtualAssetHoldingActionBar: View {
                         )
                 }
                 .buttonStyle(WatchlistRedesignActionPressStyle())
-                .accessibilityLabel("\(holding.name)\(action.title)")
+                .accessibilityLabel(
+                    language.actionAccessibilityLabel(
+                        name: language.securityName(id: holding.id, fallback: holding.name),
+                        action: action.title(language: language)
+                    )
+                )
+                .accessibilityIdentifier("trade.holding.\(holding.id).\(action.rawValue)")
             }
         }
         .frame(width: max(viewportWidth - 32, 0), height: VirtualAssetHoldingLayout.actionHeight)

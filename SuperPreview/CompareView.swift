@@ -10,10 +10,13 @@ import SwiftUI
 
 
 struct CompareView: View {
+    @AppStorage(DemoLanguage.storageKey) private var demoLanguage = DemoLanguage.simplifiedChinese
+
     var body: some View {
         VStack(spacing: 0.0) {
             CompareHeaderTabsView()
         }
+        .environment(\.demoLanguage, demoLanguage)
     }
 }
 
@@ -163,6 +166,8 @@ struct CompareTab4View: View {
 }
 
 struct CompareTab5View: View {
+    @Environment(\.demoLanguage) private var demoLanguage
+
     var body: some View{
         
         List{
@@ -241,7 +246,7 @@ struct CompareTab5View: View {
                 destination: WatchlistRedesignPreviewView(),
                 label:{
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("新自选")
+                        Text(demoLanguage.text(.newWatchlist))
                             .font(.system(size: 16, weight: .semibold, design: .default))
                         Text("Watchlist Redesign")
                             .foregroundColor(.gray)
@@ -256,7 +261,7 @@ struct CompareTab5View: View {
                 destination: TradeAggregationDemoView(),
                 label:{
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("新交易")
+                        Text(demoLanguage.text(.newTrade))
                             .font(.system(size: 16, weight: .semibold, design: .default))
                         Text("Trade Aggregation")
                             .foregroundColor(.gray)

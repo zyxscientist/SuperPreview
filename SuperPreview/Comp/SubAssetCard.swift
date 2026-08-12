@@ -124,11 +124,12 @@ struct SubAssetCardHeader: View {
     let isNumberHidden: Bool
     let isExpanded: Bool
     let toggleExpansion: () -> Void
+    @Environment(\.demoLanguage) private var language
 
     var body: some View {
         HStack(alignment: .top, spacing: 0) {
             VStack(alignment: .leading, spacing: 4) {
-                Text("净资产·\(currency)")
+                Text("\(language.text(.netAssets)) · \(currency)")
                     .font(.custom("PlusJakartaSans-Regular", size: 14, relativeTo: .subheadline))
                     .foregroundColor(Color("color-text-60"))
                     .frame(height: 20)
@@ -161,7 +162,7 @@ struct SubAssetCardHeader: View {
             }
             .buttonStyle(PlainButtonStyle())
             .sensoryFeedback(.impact(weight: .medium), trigger: isExpanded)
-            .accessibilityLabel(isExpanded ? "收起资产详情" : "展开资产详情")
+            .accessibilityLabel(language.text(isExpanded ? .collapseAssetDetails : .expandAssetDetails))
         }
         .frame(maxWidth: .infinity, minHeight: 84, maxHeight: 84, alignment: .top)
     }
@@ -198,6 +199,7 @@ struct SubAssetMetricItem: Identifiable {
     let alignment: Alignment
     let isGain: Bool
     let showsDisclosure: Bool
+    let accessibilityLabel: String?
 
     init(
         id: String? = nil,
@@ -205,7 +207,8 @@ struct SubAssetMetricItem: Identifiable {
         value: String,
         alignment: Alignment,
         isGain: Bool = false,
-        showsDisclosure: Bool = false
+        showsDisclosure: Bool = false,
+        accessibilityLabel: String? = nil
     ) {
         self.id = id ?? title
         self.title = title
@@ -213,6 +216,7 @@ struct SubAssetMetricItem: Identifiable {
         self.alignment = alignment
         self.isGain = isGain
         self.showsDisclosure = showsDisclosure
+        self.accessibilityLabel = accessibilityLabel
     }
 }
 
@@ -226,6 +230,11 @@ struct SubAssetMetricRow: View {
                 VStack(spacing: 4) {
                     HStack(spacing: item.showsDisclosure ? 2 : 0) {
                         Text(item.title)
+                            .accessibilityLabel(item.accessibilityLabel ?? item.title)
+                            .accessibilityIdentifier("trade.metric.\(item.id)")
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.72)
+                            .allowsTightening(true)
 
                         if item.showsDisclosure {
                             Image("subasset_disclosure_chevron")
@@ -234,7 +243,6 @@ struct SubAssetMetricRow: View {
                                 .accessibilityHidden(true)
                         }
                     }
-                    .fixedSize(horizontal: true, vertical: false)
                     .font(.custom("PlusJakartaSans-Regular", size: 14, relativeTo: .subheadline))
                     .foregroundColor(Color("color-text-60"))
                     .frame(maxWidth: .infinity, minHeight: 20, maxHeight: 20, alignment: item.alignment)

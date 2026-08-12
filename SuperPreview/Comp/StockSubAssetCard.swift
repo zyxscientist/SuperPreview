@@ -61,6 +61,7 @@ struct StockSubAssetCard: View {
     @AppStorage(TradeAggregationExpansionStorageKey.stockSubAssetCard)
     private var isExpanded = false
     @State private var expansionBlurRadius: CGFloat
+    @Environment(\.demoLanguage) private var language
 
     init(
         model: StockSubAssetCardModel = .preview,
@@ -81,7 +82,7 @@ struct StockSubAssetCard: View {
             SubAssetCardHeader(
                 currency: model.currency,
                 netAsset: model.netAsset,
-                profitLossTitle: "今日盈亏",
+                profitLossTitle: language.text(.todayProfitLoss),
                 profitLoss: model.todayProfitLoss,
                 isNumberHidden: isNumberHidden,
                 isExpanded: isExpanded,
@@ -91,21 +92,27 @@ struct StockSubAssetCard: View {
             SubAssetMetricRow(
                 items: [
                     SubAssetMetricItem(
-                        title: "证券市值",
+                        id: "securitiesMarketValue",
+                        title: language.text(.securitiesMarketValue),
                         value: model.securitiesMarketValue,
-                        alignment: .leading
+                        alignment: .leading,
+                        accessibilityLabel: language.accessibilityText(.securitiesMarketValue)
                     ),
                     SubAssetMetricItem(
-                        title: "总现金",
+                        id: "totalCash",
+                        title: language.text(.totalCash),
                         value: model.totalCash,
                         alignment: .center,
-                        showsDisclosure: true
+                        showsDisclosure: true,
+                        accessibilityLabel: language.accessibilityText(.totalCash)
                     ),
                     SubAssetMetricItem(
-                        title: "持仓盈亏",
+                        id: "positionProfitLoss",
+                        title: language.text(.positionProfitLoss),
                         value: model.positionProfitLoss,
                         alignment: .trailing,
-                        isGain: true
+                        isGain: true,
+                        accessibilityLabel: language.accessibilityText(.positionProfitLoss)
                     )
                 ],
                 isNumberHidden: isNumberHidden
@@ -116,19 +123,25 @@ struct StockSubAssetCard: View {
                 SubAssetMetricRow(
                     items: [
                         SubAssetMetricItem(
-                            title: "在途资金",
+                            id: "fundsInTransit",
+                            title: language.text(.fundsInTransit),
                             value: model.fundsInTransit,
-                            alignment: .leading
+                            alignment: .leading,
+                            accessibilityLabel: language.accessibilityText(.fundsInTransit)
                         ),
                         SubAssetMetricItem(
-                            title: "IPO 在途资金",
+                            id: "ipoFundsInTransit",
+                            title: language.text(.ipoFundsInTransit),
                             value: model.ipoFundsInTransit,
-                            alignment: .center
+                            alignment: .center,
+                            accessibilityLabel: language.accessibilityText(.ipoFundsInTransit)
                         ),
                         SubAssetMetricItem(
-                            title: "冻结资金",
+                            id: "fundsOnHold",
+                            title: language.text(.fundsOnHold),
                             value: model.frozenFunds,
-                            alignment: .trailing
+                            alignment: .trailing,
+                            accessibilityLabel: language.accessibilityText(.fundsOnHold)
                         )
                     ],
                     isNumberHidden: isNumberHidden
@@ -160,11 +173,12 @@ struct StockSubAssetCard: View {
 private struct StockSubAssetCashBreakdown: View {
     let balances: [SubAssetCurrencyBalance]
     let isNumberHidden: Bool
+    @Environment(\.demoLanguage) private var language
 
     var body: some View {
         HStack(alignment: .top, spacing: 0) {
             VStack(alignment: .leading, spacing: 4) {
-                title("现金可用", alignment: .leading)
+                title(.cashAvailable, alignment: .leading)
 
                 VStack(alignment: .leading, spacing: 8) {
                     ForEach(balances) { balance in
@@ -179,7 +193,7 @@ private struct StockSubAssetCashBreakdown: View {
             .frame(maxWidth: .infinity, alignment: .leading)
 
             VStack(spacing: 4) {
-                title("现金可取", alignment: .center)
+                title(.cashWithdrawable, alignment: .center)
 
                 VStack(spacing: 8) {
                     ForEach(balances) { balance in
@@ -190,7 +204,7 @@ private struct StockSubAssetCashBreakdown: View {
             .frame(maxWidth: .infinity, alignment: .center)
 
             VStack(alignment: .trailing, spacing: 4) {
-                title("最大购买力", alignment: .trailing)
+                title(.maximumBuyingPower, alignment: .trailing)
 
                 VStack(alignment: .trailing, spacing: 8) {
                     ForEach(balances) { balance in
@@ -203,11 +217,14 @@ private struct StockSubAssetCashBreakdown: View {
         .frame(maxWidth: .infinity, minHeight: 100, maxHeight: 100, alignment: .top)
     }
 
-    private func title(_ text: String, alignment: Alignment) -> some View {
-        Text(text)
+    private func title(_ key: DemoCopyKey, alignment: Alignment) -> some View {
+        Text(language.text(key))
             .font(.custom("PlusJakartaSans-Regular", size: 14, relativeTo: .subheadline))
             .foregroundColor(Color("color-text-60"))
             .frame(maxWidth: .infinity, minHeight: 20, maxHeight: 20, alignment: alignment)
+            .lineLimit(1)
+            .minimumScaleFactor(0.8)
+            .accessibilityLabel(language.accessibilityText(key))
     }
 
     private func value(_ text: String, alignment: Alignment) -> some View {

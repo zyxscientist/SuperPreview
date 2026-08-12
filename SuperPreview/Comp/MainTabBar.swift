@@ -16,14 +16,14 @@ enum AppTab: Int, CaseIterable {
     case tab5
     case tab6
 
-    var title: String {
+    func title(language: DemoLanguage) -> String {
         switch self {
-        case .tab1: return "自选"
-        case .tab2: return "交易"
-        case .tab3: return "理财"
-        case .tab4: return "资讯"
-        case .tab5: return "市场"
-        case .tab6: return "我的"
+        case .tab1: return language.text(.watchlist)
+        case .tab2: return language.text(.trade)
+        case .tab3: return language.text(.wealth)
+        case .tab4: return language.text(.news)
+        case .tab5: return language.text(.markets)
+        case .tab6: return language.text(.me)
         }
     }
 
@@ -54,6 +54,7 @@ struct MainTabBar: UIViewRepresentable {
     static let height: CGFloat = 49
 
     @Binding var selectedTab: AppTab
+    @Environment(\.demoLanguage) private var language
 
     func makeCoordinator() -> Coordinator {
         Coordinator(parent: self)
@@ -71,12 +72,19 @@ struct MainTabBar: UIViewRepresentable {
 
     func updateUIView(_ tabBar: UITabBar, context: Context) {
         context.coordinator.parent = self
+        if tabBar.items?.count != AppTab.allCases.count {
+            tabBar.items = AppTab.allCases.map(makeItem)
+        } else {
+            for (item, tab) in zip(tabBar.items ?? [], AppTab.allCases) {
+                item.title = tab.title(language: language)
+            }
+        }
         tabBar.selectedItem = tabBar.items?.first(where: { $0.tag == selectedTab.rawValue })
     }
 
     private func makeItem(for tab: AppTab) -> UITabBarItem {
         let item = UITabBarItem(
-            title: tab.title,
+            title: tab.title(language: language),
             image: UIImage(named: tab.inactiveImageName),
             selectedImage: UIImage(named: tab.activeImageName)
         )

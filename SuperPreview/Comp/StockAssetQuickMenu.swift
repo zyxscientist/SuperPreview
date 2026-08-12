@@ -11,6 +11,7 @@ struct StockAssetQuickMenu: View {
     let onIPOCenter: () -> Void
     let onDeposit: () -> Void
     let onMore: () -> Void
+    @Environment(\.demoLanguage) private var language
 
     init(
         onTrade: @escaping () -> Void = {},
@@ -30,27 +31,28 @@ struct StockAssetQuickMenu: View {
         AssetQuickMenu(
             items: [
                 AssetQuickMenuItem(
-                    title: "交易",
+                    title: language.text(.trade),
                     imageName: "stock_trade_outline",
                     action: onTrade
                 ),
                 AssetQuickMenuItem(
-                    title: "今日订单",
+                    title: language.text(.todayOrders),
                     imageName: "today_order_outline",
+                    accessibilityLabel: language.accessibilityText(.todayOrders),
                     action: onTodayOrders
                 ),
                 AssetQuickMenuItem(
-                    title: "新股中心",
+                    title: language.text(.ipoCenter),
                     imageName: "ipo_outline",
                     action: onIPOCenter
                 ),
                 AssetQuickMenuItem(
-                    title: "入金",
+                    title: language.text(.deposit),
                     imageName: "deposit_outline",
                     action: onDeposit
                 ),
                 AssetQuickMenuItem(
-                    title: "更多",
+                    title: language.text(.more),
                     imageName: "more_outline",
                     action: onMore
                 )

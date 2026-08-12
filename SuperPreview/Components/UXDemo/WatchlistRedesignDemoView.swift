@@ -17,6 +17,7 @@ struct WatchlistRedesignDemoView: View {
     @State private var isPriceSimulationEnabled = false
     @State private var priceSimulationSpeed: WatchlistRedesignPriceSimulationSpeed = .medium
     @State private var selectedMainTab: AppTab = .tab1
+    @AppStorage(DemoLanguage.storageKey) private var demoLanguage = DemoLanguage.simplifiedChinese
 
     private var priceSimulationTaskID: String {
         "\(isPriceSimulationEnabled)-\(priceSimulationSpeed.rawValue)"
@@ -48,19 +49,35 @@ struct WatchlistRedesignDemoView: View {
             .background(Color("color-base-1").edgesIgnoringSafeArea(.all))
             .ignoresSafeArea(.container, edges: .bottom)
         }
+        .overlay(alignment: .topLeading) {
+            if PreviewRuntime.isUITesting {
+                HStack(spacing: 0) {
+                    Text(demoLanguage.rawValue)
+                        .accessibilityIdentifier("watchlist.debug.status.language")
+                    Text(demoLanguage.text(.changePercent))
+                        .accessibilityIdentifier("watchlist.debug.status.changeHeader")
+                }
+                .frame(width: 1, height: 1)
+                .accessibilityElement(children: .contain)
+                .allowsHitTesting(false)
+            }
+        }
         .mainTabBar(selectedTab: $selectedMainTab)
-        .navigationBarTitle("新自选", displayMode: .inline)
+        .accessibilityIdentifier("watchlist.root")
+        .navigationBarTitle(demoLanguage.text(.newWatchlist), displayMode: .inline)
         .navigationBarItems(
             trailing: Button(action: {
                 isShowingDebugPanel = true
             }) {
-                Text("Debug")
+                Text(demoLanguage.text(.debug))
                     .modifier(CustomFontModifier(size: 13, font: .medium, lineHeight: 16))
                     .foregroundColor(Color("color-text-30"))
             }
+            .accessibilityIdentifier("watchlist.debug.open")
         )
         .sheet(isPresented: $isShowingDebugPanel) {
             WatchlistRedesignDebugPanel(
+                language: $demoLanguage,
                 shouldNavigateOnRowTap: $shouldNavigateOnRowTap,
                 tabBarFontSize: $tabBarFontSize,
                 isPriceSimulationEnabled: $isPriceSimulationEnabled,
@@ -95,6 +112,7 @@ struct WatchlistRedesignDemoView: View {
                 }
             }
         }
+        .environment(\.demoLanguage, demoLanguage)
     }
 }
 
@@ -217,35 +235,39 @@ struct WatchlistRedesignDetailPlaceholder: View {
 }
 
 struct WatchlistRedesignDebugPanel: View {
+    @Binding var language: DemoLanguage
     @Binding var shouldNavigateOnRowTap: Bool
     @Binding var tabBarFontSize: CGFloat
     @Binding var isPriceSimulationEnabled: Bool
     @Binding var priceSimulationSpeed: WatchlistRedesignPriceSimulationSpeed
+    @Environment(\.demoLanguage) private var interfaceLanguage
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("调试")
+            Text(interfaceLanguage.text(.debug))
                 .modifier(CustomFontModifier(size: 20, font: .bold, lineHeight: 28))
                 .foregroundColor(Color("color-text-30"))
 
+            DemoLanguagePicker(language: $language)
+
             Toggle(isOn: $shouldNavigateOnRowTap) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("点击后跳转")
+                    Text(interfaceLanguage.text(.navigateOnTap))
                         .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
                         .foregroundColor(Color("color-text-30"))
 
-                    Text(shouldNavigateOnRowTap ? "开启时释放会进入空白详情页" : "关闭时只展示列表点按背景")
+                    Text(interfaceLanguage.text(shouldNavigateOnRowTap ? .navigateOnTapOn : .navigateOnTapOff))
                         .modifier(CustomFontModifier(size: 13, font: .regular, lineHeight: 16))
                         .foregroundColor(Color("color-text-60"))
                 }
             }
 
             VStack(alignment: .leading, spacing: 8) {
-                Text("Tabbar 字号")
+                Text(interfaceLanguage.text(.tabBarFontSize))
                     .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
                     .foregroundColor(Color("color-text-30"))
 
-                Picker("Tabbar 字号", selection: $tabBarFontSize) {
+                Picker(interfaceLanguage.text(.tabBarFontSize), selection: $tabBarFontSize) {
                     Text("14").tag(CGFloat(14))
                     Text("16").tag(CGFloat(16))
                 }
@@ -254,24 +276,24 @@ struct WatchlistRedesignDebugPanel: View {
 
             Toggle(isOn: $isPriceSimulationEnabled) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("模拟行情刷新")
+                    Text(interfaceLanguage.text(.simulateQuoteUpdates))
                         .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
                         .foregroundColor(Color("color-text-30"))
 
-                    Text(isPriceSimulationEnabled ? "股票价格和涨跌幅会持续变化" : "基金不会参与模拟刷新")
+                    Text(interfaceLanguage.text(isPriceSimulationEnabled ? .quoteUpdatesOn : .quoteUpdatesOff))
                         .modifier(CustomFontModifier(size: 13, font: .regular, lineHeight: 16))
                         .foregroundColor(Color("color-text-60"))
                 }
             }
 
             VStack(alignment: .leading, spacing: 8) {
-                Text("刷新速度")
+                Text(interfaceLanguage.text(.updateSpeed))
                     .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
                     .foregroundColor(Color("color-text-30"))
 
-                Picker("刷新速度", selection: $priceSimulationSpeed) {
+                Picker(interfaceLanguage.text(.updateSpeed), selection: $priceSimulationSpeed) {
                     ForEach(WatchlistRedesignPriceSimulationSpeed.allCases) { speed in
-                        Text(speed.title).tag(speed)
+                        Text(interfaceLanguage.speedTitle(speed)).tag(speed)
                     }
                 }
                 .pickerStyle(.segmented)
@@ -289,6 +311,7 @@ struct WatchlistRedesignTabs: View {
     let tabs: [String]
     @Binding var selectedTab: String
     let fontSize: CGFloat
+    @Environment(\.demoLanguage) private var language
 
     var body: some View {
         HStack(spacing: 0) {
@@ -302,7 +325,7 @@ struct WatchlistRedesignTabs: View {
                                 selectedTab = tab
                             }
                         }) {
-                            Text(tab)
+                            Text(language.watchlistTabTitle(tab))
                                 .modifier(CustomFontModifier(size: fontSize, font: selectedTab == tab ? .bold : .regular, lineHeight: 24))
                                 .foregroundColor(selectedTab == tab ? Color("color-text-r") : Color("color-text-60"))
                                 .padding(.horizontal, 14)
@@ -310,6 +333,7 @@ struct WatchlistRedesignTabs: View {
                                 .background(selectedTab == tab ? Color("color-base-r") : Color("color-base-1"))
                                 .clipShape(Capsule())
                         }
+                        .accessibilityIdentifier("watchlist.tab.\(tab)")
                     }
                 }
                 .padding(.leading, 10)
@@ -339,6 +363,7 @@ struct WatchlistRedesignTabs: View {
 
 struct WatchlistRedesignTableHeader: View {
     @Binding var isMiniKVisible: Bool
+    @Environment(\.demoLanguage) private var language
 
     var body: some View {
         GeometryReader { proxy in
@@ -346,9 +371,10 @@ struct WatchlistRedesignTableHeader: View {
 
             ZStack(alignment: .leading) {
                 HStack(spacing: 8) {
-                    Text("名称")
+                    Text(language.text(.name))
                         .modifier(CustomFontModifier(size: 14, font: .regular, lineHeight: 20))
                         .foregroundColor(Color("color-text-90"))
+                        .accessibilityIdentifier("watchlist.header.name")
                     Rectangle()
                         .fill(Color("color-separator-20"))
                         .frame(width: 1, height: 11)
@@ -369,8 +395,9 @@ struct WatchlistRedesignTableHeader: View {
                 .position(x: nameWidth / 2, y: 18)
 
                 HStack(spacing: 2) {
-                    Text("价格")
+                    Text(language.text(.price))
                         .modifier(CustomFontModifier(size: 14, font: .regular, lineHeight: 20))
+                        .accessibilityIdentifier("watchlist.header.price")
                     Image("Glyph_Sort")
                         .resizable()
                         .scaledToFit()
@@ -381,7 +408,9 @@ struct WatchlistRedesignTableHeader: View {
                 .position(x: proxy.size.width - 110 - 45, y: 18)
 
                 HStack(spacing: 2) {
-                    Text("涨跌幅")
+                    Text(language.text(.changePercent))
+                        .accessibilityLabel(language == .english ? "Percentage Change" : language.text(.changePercent))
+                        .accessibilityIdentifier("watchlist.header.changePercent")
                         .modifier(CustomFontModifier(size: 14, font: .regular, lineHeight: 20))
                     Image("Glyph_Sort")
                         .resizable()
@@ -502,6 +531,7 @@ private extension String {
 
 struct WatchlistRedesignNameCell: View {
     let item: WatchlistRedesignItem
+    @Environment(\.demoLanguage) private var language
 
     var body: some View {
         VStack(alignment: .leading, spacing: 7) {
@@ -509,7 +539,7 @@ struct WatchlistRedesignNameCell: View {
                 marketBadge
                     .frame(width: 12, height: 10)
 
-                Text(item.name)
+                Text(language.watchlistName(symbol: item.symbol, fallback: item.name))
                     .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
                     .foregroundColor(Color("color-text-30"))
                     .lineLimit(1)
@@ -575,6 +605,7 @@ struct WatchlistRedesignPriceCell: View {
 
 struct WatchlistRedesignChangeCell: View {
     let item: WatchlistRedesignItem
+    @Environment(\.demoLanguage) private var language
 
     var body: some View {
         switch item.session {
@@ -630,7 +661,12 @@ struct WatchlistRedesignChangeCell: View {
 
                 Spacer(minLength: 4)
 
-                Text(label)
+                Text(language.sessionTitle(label))
+                    .accessibilityLabel(
+                        language == .english
+                            ? (label == "盘前" ? "Pre-market" : "After-hours")
+                            : language.sessionTitle(label)
+                    )
                     .modifier(CustomFontModifier(size: 8, font: .regular, lineHeight: 8))
                     .foregroundColor(Color("color-text-30"))
                     .lineLimit(1)
@@ -734,11 +770,13 @@ struct WatchlistRedesignReferenceLine: Shape {
 }
 
 struct WatchlistRedesignActions: View {
+    @Environment(\.demoLanguage) private var language
+
     var body: some View {
         HStack(spacing: 2) {
             Button(action: {}) {
                 WatchlistRedesignActionButtonLabel(
-                    title: "添加自选",
+                    title: language.text(.addToWatchlist),
                     leftRadius: 12,
                     rightRadius: 4
                 )
@@ -747,7 +785,7 @@ struct WatchlistRedesignActions: View {
 
             Button(action: {}) {
                 WatchlistRedesignActionButtonLabel(
-                    title: "编辑自选",
+                    title: language.text(.editWatchlist),
                     leftRadius: 4,
                     rightRadius: 12
                 )

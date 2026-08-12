@@ -11,6 +11,7 @@ struct FundAssetQuickMenu: View {
     let onRecurringInvestment: () -> Void
     let onStatement: () -> Void
     let onMore: () -> Void
+    @Environment(\.demoLanguage) private var language
 
     init(
         onDeposit: @escaping () -> Void = {},
@@ -30,27 +31,29 @@ struct FundAssetQuickMenu: View {
         AssetQuickMenu(
             items: [
                 AssetQuickMenuItem(
-                    title: "入金",
+                    title: language.text(.deposit),
                     imageName: "deposit_outline",
                     action: onDeposit
                 ),
                 AssetQuickMenuItem(
-                    title: "交易记录",
+                    title: language.text(.transactionHistory),
                     imageName: "his_order_outline",
+                    accessibilityLabel: language.accessibilityText(.transactionHistory),
                     action: onTransactionRecords
                 ),
                 AssetQuickMenuItem(
-                    title: "我的定投",
+                    title: language.text(.recurringInvestment),
                     imageName: "my_AIP_outline",
+                    accessibilityLabel: language.accessibilityText(.recurringInvestment),
                     action: onRecurringInvestment
                 ),
                 AssetQuickMenuItem(
-                    title: "结单",
+                    title: language.text(.statements),
                     imageName: "statement_outline",
                     action: onStatement
                 ),
                 AssetQuickMenuItem(
-                    title: "更多",
+                    title: language.text(.more),
                     imageName: "more_outline",
                     action: onMore
                 )

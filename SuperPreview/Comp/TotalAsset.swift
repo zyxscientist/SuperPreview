@@ -13,6 +13,7 @@ struct TotalAsset: View {
 
     private let numberVisibilityBinding: Binding<Bool>?
     @State private var localIsNumberHidden: Bool
+    @Environment(\.demoLanguage) private var language
 
     init(
         currency: String = "USD",
@@ -81,9 +82,9 @@ struct TotalAsset: View {
                     .frame(width: 16, height: 16)
             }
             .buttonStyle(PlainButtonStyle())
-            .accessibilityLabel(numberIsHidden ? "显示资产数字" : "隐藏资产数字")
+            .accessibilityLabel(language.text(numberIsHidden ? .showAssetValues : .hideAssetValues))
 
-            Text("总资产")
+            Text(language.text(.totalAssets))
             Text("·")
             Text(currency)
 
@@ -100,7 +101,7 @@ struct TotalAsset: View {
 
     private var totalProfitLossRow: some View {
         HStack(spacing: 8) {
-            Text("总盈亏")
+            Text(language.text(.totalProfitLoss))
                 .font(.custom("PlusJakartaSans-Medium", size: 16, relativeTo: .body))
                 .foregroundColor(Color("color-text-30"))
 

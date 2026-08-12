@@ -33,6 +33,7 @@ struct FundSubAssetCard: View {
     @AppStorage(TradeAggregationExpansionStorageKey.fundSubAssetCard)
     private var isExpanded = false
     @State private var expansionBlurRadius: CGFloat
+    @Environment(\.demoLanguage) private var language
 
     init(
         model: FundSubAssetCardModel = .preview,
@@ -53,7 +54,7 @@ struct FundSubAssetCard: View {
             SubAssetCardHeader(
                 currency: model.currency,
                 netAsset: model.netAsset,
-                profitLossTitle: "昨日收益",
+                profitLossTitle: language.text(.yesterdayProfitLoss),
                 profitLoss: model.yesterdayIncome,
                 isNumberHidden: isNumberHidden,
                 isExpanded: isExpanded,
@@ -63,15 +64,19 @@ struct FundSubAssetCard: View {
             SubAssetMetricRow(
                 items: [
                     SubAssetMetricItem(
-                        title: "基金市值",
+                        id: "fundMarketValue",
+                        title: language.text(.fundMarketValue),
                         value: model.fundMarketValue,
-                        alignment: .leading
+                        alignment: .leading,
+                        accessibilityLabel: language.accessibilityText(.fundMarketValue)
                     ),
                     SubAssetMetricItem(
-                        title: "持仓收益",
+                        id: "positionIncome",
+                        title: language.text(.positionIncome),
                         value: model.positionIncome,
                         alignment: .trailing,
-                        isGain: true
+                        isGain: true,
+                        accessibilityLabel: language.accessibilityText(.positionIncome)
                     )
                 ],
                 isNumberHidden: isNumberHidden
@@ -82,14 +87,18 @@ struct FundSubAssetCard: View {
                 SubAssetMetricRow(
                     items: [
                         SubAssetMetricItem(
-                            title: "在途资金",
+                            id: "fundsInTransit",
+                            title: language.text(.fundsInTransit),
                             value: model.fundsInTransit,
-                            alignment: .leading
+                            alignment: .leading,
+                            accessibilityLabel: language.accessibilityText(.fundsInTransit)
                         ),
                         SubAssetMetricItem(
-                            title: "冻结资金",
+                            id: "fundsOnHold",
+                            title: language.text(.fundsOnHold),
                             value: model.frozenFunds,
-                            alignment: .trailing
+                            alignment: .trailing,
+                            accessibilityLabel: language.accessibilityText(.fundsOnHold)
                         )
                     ],
                     isNumberHidden: isNumberHidden

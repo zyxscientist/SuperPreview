@@ -9,17 +9,20 @@ struct AssetQuickMenuItem: Identifiable {
     let id: String
     let title: String
     let imageName: String
+    let accessibilityLabel: String
     let action: () -> Void
 
     init(
         id: String? = nil,
         title: String,
         imageName: String,
+        accessibilityLabel: String? = nil,
         action: @escaping () -> Void
     ) {
         self.id = id ?? imageName
         self.title = title
         self.imageName = imageName
+        self.accessibilityLabel = accessibilityLabel ?? title
         self.action = action
     }
 }
@@ -44,13 +47,15 @@ struct AssetQuickMenu: View {
                                 .font(.custom("PlusJakartaSans-Regular", size: 14, relativeTo: .subheadline))
                                 .foregroundColor(Color("color-text-30"))
                                 .lineLimit(1)
+                                .minimumScaleFactor(0.72)
+                                .allowsTightening(true)
                                 .frame(maxWidth: .infinity, minHeight: 20, maxHeight: 20)
                         }
                         .frame(width: itemWidth, height: 74)
                         .contentShape(Rectangle())
                     }
                     .buttonStyle(PlainButtonStyle())
-                    .accessibilityLabel(item.title)
+                    .accessibilityLabel(item.accessibilityLabel)
                 }
             }
             .frame(width: proxy.size.width, height: 74)

@@ -6,15 +6,24 @@
 import SwiftUI
 
 enum AssetCategory: String, CaseIterable, Identifiable {
-    case stocks = "股票"
-    case funds = "基金"
-    case virtualAssets = "虚拟资产"
+    case stocks
+    case funds
+    case virtualAssets
 
     var id: Self { self }
+
+    func title(language: DemoLanguage) -> String {
+        switch self {
+        case .stocks: return language.text(.stocks)
+        case .funds: return language.text(.funds)
+        case .virtualAssets: return language.text(.virtualAssets)
+        }
+    }
 }
 
 struct AssetCategoryTabBar: View {
     @Binding var selection: AssetCategory
+    @Environment(\.demoLanguage) private var language
 
     var body: some View {
         ZStack(alignment: .trailing) {
@@ -44,7 +53,7 @@ struct AssetCategoryTabBar: View {
         return Button {
             selection = category
         } label: {
-            Text(category.rawValue)
+            Text(category.title(language: language))
                 .font(
                     .custom(
                         isSelected ? "PlusJakartaSans-Bold" : "PlusJakartaSans-Regular",
@@ -93,6 +102,7 @@ struct AssetCategoryTabBar: View {
 
 private struct AssetCategoryTabBarPreviewContainer: View {
     @State private var selection: AssetCategory = .stocks
+    @Environment(\.demoLanguage) private var language
 
     var body: some View {
         VStack(spacing: 0) {
@@ -100,7 +110,7 @@ private struct AssetCategoryTabBarPreviewContainer: View {
 
             TabView(selection: $selection) {
                 ForEach(AssetCategory.allCases) { category in
-                    Text(category.rawValue)
+                    Text(category.title(language: language))
                         .font(.custom("PlusJakartaSans-Medium", size: 16, relativeTo: .body))
                         .foregroundColor(Color("color-text-30"))
                         .frame(maxWidth: .infinity, maxHeight: .infinity)

@@ -26,6 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     private func resetTradeAggregationStateForUITests() {
         let keys = [
+            DemoLanguage.storageKey,
             TradeAggregationExpansionStorageKey.stockSubAssetCard,
             TradeAggregationExpansionStorageKey.fundSubAssetCard,
             TradeAggregationExpansionStorageKey.virtualAssetSubAssetCard,

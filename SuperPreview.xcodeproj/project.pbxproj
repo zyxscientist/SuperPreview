@@ -23,6 +23,7 @@
 		84574C322975503A0062D03D /* OrderStatusManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84574C312975503A0062D03D /* OrderStatusManager.swift */; };
 		84574C342976A0590062D03D /* ImageDebug.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84574C332976A0590062D03D /* ImageDebug.swift */; };
 		845A1EAB2F7581C900D7A110 /* PreviewRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845A1EAA2F7581C900D7A110 /* PreviewRuntime.swift */; };
+		84F600012F83000000ABC001 /* DemoLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F600002F83000000ABC001 /* DemoLocalization.swift */; };
 		8461BFF92CC0B9960014ED60 /* MacroDataPCEView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8461BFF82CC0B9960014ED60 /* MacroDataPCEView.swift */; };
 		8461BFFB2CC0BAEC0014ED60 /* PCEData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8461BFFA2CC0BAEC0014ED60 /* PCEData.swift */; };
 		8461BFFD2CC0BB6A0014ED60 /* MacroDataPCEViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8461BFFC2CC0BB6A0014ED60 /* MacroDataPCEViewModel.swift */; };
@@ -167,6 +168,7 @@
 		84574C312975503A0062D03D /* OrderStatusManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderStatusManager.swift; sourceTree = "<group>"; };
 		84574C332976A0590062D03D /* ImageDebug.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDebug.swift; sourceTree = "<group>"; };
 		845A1EAA2F7581C900D7A110 /* PreviewRuntime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewRuntime.swift; sourceTree = "<group>"; };
+		84F600002F83000000ABC001 /* DemoLocalization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoLocalization.swift; sourceTree = "<group>"; };
 		8461BFF82CC0B9960014ED60 /* MacroDataPCEView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacroDataPCEView.swift; sourceTree = "<group>"; };
 		8461BFFA2CC0BAEC0014ED60 /* PCEData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCEData.swift; sourceTree = "<group>"; };
 		8461BFFC2CC0BB6A0014ED60 /* MacroDataPCEViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacroDataPCEViewModel.swift; sourceTree = "<group>"; };
@@ -355,6 +357,7 @@
 		84574C3029754FE10062D03D /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				84F600002F83000000ABC001 /* DemoLocalization.swift */,
 				84574C312975503A0062D03D /* OrderStatusManager.swift */,
 				845A1EAA2F7581C900D7A110 /* PreviewRuntime.swift */,
 			);
@@ -786,6 +789,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				84F600012F83000000ABC001 /* DemoLocalization.swift in Sources */,
 				84F300012F80000000ABC001 /* MainTabBar.swift in Sources */,
 				84F2001E2F7D000000ABC001 /* TradeAggregationDemoView.swift in Sources */,
 				84F300032F76000000ABC001 /* TradeAggregationDemoViewModel.swift in Sources */,
