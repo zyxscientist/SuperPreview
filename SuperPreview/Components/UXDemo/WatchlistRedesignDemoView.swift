@@ -16,6 +16,8 @@ struct WatchlistRedesignDemoView: View {
     @State private var tabBarFontSize: CGFloat = 14
     @State private var isPriceSimulationEnabled = false
     @State private var priceSimulationSpeed: WatchlistRedesignPriceSimulationSpeed = .medium
+    @State private var isInAppNotificationSimulationEnabled = false
+    @State private var isMultipleInAppNotificationSimulationEnabled = false
     @State private var selectedMainTab: AppTab = .tab1
     @AppStorage(DemoLanguage.storageKey) private var demoLanguage = DemoLanguage.simplifiedChinese
 
@@ -63,6 +65,10 @@ struct WatchlistRedesignDemoView: View {
             }
         }
         .mainTabBar(selectedTab: $selectedMainTab)
+        .inAppNotificationSimulation(
+            isEnabled: isInAppNotificationSimulationEnabled && !isShowingDebugPanel,
+            isMultipleMessages: isMultipleInAppNotificationSimulationEnabled
+        )
         .accessibilityIdentifier("watchlist.root")
         .navigationBarTitle(demoLanguage.text(.newWatchlist), displayMode: .inline)
         .navigationBarItems(
@@ -81,7 +87,9 @@ struct WatchlistRedesignDemoView: View {
                 shouldNavigateOnRowTap: $shouldNavigateOnRowTap,
                 tabBarFontSize: $tabBarFontSize,
                 isPriceSimulationEnabled: $isPriceSimulationEnabled,
-                priceSimulationSpeed: $priceSimulationSpeed
+                priceSimulationSpeed: $priceSimulationSpeed,
+                isInAppNotificationSimulationEnabled: $isInAppNotificationSimulationEnabled,
+                isMultipleInAppNotificationSimulationEnabled: $isMultipleInAppNotificationSimulationEnabled
             )
         }
         .task(id: priceSimulationTaskID) {
@@ -240,6 +248,8 @@ struct WatchlistRedesignDebugPanel: View {
     @Binding var tabBarFontSize: CGFloat
     @Binding var isPriceSimulationEnabled: Bool
     @Binding var priceSimulationSpeed: WatchlistRedesignPriceSimulationSpeed
+    @Binding var isInAppNotificationSimulationEnabled: Bool
+    @Binding var isMultipleInAppNotificationSimulationEnabled: Bool
     @Environment(\.demoLanguage) private var interfaceLanguage
 
     var body: some View {
@@ -299,11 +309,48 @@ struct WatchlistRedesignDebugPanel: View {
                 .pickerStyle(.segmented)
             }
 
+            Toggle(isOn: $isInAppNotificationSimulationEnabled) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("模拟成交站内信")
+                        .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
+                        .foregroundColor(Color("color-text-30"))
+
+                    Text(
+                        isInAppNotificationSimulationEnabled
+                            ? "关闭调试面板后开始循环推送"
+                            : "每次显示 5 秒，退场 1 秒后再次推送"
+                    )
+                    .modifier(CustomFontModifier(size: 13, font: .regular, lineHeight: 16))
+                    .foregroundColor(Color("color-text-60"))
+                }
+            }
+            .accessibilityIdentifier("watchlist.debug.inAppNotification")
+
+            Toggle(isOn: $isMultipleInAppNotificationSimulationEnabled) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("模拟多条成交站内信")
+                        .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
+                        .foregroundColor(Color("color-text-30"))
+
+                    Text(
+                        isMultipleInAppNotificationSimulationEnabled
+                            ? "每 2 秒推入一条新信息，当前通知将原地淡出"
+                            : "开启后模拟当前通知被新的成交信息打断"
+                    )
+                    .modifier(CustomFontModifier(size: 13, font: .regular, lineHeight: 16))
+                    .foregroundColor(Color("color-text-60"))
+                }
+            }
+            .disabled(!isInAppNotificationSimulationEnabled)
+            .accessibilityIdentifier("watchlist.debug.inAppNotificationMultiple")
+
             Spacer()
         }
         .padding(.horizontal, 20)
         .padding(.top, 24)
         .background(Color("color-base-1").edgesIgnoringSafeArea(.all))
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("watchlist.debug.panel")
     }
 }
 

@@ -186,6 +186,110 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         XCTAssertEqual(waitFor("watchlist.debug.status.changeHeader").label, "Chg%")
     }
 
+    func testWatchlistInAppNotificationMatchesViewport() throws {
+        enterWatchlist()
+
+        waitFor("watchlist.debug.open").tap()
+        waitFor("watchlist.debug.inAppNotification").tap()
+
+        let debugPanel = waitFor("watchlist.debug.panel")
+        debugPanel.swipeDown()
+        waitForDisappearance(debugPanel)
+
+        let banner = waitFor("inAppNotification.tradeBanner")
+        assertInAppNotificationFrame(banner)
+    }
+
+    func testTradeInAppNotificationRepeatsAndStops() throws {
+        enterTrade()
+
+        app.buttons["Debug"].tap()
+        waitFor("trade.debug.inAppNotification").tap()
+        dismissDebugPanel()
+        XCTAssertEqual(
+            waitFor("trade.debug.status.inAppNotification").label,
+            "INAPP_ENABLED"
+        )
+
+        let banner = waitFor("inAppNotification.tradeBanner")
+        assertInAppNotificationFrame(banner)
+
+        sleep(4)
+        XCTAssertTrue(banner.exists, "Banner should remain visible for five seconds")
+        waitForDisappearance(banner, timeout: 2)
+        XCTAssertTrue(
+            banner.waitForExistence(timeout: 3),
+            "Banner should reappear one second after its exit animation"
+        )
+
+        app.buttons["Debug"].tap()
+        waitFor("trade.debug.inAppNotification").tap()
+        dismissDebugPanel()
+        XCTAssertEqual(
+            waitFor("trade.debug.status.inAppNotification").label,
+            "INAPP_DISABLED"
+        )
+
+        waitForDisappearance(banner, timeout: 2)
+        sleep(2)
+        XCTAssertFalse(banner.exists, "Banner must not restart after the toggle is disabled")
+    }
+
+    func testTradeInAppNotificationTouchResetsCountdownAndSwipeUpDismisses() throws {
+        enterTrade()
+
+        app.buttons["Debug"].tap()
+        waitFor("trade.debug.inAppNotification").tap()
+        dismissDebugPanel()
+
+        let banner = waitFor("inAppNotification.tradeBanner")
+        sleep(4)
+        banner.press(forDuration: 1)
+
+        sleep(4)
+        XCTAssertTrue(
+            banner.exists,
+            "Touching the banner should restart its five-second dismissal countdown"
+        )
+
+        banner.swipeUp()
+        waitForDisappearance(banner, timeout: 2)
+        XCTAssertTrue(
+            banner.waitForExistence(timeout: 3),
+            "A manually dismissed banner should continue the enabled simulation cycle"
+        )
+    }
+
+    func testTradeMultipleInAppNotificationsReplaceCurrentBanner() throws {
+        enterTrade()
+
+        app.buttons["Debug"].tap()
+        waitFor("trade.debug.inAppNotification").tap()
+        waitFor("trade.debug.inAppNotificationMultiple").tap()
+        dismissDebugPanel()
+
+        XCTAssertEqual(
+            waitFor("trade.debug.status.inAppNotificationMultiple").label,
+            "INAPP_MULTIPLE_ENABLED"
+        )
+
+        let firstMessage = waitFor("inAppNotification.tradeBanner").label
+        sleep(3)
+
+        let replacementBanner = waitFor("inAppNotification.tradeBanner")
+        XCTAssertNotEqual(
+            replacementBanner.label,
+            firstMessage,
+            "A new simulated message should replace the currently displayed banner"
+        )
+        assertInAppNotificationFrame(replacementBanner)
+    }
+
+    private func enterWatchlist() {
+        waitFor("compare.newWatchlist").tap()
+        XCTAssertTrue(waitFor("watchlist.root").exists)
+    }
+
     private func enterTrade() {
         waitFor("compare.newTrade").tap()
         XCTAssertTrue(waitFor("trade.root").exists)
@@ -207,6 +311,18 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         dismissDebugPanel()
     }
 
+    private func waitForDisappearance(
+        _ element: XCUIElement,
+        timeout: TimeInterval = 3,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        let predicate = NSPredicate(format: "exists == false")
+        let expectation = XCTNSPredicateExpectation(predicate: predicate, object: element)
+        let result = XCTWaiter.wait(for: [expectation], timeout: timeout)
+        XCTAssertEqual(result, .completed, "Element did not disappear", file: file, line: line)
+    }
+
     @discardableResult
     private func waitFor(_ identifier: String, timeout: TimeInterval = 8) -> XCUIElement {
         let element = app.descendants(matching: .any)[identifier].firstMatch
@@ -222,6 +338,44 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
 
     private func assertWidth(of element: XCUIElement, equals expected: CGFloat, file: StaticString = #filePath, line: UInt = #line) {
         XCTAssertEqual(element.frame.width, expected, accuracy: 1, file: file, line: line)
+    }
+
+    private func assertInAppNotificationFrame(
+        _ banner: XCUIElement,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        let navigationBar = app.navigationBars.firstMatch
+        XCTAssertTrue(
+            navigationBar.waitForExistence(timeout: 5),
+            "Missing navigation bar",
+            file: file,
+            line: line
+        )
+        XCTAssertEqual(banner.frame.minX, 10, accuracy: 1, file: file, line: line)
+        XCTAssertEqual(
+            banner.frame.width,
+            expectedViewportWidth - 20,
+            accuracy: 1,
+            file: file,
+            line: line
+        )
+        XCTAssertEqual(banner.frame.height, 90, accuracy: 1, file: file, line: line)
+        XCTAssertEqual(
+            banner.frame.minY,
+            navigationBar.frame.minY,
+            accuracy: 1,
+            "Banner must begin at the top safe-area edge and overlap the navigation bar",
+            file: file,
+            line: line
+        )
+        XCTAssertGreaterThan(
+            banner.frame.maxY,
+            navigationBar.frame.maxY,
+            "Banner must extend over the navigation bar layer",
+            file: file,
+            line: line
+        )
     }
 
     private var expectedViewportWidth: CGFloat {

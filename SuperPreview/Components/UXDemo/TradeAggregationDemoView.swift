@@ -14,6 +14,8 @@ struct TradeAggregationDemoView: View {
     @State private var isLiveDataEnabled = false
     @State private var isMRTestingEnabled = false
     @State private var isSummerAdvertisementEnabled = false
+    @State private var isInAppNotificationSimulationEnabled = false
+    @State private var isMultipleInAppNotificationSimulationEnabled = false
     @State private var selectedMainTab: AppTab = .tab2
     @AppStorage(DemoLanguage.storageKey) private var demoLanguage = DemoLanguage.simplifiedChinese
 
@@ -79,6 +81,18 @@ struct TradeAggregationDemoView: View {
                             .accessibilityIdentifier("trade.debug.status.language")
                         Text(demoLanguage.text(.marketValueQuantityHeader))
                             .accessibilityIdentifier("trade.debug.status.marketValueHeader")
+                        Text(
+                            isInAppNotificationSimulationEnabled
+                                ? "INAPP_ENABLED"
+                                : "INAPP_DISABLED"
+                        )
+                        .accessibilityIdentifier("trade.debug.status.inAppNotification")
+                        Text(
+                            isMultipleInAppNotificationSimulationEnabled
+                                ? "INAPP_MULTIPLE_ENABLED"
+                                : "INAPP_MULTIPLE_DISABLED"
+                        )
+                        .accessibilityIdentifier("trade.debug.status.inAppNotificationMultiple")
                     }
                     .frame(width: 1, height: 1)
                     .accessibilityElement(children: .contain)
@@ -91,6 +105,10 @@ struct TradeAggregationDemoView: View {
         .coordinateSpace(name: TradeAggregationLayout.stickyCoordinateSpace)
         .background(Color("color-base-1").ignoresSafeArea())
         .mainTabBar(selectedTab: $selectedMainTab)
+        .inAppNotificationSimulation(
+            isEnabled: isInAppNotificationSimulationEnabled && !isShowingDebugPanel,
+            isMultipleMessages: isMultipleInAppNotificationSimulationEnabled
+        )
         .navigationBarTitle(demoLanguage.text(.newTrade), displayMode: .inline)
         .navigationBarItems(
             trailing: Button(action: {
@@ -109,7 +127,9 @@ struct TradeAggregationDemoView: View {
                 language: $demoLanguage,
                 isLiveDataEnabled: $isLiveDataEnabled,
                 isMRTestingEnabled: $isMRTestingEnabled,
-                isSummerAdvertisementEnabled: $isSummerAdvertisementEnabled
+                isSummerAdvertisementEnabled: $isSummerAdvertisementEnabled,
+                isInAppNotificationSimulationEnabled: $isInAppNotificationSimulationEnabled,
+                isMultipleInAppNotificationSimulationEnabled: $isMultipleInAppNotificationSimulationEnabled
             )
         }
         .onPreferenceChange(TradeAggregationQuickMenuTopPreferenceKey.self) {
@@ -486,6 +506,8 @@ private struct TradeAggregationDebugPanel: View {
     @Binding var isLiveDataEnabled: Bool
     @Binding var isMRTestingEnabled: Bool
     @Binding var isSummerAdvertisementEnabled: Bool
+    @Binding var isInAppNotificationSimulationEnabled: Bool
+    @Binding var isMultipleInAppNotificationSimulationEnabled: Bool
     @Environment(\.dismiss) private var dismiss
     @Environment(\.demoLanguage) private var interfaceLanguage
 
@@ -521,6 +543,41 @@ private struct TradeAggregationDebugPanel: View {
                 }
             }
             .accessibilityIdentifier("trade.debug.liveData")
+
+            Toggle(isOn: $isInAppNotificationSimulationEnabled) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("模拟成交站内信")
+                        .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
+                        .foregroundColor(Color("color-text-30"))
+
+                    Text(
+                        isInAppNotificationSimulationEnabled
+                            ? "关闭调试面板后开始循环推送"
+                            : "每次显示 5 秒，退场 1 秒后再次推送"
+                    )
+                    .modifier(CustomFontModifier(size: 13, font: .regular, lineHeight: 16))
+                    .foregroundColor(Color("color-text-60"))
+                }
+            }
+            .accessibilityIdentifier("trade.debug.inAppNotification")
+
+            Toggle(isOn: $isMultipleInAppNotificationSimulationEnabled) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("模拟多条成交站内信")
+                        .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
+                        .foregroundColor(Color("color-text-30"))
+
+                    Text(
+                        isMultipleInAppNotificationSimulationEnabled
+                            ? "每 2 秒推入一条新信息，当前通知将原地淡出"
+                            : "开启后模拟当前通知被新的成交信息打断"
+                    )
+                    .modifier(CustomFontModifier(size: 13, font: .regular, lineHeight: 16))
+                    .foregroundColor(Color("color-text-60"))
+                }
+            }
+            .disabled(!isInAppNotificationSimulationEnabled)
+            .accessibilityIdentifier("trade.debug.inAppNotificationMultiple")
 
             Toggle(isOn: $isMRTestingEnabled) {
                 VStack(alignment: .leading, spacing: 4) {
