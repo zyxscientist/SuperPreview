@@ -184,4 +184,15 @@ extension String {
             .filter { !$0.isWhitespace }
             .folding(options: [.diacriticInsensitive, .widthInsensitive], locale: .current)
     }
+
+    /// The quote tile uses its direction icon to communicate up/down, so the
+    /// percentage text should not repeat that information with a sign.
+    var stockOrderUnsignedChange: String {
+        let trimmed = trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let first = trimmed.first, first == "+" || first == "-" else {
+            return trimmed
+        }
+
+        return String(trimmed.dropFirst())
+    }
 }

@@ -41,7 +41,8 @@ struct StockOrderSymbolSelector: View {
             isChartExpanded: $isChartExpanded,
             onSearchRequested: {
                 isSearchPresented = true
-            }
+            },
+            onClearSelection: clearSelection
         )
         .sheet(isPresented: $isSearchPresented, onDismiss: {
             query = ""
@@ -90,15 +91,37 @@ struct StockOrderSymbolSelector: View {
         }
         isSearchPresented = false
     }
+
+    private func clearSelection() {
+        withAnimation(
+            StockOrderMotion.expansion(reduceMotion: accessibilityReduceMotion)
+        ) {
+            selection = nil
+            isChartExpanded = false
+        }
+    }
 }
 
 struct StockOrderSymbolInput: View {
     let symbol: StockOrderSymbol?
     @Binding var isChartExpanded: Bool
     let onSearchRequested: () -> Void
+    let onClearSelection: () -> Void
 
     @Environment(\.demoLanguage) private var language
     @Environment(\.accessibilityReduceMotion) private var accessibilityReduceMotion
+
+    init(
+        symbol: StockOrderSymbol?,
+        isChartExpanded: Binding<Bool>,
+        onSearchRequested: @escaping () -> Void,
+        onClearSelection: @escaping () -> Void = {}
+    ) {
+        self.symbol = symbol
+        _isChartExpanded = isChartExpanded
+        self.onSearchRequested = onSearchRequested
+        self.onClearSelection = onClearSelection
+    }
 
     var body: some View {
         Group {
@@ -160,6 +183,12 @@ struct StockOrderSymbolInput: View {
         .animation(
             StockOrderMotion.expansion(reduceMotion: accessibilityReduceMotion),
             value: isChartExpanded
+        )
+        .highPriorityGesture(
+            LongPressGesture(minimumDuration: 2)
+                .onEnded { _ in
+                    onClearSelection()
+                }
         )
     }
 
@@ -348,7 +377,7 @@ private struct StockOrderChangeTile: View {
             StockOrderChangeDirectionIcon(trend: quote.trend, contrast: .white)
                 .frame(width: 12, height: 12)
 
-            Text(quote.changePercent)
+            Text(quote.changePercent.stockOrderUnsignedChange)
                 .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 20))
                 .monospacedDigit()
                 .foregroundColor(.white)
@@ -368,7 +397,7 @@ private struct StockOrderChangeTile: View {
                 StockOrderChangeDirectionIcon(trend: quote.trend, contrast: .tinted)
                     .frame(width: 12, height: 12)
 
-                Text(quote.changePercent)
+                Text(quote.changePercent.stockOrderUnsignedChange)
                     .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 20))
                     .monospacedDigit()
                     .foregroundColor(quote.trend.tileColor)
@@ -381,7 +410,7 @@ private struct StockOrderChangeTile: View {
 
             HStack(spacing: 4) {
                 if let secondaryChange = quote.session.secondaryChange {
-                    Text(secondaryChange)
+                    Text(secondaryChange.stockOrderUnsignedChange)
                         .modifier(CustomFontModifier(size: 13, font: .medium, lineHeight: 16))
                         .monospacedDigit()
                         .foregroundColor(Color("color-text-60"))

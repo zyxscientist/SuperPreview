@@ -85,7 +85,7 @@ struct StockOrderDemoProfile {
         defaultPriceTarget: .specifiedPrice,
         supportedPriceTargets: StockOrderPriceTargetOptions.advancedQuote,
         defaultPrice: "82.150",
-        defaultQuantity: "",
+        defaultQuantity: "100",
         currentPrice: Decimal(string: "82.15"),
         priceStep: 0.01,
         priceFractionDigits: 3,
@@ -125,7 +125,7 @@ struct StockOrderDemoProfile {
         defaultPriceTarget: .specifiedPrice,
         supportedPriceTargets: StockOrderPriceTargetOptions.advancedQuote,
         defaultPrice: "131.72",
-        defaultQuantity: "",
+        defaultQuantity: "1",
         currentPrice: Decimal(string: "131.72"),
         priceStep: 0.01,
         priceFractionDigits: 2,
@@ -165,7 +165,7 @@ struct StockOrderDemoProfile {
         defaultPriceTarget: .specifiedPrice,
         supportedPriceTargets: StockOrderPriceTargetOptions.basicQuote,
         defaultPrice: "16.400",
-        defaultQuantity: "",
+        defaultQuantity: "100",
         currentPrice: Decimal(string: "16.40"),
         priceStep: 0.01,
         priceFractionDigits: 3,
@@ -205,7 +205,7 @@ struct StockOrderDemoProfile {
         defaultPriceTarget: .specifiedPrice,
         supportedPriceTargets: StockOrderPriceTargetOptions.basicQuote,
         defaultPrice: "102345.12",
-        defaultQuantity: "",
+        defaultQuantity: "0.00001",
         currentPrice: Decimal(string: "102345.12"),
         priceStep: 0.01,
         priceFractionDigits: 2,
@@ -313,6 +313,115 @@ final class StockOrderDemoViewModel: ObservableObject {
         orderType == .market
     }
 
+    func confirmationData(
+        for side: StockOrderConfirmationSide,
+        language: DemoLanguage
+    ) -> StockOrderConfirmationData {
+        let isConditional = orderType == .conditional
+        let displayedPrice = isMarketOrder
+            ? language.text(.marketPrice)
+            : (price.isEmpty ? "--" : price)
+        let accountTitle = "\(language.text(profile.accountTitleKey))(\(profile.accountNumber))"
+        let symbolTitle = selection.map {
+            "\($0.localizedName(for: language))(\($0.id))"
+        } ?? "--"
+        let sideTone: StockOrderConfirmationValueTone = side == .buy ? .buy : .sell
+
+        var rows = [
+            StockOrderConfirmationRow(
+                id: "account",
+                label: language.text(.transactionAccount),
+                value: accountTitle
+            ),
+            StockOrderConfirmationRow(
+                id: "orderType",
+                label: language.text(.orderType),
+                value: language.text(orderType.titleKey)
+            ),
+            StockOrderConfirmationRow(
+                id: "side",
+                label: language.text(.direction),
+                value: language.text(side.titleKey),
+                tone: sideTone
+            ),
+            StockOrderConfirmationRow(
+                id: "symbol",
+                label: language.text(.name),
+                value: symbolTitle
+            )
+        ]
+
+        if isConditional {
+            rows.append(
+                StockOrderConfirmationRow(
+                    id: "triggerPrice",
+                    label: language.text(.triggerPrice),
+                    value: profile.bidLevels.first?.price ?? displayedPrice
+                )
+            )
+            rows.append(
+                StockOrderConfirmationRow(
+                    id: "executionType",
+                    label: language.text(.executionType),
+                    value: language.text(.enhancedLimitOrder)
+                )
+            )
+        }
+
+        rows.append(
+            StockOrderConfirmationRow(
+                id: "price",
+                label: language.text(.price),
+                value: displayedPrice
+            )
+        )
+        rows.append(
+            StockOrderConfirmationRow(
+                id: "quantity",
+                label: language.text(.quantity),
+                value: quantity.isEmpty ? "--" : quantity
+            )
+        )
+        rows.append(
+            StockOrderConfirmationRow(
+                id: "fees",
+                label: language.text(.transactionFeesAndTaxes),
+                value: "11.23"
+            )
+        )
+        rows.append(
+            StockOrderConfirmationRow(
+                id: "commission",
+                label: language.text(.commissionRate),
+                value: language.text(.minimumCommission)
+            )
+        )
+        rows.append(
+            StockOrderConfirmationRow(
+                id: "effectPeriod",
+                label: language.text(.effectPeriod),
+                value: language.text(effectPeriod.titleKey)
+            )
+        )
+
+        if showsExtendedHours {
+            rows.append(
+                StockOrderConfirmationRow(
+                    id: "extendedHours",
+                    label: language.text(.extendedHours),
+                    value: language.text(extendedHours.titleKey)
+                )
+            )
+        }
+
+        return StockOrderConfirmationData(
+            estimatedAmount: isMarketOrder
+                ? language.text(.atMarketPrice)
+                : formattedConfirmationAmount(),
+            rows: rows
+        )
+    }
+
     func synchronizeSelection() {
         let nextProfile = Self.profile(for: selection)
         orderType = nextProfile.defaultOrderType
@@ -386,6 +495,11 @@ final class StockOrderDemoViewModel: ObservableObject {
                 inputValue: value(baseBuy / 2)
             ),
             StockOrderQuantityQuickInputItem(
+                fractionLabel: "1/3",
+                displayQuantity: value(baseBuy / 3),
+                inputValue: value(baseBuy / 3)
+            ),
+            StockOrderQuantityQuickInputItem(
                 fractionLabel: "1/4",
                 displayQuantity: value(baseBuy / 4),
                 inputValue: value(baseBuy / 4)
@@ -401,6 +515,11 @@ final class StockOrderDemoViewModel: ObservableObject {
                 fractionLabel: "1/2",
                 displayQuantity: value(baseSell / 2),
                 inputValue: value(baseSell / 2)
+            ),
+            StockOrderQuantityQuickInputItem(
+                fractionLabel: "1/3",
+                displayQuantity: value(baseSell / 3),
+                inputValue: value(baseSell / 3)
             ),
             StockOrderQuantityQuickInputItem(
                 fractionLabel: "1/4",
@@ -443,6 +562,11 @@ final class StockOrderDemoViewModel: ObservableObject {
                             inputValue: value(maximumBuy / 2)
                         ),
                         StockOrderQuantityQuickInputItem(
+                            fractionLabel: "1/3",
+                            displayQuantity: value(maximumBuy / 3),
+                            inputValue: value(maximumBuy / 3)
+                        ),
+                        StockOrderQuantityQuickInputItem(
                             fractionLabel: "1/4",
                             displayQuantity: value(maximumBuy / 4),
                             inputValue: value(maximumBuy / 4)
@@ -468,7 +592,8 @@ final class StockOrderDemoViewModel: ObservableObject {
                 price: index.isMultiple(of: 2) ? "131.70" : "131.74",
                 quantity: "2,000",
                 filledQuantity: status == .filled ? "2,000" : (status == .partiallyFilled ? "800" : "0"),
-                tag: status == .submitted ? "GTC" : nil,
+                // The demo intentionally does not show a GTC tag.
+                tag: nil,
                 actions: StockOrderTodayOrderAction.allCases
             )
         }
@@ -501,6 +626,34 @@ final class StockOrderDemoViewModel: ObservableObject {
         case .askOne:
             return profile.askLevels.first?.price ?? price
         }
+    }
+
+    private func formattedConfirmationAmount() -> String {
+        guard
+            let parsedPrice = Decimal(
+                string: price.replacingOccurrences(of: ",", with: ""),
+                locale: Locale(identifier: "en_US_POSIX")
+            ),
+            let parsedQuantity = Decimal(
+                string: quantity.replacingOccurrences(of: ",", with: ""),
+                locale: Locale(identifier: "en_US_POSIX")
+            )
+        else {
+            return "--"
+        }
+
+        let formatter = NumberFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.numberStyle = .decimal
+        formatter.usesGroupingSeparator = true
+        formatter.minimumFractionDigits = 2
+        formatter.maximumFractionDigits = 2
+
+        let amount = parsedPrice * parsedQuantity
+        let formatted = formatter.string(from: NSDecimalNumber(decimal: amount)) ?? "--"
+        return profile.currencyCode.isEmpty
+            ? formatted
+            : "\(profile.currencyCode) \(formatted)"
     }
 
     private func format(_ decimal: Decimal, fractionDigits: Int) -> String {

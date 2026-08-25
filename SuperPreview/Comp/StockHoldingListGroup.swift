@@ -236,6 +236,8 @@ struct StockHoldingListGroup: View {
     let viewportWidth: CGFloat
     let sections: [StockHoldingMarketSection]
     let isNumberHidden: Bool
+    let showsMarketHeaders: Bool
+    let sortsHoldingsByMarketValueDescending: Bool
     let onQuote: (StockHoldingItem) -> Void
     let onOrder: (StockHoldingItem) -> Void
     let onDetails: (StockHoldingItem) -> Void
@@ -248,6 +250,8 @@ struct StockHoldingListGroup: View {
         viewportWidth: CGFloat,
         sections: [StockHoldingMarketSection] = .preview,
         isNumberHidden: Bool = false,
+        showsMarketHeaders: Bool = true,
+        sortsHoldingsByMarketValueDescending: Bool = false,
         initiallyCollapsedMarkets: Set<StockHoldingMarket> = [],
         initiallyExpandedHoldingID: StockHoldingItem.ID? = nil,
         onQuote: @escaping (StockHoldingItem) -> Void = { _ in },
@@ -257,6 +261,8 @@ struct StockHoldingListGroup: View {
         self.viewportWidth = viewportWidth
         self.sections = sections
         self.isNumberHidden = isNumberHidden
+        self.showsMarketHeaders = showsMarketHeaders
+        self.sortsHoldingsByMarketValueDescending = sortsHoldingsByMarketValueDescending
         self.onQuote = onQuote
         self.onOrder = onOrder
         self.onDetails = onDetails
@@ -293,12 +299,17 @@ struct StockHoldingListGroup: View {
 
     private var scrollableContent: some View {
         VStack(alignment: .leading, spacing: StockHoldingLayout.sectionSpacing) {
-            ForEach(sections) { section in
-                VStack(alignment: .leading, spacing: StockHoldingLayout.sectionSpacing) {
+            ForEach(displayedSections) { section in
+                VStack(
+                    alignment: .leading,
+                    spacing: showsMarketHeaders ? StockHoldingLayout.sectionSpacing : 0
+                ) {
                     Color.clear
                         .frame(
                             width: StockHoldingLayout.contentWidth,
-                            height: StockHoldingLayout.marketHeaderHeight
+                            height: showsMarketHeaders
+                                ? StockHoldingLayout.marketHeaderHeight
+                                : 0
                         )
 
                     if isMarketExpanded(section.market) {
@@ -323,10 +334,11 @@ struct StockHoldingListGroup: View {
 
     private var fixedContent: some View {
         VStack(alignment: .leading, spacing: StockHoldingLayout.sectionSpacing) {
-            ForEach(sections) { section in
+            ForEach(displayedSections) { section in
                 StockHoldingFixedMarketSection(
                     section: section,
                     isMarketExpanded: isMarketExpanded(section.market),
+                    showsMarketHeader: showsMarketHeaders,
                     isNumberHidden: isNumberHidden,
                     expandedHoldingID: expandedHoldingID,
                     toggleMarket: { toggleMarket(section.market) },
@@ -340,15 +352,19 @@ struct StockHoldingListGroup: View {
     }
 
     private var contentHeight: CGFloat {
-        var height = CGFloat(max(sections.count - 1, 0))
+        var height = CGFloat(max(displayedSections.count - 1, 0))
             * StockHoldingLayout.sectionSpacing
 
-        for section in sections {
-            height += StockHoldingLayout.collapsedSectionHeight
+        for section in displayedSections {
+            height += showsMarketHeaders
+                ? StockHoldingLayout.collapsedSectionHeight
+                : StockHoldingLayout.separatorAreaHeight
 
             if isMarketExpanded(section.market) {
-                height += StockHoldingLayout.sectionSpacing
-                    + tableHeight(for: section)
+                if showsMarketHeaders {
+                    height += StockHoldingLayout.sectionSpacing
+                }
+                height += tableHeight(for: section)
             }
         }
 
@@ -369,7 +385,53 @@ struct StockHoldingListGroup: View {
     }
 
     private func isMarketExpanded(_ market: StockHoldingMarket) -> Bool {
-        !collapsedMarkets.contains(market)
+        !showsMarketHeaders || !collapsedMarkets.contains(market)
+    }
+
+    private var displayedSections: [StockHoldingMarketSection] {
+        guard !sections.isEmpty else { return [] }
+
+        let sections = sortsHoldingsByMarketValueDescending
+            ? sections.map { section in
+                StockHoldingMarketSection(
+                    market: section.market,
+                    holdings: sortedHoldings(section.holdings)
+                )
+            }
+            : sections
+
+        guard !showsMarketHeaders else { return sections }
+
+        return [
+            StockHoldingMarketSection(
+                market: sections[0].market,
+                holdings: sortedHoldings(sections.flatMap(\.holdings))
+            )
+        ]
+    }
+
+    private func sortedHoldings(
+        _ holdings: [StockHoldingItem]
+    ) -> [StockHoldingItem] {
+        holdings.enumerated()
+            .sorted { lhs, rhs in
+                let leftValue = marketValue(of: lhs.element)
+                let rightValue = marketValue(of: rhs.element)
+
+                if leftValue == rightValue {
+                    return lhs.offset < rhs.offset
+                }
+
+                return leftValue > rightValue
+            }
+            .map(\.element)
+    }
+
+    private func marketValue(of holding: StockHoldingItem) -> Decimal {
+        Decimal(
+            string: holding.marketValue.replacingOccurrences(of: ",", with: ""),
+            locale: Locale(identifier: "en_US_POSIX")
+        ) ?? 0
     }
 
     private func toggleMarket(_ market: StockHoldingMarket) {
@@ -521,6 +583,7 @@ private struct StockHoldingScrollableMarketTable: View {
 private struct StockHoldingFixedMarketSection: View {
     let section: StockHoldingMarketSection
     let isMarketExpanded: Bool
+    let showsMarketHeader: Bool
     let isNumberHidden: Bool
     let expandedHoldingID: StockHoldingItem.ID?
     let toggleMarket: () -> Void
@@ -529,12 +592,17 @@ private struct StockHoldingFixedMarketSection: View {
     let onDetails: (StockHoldingItem) -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: StockHoldingLayout.sectionSpacing) {
-            StockHoldingMarketHeader(
-                market: section.market,
-                isExpanded: isMarketExpanded,
-                action: toggleMarket
-            )
+        VStack(
+            alignment: .leading,
+            spacing: showsMarketHeader ? StockHoldingLayout.sectionSpacing : 0
+        ) {
+            if showsMarketHeader {
+                StockHoldingMarketHeader(
+                    market: section.market,
+                    isExpanded: isMarketExpanded,
+                    action: toggleMarket
+                )
+            }
 
             if isMarketExpanded {
                 StockHoldingFixedMarketTable(

@@ -47,7 +47,7 @@ struct StockOrderOrderTypeActionSheet: View {
                 )
                 .padding(
                     .bottom,
-                    proxy.safeAreaInsets.bottom
+                    StockOrderOrderTypeActionSheetLayout.bottomPadding
                 )
                 .frame(
                     maxWidth: .infinity,
@@ -260,6 +260,7 @@ struct StockOrderOrderTypeActionSheet: View {
 
 enum StockOrderOrderTypeActionSheetLayout {
     static let horizontalPadding: CGFloat = 16
+    static let bottomPadding: CGFloat = 8
     static let sectionSpacing: CGFloat = 8
     static let titleHeight: CGFloat = 46
     static let rowHeight: CGFloat = 56

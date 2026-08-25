@@ -47,7 +47,9 @@ enum DemoCopyKey {
     case name, price, enterPrice, decreasePrice, increasePrice, priceAction
     case quantity, enterQuantity, minimumQuantity, decreaseQuantity, increaseQuantity
     case quickQuantityInput, hideQuickQuantityInput
-    case amount, atMarketPrice, buyingUsesMargin
+    case amount, estimatedAmount, atMarketPrice, marketPrice, buyingUsesMargin
+    case transactionAccount, direction, transactionFeesAndTaxes, commissionRate, minimumCommission
+    case triggerPrice, executionType, confirm
     case effectPeriod, dayValid, goodTillCancelled
     case selectEffectPeriod, chooseEffectPeriod, effectPeriodInformation
     case extendedHours, extendedHoursAllowed, extendedHoursNotAllowed
@@ -211,8 +213,18 @@ private enum DemoCopy {
         .quickQuantityInput: ("快捷输入", "快捷輸入", "Quick input"),
         .hideQuickQuantityInput: ("收起快捷输入", "收起快捷輸入", "Hide quick input"),
         .amount: ("金额", "金額", "Amount"),
+        .estimatedAmount: ("预估金额", "預估金額", "Estimated amount"),
         .atMarketPrice: ("按市价", "按市價", "At market price"),
+        .marketPrice: ("市价", "市價", "Market price"),
         .buyingUsesMargin: ("买入将使用融资", "買入將使用融資", "Buy will use margin"),
+        .transactionAccount: ("交易账户", "交易帳戶", "Trading account"),
+        .direction: ("方向", "方向", "Side"),
+        .transactionFeesAndTaxes: ("交易费用及税项", "交易費用及稅項", "Fees and taxes"),
+        .commissionRate: ("佣金费率", "佣金費率", "Commission rate"),
+        .minimumCommission: ("0.00%，最低0.00", "0.00%，最低0.00", "0.00%, min. 0.00"),
+        .triggerPrice: ("触发价", "觸發價", "Trigger price"),
+        .executionType: ("委托类型", "委託類型", "Execution type"),
+        .confirm: ("确定", "確定", "Confirm"),
         .effectPeriod: ("有效期", "有效期", "Validity"),
         .dayValid: ("当日有效", "當日有效", "Day"),
         .goodTillCancelled: ("撤单前有效", "撤單前有效", "Good Till Cancelled"),

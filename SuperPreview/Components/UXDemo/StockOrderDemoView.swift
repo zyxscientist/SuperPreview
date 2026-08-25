@@ -12,6 +12,8 @@ import SwiftUI
 /// model owns the market matrix and the bindings that connect those blocks.
 struct StockOrderDemoView: View {
     @StateObject private var viewModel: StockOrderDemoViewModel
+    @State private var confirmationSide: StockOrderConfirmationSide?
+    @State private var focusedInput: StockOrderFormInputFocus?
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.demoLanguage) private var language
@@ -25,33 +27,60 @@ struct StockOrderDemoView: View {
 
     var body: some View {
         GeometryReader { proxy in
-            VStack(spacing: 0) {
-                StockOrderNavbar(
-                    accountTitle: accountTitle,
-                    buyingPower: viewModel.buyingPower,
-                    onBack: { dismiss() },
-                    onRefresh: {}
-                )
+            ZStack(alignment: .bottom) {
+                VStack(spacing: 0) {
+                    StockOrderNavbar(
+                        accountTitle: accountTitle,
+                        buyingPower: viewModel.buyingPower,
+                        onBack: {
+                            dismissInput()
+                            dismiss()
+                        },
+                        onRefresh: dismissInput
+                    )
 
-                ScrollView(.vertical, showsIndicators: false) {
-                    pageContent(viewportWidth: proxy.size.width)
-                        .frame(maxWidth: .infinity, alignment: .topLeading)
-                        .padding(.bottom, 16)
+                    ScrollView(.vertical, showsIndicators: false) {
+                        pageContent(viewportWidth: proxy.size.width)
+                            .frame(maxWidth: .infinity, alignment: .topLeading)
+                            .padding(
+                                .bottom,
+                                StockOrderDemoViewLayout.bottomTradeBarHeight + 16
+                            )
+                    }
+                    .scrollBounceBehavior(.basedOnSize)
+                    .scrollDismissesKeyboard(.immediately)
+                    .simultaneousGesture(
+                        DragGesture(minimumDistance: 1)
+                            .onChanged { _ in dismissInput() }
+                    )
                 }
-                .scrollBounceBehavior(.basedOnSize)
+
+                // Keep the trade bar in the page viewport. A safe-area inset is
+                // re-laid out while a search sheet is dismissed, which makes the
+                // bar visibly move even though it should remain pinned.
+                bottomTradeBar
             }
         }
+        .ignoresSafeArea(.keyboard, edges: .bottom)
         .background(Color("color-base-1"))
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            bottomTradeBar
+        .fullScreenCover(item: $confirmationSide) { side in
+            StockOrderConfirmationSheet(
+                data: viewModel.confirmationData(for: side, language: language)
+            )
+            .environment(\.demoLanguage, language)
+            .presentationBackground(.clear)
         }
         .onChange(of: viewModel.selection) { _, _ in
+            dismissInput()
             viewModel.synchronizeSelection()
         }
         .onChange(of: viewModel.priceTarget) { _, target in
             viewModel.updatePriceTarget(target)
+        }
+        .onChange(of: viewModel.orderType) { _, _ in
+            dismissInput()
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockOrder.demo")
@@ -66,6 +95,7 @@ struct StockOrderDemoView: View {
                 searchableSymbols: StockOrderDemoViewModel.searchableSymbols,
                 searchAvailability: .available
             )
+            .simultaneousGesture(TapGesture().onEnded { dismissInput() })
 
             if viewModel.showsOrderBook, let depth = viewModel.profile.orderBookDepth {
                 StockOrderBook(
@@ -76,6 +106,7 @@ struct StockOrderDemoView: View {
                     isExpanded: $viewModel.isOrderBookExpanded
                 )
                 .transition(.opacity.combined(with: .scale(scale: 0.98, anchor: .top)))
+                .simultaneousGesture(TapGesture().onEnded { dismissInput() })
             }
 
             orderForm
@@ -86,6 +117,7 @@ struct StockOrderDemoView: View {
                 maximumPurchasable: viewModel.profile.maximumPurchasable,
                 positionSellable: viewModel.profile.positionSellable
             )
+            .simultaneousGesture(TapGesture().onEnded { dismissInput() })
 
             StockOrderOrdersAndPositions(
                 selectedTab: $viewModel.selectedOrdersTab,
@@ -98,7 +130,13 @@ struct StockOrderDemoView: View {
                 todayOrdersState: .content,
                 positionsState: .content
             )
+            .simultaneousGesture(TapGesture().onEnded { dismissInput() })
         }
+        .contentShape(Rectangle())
+        .gesture(
+            TapGesture().onEnded { dismissInput() },
+            including: .gesture
+        )
         .animation(
             StockOrderMotion.expansion(reduceMotion: reduceMotion),
             value: viewModel.selection?.id
@@ -111,19 +149,24 @@ struct StockOrderDemoView: View {
                 selection: $viewModel.orderType,
                 supportedOrderTypes: viewModel.profile.supportedOrderTypes
             )
+            .simultaneousGesture(TapGesture().onEnded { dismissInput() })
 
-            StockOrderPriceInput(
-                price: $viewModel.price,
-                priceTarget: $viewModel.priceTarget,
-                currentPrice: viewModel.profile.currentPrice,
-                supportedPriceTargets: viewModel.profile.supportedPriceTargets,
-                onDecrease: viewModel.decreasePrice,
-                onIncrease: viewModel.increasePrice
-            )
+            if !viewModel.isMarketOrder {
+                StockOrderPriceInput(
+                    price: $viewModel.price,
+                    priceTarget: $viewModel.priceTarget,
+                    focusedInput: $focusedInput,
+                    currentPrice: viewModel.profile.currentPrice,
+                    supportedPriceTargets: viewModel.profile.supportedPriceTargets,
+                    onDecrease: viewModel.decreasePrice,
+                    onIncrease: viewModel.increasePrice
+                )
+            }
 
             StockOrderQuantityInput(
                 quantity: $viewModel.quantity,
                 quickInputColumns: viewModel.quickInputColumns(language: language),
+                focusedInput: $focusedInput,
                 inputMode: quantityInputMode,
                 onDecrease: viewModel.decreaseQuantity,
                 onIncrease: viewModel.increaseQuantity
@@ -137,17 +180,20 @@ struct StockOrderDemoView: View {
                 fractionDigits: viewModel.profile.isCrypto ? 2 : 2,
                 usesMargin: viewModel.profile.usesMargin && viewModel.orderType != .market
             )
+            .simultaneousGesture(TapGesture().onEnded { dismissInput() })
 
             if viewModel.showsExtendedHours {
                 StockOrderExtendedHoursInput(
                     selection: $viewModel.extendedHours
                 )
                 .transition(.opacity.combined(with: .scale(scale: 0.98, anchor: .top)))
+                .simultaneousGesture(TapGesture().onEnded { dismissInput() })
             }
 
             StockOrderEffectPeriodInput(
                 selection: $viewModel.effectPeriod
             )
+            .simultaneousGesture(TapGesture().onEnded { dismissInput() })
         }
     }
 
@@ -166,12 +212,12 @@ struct StockOrderDemoView: View {
 
             StockOrderTradeActionBar(
                 status: .unlocked,
-                onBuy: {},
-                onSell: {}
+                onBuy: { presentConfirmation(for: .buy) },
+                onSell: { presentConfirmation(for: .sell) }
             )
             .padding(.bottom, 8)
         }
-        .frame(height: 94)
+        .frame(height: StockOrderDemoViewLayout.bottomTradeBarHeight)
         .background(.clear)
     }
 
@@ -212,6 +258,27 @@ struct StockOrderDemoView: View {
             set: { viewModel.setProductCategory($0) }
         )
     }
+
+    private func presentConfirmation(for side: StockOrderConfirmationSide) {
+        dismissInput()
+
+        guard viewModel.selection != nil else { return }
+
+        var transaction = Transaction()
+        transaction.disablesAnimations = true
+
+        withTransaction(transaction) {
+            confirmationSide = side
+        }
+    }
+
+    private func dismissInput() {
+        focusedInput = nil
+    }
+}
+
+private enum StockOrderDemoViewLayout {
+    static let bottomTradeBarHeight: CGFloat = 94
 }
 
 private extension StockOrderSymbol {

@@ -5,6 +5,16 @@
 
 import SwiftUI
 
+/// The currently editable field on the assembled stock-order page.
+///
+/// Individual input components retain their local `FocusState`, while this
+/// small shared value lets the page dismiss the keyboard consistently when a
+/// user moves on to another interaction.
+enum StockOrderFormInputFocus: Hashable {
+    case price
+    case quantity
+}
+
 /// The price field used by the stock-order demo.
 ///
 /// The parent owns price-tick validation and the resulting price. This view
@@ -13,6 +23,7 @@ import SwiftUI
 struct StockOrderPriceInput: View {
     @Binding var price: String
     @Binding var priceTarget: StockOrderPriceTarget
+    @Binding var focusedInput: StockOrderFormInputFocus?
 
     /// The selected symbol's current price. A value enables the input-deviation bubble.
     let currentPrice: Decimal?
@@ -32,6 +43,7 @@ struct StockOrderPriceInput: View {
     init(
         price: Binding<String>,
         priceTarget: Binding<StockOrderPriceTarget>,
+        focusedInput: Binding<StockOrderFormInputFocus?> = .constant(nil),
         currentPrice: Decimal? = nil,
         minimumDeviationPercent: Decimal = 0.01,
         supportedPriceTargets: [StockOrderPriceTarget] = StockOrderPriceTargetOptions.advancedQuote,
@@ -41,6 +53,7 @@ struct StockOrderPriceInput: View {
     ) {
         _price = price
         _priceTarget = priceTarget
+        _focusedInput = focusedInput
         self.currentPrice = currentPrice
         self.minimumDeviationPercent = minimumDeviationPercent
         self.supportedPriceTargets = supportedPriceTargets
@@ -101,6 +114,22 @@ struct StockOrderPriceInput: View {
 
             if sanitizedPrice != newValue {
                 price = sanitizedPrice
+            }
+        }
+        .onChange(of: focusedInput) { _, focusedInput in
+            guard focusedInput != .price else { return }
+            isPriceFieldFocused = false
+        }
+        .onChange(of: isPriceFieldFocused) { _, isFocused in
+            if isFocused {
+                focusedInput = .price
+            } else if focusedInput == .price {
+                focusedInput = nil
+            }
+        }
+        .onDisappear {
+            if focusedInput == .price {
+                focusedInput = nil
             }
         }
     }
@@ -349,6 +378,10 @@ struct StockOrderPriceInput: View {
     private func nudgePrice(_ action: () -> Void) {
         let shouldRestoreFocus = isPriceFieldFocused
 
+        if !shouldRestoreFocus {
+            dismissActiveInput()
+        }
+
         action()
         HapticManager.instance.impactHaptic(type: .medium)
 
@@ -363,8 +396,14 @@ struct StockOrderPriceInput: View {
     private func toggleTargetMenu() {
         guard supportedPriceTargets.count > 1 else { return }
 
+        dismissActiveInput()
         HapticManager.instance.impactHaptic(type: .medium)
         isTargetMenuPresented.toggle()
+    }
+
+    private func dismissActiveInput() {
+        isPriceFieldFocused = false
+        focusedInput = nil
     }
 
     private func sanitized(_ value: String) -> String {

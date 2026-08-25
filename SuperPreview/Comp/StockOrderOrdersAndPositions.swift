@@ -230,6 +230,8 @@ struct StockOrderOrdersAndPositions: View {
                     viewportWidth: viewportWidth,
                     sections: virtualAssetHoldingSections,
                     isNumberHidden: isNumberHidden,
+                    showsCategoryHeaders: false,
+                    sortsHoldingsByMarketValueDescending: true,
                     onAction: onVirtualAssetAction
                 )
             } else {
@@ -237,6 +239,8 @@ struct StockOrderOrdersAndPositions: View {
                     viewportWidth: viewportWidth,
                     sections: holdingSections,
                     isNumberHidden: isNumberHidden,
+                    showsMarketHeaders: false,
+                    sortsHoldingsByMarketValueDescending: true,
                     onQuote: onQuote,
                     onOrder: onOrder,
                     onDetails: onDetails
@@ -256,7 +260,10 @@ struct StockOrderOrdersAndPositions: View {
             VStack(spacing: 0) {
                 todayOrdersTableHeader
 
-                LazyVStack(spacing: 0) {
+                // Today's orders are a small, fixed demo list. Keep the rows in a
+                // regular stack so an animated section above does not cause a
+                // lazy list to re-measure and visibly jump.
+                VStack(spacing: 0) {
                     ForEach(todayOrders) { item in
                         StockOrderTodayOrder(
                             isActionGroupExpanded: orderExpansionBinding(for: item.id),

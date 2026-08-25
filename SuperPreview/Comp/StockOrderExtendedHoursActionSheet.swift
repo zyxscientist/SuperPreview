@@ -42,7 +42,10 @@ struct StockOrderExtendedHoursActionSheet: View {
                     cancelButton
                 }
                 .padding(.horizontal, StockOrderExtendedHoursActionSheetLayout.horizontalPadding)
-                .padding(.bottom, proxy.safeAreaInsets.bottom)
+                .padding(
+                    .bottom,
+                    StockOrderExtendedHoursActionSheetLayout.bottomPadding
+                )
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
                 .offset(y: isCardsVisible ? 0 : proxy.size.height)
                 .animation(
@@ -217,6 +220,7 @@ struct StockOrderExtendedHoursActionSheet: View {
 
 private enum StockOrderExtendedHoursActionSheetLayout {
     static let horizontalPadding: CGFloat = 16
+    static let bottomPadding: CGFloat = 8
     static let sectionSpacing: CGFloat = 8
     static let titleHeight: CGFloat = 46
     static let rowHeight: CGFloat = 56

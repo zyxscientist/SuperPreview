@@ -185,6 +185,8 @@ struct VirtualAssetHoldingListGroup: View {
     let viewportWidth: CGFloat
     let sections: [VirtualAssetHoldingSection]
     let isNumberHidden: Bool
+    let showsCategoryHeaders: Bool
+    let sortsHoldingsByMarketValueDescending: Bool
     let onAction: (VirtualAssetHoldingAction, VirtualAssetHoldingItem) -> Void
 
     @Environment(\.accessibilityReduceMotion) private var accessibilityReduceMotion
@@ -196,6 +198,8 @@ struct VirtualAssetHoldingListGroup: View {
         viewportWidth: CGFloat,
         sections: [VirtualAssetHoldingSection] = .virtualAssetHoldingPreview,
         isNumberHidden: Bool = false,
+        showsCategoryHeaders: Bool = true,
+        sortsHoldingsByMarketValueDescending: Bool = false,
         initialInfoPlacement: VirtualAssetHoldingInfoPlacement = .head,
         initiallyCollapsedCategories: Set<VirtualAssetHoldingCategory> = [],
         initiallyExpandedHoldingID: VirtualAssetHoldingItem.ID? = nil,
@@ -207,6 +211,8 @@ struct VirtualAssetHoldingListGroup: View {
         self.viewportWidth = viewportWidth
         self.sections = sections
         self.isNumberHidden = isNumberHidden
+        self.showsCategoryHeaders = showsCategoryHeaders
+        self.sortsHoldingsByMarketValueDescending = sortsHoldingsByMarketValueDescending
         self.onAction = onAction
         _collapsedCategories = State(
             initialValue: TradeAggregationExpansionState.restoredCollapsed(
@@ -252,10 +258,11 @@ struct VirtualAssetHoldingListGroup: View {
             alignment: .leading,
             spacing: VirtualAssetHoldingLayout.sectionSpacing
         ) {
-            ForEach(sections) { section in
+            ForEach(displayedSections) { section in
                 VirtualAssetHoldingScrollableSection(
                     section: section,
                     isExpanded: isCategoryExpanded(section.category),
+                    showsCategoryHeader: showsCategoryHeaders,
                     showsHeadInfo: showsHeadInfo(for: section.category),
                     showsFooterInfo: showsFooterInfo(for: section.category),
                     isNumberHidden: isNumberHidden,
@@ -276,10 +283,11 @@ struct VirtualAssetHoldingListGroup: View {
             alignment: .leading,
             spacing: VirtualAssetHoldingLayout.sectionSpacing
         ) {
-            ForEach(sections) { section in
+            ForEach(displayedSections) { section in
                 VirtualAssetHoldingFixedSection(
                     section: section,
                     isExpanded: isCategoryExpanded(section.category),
+                    showsCategoryHeader: showsCategoryHeaders,
                     showsHeadInfo: showsHeadInfo(for: section.category),
                     showsFooterInfo: showsFooterInfo(for: section.category),
                     isNumberHidden: isNumberHidden,
@@ -300,10 +308,10 @@ struct VirtualAssetHoldingListGroup: View {
     }
 
     private var contentHeight: CGFloat {
-        let sectionHeights = sections.reduce(CGFloat.zero) {
+        let sectionHeights = displayedSections.reduce(CGFloat.zero) {
             $0 + sectionHeight(for: $1)
         }
-        let gaps = CGFloat(max(sections.count - 1, 0))
+        let gaps = CGFloat(max(displayedSections.count - 1, 0))
             * VirtualAssetHoldingLayout.sectionSpacing
         return sectionHeights + gaps
     }
@@ -311,9 +319,13 @@ struct VirtualAssetHoldingListGroup: View {
     private func sectionHeight(
         for section: VirtualAssetHoldingSection
     ) -> CGFloat {
-        var childCount = 2
-        var height = VirtualAssetHoldingLayout.marketHeaderHeight
-            + VirtualAssetHoldingLayout.separatorAreaHeight
+        var childCount = 1
+        var height = VirtualAssetHoldingLayout.separatorAreaHeight
+
+        if showsCategoryHeaders {
+            childCount += 1
+            height += VirtualAssetHoldingLayout.marketHeaderHeight
+        }
 
         if showsHeadInfo(for: section.category) {
             childCount += 1
@@ -352,7 +364,53 @@ struct VirtualAssetHoldingListGroup: View {
     private func isCategoryExpanded(
         _ category: VirtualAssetHoldingCategory
     ) -> Bool {
-        !collapsedCategories.contains(category)
+        !showsCategoryHeaders || !collapsedCategories.contains(category)
+    }
+
+    private var displayedSections: [VirtualAssetHoldingSection] {
+        guard !sections.isEmpty else { return [] }
+
+        let sections = sortsHoldingsByMarketValueDescending
+            ? sections.map { section in
+                VirtualAssetHoldingSection(
+                    category: section.category,
+                    holdings: sortedHoldings(section.holdings)
+                )
+            }
+            : sections
+
+        guard !showsCategoryHeaders else { return sections }
+
+        return [
+            VirtualAssetHoldingSection(
+                category: sections[0].category,
+                holdings: sortedHoldings(sections.flatMap(\.holdings))
+            )
+        ]
+    }
+
+    private func sortedHoldings(
+        _ holdings: [VirtualAssetHoldingItem]
+    ) -> [VirtualAssetHoldingItem] {
+        holdings.enumerated()
+            .sorted { lhs, rhs in
+                let leftValue = marketValue(of: lhs.element)
+                let rightValue = marketValue(of: rhs.element)
+
+                if leftValue == rightValue {
+                    return lhs.offset < rhs.offset
+                }
+
+                return leftValue > rightValue
+            }
+            .map(\.element)
+    }
+
+    private func marketValue(of holding: VirtualAssetHoldingItem) -> Decimal {
+        Decimal(
+            string: holding.marketValue.replacingOccurrences(of: ",", with: ""),
+            locale: Locale(identifier: "en_US_POSIX")
+        ) ?? 0
     }
 
     private func showsHeadInfo(
@@ -427,6 +485,7 @@ private enum VirtualAssetHoldingLayout {
 private struct VirtualAssetHoldingScrollableSection: View {
     let section: VirtualAssetHoldingSection
     let isExpanded: Bool
+    let showsCategoryHeader: Bool
     let showsHeadInfo: Bool
     let showsFooterInfo: Bool
     let isNumberHidden: Bool
@@ -438,7 +497,9 @@ private struct VirtualAssetHoldingScrollableSection: View {
             alignment: .leading,
             spacing: VirtualAssetHoldingLayout.sectionContentSpacing
         ) {
-            placeholder(height: VirtualAssetHoldingLayout.marketHeaderHeight)
+            if showsCategoryHeader {
+                placeholder(height: VirtualAssetHoldingLayout.marketHeaderHeight)
+            }
 
             if showsHeadInfo {
                 placeholder(height: VirtualAssetHoldingLayout.headInfoHeight)
@@ -474,6 +535,7 @@ private struct VirtualAssetHoldingFixedSection: View {
 
     let section: VirtualAssetHoldingSection
     let isExpanded: Bool
+    let showsCategoryHeader: Bool
     let showsHeadInfo: Bool
     let showsFooterInfo: Bool
     let isNumberHidden: Bool
@@ -487,12 +549,14 @@ private struct VirtualAssetHoldingFixedSection: View {
             alignment: .leading,
             spacing: VirtualAssetHoldingLayout.sectionContentSpacing
         ) {
-            Color.clear
-                .frame(
-                    width: viewportWidth,
-                    height: VirtualAssetHoldingLayout.marketHeaderHeight
-                )
-                .allowsHitTesting(false)
+            if showsCategoryHeader {
+                Color.clear
+                    .frame(
+                        width: viewportWidth,
+                        height: VirtualAssetHoldingLayout.marketHeaderHeight
+                    )
+                    .allowsHitTesting(false)
+            }
 
             if showsHeadInfo {
                 VirtualAssetHoldingHeadInfo(action: dismissHeadInfo)
@@ -515,13 +579,15 @@ private struct VirtualAssetHoldingFixedSection: View {
                 .allowsHitTesting(false)
         }
         .overlay(alignment: .topLeading) {
-            VirtualAssetHoldingMarketHeader(
-                category: section.category,
-                isExpanded: isExpanded,
-                action: toggleCategory
-            )
-            .background(Color("color-base-1"))
-            .zIndex(1)
+            if showsCategoryHeader {
+                VirtualAssetHoldingMarketHeader(
+                    category: section.category,
+                    isExpanded: isExpanded,
+                    action: toggleCategory
+                )
+                .background(Color("color-base-1"))
+                .zIndex(1)
+            }
         }
     }
 }

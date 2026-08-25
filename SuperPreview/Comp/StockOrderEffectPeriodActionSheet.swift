@@ -45,7 +45,10 @@ struct StockOrderEffectPeriodActionSheet: View {
                     .horizontal,
                     StockOrderEffectPeriodActionSheetLayout.horizontalPadding
                 )
-                .padding(.bottom, proxy.safeAreaInsets.bottom)
+                .padding(
+                    .bottom,
+                    StockOrderEffectPeriodActionSheetLayout.bottomPadding
+                )
                 .frame(
                     maxWidth: .infinity,
                     maxHeight: .infinity,
@@ -253,6 +256,7 @@ struct StockOrderEffectPeriodActionSheet: View {
 
 private enum StockOrderEffectPeriodActionSheetLayout {
     static let horizontalPadding: CGFloat = 16
+    static let bottomPadding: CGFloat = 8
     static let sectionSpacing: CGFloat = 8
     static let titleHeight: CGFloat = 46
     static let rowHeight: CGFloat = 56

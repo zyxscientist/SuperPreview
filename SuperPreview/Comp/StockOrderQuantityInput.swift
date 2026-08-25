@@ -136,6 +136,7 @@ struct StockOrderQuantityQuickInputColumn: Identifiable, Hashable {
 /// quantity field everywhere else.
 struct StockOrderQuantityInput: View {
     @Binding var quantity: String
+    @Binding var focusedInput: StockOrderFormInputFocus?
 
     let quickInputColumns: [StockOrderQuantityQuickInputColumn]
     let inputMode: StockOrderQuantityInputMode
@@ -152,6 +153,7 @@ struct StockOrderQuantityInput: View {
     init(
         quantity: Binding<String>,
         quickInputColumns: [StockOrderQuantityQuickInputColumn],
+        focusedInput: Binding<StockOrderFormInputFocus?> = .constant(nil),
         inputMode: StockOrderQuantityInputMode = .wholeNumber,
         showsValidationError: Bool = false,
         initiallyShowsQuickInput: Bool = false,
@@ -160,6 +162,7 @@ struct StockOrderQuantityInput: View {
         onQuickInput: @escaping (StockOrderQuantityQuickInputItem) -> Void = { _ in }
     ) {
         _quantity = quantity
+        _focusedInput = focusedInput
         self.quickInputColumns = quickInputColumns
         self.inputMode = inputMode
         self.showsValidationError = showsValidationError
@@ -203,6 +206,21 @@ struct StockOrderQuantityInput: View {
                 ) {
                     isQuickInputPresented = false
                 }
+            }
+
+            if isFocused {
+                focusedInput = .quantity
+            } else if focusedInput == .quantity {
+                focusedInput = nil
+            }
+        }
+        .onChange(of: focusedInput) { _, focusedInput in
+            guard focusedInput != .quantity else { return }
+            isQuantityFieldFocused = false
+        }
+        .onDisappear {
+            if focusedInput == .quantity {
+                focusedInput = nil
             }
         }
     }
@@ -476,6 +494,10 @@ struct StockOrderQuantityInput: View {
     private func nudgeQuantity(_ action: () -> Void) {
         let shouldRestoreFocus = isQuantityFieldFocused
 
+        if !shouldRestoreFocus {
+            dismissActiveInput()
+        }
+
         action()
         HapticManager.instance.impactHaptic(type: .medium)
 
@@ -490,20 +512,22 @@ struct StockOrderQuantityInput: View {
     private func toggleQuickInput() {
         guard hasQuickInput else { return }
 
+        dismissActiveInput()
         withAnimation(StockOrderMotion.expansion(reduceMotion: reduceMotion)) {
-            if !isQuickInputPresented {
-                isQuantityFieldFocused = false
-            }
-
             isQuickInputPresented.toggle()
         }
     }
 
     private func selectQuickInput(_ item: StockOrderQuantityQuickInputItem) {
-        isQuantityFieldFocused = false
+        dismissActiveInput()
         quantity = item.inputValue
         HapticManager.instance.impactHaptic(type: .medium)
         onQuickInput(item)
+    }
+
+    private func dismissActiveInput() {
+        isQuantityFieldFocused = false
+        focusedInput = nil
     }
 
     private func sanitized(_ value: String) -> String {
