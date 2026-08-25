@@ -13,6 +13,7 @@ import SwiftUI
 struct StockOrderDemoView: View {
     @StateObject private var viewModel: StockOrderDemoViewModel
     @State private var confirmationSide: StockOrderConfirmationSide?
+    @State private var isPriceTargetMenuPresented = false
     @State private var focusedInput: StockOrderFormInputFocus?
 
     @Environment(\.dismiss) private var dismiss
@@ -156,6 +157,7 @@ struct StockOrderDemoView: View {
                     price: $viewModel.price,
                     priceTarget: $viewModel.priceTarget,
                     focusedInput: $focusedInput,
+                    isTargetMenuPresented: $isPriceTargetMenuPresented,
                     currentPrice: viewModel.profile.currentPrice,
                     supportedPriceTargets: viewModel.profile.supportedPriceTargets,
                     onDecrease: viewModel.decreasePrice,
@@ -168,9 +170,19 @@ struct StockOrderDemoView: View {
                 quickInputColumns: viewModel.quickInputColumns(language: language),
                 focusedInput: $focusedInput,
                 inputMode: quantityInputMode,
-                onDecrease: viewModel.decreaseQuantity,
-                onIncrease: viewModel.increaseQuantity
+                onDecrease: {
+                    dismissInput()
+                    viewModel.decreaseQuantity()
+                },
+                onIncrease: {
+                    dismissInput()
+                    viewModel.increaseQuantity()
+                },
+                onQuickInput: { _ in
+                    dismissInput()
+                }
             )
+            .simultaneousGesture(TapGesture().onEnded { dismissInput() })
 
             StockOrderAmountField(
                 price: viewModel.price.isEmpty ? "0" : viewModel.price,
@@ -274,6 +286,7 @@ struct StockOrderDemoView: View {
 
     private func dismissInput() {
         focusedInput = nil
+        isPriceTargetMenuPresented = false
     }
 }
 

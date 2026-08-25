@@ -24,6 +24,7 @@ struct StockOrderPriceInput: View {
     @Binding var price: String
     @Binding var priceTarget: StockOrderPriceTarget
     @Binding var focusedInput: StockOrderFormInputFocus?
+    @Binding var isTargetMenuPresented: Bool
 
     /// The selected symbol's current price. A value enables the input-deviation bubble.
     let currentPrice: Decimal?
@@ -38,12 +39,12 @@ struct StockOrderPriceInput: View {
     @Environment(\.demoLanguage) private var language
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @FocusState private var isPriceFieldFocused: Bool
-    @State private var isTargetMenuPresented = false
 
     init(
         price: Binding<String>,
         priceTarget: Binding<StockOrderPriceTarget>,
         focusedInput: Binding<StockOrderFormInputFocus?> = .constant(nil),
+        isTargetMenuPresented: Binding<Bool> = .constant(false),
         currentPrice: Decimal? = nil,
         minimumDeviationPercent: Decimal = 0.01,
         supportedPriceTargets: [StockOrderPriceTarget] = StockOrderPriceTargetOptions.advancedQuote,
@@ -54,6 +55,7 @@ struct StockOrderPriceInput: View {
         _price = price
         _priceTarget = priceTarget
         _focusedInput = focusedInput
+        _isTargetMenuPresented = isTargetMenuPresented
         self.currentPrice = currentPrice
         self.minimumDeviationPercent = minimumDeviationPercent
         self.supportedPriceTargets = supportedPriceTargets
@@ -119,9 +121,13 @@ struct StockOrderPriceInput: View {
         .onChange(of: focusedInput) { _, focusedInput in
             guard focusedInput != .price else { return }
             isPriceFieldFocused = false
+            if focusedInput != nil {
+                isTargetMenuPresented = false
+            }
         }
         .onChange(of: isPriceFieldFocused) { _, isFocused in
             if isFocused {
+                isTargetMenuPresented = false
                 focusedInput = .price
             } else if focusedInput == .price {
                 focusedInput = nil
@@ -376,6 +382,7 @@ struct StockOrderPriceInput: View {
     }
 
     private func nudgePrice(_ action: () -> Void) {
+        isTargetMenuPresented = false
         let shouldRestoreFocus = isPriceFieldFocused
 
         if !shouldRestoreFocus {
@@ -569,11 +576,13 @@ private struct StockOrderNudgePressButton: View {
 private struct StockOrderPriceInputPreviewHarness: View {
     @State private var price = "233.610"
     @State private var priceTarget: StockOrderPriceTarget = .specifiedPrice
+    @State private var isTargetMenuPresented = false
 
     var body: some View {
         StockOrderPriceInput(
             price: $price,
             priceTarget: $priceTarget,
+            isTargetMenuPresented: $isTargetMenuPresented,
             currentPrice: Decimal(string: "231.576", locale: StockOrderPriceInputLayout.priceLocale),
             onDecrease: { updatePrice(by: -0.010) },
             onIncrease: { updatePrice(by: 0.010) }

@@ -203,6 +203,7 @@ struct StockOrderConfirmationSheet: View {
                     detailRow(row)
                 }
             }
+            .padding(.bottom, StockOrderConfirmationSheetLayout.lastRowBottomPadding)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .accessibilityIdentifier("stockOrder.confirmationSheet.content")
@@ -369,6 +370,7 @@ private enum StockOrderConfirmationSheetLayout {
     static let labelWidth: CGFloat = 120
     static let rowHeight: CGFloat = 32
     static let rowVerticalPadding: CGFloat = 4
+    static let lastRowBottomPadding: CGFloat = 10
     static let separatorHeight: CGFloat = 0.5
     static let buttonTopPadding: CGFloat = 8
     static let buttonHeight: CGFloat = 44
