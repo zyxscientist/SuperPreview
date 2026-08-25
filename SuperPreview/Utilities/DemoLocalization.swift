@@ -45,6 +45,10 @@ enum DemoCopyKey {
     case slow, medium, fast, mixed
     case all, hkStocks, chinaAShares, usStocks, etfs, custom
     case name, price, changePercent, preMarket, afterHours
+    case stockInputPlaceholder, searchPlaceholder, search, cancel, clear, delete
+    case recentSearches, clearSearchHistory, noSearchResult, networkUnavailable, refreshNow
+    case expandChart, collapseChart, closingAuction, volatilityCoolingOff, priceRange
+    case buyOrderBook, sellOrderBook, expandOrderBook, collapseOrderBook
     case addToWatchlist, editWatchlist
     case watchlist, trade, wealth, news, markets, me
     case stocks, funds, virtualAssets, positionDetails
@@ -52,6 +56,7 @@ enum DemoCopyKey {
     case securitiesMarketValue, totalCash, positionProfitLoss
     case fundsInTransit, ipoFundsInTransit, fundsOnHold
     case cashAvailable, cashWithdrawable, maximumBuyingPower
+    case securitiesMarginAccount, back, refresh
     case fundMarketValue, positionIncome, virtualAssetMarketValue
     case todayOrders, ipoCenter, deposit, more
     case transactionHistory, recurringInvestment, statements
@@ -179,6 +184,26 @@ private enum DemoCopy {
         .changePercent: ("涨跌幅", "漲跌幅", "Chg%"),
         .preMarket: ("盘前", "盤前", "Pre"),
         .afterHours: ("盘后", "盤後", "Post"),
+        .stockInputPlaceholder: ("请输入股票", "請輸入股票", "Enter stock"),
+        .searchPlaceholder: ("代码/名称/全拼/首字母", "代碼/名稱/全拼/首字母", "Symbol / name / pinyin / initials"),
+        .search: ("搜索", "搜尋", "Search"),
+        .cancel: ("取消", "取消", "Cancel"),
+        .clear: ("清除", "清除", "Clear"),
+        .delete: ("删除", "刪除", "Delete"),
+        .recentSearches: ("最近搜索", "最近搜尋", "Recent searches"),
+        .clearSearchHistory: ("清除最近搜索", "清除最近搜尋", "Clear recent searches"),
+        .noSearchResult: ("无搜索结果", "無搜尋結果", "No results"),
+        .networkUnavailable: ("网络不可用", "網絡不可用", "Network Unavailable"),
+        .refreshNow: ("立即刷新", "立即重新整理", "Refresh now"),
+        .expandChart: ("展开图表", "展開圖表", "Open Chart"),
+        .collapseChart: ("收起图表", "收起圖表", "Collapse chart"),
+        .closingAuction: ("竞价时段", "競價時段", "CAS"),
+        .volatilityCoolingOff: ("冷静期", "冷靜期", "VCM"),
+        .priceRange: ("价格范围", "價格範圍", "Price range"),
+        .buyOrderBook: ("买盘", "買盤", "Bid"),
+        .sellOrderBook: ("卖盘", "賣盤", "Ask"),
+        .expandOrderBook: ("展开买卖盘", "展開買賣盤", "Expand order book"),
+        .collapseOrderBook: ("收起买卖盘", "收起買賣盤", "Collapse order book"),
         .addToWatchlist: ("添加自选", "加入自選", "Add to Watchlist"),
         .editWatchlist: ("编辑自选", "編輯自選", "Edit Watchlist"),
         .watchlist: ("自选", "自選", "Watchlist"),
@@ -205,6 +230,9 @@ private enum DemoCopy {
         .cashAvailable: ("现金可用", "現金可用", "Available"),
         .cashWithdrawable: ("现金可取", "現金可取", "Withdrawable"),
         .maximumBuyingPower: ("最大购买力", "最大購買力", "Max. BP"),
+        .securitiesMarginAccount: ("证券融资账户", "證券融資帳戶", "Securities Margin Account"),
+        .back: ("返回", "返回", "Back"),
+        .refresh: ("刷新", "重新整理", "Refresh"),
         .fundMarketValue: ("基金市值", "基金市值", "Fund MKV"),
         .positionIncome: ("持仓收益", "持倉收益", "Pos. Income"),
         .virtualAssetMarketValue: ("虚拟资产市值", "虛擬資產市值", "Crypto MKV"),
@@ -359,6 +387,25 @@ private enum DemoCopy {
         .cashAvailable: "Cash Available to Trade",
         .cashWithdrawable: "Withdrawable Cash",
         .maximumBuyingPower: "Maximum Buying Power",
+        .securitiesMarginAccount: "Securities Margin Account",
+        .back: "Back",
+        .refresh: "Refresh",
+        .stockInputPlaceholder: "Enter stock",
+        .searchPlaceholder: "Symbol, name, pinyin, or initials",
+        .search: "Search",
+        .cancel: "Cancel",
+        .clear: "Clear",
+        .delete: "Delete",
+        .recentSearches: "Recent searches",
+        .clearSearchHistory: "Clear recent searches",
+        .noSearchResult: "No search results",
+        .networkUnavailable: "Network unavailable",
+        .refreshNow: "Refresh now",
+        .expandChart: "Open Chart",
+        .collapseChart: "Collapse chart",
+        .closingAuction: "Closing auction",
+        .volatilityCoolingOff: "Cooling-off period",
+        .priceRange: "Price range",
         .fundMarketValue: "Fund Market Value",
         .positionIncome: "Position Income",
         .virtualAssetMarketValue: "Virtual Asset Market Value",

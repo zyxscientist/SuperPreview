@@ -90,6 +90,12 @@
 		84F2001A2F7B000000ABC001 /* FundHoldingListGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F200192F7B000000ABC001 /* FundHoldingListGroup.swift */; };
 		84F2001C2F7C000000ABC001 /* VirtualAssetHoldingListGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F2001B2F7C000000ABC001 /* VirtualAssetHoldingListGroup.swift */; };
 		84F2001E2F7D000000ABC001 /* TradeAggregationDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F2001D2F7D000000ABC001 /* TradeAggregationDemoView.swift */; };
+		A1B2C3D4E5F6000000000011 /* StockOrderMotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000001 /* StockOrderMotion.swift */; };
+		A1B2C3D4E5F6000000000012 /* StockOrderNavbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000002 /* StockOrderNavbar.swift */; };
+		A1B2C3D4E5F6000000000013 /* StockOrderSymbolModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000003 /* StockOrderSymbolModels.swift */; };
+		A1B2C3D4E5F6000000000014 /* StockOrderSymbolSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000004 /* StockOrderSymbolSelector.swift */; };
+		A1B2C3D4E5F6000000000015 /* StockOrderSymbolSearchSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000005 /* StockOrderSymbolSearchSheet.swift */; };
+		A1B2C3D4E5F6000000000016 /* StockOrderOrderBook.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000006 /* StockOrderOrderBook.swift */; };
 		84F295CE296E60AA00976F4C /* PriceInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F295CD296E60AA00976F4C /* PriceInputField.swift */; };
 		84F295D1296E6AB000976F4C /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F295D0296E6AB000976F4C /* HapticManager.swift */; };
 		84F300012F80000000ABC001 /* MainTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F300002F80000000ABC001 /* MainTabBar.swift */; };
@@ -235,6 +241,12 @@
 		84F200192F7B000000ABC001 /* FundHoldingListGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FundHoldingListGroup.swift; sourceTree = "<group>"; };
 		84F2001B2F7C000000ABC001 /* VirtualAssetHoldingListGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualAssetHoldingListGroup.swift; sourceTree = "<group>"; };
 		84F2001D2F7D000000ABC001 /* TradeAggregationDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeAggregationDemoView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000001 /* StockOrderMotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderMotion.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000002 /* StockOrderNavbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderNavbar.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000003 /* StockOrderSymbolModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderSymbolModels.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000004 /* StockOrderSymbolSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderSymbolSelector.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000005 /* StockOrderSymbolSearchSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderSymbolSearchSheet.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000006 /* StockOrderOrderBook.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderOrderBook.swift; sourceTree = "<group>"; };
 		84F295CD296E60AA00976F4C /* PriceInputField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceInputField.swift; sourceTree = "<group>"; };
 		84F295D0296E6AB000976F4C /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
 		84F300002F80000000ABC001 /* MainTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBar.swift; sourceTree = "<group>"; };
@@ -512,6 +524,12 @@
 		84F200022F78000000ABC001 /* Comp */ = {
 			isa = PBXGroup;
 			children = (
+				A1B2C3D4E5F6000000000006 /* StockOrderOrderBook.swift */,
+				A1B2C3D4E5F6000000000005 /* StockOrderSymbolSearchSheet.swift */,
+				A1B2C3D4E5F6000000000004 /* StockOrderSymbolSelector.swift */,
+				A1B2C3D4E5F6000000000003 /* StockOrderSymbolModels.swift */,
+				A1B2C3D4E5F6000000000002 /* StockOrderNavbar.swift */,
+				A1B2C3D4E5F6000000000001 /* StockOrderMotion.swift */,
 				84F300002F80000000ABC001 /* MainTabBar.swift */,
 				84F2001B2F7C000000ABC001 /* VirtualAssetHoldingListGroup.swift */,
 				84F200192F7B000000ABC001 /* FundHoldingListGroup.swift */,
@@ -790,6 +808,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				84F600012F83000000ABC001 /* DemoLocalization.swift in Sources */,
+				A1B2C3D4E5F6000000000011 /* StockOrderMotion.swift in Sources */,
+				A1B2C3D4E5F6000000000012 /* StockOrderNavbar.swift in Sources */,
+				A1B2C3D4E5F6000000000013 /* StockOrderSymbolModels.swift in Sources */,
+				A1B2C3D4E5F6000000000014 /* StockOrderSymbolSelector.swift in Sources */,
+				A1B2C3D4E5F6000000000015 /* StockOrderSymbolSearchSheet.swift in Sources */,
+				A1B2C3D4E5F6000000000016 /* StockOrderOrderBook.swift in Sources */,
 				84F300012F80000000ABC001 /* MainTabBar.swift in Sources */,
 				84F2001E2F7D000000ABC001 /* TradeAggregationDemoView.swift in Sources */,
 				84F300032F76000000ABC001 /* TradeAggregationDemoViewModel.swift in Sources */,
