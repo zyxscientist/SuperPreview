@@ -104,8 +104,8 @@ struct StockOrderSymbolSearchSheet: View {
                 .overlay {
                     // 内阴影
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .stroke(Color.black.opacity(0.02), lineWidth: 6)
-                        .blur(radius: 3)
+                        .stroke(Color.black.opacity(0.01), lineWidth: 5)
+                        .blur(radius: 1)
                         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 }
         )

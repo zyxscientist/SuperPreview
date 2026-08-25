@@ -20,7 +20,7 @@ import SwiftUI
             }
             self.init(uiImage: img)
         }
-        init(systemName sys: String) {
+        init(debugSystemName sys: String) {
             guard let img = UIImage(systemName: sys) else {
                 print(sys)
                 fatalError("found an image that doesn't exist, see: https://stackoverflow.com/a/63006278/11161266")

@@ -39,26 +39,43 @@ extension EnvironmentValues {
 }
 
 enum DemoCopyKey {
-    case newWatchlist, newTrade, debug, done, interfaceLanguage
+    case newWatchlist, newTrade, stockOrderPage, debug, done, interfaceLanguage
     case navigateOnTap, navigateOnTapOn, navigateOnTapOff, tabBarFontSize
     case simulateQuoteUpdates, quoteUpdatesOn, quoteUpdatesOff, updateSpeed
     case slow, medium, fast, mixed
     case all, hkStocks, chinaAShares, usStocks, etfs, custom
-    case name, price, changePercent, preMarket, afterHours
+    case name, price, enterPrice, decreasePrice, increasePrice, priceAction
+    case quantity, enterQuantity, minimumQuantity, decreaseQuantity, increaseQuantity
+    case quickQuantityInput, hideQuickQuantityInput
+    case amount, atMarketPrice, buyingUsesMargin
+    case effectPeriod, dayValid, goodTillCancelled
+    case selectEffectPeriod, chooseEffectPeriod, effectPeriodInformation
+    case extendedHours, extendedHoursAllowed, extendedHoursNotAllowed
+    case selectExtendedHours, chooseExtendedHours, extendedHoursInformation
+    case cashPurchasable, maximumPurchasable, positionSellable, fullPosition
+    case priceAboveCurrentPrice, priceBelowCurrentPrice
+    case priceTracking, specifiedPrice, followMarketPrice, followBidOne, followAskOne
+    case changePercent, preMarket, afterHours
     case stockInputPlaceholder, searchPlaceholder, search, cancel, clear, delete
     case recentSearches, clearSearchHistory, noSearchResult, networkUnavailable, refreshNow
     case expandChart, collapseChart, closingAuction, volatilityCoolingOff, priceRange
+    case orderType, limitOrder, enhancedLimitOrder, marketOrder
+    case auctionLimitOrder, auctionMarketOrder, oddLotOrder, conditionalOrder
+    case orderStatusHeader, symbolHeader, orderPriceHeader, quantityFilledHeader
+    case selectOrderType, chooseOrderType, orderTypeInformation, marketOrderReminder
     case buyOrderBook, sellOrderBook, expandOrderBook, collapseOrderBook
+    case buy, sell, unlockTrading, orderPendingSubmission, orderPendingFill, orderPartiallyFilled
+    case orderFilled, orderFailed, orderExpired, orderCancelled, amendOrder, cancelOrder
     case addToWatchlist, editWatchlist
     case watchlist, trade, wealth, news, markets, me
-    case stocks, funds, virtualAssets, positionDetails
+    case stocks, funds, virtualAssets, cryptocurrency, positions, positionDetails
     case totalAssets, totalProfitLoss, netAssets, todayProfitLoss, yesterdayProfitLoss
     case securitiesMarketValue, totalCash, positionProfitLoss
     case fundsInTransit, ipoFundsInTransit, fundsOnHold
     case cashAvailable, cashWithdrawable, maximumBuyingPower
-    case securitiesMarginAccount, back, refresh
+    case securitiesMarginAccount, virtualAssetCashAccount, back, refresh
     case fundMarketValue, positionIncome, virtualAssetMarketValue
-    case todayOrders, ipoCenter, deposit, more
+    case todayOrders, historyOrders, noTodayOrders, noPositions, ipoCenter, deposit, more
     case transactionHistory, recurringInvestment, statements
     case internalTransfer, cashHistory
     case quote, order, details, subscribe, redeem, recurringInvestmentTag
@@ -158,6 +175,7 @@ private enum DemoCopy {
     static let values: [DemoCopyKey: Values] = [
         .newWatchlist: ("新自选", "新自選", "New Watchlist"),
         .newTrade: ("新交易", "新交易", "New Trade"),
+        .stockOrderPage: ("股票下单页", "股票下單頁", "Stock Order"),
         .debug: ("调试", "除錯", "Debug"),
         .done: ("完成", "完成", "Done"),
         .interfaceLanguage: ("界面语言", "介面語言", "Interface Language"),
@@ -181,6 +199,43 @@ private enum DemoCopy {
         .custom: ("自定义", "自訂", "Custom"),
         .name: ("名称", "名稱", "Name"),
         .price: ("价格", "價格", "Price"),
+        .enterPrice: ("输入价格", "輸入價格", "Enter price"),
+        .decreasePrice: ("降低价格", "降低價格", "Decrease price"),
+        .increasePrice: ("提高价格", "提高價格", "Increase price"),
+        .priceAction: ("价格功能", "價格功能", "Price action"),
+        .quantity: ("数量", "數量", "Quantity"),
+        .enterQuantity: ("输入数量", "輸入數量", "Enter quantity"),
+        .minimumQuantity: ("最小%@", "最小%@", "Min. %@"),
+        .decreaseQuantity: ("减少数量", "減少數量", "Decrease quantity"),
+        .increaseQuantity: ("增加数量", "增加數量", "Increase quantity"),
+        .quickQuantityInput: ("快捷输入", "快捷輸入", "Quick input"),
+        .hideQuickQuantityInput: ("收起快捷输入", "收起快捷輸入", "Hide quick input"),
+        .amount: ("金额", "金額", "Amount"),
+        .atMarketPrice: ("按市价", "按市價", "At market price"),
+        .buyingUsesMargin: ("买入将使用融资", "買入將使用融資", "Buy will use margin"),
+        .effectPeriod: ("有效期", "有效期", "Validity"),
+        .dayValid: ("当日有效", "當日有效", "Day"),
+        .goodTillCancelled: ("撤单前有效", "撤單前有效", "Good Till Cancelled"),
+        .selectEffectPeriod: ("选择有效期", "選擇有效期", "Select validity"),
+        .chooseEffectPeriod: ("请选择有效期", "請選擇有效期", "Please select a validity"),
+        .effectPeriodInformation: ("有效期说明", "有效期說明", "Validity information"),
+        .extendedHours: ("盘前后", "盤前後", "ETH"),
+        .extendedHoursAllowed: ("允许", "允許", "Allow"),
+        .extendedHoursNotAllowed: ("不允许", "不允許", "Do not allow"),
+        .selectExtendedHours: ("选择盘前后", "選擇盤前後", "Select extended hours"),
+        .chooseExtendedHours: ("请选择盘前后", "請選擇盤前後", "Please select extended hours"),
+        .extendedHoursInformation: ("盘前后说明", "盤前後說明", "Extended-hours information"),
+        .cashPurchasable: ("现金可买", "現金可買", "Cash buy"),
+        .maximumPurchasable: ("最大可买", "最大可買", "Max. buy"),
+        .positionSellable: ("持仓可卖", "持倉可賣", "Pos. sell"),
+        .fullPosition: ("全仓", "全倉", "Full"),
+        .priceAboveCurrentPrice: ("高于当前价%@", "高於當前價%@", "%@ above current price"),
+        .priceBelowCurrentPrice: ("低于当前价%@", "低於當前價%@", "%@ below current price"),
+        .priceTracking: ("价格跟踪", "價格跟蹤", "Price tracking"),
+        .specifiedPrice: ("指定价", "指定價", "Specified Price"),
+        .followMarketPrice: ("跟市价", "跟市價", "Follow Market"),
+        .followBidOne: ("跟买一", "跟買一", "Follow Bid 1"),
+        .followAskOne: ("跟卖一", "跟賣一", "Follow Ask 1"),
         .changePercent: ("涨跌幅", "漲跌幅", "Chg%"),
         .preMarket: ("盘前", "盤前", "Pre"),
         .afterHours: ("盘后", "盤後", "Post"),
@@ -200,10 +255,38 @@ private enum DemoCopy {
         .closingAuction: ("竞价时段", "競價時段", "CAS"),
         .volatilityCoolingOff: ("冷静期", "冷靜期", "VCM"),
         .priceRange: ("价格范围", "價格範圍", "Price range"),
+        .orderType: ("类型", "類型", "Type"),
+        .limitOrder: ("限价单", "限價單", "Limit Order"),
+        .enhancedLimitOrder: ("增强限价单", "增強限價單", "Enhanced Limit Order"),
+        .marketOrder: ("市价单", "市價單", "Market Order"),
+        .auctionLimitOrder: ("竞价限价单", "競價限價單", "Auction Limit Order"),
+        .auctionMarketOrder: ("竞价市价单", "競價市價單", "Auction Market Order"),
+        .oddLotOrder: ("碎股单", "碎股單", "Odd Lot Order"),
+        .conditionalOrder: ("条件单", "條件單", "Conditional Order"),
+        .orderStatusHeader: ("订单状态", "訂單狀態", "Order status"),
+        .symbolHeader: ("名称代码", "名稱代碼", "Name / symbol"),
+        .orderPriceHeader: ("委托价", "委託價", "Order price"),
+        .quantityFilledHeader: ("数量/已成", "數量/已成", "Qty / filled"),
+        .selectOrderType: ("选择订单类型", "選擇訂單類型", "Select order type"),
+        .chooseOrderType: ("请选择订单类型", "請選擇訂單類型", "Please select an order type"),
+        .orderTypeInformation: ("订单类型说明", "訂單類型說明", "Order type information"),
+        .marketOrderReminder: ("请留意市价单的成交价格并没有任何保证，订单将可能以任何价格成交", "請留意市價單的成交價格並沒有任何保證，訂單將可能以任何價格成交", "Please note that a market order's execution price is not guaranteed and it may be filled at any price."),
         .buyOrderBook: ("买盘", "買盤", "Bid"),
         .sellOrderBook: ("卖盘", "賣盤", "Ask"),
         .expandOrderBook: ("展开买卖盘", "展開買賣盤", "Expand order book"),
         .collapseOrderBook: ("收起买卖盘", "收起買賣盤", "Collapse order book"),
+        .buy: ("买入", "買入", "Buy"),
+        .sell: ("卖出", "賣出", "Sell"),
+        .unlockTrading: ("解锁交易", "解鎖交易", "Unlock Trading"),
+        .orderPendingSubmission: ("待提交", "待提交", "Pending submission"),
+        .orderPendingFill: ("待成交", "待成交", "Pending fill"),
+        .orderPartiallyFilled: ("部分成交", "部分成交", "Partially filled"),
+        .orderFilled: ("全部成交", "全部成交", "Filled"),
+        .orderFailed: ("下单失败", "下單失敗", "Order failed"),
+        .orderExpired: ("已失效", "已失效", "Expired"),
+        .orderCancelled: ("已撤单", "已撤單", "Cancelled"),
+        .amendOrder: ("改单", "改單", "Amend"),
+        .cancelOrder: ("撤单", "撤單", "Cancel order"),
         .addToWatchlist: ("添加自选", "加入自選", "Add to Watchlist"),
         .editWatchlist: ("编辑自选", "編輯自選", "Edit Watchlist"),
         .watchlist: ("自选", "自選", "Watchlist"),
@@ -215,6 +298,8 @@ private enum DemoCopy {
         .stocks: ("股票", "股票", "Stocks"),
         .funds: ("基金", "基金", "Funds"),
         .virtualAssets: ("虚拟资产", "虛擬資產", "Virtual Assets"),
+        .cryptocurrency: ("加密货币", "加密貨幣", "Cryptocurrency"),
+        .positions: ("持仓", "持倉", "Positions"),
         .positionDetails: ("持仓明细", "持倉明細", "Position Details"),
         .totalAssets: ("总资产", "總資產", "Total Assets"),
         .totalProfitLoss: ("总盈亏", "總盈虧", "Total P/L"),
@@ -231,12 +316,16 @@ private enum DemoCopy {
         .cashWithdrawable: ("现金可取", "現金可取", "Withdrawable"),
         .maximumBuyingPower: ("最大购买力", "最大購買力", "Max. BP"),
         .securitiesMarginAccount: ("证券融资账户", "證券融資帳戶", "Securities Margin Account"),
+        .virtualAssetCashAccount: ("虚拟资产现金账户", "虛擬資產現金帳戶", "Virtual Asset Cash Account"),
         .back: ("返回", "返回", "Back"),
         .refresh: ("刷新", "重新整理", "Refresh"),
         .fundMarketValue: ("基金市值", "基金市值", "Fund MKV"),
         .positionIncome: ("持仓收益", "持倉收益", "Pos. Income"),
         .virtualAssetMarketValue: ("虚拟资产市值", "虛擬資產市值", "Crypto MKV"),
         .todayOrders: ("今日订单", "今日訂單", "Orders"),
+        .historyOrders: ("历史订单", "歷史訂單", "Order History"),
+        .noTodayOrders: ("暂无今日订单", "暫無今日訂單", "No orders today"),
+        .noPositions: ("暂无持仓", "暫無持倉", "No positions"),
         .ipoCenter: ("新股中心", "新股中心", "IPO Center"),
         .deposit: ("入金", "入金", "Deposit"),
         .more: ("更多", "更多", "More"),
@@ -343,6 +432,9 @@ private enum DemoCopy {
         "wl-us-apple": ("苹果", "蘋果", "Apple"),
         "wl-us-tesla": ("特斯拉", "特斯拉", "Tesla"),
         "wl-us-microsoft": ("微软", "微軟", "Microsoft"),
+        "wl-us-hybl": ("海博思创", "海博思創", "Hybl"),
+        "wl-us-spcx": ("SPACEX", "SPACEX", "SPACEX"),
+        "wl-cn-haitian": ("海天味业", "海天味業", "Haitian Flavor"),
         "wl-etf-hstech": ("恒生科技ETF", "恒生科技ETF", "Hang Seng TECH ETF"),
         "wl-etf-nasdaq-cn": ("纳指100ETF", "納指100ETF", "Nasdaq-100 ETF"),
         "wl-fund-energy": ("贝莱德世界能源基金", "貝萊德世界能源基金", "World Energy Fund"),
@@ -367,6 +459,9 @@ private enum DemoCopy {
         "AAPL": "wl-us-apple",
         "TSLA": "wl-us-tesla",
         "MSFT": "wl-us-microsoft",
+        "HYBL": "wl-us-hybl",
+        "SPCX": "wl-us-spcx",
+        "600388": "wl-cn-haitian",
         "03032": "wl-etf-hstech",
         "513100": "wl-etf-nasdaq-cn",
         "LU012376428": "wl-fund-energy",

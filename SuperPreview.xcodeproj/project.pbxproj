@@ -96,6 +96,22 @@
 		A1B2C3D4E5F6000000000014 /* StockOrderSymbolSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000004 /* StockOrderSymbolSelector.swift */; };
 		A1B2C3D4E5F6000000000015 /* StockOrderSymbolSearchSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000005 /* StockOrderSymbolSearchSheet.swift */; };
 		A1B2C3D4E5F6000000000016 /* StockOrderOrderBook.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000006 /* StockOrderOrderBook.swift */; };
+		A1B2C3D4E5F6000000000017 /* StockOrderOrderTypeInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000007 /* StockOrderOrderTypeInput.swift */; };
+		A1B2C3D4E5F6000000000018 /* StockOrderOrderTypeActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000008 /* StockOrderOrderTypeActionSheet.swift */; };
+		A1B2C3D4E5F6000000000019 /* StockOrderPriceInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000009 /* StockOrderPriceInput.swift */; };
+		A1B2C3D4E5F600000000001A /* StockOrderPriceTargetMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000000A /* StockOrderPriceTargetMenu.swift */; };
+		A1B2C3D4E5F600000000001B /* StockOrderQuantityInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000000B /* StockOrderQuantityInput.swift */; };
+		A1B2C3D4E5F600000000001C /* StockOrderAmountField.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000000C /* StockOrderAmountField.swift */; };
+		A1B2C3D4E5F600000000001D /* StockOrderEffectPeriodInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000000D /* StockOrderEffectPeriodInput.swift */; };
+		A1B2C3D4E5F600000000001E /* StockOrderEffectPeriodActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000000E /* StockOrderEffectPeriodActionSheet.swift */; };
+		A1B2C3D4E5F600000000001F /* StockOrderExtendedHoursInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000000F /* StockOrderExtendedHoursInput.swift */; };
+		A1B2C3D4E5F6000000000020 /* StockOrderExtendedHoursActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000010 /* StockOrderExtendedHoursActionSheet.swift */; };
+		A1B2C3D4E5F6000000000023 /* StockOrderQuantityAvailability.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000022 /* StockOrderQuantityAvailability.swift */; };
+		A1B2C3D4E5F6000000000024 /* StockOrderTodayOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000025 /* StockOrderTodayOrder.swift */; };
+		A1B2C3D4E5F6000000000026 /* StockOrderOrdersAndPositions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000027 /* StockOrderOrdersAndPositions.swift */; };
+		A1B2C3D4E5F6000000000028 /* StockOrderTradeActionBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000029 /* StockOrderTradeActionBar.swift */; };
+		A1B2C3D4E5F6000000000033 /* StockOrderDemoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000032 /* StockOrderDemoViewModel.swift */; };
+		A1B2C3D4E5F6000000000035 /* StockOrderDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000034 /* StockOrderDemoView.swift */; };
 		84F295CE296E60AA00976F4C /* PriceInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F295CD296E60AA00976F4C /* PriceInputField.swift */; };
 		84F295D1296E6AB000976F4C /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F295D0296E6AB000976F4C /* HapticManager.swift */; };
 		84F300012F80000000ABC001 /* MainTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F300002F80000000ABC001 /* MainTabBar.swift */; };
@@ -247,6 +263,22 @@
 		A1B2C3D4E5F6000000000004 /* StockOrderSymbolSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderSymbolSelector.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6000000000005 /* StockOrderSymbolSearchSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderSymbolSearchSheet.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6000000000006 /* StockOrderOrderBook.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderOrderBook.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000007 /* StockOrderOrderTypeInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderOrderTypeInput.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000008 /* StockOrderOrderTypeActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderOrderTypeActionSheet.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000009 /* StockOrderPriceInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderPriceInput.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F600000000000A /* StockOrderPriceTargetMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderPriceTargetMenu.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F600000000000B /* StockOrderQuantityInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderQuantityInput.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F600000000000C /* StockOrderAmountField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderAmountField.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F600000000000D /* StockOrderEffectPeriodInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderEffectPeriodInput.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F600000000000E /* StockOrderEffectPeriodActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderEffectPeriodActionSheet.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F600000000000F /* StockOrderExtendedHoursInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderExtendedHoursInput.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000010 /* StockOrderExtendedHoursActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderExtendedHoursActionSheet.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000022 /* StockOrderQuantityAvailability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderQuantityAvailability.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000025 /* StockOrderTodayOrder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderTodayOrder.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000027 /* StockOrderOrdersAndPositions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderOrdersAndPositions.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000029 /* StockOrderTradeActionBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderTradeActionBar.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000032 /* StockOrderDemoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderDemoViewModel.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6000000000034 /* StockOrderDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderDemoView.swift; sourceTree = "<group>"; };
 		84F295CD296E60AA00976F4C /* PriceInputField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceInputField.swift; sourceTree = "<group>"; };
 		84F295D0296E6AB000976F4C /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
 		84F300002F80000000ABC001 /* MainTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBar.swift; sourceTree = "<group>"; };
@@ -419,6 +451,7 @@
 		84A729A1296FB4AF0056BA94 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				A1B2C3D4E5F6000000000032 /* StockOrderDemoViewModel.swift */,
 				84F300022F76000000ABC001 /* TradeAggregationDemoViewModel.swift */,
 				847296372CBE541F00676FE1 /* MacroDataCPIViewModel.swift */,
 				8461BFFC2CC0BB6A0014ED60 /* MacroDataPCEViewModel.swift */,
@@ -433,6 +466,7 @@
 		84B893E12CB92E2C00EA5F84 /* UXDemo */ = {
 			isa = PBXGroup;
 			children = (
+				A1B2C3D4E5F6000000000034 /* StockOrderDemoView.swift */,
 				84F2001D2F7D000000ABC001 /* TradeAggregationDemoView.swift */,
 				84B893E22CB92E4800EA5F84 /* StockShuffleDemoView.swift */,
 				84F000022F76000000ABC001 /* WatchlistRedesignDemoView.swift */,
@@ -524,6 +558,20 @@
 		84F200022F78000000ABC001 /* Comp */ = {
 			isa = PBXGroup;
 			children = (
+				A1B2C3D4E5F6000000000029 /* StockOrderTradeActionBar.swift */,
+				A1B2C3D4E5F6000000000027 /* StockOrderOrdersAndPositions.swift */,
+				A1B2C3D4E5F6000000000025 /* StockOrderTodayOrder.swift */,
+				A1B2C3D4E5F6000000000022 /* StockOrderQuantityAvailability.swift */,
+				A1B2C3D4E5F6000000000010 /* StockOrderExtendedHoursActionSheet.swift */,
+				A1B2C3D4E5F600000000000F /* StockOrderExtendedHoursInput.swift */,
+				A1B2C3D4E5F600000000000E /* StockOrderEffectPeriodActionSheet.swift */,
+				A1B2C3D4E5F600000000000D /* StockOrderEffectPeriodInput.swift */,
+				A1B2C3D4E5F600000000000C /* StockOrderAmountField.swift */,
+				A1B2C3D4E5F600000000000B /* StockOrderQuantityInput.swift */,
+				A1B2C3D4E5F600000000000A /* StockOrderPriceTargetMenu.swift */,
+				A1B2C3D4E5F6000000000009 /* StockOrderPriceInput.swift */,
+				A1B2C3D4E5F6000000000008 /* StockOrderOrderTypeActionSheet.swift */,
+				A1B2C3D4E5F6000000000007 /* StockOrderOrderTypeInput.swift */,
 				A1B2C3D4E5F6000000000006 /* StockOrderOrderBook.swift */,
 				A1B2C3D4E5F6000000000005 /* StockOrderSymbolSearchSheet.swift */,
 				A1B2C3D4E5F6000000000004 /* StockOrderSymbolSelector.swift */,
@@ -814,6 +862,22 @@
 				A1B2C3D4E5F6000000000014 /* StockOrderSymbolSelector.swift in Sources */,
 				A1B2C3D4E5F6000000000015 /* StockOrderSymbolSearchSheet.swift in Sources */,
 				A1B2C3D4E5F6000000000016 /* StockOrderOrderBook.swift in Sources */,
+				A1B2C3D4E5F6000000000017 /* StockOrderOrderTypeInput.swift in Sources */,
+				A1B2C3D4E5F6000000000018 /* StockOrderOrderTypeActionSheet.swift in Sources */,
+				A1B2C3D4E5F6000000000019 /* StockOrderPriceInput.swift in Sources */,
+				A1B2C3D4E5F600000000001A /* StockOrderPriceTargetMenu.swift in Sources */,
+				A1B2C3D4E5F600000000001B /* StockOrderQuantityInput.swift in Sources */,
+				A1B2C3D4E5F600000000001C /* StockOrderAmountField.swift in Sources */,
+				A1B2C3D4E5F600000000001D /* StockOrderEffectPeriodInput.swift in Sources */,
+				A1B2C3D4E5F600000000001E /* StockOrderEffectPeriodActionSheet.swift in Sources */,
+				A1B2C3D4E5F600000000001F /* StockOrderExtendedHoursInput.swift in Sources */,
+				A1B2C3D4E5F6000000000020 /* StockOrderExtendedHoursActionSheet.swift in Sources */,
+				A1B2C3D4E5F6000000000023 /* StockOrderQuantityAvailability.swift in Sources */,
+				A1B2C3D4E5F6000000000024 /* StockOrderTodayOrder.swift in Sources */,
+				A1B2C3D4E5F6000000000026 /* StockOrderOrdersAndPositions.swift in Sources */,
+				A1B2C3D4E5F6000000000028 /* StockOrderTradeActionBar.swift in Sources */,
+				A1B2C3D4E5F6000000000033 /* StockOrderDemoViewModel.swift in Sources */,
+				A1B2C3D4E5F6000000000035 /* StockOrderDemoView.swift in Sources */,
 				84F300012F80000000ABC001 /* MainTabBar.swift in Sources */,
 				84F2001E2F7D000000ABC001 /* TradeAggregationDemoView.swift in Sources */,
 				84F300032F76000000ABC001 /* TradeAggregationDemoViewModel.swift in Sources */,

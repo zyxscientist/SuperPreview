@@ -137,7 +137,7 @@ struct StockOrderSymbolInput: View {
             .buttonStyle(PlainButtonStyle())
             .frame(maxWidth: .infinity, minHeight: 44, maxHeight: 44)
             .accessibilityLabel(language.text(.stockInputPlaceholder))
-            .accessibilityIdentifier("stockOrder.symbolInput.emptyField")
+            .accessibilityIdentifier("stsockOrder.symbolInput.emptyField")
         }
         .padding(.horizontal, 16)
         .frame(height: 44)
@@ -267,7 +267,7 @@ private struct StockOrderSelectedSymbolCell: View {
         Button(action: onSearchRequested) {
             VStack(alignment: .leading, spacing: 7) {
                 HStack(alignment: .center, spacing: 4) {
-                    Image(symbol.market.badgeAssetName)
+                    Image(symbol.badgeAssetName)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 12, height: 10)

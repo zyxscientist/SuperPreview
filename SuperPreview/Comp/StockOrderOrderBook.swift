@@ -15,7 +15,12 @@ enum StockOrderBookDepth: Int, CaseIterable, Equatable {
     }
 
     static func standard(for market: StockOrderMarket) -> StockOrderBookDepth {
-        market == .us ? .one : .ten
+        switch market {
+        case .us:
+            return .one
+        case .hk, .china, .crypto:
+            return .ten
+        }
     }
 }
 

@@ -271,6 +271,21 @@ struct CompareTab5View: View {
             )
             .accessibilityIdentifier("compare.newTrade")
             // 结束
+
+            NavigationLink(
+                destination: StockOrderDemoView(),
+                label: {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(demoLanguage.text(.stockOrderPage))
+                            .font(.system(size: 16, weight: .semibold, design: .default))
+                        Text("Stock Order (UX Demo)")
+                            .foregroundColor(.gray)
+                            .font(.system(size: 13, weight: .regular, design: .monospaced))
+                    }
+                }
+            )
+            .accessibilityIdentifier("compare.stockOrder")
+            // 结束
             
             NavigationLink(
                 destination: MacroDataCenterView(),

@@ -81,7 +81,6 @@ struct VirtualAssetHoldingItem: Identifiable {
     let currentPrice: String
     let costPrice: String
     let todayProfitLoss: String
-    let todayProfitLossRate: String
     let holdingProfitLoss: String
     let holdingProfitLossRate: String
     let holdingRatio: String
@@ -120,7 +119,6 @@ extension Array where Element == VirtualAssetHoldingSection {
                         currentPrice: "220.50",
                         costPrice: "185.32",
                         todayProfitLoss: "5,624",
-                        todayProfitLossRate: "+1.59%",
                         holdingProfitLoss: "56,288",
                         holdingProfitLossRate: "+18.97%",
                         holdingRatio: "45.20%",
@@ -136,7 +134,6 @@ extension Array where Element == VirtualAssetHoldingSection {
                         currentPrice: "473.120",
                         costPrice: "367.121",
                         todayProfitLoss: "2,473.120",
-                        todayProfitLossRate: "+8.12%",
                         holdingProfitLoss: "2,473.120",
                         holdingProfitLossRate: "+8.12%",
                         holdingRatio: "34.40%",
@@ -152,7 +149,6 @@ extension Array where Element == VirtualAssetHoldingSection {
                         currentPrice: "134.25",
                         costPrice: "112.68",
                         todayProfitLoss: "3,760",
-                        todayProfitLossRate: "+2.86%",
                         holdingProfitLoss: "43,140",
                         holdingProfitLossRate: "+19.13%",
                         holdingRatio: "34.40%",
@@ -173,7 +169,6 @@ extension Array where Element == VirtualAssetHoldingSection {
                         currentPrice: "473.120",
                         costPrice: "367.121",
                         todayProfitLoss: "2,473.120",
-                        todayProfitLossRate: "+8.12%",
                         holdingProfitLoss: "2,473.120",
                         holdingProfitLossRate: "+8.12%",
                         holdingRatio: "34.40%",
@@ -864,7 +859,7 @@ private struct VirtualAssetHoldingMetricsRow: View {
 
             valuePair(
                 primary: holding.todayProfitLoss,
-                secondary: holding.todayProfitLossRate,
+                secondary: nil,
                 primaryColor: holding.todayTone.color,
                 secondaryColor: holding.todayTone.color
             )

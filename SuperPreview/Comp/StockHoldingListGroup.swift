@@ -61,7 +61,6 @@ struct StockHoldingItem: Identifiable {
     let currentPrice: String
     let costPrice: String
     let todayProfitLoss: String
-    let todayProfitLossRate: String
     let holdingProfitLoss: String
     let holdingProfitLossRate: String
     let holdingRatio: String
@@ -91,7 +90,6 @@ extension Array where Element == StockHoldingMarketSection {
                     currentPrice: "473.120",
                     costPrice: "367.121",
                     todayProfitLoss: "2,473.120",
-                    todayProfitLossRate: "+8.12%",
                     holdingProfitLoss: "2,473.120",
                     holdingProfitLossRate: "+8.12%",
                     holdingRatio: "100.00%",
@@ -107,7 +105,6 @@ extension Array where Element == StockHoldingMarketSection {
                     currentPrice: "473.120",
                     costPrice: "367.121",
                     todayProfitLoss: "2,473.120",
-                    todayProfitLossRate: "+8.12%",
                     holdingProfitLoss: "2,473.120",
                     holdingProfitLossRate: "+8.12%",
                     holdingRatio: "100.00%",
@@ -123,7 +120,6 @@ extension Array where Element == StockHoldingMarketSection {
                     currentPrice: "398.200",
                     costPrice: "385.600",
                     todayProfitLoss: "96,400.00",
-                    todayProfitLossRate: "-3.27%",
                     holdingProfitLoss: "96,400.00",
                     holdingProfitLossRate: "+3.27%",
                     holdingRatio: "100.00%",
@@ -144,7 +140,6 @@ extension Array where Element == StockHoldingMarketSection {
                     currentPrice: "473.120",
                     costPrice: "367.121",
                     todayProfitLoss: "2,473.120",
-                    todayProfitLossRate: "+8.12%",
                     holdingProfitLoss: "2,473.120",
                     holdingProfitLossRate: "+8.12%",
                     holdingRatio: "100.00%",
@@ -160,7 +155,6 @@ extension Array where Element == StockHoldingMarketSection {
                     currentPrice: "85.600",
                     costPrice: "72.450",
                     todayProfitLoss: "1,285.600",
-                    todayProfitLossRate: "-5.23%",
                     holdingProfitLoss: "1,285.600",
                     holdingProfitLossRate: "-5.23%",
                     holdingRatio: "100.00%",
@@ -176,7 +170,6 @@ extension Array where Element == StockHoldingMarketSection {
                     currentPrice: "158.540",
                     costPrice: "152.320",
                     todayProfitLoss: "762.080",
-                    todayProfitLossRate: "+2.35%",
                     holdingProfitLoss: "808.000",
                     holdingProfitLossRate: "+3.76%",
                     holdingRatio: "100.00%",
@@ -197,7 +190,6 @@ extension Array where Element == StockHoldingMarketSection {
                     currentPrice: "220.50",
                     costPrice: "185.32",
                     todayProfitLoss: "5,624",
-                    todayProfitLossRate: "+1.59%",
                     holdingProfitLoss: "56,288",
                     holdingProfitLossRate: "+18.97%",
                     holdingRatio: "45.20%",
@@ -213,7 +205,6 @@ extension Array where Element == StockHoldingMarketSection {
                     currentPrice: "134.25",
                     costPrice: "112.68",
                     todayProfitLoss: "3,760",
-                    todayProfitLossRate: "+2.86%",
                     holdingProfitLoss: "43,140",
                     holdingProfitLossRate: "+19.13%",
                     holdingRatio: "34.40%",
@@ -229,7 +220,6 @@ extension Array where Element == StockHoldingMarketSection {
                     currentPrice: "331.50",
                     costPrice: "289.75",
                     todayProfitLoss: "-4,320",
-                    todayProfitLossRate: "-2.64%",
                     holdingProfitLoss: "20,040",
                     holdingProfitLossRate: "+14.40%",
                     holdingRatio: "20.40%",
@@ -726,7 +716,7 @@ private struct StockHoldingMetricsRow: View {
 
             valuePair(
                 primary: holding.todayProfitLoss,
-                secondary: holding.todayProfitLossRate,
+                secondary: nil,
                 primaryColor: holding.todayTone.color,
                 secondaryColor: holding.todayTone.color
             )

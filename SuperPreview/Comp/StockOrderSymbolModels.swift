@@ -10,6 +10,7 @@ enum StockOrderMarket: String, CaseIterable, Equatable, Identifiable {
     case hk
     case us
     case china
+    case crypto
 
     var id: String { rawValue }
 
@@ -21,6 +22,8 @@ enum StockOrderMarket: String, CaseIterable, Equatable, Identifiable {
             return "Glyph_US"
         case .china:
             return "Glyph_SZ"
+        case .crypto:
+            return "market_crypto"
         }
     }
 }
@@ -132,6 +135,7 @@ struct StockOrderSymbol: Equatable, Identifiable {
     let fallbackName: String
     let localizationID: String?
     let market: StockOrderMarket
+    let marketBadgeAssetName: String?
     let quote: StockOrderQuote
     let marketNotice: StockOrderMarketNotice?
     let searchAliases: [String]
@@ -143,15 +147,21 @@ struct StockOrderSymbol: Equatable, Identifiable {
         market: StockOrderMarket,
         quote: StockOrderQuote,
         marketNotice: StockOrderMarketNotice? = nil,
-        searchAliases: [String] = []
+        searchAliases: [String] = [],
+        marketBadgeAssetName: String? = nil
     ) {
         self.id = id
         self.fallbackName = fallbackName
         self.localizationID = localizationID
         self.market = market
+        self.marketBadgeAssetName = marketBadgeAssetName
         self.quote = quote
         self.marketNotice = marketNotice
         self.searchAliases = searchAliases
+    }
+
+    var badgeAssetName: String {
+        marketBadgeAssetName ?? market.badgeAssetName
     }
 
     func localizedName(for language: DemoLanguage) -> String {
