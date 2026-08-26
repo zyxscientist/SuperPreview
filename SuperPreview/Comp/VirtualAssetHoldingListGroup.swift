@@ -884,6 +884,7 @@ private struct VirtualAssetHoldingNameCell: View {
 
             Text(display(holding.symbol))
                 .font(.custom("PlusJakartaSans-Regular", size: 14, relativeTo: .subheadline))
+                .monospacedDigit()
                 .foregroundColor(
                     Color(isNumberHidden ? "color-text-30" : "color-text-60")
                 )
@@ -980,6 +981,7 @@ private struct VirtualAssetHoldingValuePairCell: View {
         VStack(alignment: .trailing, spacing: 2) {
             Text(primary)
                 .font(.custom("PlusJakartaSans-Regular", size: 16, relativeTo: .body))
+                .monospacedDigit()
                 .foregroundColor(primaryColor)
                 .frame(
                     width: VirtualAssetHoldingLayout.metricWidth,
@@ -991,6 +993,7 @@ private struct VirtualAssetHoldingValuePairCell: View {
             if let secondary {
                 Text(secondary)
                     .font(.custom("PlusJakartaSans-Regular", size: 14, relativeTo: .subheadline))
+                    .monospacedDigit()
                     .foregroundColor(secondaryColor)
                     .frame(
                         width: VirtualAssetHoldingLayout.metricWidth,

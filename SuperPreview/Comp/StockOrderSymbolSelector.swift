@@ -93,6 +93,10 @@ struct StockOrderSymbolSelector: View {
     }
 
     private func clearSelection() {
+        guard selection != nil else { return }
+
+        HapticManager.instance.impactHaptic(type: .medium)
+
         withAnimation(
             StockOrderMotion.expansion(reduceMotion: accessibilityReduceMotion)
         ) {
@@ -185,8 +189,8 @@ struct StockOrderSymbolInput: View {
             value: isChartExpanded
         )
         .highPriorityGesture(
-            LongPressGesture(minimumDuration: 2)
-                .onEnded { _ in
+            TapGesture(count: 2)
+                .onEnded {
                     onClearSelection()
                 }
         )
@@ -195,25 +199,38 @@ struct StockOrderSymbolInput: View {
     private func selectedSummary(_ symbol: StockOrderSymbol) -> some View {
         let baseHeight: CGFloat = symbol.marketNotice == nil ? 76 : 115
 
-        return VStack(spacing: 0) {
-            StockOrderQuoteSummary(
-                symbol: symbol,
-                onSearchRequested: onSearchRequested
-            )
-            .frame(height: 66)
+        return ZStack(alignment: .bottom) {
+            Button(action: onSearchRequested) {
+                VStack(spacing: 0) {
+                    StockOrderQuoteSummary(symbol: symbol)
+                        .frame(height: 66)
 
-            if let marketNotice = symbol.marketNotice {
-                StockOrderMarketNoticeView(notice: marketNotice)
-                    .frame(height: 29)
-            } else {
-                Color.clear
-                    .frame(height: 10)
+                    if let marketNotice = symbol.marketNotice {
+                        StockOrderMarketNoticeView(notice: marketNotice)
+                            .frame(height: 29)
+                    } else {
+                        Color.clear
+                            .frame(height: 10)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: baseHeight, alignment: .top)
             }
-        }
-        .frame(height: baseHeight, alignment: .top)
-        .overlay(alignment: .bottom) {
+            .buttonStyle(PlainButtonStyle())
+            .contentShape(Rectangle())
+            .accessibilityLabel(
+                language.actionAccessibilityLabel(
+                    name: symbol.localizedName(for: language),
+                    action: language.text(.search)
+                )
+            )
+            .accessibilityIdentifier("stockOrder.symbolInput.selectedSymbol")
+
             chartToggle
+                .zIndex(1)
         }
+        .frame(maxWidth: .infinity)
+        .frame(height: baseHeight, alignment: .top)
     }
 
     private var chartToggle: some View {
@@ -250,7 +267,6 @@ struct StockOrderSymbolInput: View {
 
 private struct StockOrderQuoteSummary: View {
     let symbol: StockOrderSymbol
-    let onSearchRequested: () -> Void
 
     var body: some View {
         GeometryReader { proxy in
@@ -258,8 +274,7 @@ private struct StockOrderQuoteSummary: View {
 
             ZStack(alignment: .topLeading) {
                 StockOrderSelectedSymbolCell(
-                    symbol: symbol,
-                    onSearchRequested: onSearchRequested
+                    symbol: symbol
                 )
                 .frame(width: nameWidth, height: 66, alignment: .leading)
                 .clipped()
@@ -288,49 +303,38 @@ private struct StockOrderQuoteSummary: View {
 
 private struct StockOrderSelectedSymbolCell: View {
     let symbol: StockOrderSymbol
-    let onSearchRequested: () -> Void
 
     @Environment(\.demoLanguage) private var language
 
     var body: some View {
-        Button(action: onSearchRequested) {
-            VStack(alignment: .leading, spacing: 7) {
-                HStack(alignment: .center, spacing: 4) {
-                    Image(symbol.badgeAssetName)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 12, height: 10)
+        VStack(alignment: .leading, spacing: 7) {
+            HStack(alignment: .center, spacing: 4) {
+                Image(symbol.badgeAssetName)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 12, height: 10)
 
-                    Text(symbol.id)
-                        .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
-                        .foregroundColor(Color("color-text-30"))
-                        .lineLimit(1)
-                        .fixedSize(horizontal: true, vertical: false)
-
-                    Image("stock_order_search")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 18, height: 18)
-                }
-
-                Text(symbol.localizedName(for: language))
-                    .modifier(CustomFontModifier(size: 13, font: .medium, lineHeight: 16))
-                    .foregroundColor(Color("color-text-60"))
+                Text(symbol.id)
+                    .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
+                    .foregroundColor(Color("color-text-30"))
                     .lineLimit(1)
-                    .minimumScaleFactor(0.7)
-                    .padding(.leading, 16)
+                    .fixedSize(horizontal: true, vertical: false)
+
+                Image("stock_order_search")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)
             }
-            .frame(maxHeight: .infinity, alignment: .center)
-            .frame(maxWidth: .infinity, alignment: .leading)
+
+            Text(symbol.localizedName(for: language))
+                .modifier(CustomFontModifier(size: 13, font: .medium, lineHeight: 16))
+                .foregroundColor(Color("color-text-60"))
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+                .padding(.leading, 16)
         }
-        .buttonStyle(PlainButtonStyle())
-        .accessibilityLabel(
-            language.actionAccessibilityLabel(
-                name: symbol.localizedName(for: language),
-                action: language.text(.search)
-            )
-        )
-        .accessibilityIdentifier("stockOrder.symbolInput.selectedSymbol")
+        .frame(maxHeight: .infinity, alignment: .center)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 

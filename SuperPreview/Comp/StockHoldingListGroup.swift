@@ -745,6 +745,7 @@ private struct StockHoldingNameCell: View {
 
             Text(display(holding.symbol))
                 .font(.custom("PlusJakartaSans-Regular", size: 14, relativeTo: .subheadline))
+                .monospacedDigit()
                 .foregroundColor(Color(isNumberHidden ? "color-text-30" : "color-text-60"))
                 .frame(width: 110, height: 20, alignment: .leading)
         }
@@ -839,6 +840,7 @@ private struct StockHoldingValuePairCell: View {
         VStack(alignment: .trailing, spacing: 2) {
             Text(primary)
                 .font(.custom("PlusJakartaSans-Regular", size: 16, relativeTo: .body))
+                .monospacedDigit()
                 .foregroundColor(primaryColor)
                 .frame(width: StockHoldingLayout.metricWidth, height: 24, alignment: .trailing)
                 .lineLimit(1)
@@ -846,6 +848,7 @@ private struct StockHoldingValuePairCell: View {
             if let secondary {
                 Text(secondary)
                     .font(.custom("PlusJakartaSans-Regular", size: 14, relativeTo: .subheadline))
+                    .monospacedDigit()
                     .foregroundColor(secondaryColor)
                     .frame(width: StockHoldingLayout.metricWidth, height: 20, alignment: .trailing)
                     .lineLimit(1)

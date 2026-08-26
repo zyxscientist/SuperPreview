@@ -316,6 +316,7 @@ struct StockOrderQuantityInput: View {
                                 lineHeight: 24
                             )
                         )
+                        .monospacedDigit()
                         .foregroundColor(Color("color-text-90"))
                         .lineLimit(1)
                         .allowsHitTesting(false)
@@ -329,6 +330,7 @@ struct StockOrderQuantityInput: View {
                             lineHeight: 24
                         )
                     )
+                    .monospacedDigit()
                     .foregroundColor(Color("color-text-30"))
                     .keyboardType(inputMode.maxFractionDigits == nil ? .numberPad : .decimalPad)
                     .textInputAutocapitalization(.never)
@@ -708,6 +710,7 @@ private struct StockOrderQuantityQuickInputPanel: View {
                             lineHeight: 16
                         )
                     )
+                    .monospacedDigit()
                     .foregroundColor(Color("color-text-90"))
                     .lineLimit(1)
 
@@ -719,6 +722,7 @@ private struct StockOrderQuantityQuickInputPanel: View {
                             lineHeight: 20
                         )
                     )
+                    .monospacedDigit()
                     .foregroundColor(Color("color-text-30"))
                     .lineLimit(1)
                     .minimumScaleFactor(0.68)

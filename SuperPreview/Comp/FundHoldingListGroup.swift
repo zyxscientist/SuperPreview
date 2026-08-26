@@ -535,6 +535,7 @@ private struct FundHoldingNameCell: View {
         HStack(spacing: 2) {
             Text(display(holding.symbol))
                 .font(.custom("PlusJakartaSans-Regular", size: 14, relativeTo: .subheadline))
+                .monospacedDigit()
                 .foregroundColor(Color(isNumberHidden ? "color-text-30" : "color-text-60"))
                 .lineLimit(1)
 
@@ -556,6 +557,7 @@ private struct FundHoldingTPlusZeroTag: View {
         HStack(spacing: 0) {
             Text("T+0")
                 .font(.custom("PlusJakartaSans-Medium", size: 10, relativeTo: .caption2))
+                .monospacedDigit()
                 .foregroundColor(Color("color-brand-blue"))
                 .frame(height: 12)
 
@@ -648,6 +650,7 @@ private struct FundHoldingValuePairCell: View {
         VStack(alignment: .trailing, spacing: 2) {
             Text(primary)
                 .font(.custom("PlusJakartaSans-Regular", size: 16, relativeTo: .body))
+                .monospacedDigit()
                 .foregroundColor(primaryColor)
                 .frame(width: FundHoldingLayout.metricWidth, height: 24, alignment: .trailing)
                 .lineLimit(1)
@@ -655,6 +658,7 @@ private struct FundHoldingValuePairCell: View {
             if let secondary {
                 Text(secondary)
                     .font(.custom("PlusJakartaSans-Regular", size: 14, relativeTo: .subheadline))
+                    .monospacedDigit()
                     .foregroundColor(secondaryColor)
                     .frame(width: FundHoldingLayout.metricWidth, height: 20, alignment: .trailing)
                     .lineLimit(1)

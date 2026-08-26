@@ -18,7 +18,7 @@ struct StockOrderNavbar: View {
     let accountTitle: String
     let buyingPower: StockOrderBuyingPower?
     let onBack: () -> Void
-    let onRefresh: () -> Void
+    let onDebug: () -> Void
 
     @Environment(\.demoLanguage) private var language
 
@@ -26,12 +26,12 @@ struct StockOrderNavbar: View {
         accountTitle: String,
         buyingPower: StockOrderBuyingPower? = nil,
         onBack: @escaping () -> Void = {},
-        onRefresh: @escaping () -> Void = {}
+        onDebug: @escaping () -> Void = {}
     ) {
         self.accountTitle = accountTitle
         self.buyingPower = buyingPower
         self.onBack = onBack
-        self.onRefresh = onRefresh
+        self.onDebug = onDebug
     }
 
     var body: some View {
@@ -54,17 +54,20 @@ struct StockOrderNavbar: View {
 
             Spacer(minLength: 0)
 
-            Button(action: onRefresh) {
-                Image("refresh-Right")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: StockOrderNavbarLayout.iconSize, height: StockOrderNavbarLayout.iconSize)
+            Button(action: onDebug) {
+                Text(language.text(.debug))
+                    .modifier(CustomFontModifier(size: 13, font: .medium, lineHeight: 16))
+                    .foregroundColor(Color("color-text-30"))
             }
             .buttonStyle(PlainButtonStyle())
-            .frame(width: StockOrderNavbarLayout.iconSize, height: StockOrderNavbarLayout.height)
+            .frame(
+                minWidth: StockOrderNavbarLayout.iconSize,
+                minHeight: StockOrderNavbarLayout.height,
+                maxHeight: StockOrderNavbarLayout.height
+            )
             .contentShape(Rectangle())
-            .accessibilityLabel(language.text(.refresh))
-            .accessibilityIdentifier("stockOrder.navbar.refresh")
+            .accessibilityLabel(language.text(.debug))
+            .accessibilityIdentifier("stockOrder.navbar.debug")
         }
         .padding(.horizontal, StockOrderNavbarLayout.horizontalPadding)
         .frame(

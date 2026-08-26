@@ -195,6 +195,7 @@ struct StockOrderTodayOrder: View {
                 HStack(spacing: StockOrderTodayOrderLayout.majorColumnSpacing) {
                     Text(price)
                         .modifier(CustomFontModifier(size: 16, font: .regular, lineHeight: 24))
+                        .monospacedDigit()
                         .foregroundColor(Color("color-text-30"))
                         .lineLimit(1)
                         .minimumScaleFactor(0.65)
@@ -293,12 +294,14 @@ struct StockOrderTodayOrder: View {
         VStack(alignment: .trailing, spacing: StockOrderTodayOrderLayout.rowSpacing) {
             Text(quantity)
                 .modifier(CustomFontModifier(size: 16, font: .regular, lineHeight: 24))
+                .monospacedDigit()
                 .foregroundColor(Color("color-text-30"))
                 .lineLimit(1)
                 .minimumScaleFactor(0.65)
 
             Text(filledQuantity)
                 .modifier(CustomFontModifier(size: 14, font: .regular, lineHeight: 20))
+                .monospacedDigit()
                 .foregroundColor(Color("color-text-60"))
                 .lineLimit(1)
                 .minimumScaleFactor(0.65)

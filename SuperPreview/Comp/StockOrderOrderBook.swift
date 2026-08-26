@@ -179,6 +179,7 @@ struct StockOrderBook: View {
                     Text(distribution.bidPercentage)
                         .foregroundColor(Color("color-utility3-red"))
                         .modifier(CustomFontModifier(size: 12, font: .regular, lineHeight: 16))
+                        .monospacedDigit()
                 }
                 .modifier(CustomFontModifier(size: 14, font: .regular, lineHeight: 20))
                 .frame(width: StockOrderBookLayout.askTitleStart, alignment: .leading)
@@ -190,6 +191,7 @@ struct StockOrderBook: View {
                     Text(distribution.askPercentage)
                         .foregroundColor(Color("color-utility3-green"))
                         .modifier(CustomFontModifier(size: 12, font: .regular, lineHeight: 16))
+                        .monospacedDigit()
                 }
                 .modifier(CustomFontModifier(size: 14, font: .regular, lineHeight: 20))
 
@@ -377,6 +379,7 @@ private struct StockOrderBookCompactCell: View {
                 Text(level?.price ?? "")
                     .foregroundColor(side.color)
                     .modifier(CustomFontModifier(size: 16, font: .regular, lineHeight: 24))
+                    .monospacedDigit()
                     .lineLimit(1)
                     .minimumScaleFactor(0.75)
 
@@ -423,6 +426,7 @@ private struct StockOrderBookExpandedCell: View {
                 Text(level?.price ?? "")
                     .foregroundColor(side.color)
                     .modifier(CustomFontModifier(size: 12, font: .regular, lineHeight: 16))
+                    .monospacedDigit()
                     .lineLimit(1)
                     .minimumScaleFactor(0.75)
 
@@ -455,6 +459,7 @@ private struct StockOrderBookRankBadge: View {
     var body: some View {
         Text("\(rank)")
             .modifier(CustomFontModifier(size: 8, font: .regular, lineHeight: 9))
+            .monospacedDigit()
             .foregroundColor(.white)
             .frame(width: 13, height: 13)
             .background(color)
@@ -482,6 +487,7 @@ private struct StockOrderBookVolumeText: View {
             }
         }
         .modifier(CustomFontModifier(size: fontSize, font: .regular, lineHeight: lineHeight))
+        .monospacedDigit()
         .lineLimit(1)
         .minimumScaleFactor(0.7)
     }

@@ -14,8 +14,11 @@ struct StockOrderDemoView: View {
     @StateObject private var viewModel: StockOrderDemoViewModel
     @State private var confirmationSide: StockOrderConfirmationSide?
     @State private var isPriceTargetMenuPresented = false
+    @State private var isShowingDebugPanel = false
+    @State private var debugLanguage: DemoLanguage?
     @State private var focusedInput: StockOrderFormInputFocus?
 
+    @AppStorage(DemoLanguage.storageKey) private var storedDemoLanguage = DemoLanguage.simplifiedChinese
     @Environment(\.dismiss) private var dismiss
     @Environment(\.demoLanguage) private var language
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -37,7 +40,10 @@ struct StockOrderDemoView: View {
                             dismissInput()
                             dismiss()
                         },
-                        onRefresh: dismissInput
+                        onDebug: {
+                            dismissInput()
+                            isShowingDebugPanel = true
+                        }
                     )
 
                     ScrollView(.vertical, showsIndicators: false) {
@@ -64,14 +70,17 @@ struct StockOrderDemoView: View {
         }
         .ignoresSafeArea(.keyboard, edges: .bottom)
         .background(Color("color-base-1"))
-        .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
         .fullScreenCover(item: $confirmationSide) { side in
             StockOrderConfirmationSheet(
-                data: viewModel.confirmationData(for: side, language: language)
+                data: viewModel.confirmationData(for: side, language: activeLanguage)
             )
-            .environment(\.demoLanguage, language)
+            .environment(\.demoLanguage, activeLanguage)
             .presentationBackground(.clear)
+        }
+        .sheet(isPresented: $isShowingDebugPanel) {
+            StockOrderDebugPanel(language: debugLanguageBinding)
+                .environment(\.demoLanguage, activeLanguage)
         }
         .onChange(of: viewModel.selection) { _, _ in
             dismissInput()
@@ -83,8 +92,12 @@ struct StockOrderDemoView: View {
         .onChange(of: viewModel.orderType) { _, _ in
             dismissInput()
         }
+        .onChange(of: language) { _, newLanguage in
+            debugLanguage = newLanguage
+        }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockOrder.demo")
+        .environment(\.demoLanguage, activeLanguage)
     }
 
     private func pageContent(viewportWidth: CGFloat) -> some View {
@@ -123,13 +136,14 @@ struct StockOrderDemoView: View {
             StockOrderOrdersAndPositions(
                 selectedTab: $viewModel.selectedOrdersTab,
                 viewportWidth: viewportWidth,
-                todayOrders: viewModel.todayOrders(language: language),
+                todayOrders: viewModel.todayOrders(language: activeLanguage),
                 holdingSections: stockHoldingSections,
                 virtualAssetHoldingSections: virtualAssetHoldingSections,
                 showsProductCategoryPicker: viewModel.selection?.market == .crypto,
                 productCategory: productCategoryBinding,
                 todayOrdersState: .content,
-                positionsState: .content
+                positionsState: .content,
+                onHistoryOrders: {}
             )
             .simultaneousGesture(TapGesture().onEnded { dismissInput() })
         }
@@ -167,7 +181,7 @@ struct StockOrderDemoView: View {
 
             StockOrderQuantityInput(
                 quantity: $viewModel.quantity,
-                quickInputColumns: viewModel.quickInputColumns(language: language),
+                quickInputColumns: viewModel.quickInputColumns(language: activeLanguage),
                 focusedInput: $focusedInput,
                 inputMode: quantityInputMode,
                 onDecrease: {
@@ -211,17 +225,6 @@ struct StockOrderDemoView: View {
 
     private var bottomTradeBar: some View {
         ZStack(alignment: .bottom) {
-            LinearGradient(
-                colors: [
-                    Color("color-base-1").opacity(0),
-                    Color("color-base-1").opacity(0.92),
-                    Color("color-base-1")
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .allowsHitTesting(false)
-
             StockOrderTradeActionBar(
                 status: .unlocked,
                 onBuy: { presentConfirmation(for: .buy) },
@@ -234,7 +237,7 @@ struct StockOrderDemoView: View {
     }
 
     private var accountTitle: String {
-        "\(language.text(viewModel.profile.accountTitleKey))(\(viewModel.profile.accountNumber))"
+        "\(activeLanguage.text(viewModel.profile.accountTitleKey))(\(viewModel.profile.accountNumber))"
     }
 
     private var quantityInputMode: StockOrderQuantityInputMode {
@@ -243,7 +246,7 @@ struct StockOrderDemoView: View {
             return .wholeNumber
         case let .decimal(maxFractionDigits, _):
             let placeholder = String(
-                format: language.text(.minimumQuantity),
+                format: activeLanguage.text(.minimumQuantity),
                 "0.00001"
             )
             return .decimal(
@@ -287,6 +290,55 @@ struct StockOrderDemoView: View {
     private func dismissInput() {
         focusedInput = nil
         isPriceTargetMenuPresented = false
+    }
+
+    private var activeLanguage: DemoLanguage {
+        debugLanguage ?? language
+    }
+
+    private var debugLanguageBinding: Binding<DemoLanguage> {
+        Binding(
+            get: { activeLanguage },
+            set: { newLanguage in
+                debugLanguage = newLanguage
+                storedDemoLanguage = newLanguage
+            }
+        )
+    }
+}
+
+private struct StockOrderDebugPanel: View {
+    @Binding var language: DemoLanguage
+
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.demoLanguage) private var interfaceLanguage
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            HStack {
+                Text(interfaceLanguage.text(.debug))
+                    .modifier(CustomFontModifier(size: 20, font: .bold, lineHeight: 28))
+                    .foregroundColor(Color("color-text-30"))
+                    .accessibilityIdentifier("stockOrder.debug.title")
+
+                Spacer()
+
+                Button(interfaceLanguage.text(.done)) {
+                    dismiss()
+                }
+                .accessibilityIdentifier("stockOrder.debug.close")
+            }
+
+            DemoLanguagePicker(language: $language)
+                .accessibilityIdentifier("stockOrder.debug.language")
+
+            Spacer()
+        }
+        .padding(.horizontal, 20)
+        .padding(.top, 24)
+        .background(Color("color-base-1").ignoresSafeArea())
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("stockOrder.debug.panel")
     }
 }
 

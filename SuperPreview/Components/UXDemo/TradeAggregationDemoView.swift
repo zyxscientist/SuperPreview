@@ -17,6 +17,7 @@ struct TradeAggregationDemoView: View {
     @State private var isInAppNotificationSimulationEnabled = false
     @State private var isMultipleInAppNotificationSimulationEnabled = false
     @State private var selectedMainTab: AppTab = .tab2
+    @State private var isShowingStockOrder = false
     @AppStorage(DemoLanguage.storageKey) private var demoLanguage = DemoLanguage.simplifiedChinese
 
     var body: some View {
@@ -63,7 +64,8 @@ struct TradeAggregationDemoView: View {
                 if isQuickMenuPinned {
                     pinnedQuickMenu(
                         for: selectedCategory,
-                        viewportWidth: geometry.size.width
+                        viewportWidth: geometry.size.width,
+                        onTrade: { isShowingStockOrder = true }
                     )
                     .transition(.identity)
                     .zIndex(2)
@@ -104,6 +106,16 @@ struct TradeAggregationDemoView: View {
         }
         .coordinateSpace(name: TradeAggregationLayout.stickyCoordinateSpace)
         .background(Color("color-base-1").ignoresSafeArea())
+        .background(
+            NavigationLink(
+                destination: StockOrderDemoView(),
+                isActive: $isShowingStockOrder
+            ) {
+                EmptyView()
+            }
+            .hidden()
+            .accessibilityIdentifier("trade.stockOrder.navigation")
+        )
         .mainTabBar(selectedTab: $selectedMainTab)
         .inAppNotificationSimulation(
             isEnabled: isInAppNotificationSimulationEnabled && !isShowingDebugPanel,
@@ -174,7 +186,8 @@ struct TradeAggregationDemoView: View {
                     category: selectedCategory,
                     isNumberHidden: isNumberHidden,
                     snapshot: viewModel.snapshot,
-                    viewportWidth: viewportWidth
+                    viewportWidth: viewportWidth,
+                    onTrade: { isShowingStockOrder = true }
                 )
             }
         }
@@ -194,10 +207,13 @@ struct TradeAggregationDemoView: View {
     }
 
     @ViewBuilder
-    private func quickMenu(for category: AssetCategory) -> some View {
+    private func quickMenu(
+        for category: AssetCategory,
+        onTrade: @escaping () -> Void = {}
+    ) -> some View {
         switch category {
         case .stocks:
-            StockAssetQuickMenu()
+            StockAssetQuickMenu(onTrade: onTrade)
         case .funds:
             FundAssetQuickMenu()
         case .virtualAssets:
@@ -207,10 +223,11 @@ struct TradeAggregationDemoView: View {
 
     private func pinnedQuickMenu(
         for category: AssetCategory,
-        viewportWidth: CGFloat
+        viewportWidth: CGFloat,
+        onTrade: @escaping () -> Void
     ) -> some View {
         VStack(spacing: 0) {
-            quickMenu(for: category)
+            quickMenu(for: category, onTrade: onTrade)
                 .frame(width: viewportWidth, height: TradeAggregationLayout.quickMenuHeight)
 
             Color.clear
@@ -317,6 +334,7 @@ private struct TradeAggregationCategoryPage: View {
     let isNumberHidden: Bool
     let snapshot: TradeAggregationDemoSnapshot
     let viewportWidth: CGFloat
+    let onTrade: () -> Void
     @Environment(\.demoLanguage) private var language
 
     var body: some View {
@@ -380,7 +398,7 @@ private struct TradeAggregationCategoryPage: View {
     private var quickMenu: some View {
         switch category {
         case .stocks:
-            StockAssetQuickMenu()
+            StockAssetQuickMenu(onTrade: onTrade)
         case .funds:
             FundAssetQuickMenu()
         case .virtualAssets:
