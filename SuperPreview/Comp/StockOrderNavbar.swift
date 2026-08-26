@@ -158,7 +158,7 @@ private enum StockOrderNavbarLayout {
     static let titleWidth: CGFloat = 240
     static let accountTitleHeight: CGFloat = 24
     static let buyingPowerHeight: CGFloat = 16
-    static let height: CGFloat = 40
+    static let height: CGFloat = 44
 }
 
 private struct StockOrderNavbarPreviewHarness: View {
@@ -234,7 +234,7 @@ struct StockOrderNavbar_Previews: PreviewProvider {
                 .environment(\.demoLanguage, .english)
                 .previewDisplayName("Light · English · USD")
             }
-            .previewLayout(.fixed(width: 402, height: 40))
+            .previewLayout(.fixed(width: 402, height: 44))
 
             StockOrderNavbarPreviewHarness()
                 .environment(\.demoLanguage, .simplifiedChinese)
