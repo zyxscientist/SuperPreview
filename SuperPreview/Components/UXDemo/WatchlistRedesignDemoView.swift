@@ -365,6 +365,8 @@ struct WatchlistRedesignTabs: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 2) {
                     ForEach(tabs, id: \.self) { tab in
+                        let isSelected = selectedTab == tab
+
                         Button(action: {
                             var transaction = Transaction()
                             transaction.disablesAnimations = true
@@ -373,12 +375,11 @@ struct WatchlistRedesignTabs: View {
                             }
                         }) {
                             Text(language.watchlistTabTitle(tab))
-                                .modifier(CustomFontModifier(size: fontSize, font: selectedTab == tab ? .bold : .regular, lineHeight: 24))
-                                .foregroundColor(selectedTab == tab ? Color("color-text-r") : Color("color-text-60"))
+                                .modifier(CustomFontModifier(size: fontSize, font: isSelected ? .bold : .regular, lineHeight: 24))
+                                .foregroundColor(isSelected ? Color("color-text-30") : Color("color-text-60"))
                                 .padding(.horizontal, 14)
                                 .frame(height: 32)
-                                .background(selectedTab == tab ? Color("color-base-r") : Color("color-base-1"))
-                                .clipShape(Capsule())
+                                .modifier(WatchlistRedesignTabSelectionBackground(isSelected: isSelected))
                         }
                         .accessibilityIdentifier("watchlist.tab.\(tab)")
                     }
@@ -405,6 +406,23 @@ struct WatchlistRedesignTabs: View {
         }
         .frame(height: 48)
         .background(Color("color-base-1"))
+    }
+}
+
+private struct WatchlistRedesignTabSelectionBackground: ViewModifier {
+    let isSelected: Bool
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if isSelected {
+            if #available(iOS 26.0, *) {
+                content.glassEffect(.regular.interactive(), in: Capsule())
+            } else {
+                content.background(Color("color-base-r"), in: Capsule())
+            }
+        } else {
+            content.background(Color("color-base-1"), in: Capsule())
+        }
     }
 }
 

@@ -61,14 +61,13 @@ struct AssetCategoryTabBar: View {
                         relativeTo: .subheadline
                     )
                 )
-                .foregroundColor(Color(isSelected ? "color-text-r" : "color-text-60"))
+                .foregroundColor(isSelected ? Color("color-text-30") : Color("color-text-60"))
                 .lineLimit(1)
                 .fixedSize(horizontal: true, vertical: false)
                 .frame(height: 20)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 4)
-                .background(Color(isSelected ? "color-base-r" : "color-base-1"))
-                .clipShape(Capsule())
+                .modifier(AssetCategoryTabSelectionBackground(isSelected: isSelected))
         }
         .buttonStyle(PlainButtonStyle())
         .frame(height: 48)
@@ -97,6 +96,23 @@ struct AssetCategoryTabBar: View {
         .frame(width: 56, height: 20)
         .allowsHitTesting(false)
         .accessibilityHidden(true)
+    }
+}
+
+private struct AssetCategoryTabSelectionBackground: ViewModifier {
+    let isSelected: Bool
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if isSelected {
+            if #available(iOS 26.0, *) {
+                content.glassEffect(.regular.interactive(), in: Capsule())
+            } else {
+                content.background(Color("color-base-r"), in: Capsule())
+            }
+        } else {
+            content.background(Color("color-base-1"), in: Capsule())
+        }
     }
 }
 
