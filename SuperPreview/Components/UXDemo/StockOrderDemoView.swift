@@ -174,6 +174,7 @@ struct StockOrderDemoView: View {
                     isTargetMenuPresented: $isPriceTargetMenuPresented,
                     currentPrice: viewModel.profile.currentPrice,
                     supportedPriceTargets: viewModel.profile.supportedPriceTargets,
+                    areNudgeButtonsEnabled: viewModel.selection != nil,
                     onDecrease: viewModel.decreasePrice,
                     onIncrease: viewModel.increasePrice
                 )
@@ -184,6 +185,8 @@ struct StockOrderDemoView: View {
                 quickInputColumns: viewModel.quickInputColumns(language: activeLanguage),
                 focusedInput: $focusedInput,
                 inputMode: quantityInputMode,
+                areNudgeButtonsEnabled: viewModel.selection != nil,
+                showsQuickInputValues: viewModel.selection != nil,
                 onDecrease: {
                     dismissInput()
                     viewModel.decreaseQuantity()

@@ -33,6 +33,7 @@ struct StockOrderPriceInput: View {
     /// Price targets available for the selected symbol and its quote entitlement.
     let supportedPriceTargets: [StockOrderPriceTarget]
     let showsTargetButton: Bool
+    let areNudgeButtonsEnabled: Bool
     let onDecrease: () -> Void
     let onIncrease: () -> Void
 
@@ -49,6 +50,7 @@ struct StockOrderPriceInput: View {
         minimumDeviationPercent: Decimal = 0.01,
         supportedPriceTargets: [StockOrderPriceTarget] = StockOrderPriceTargetOptions.advancedQuote,
         showsTargetButton: Bool = true,
+        areNudgeButtonsEnabled: Bool = true,
         onDecrease: @escaping () -> Void = {},
         onIncrease: @escaping () -> Void = {}
     ) {
@@ -60,6 +62,7 @@ struct StockOrderPriceInput: View {
         self.minimumDeviationPercent = minimumDeviationPercent
         self.supportedPriceTargets = supportedPriceTargets
         self.showsTargetButton = showsTargetButton
+        self.areNudgeButtonsEnabled = areNudgeButtonsEnabled
         self.onDecrease = onDecrease
         self.onIncrease = onIncrease
     }
@@ -272,7 +275,7 @@ struct StockOrderPriceInput: View {
             )
             .contentShape(Rectangle())
         }
-        .buttonStyle(PlainButtonStyle())
+        .buttonStyle(StockOrderNudgePressStyle(reduceMotion: reduceMotion))
         .accessibilityLabel(language.text(.priceTracking))
         .accessibilityValue(language.text(priceTarget.menuTitleKey))
         .accessibilityIdentifier("stockOrder.priceInput.target")
@@ -355,6 +358,7 @@ struct StockOrderPriceInput: View {
                 Image(assetName)
                     .resizable()
                     .scaledToFit()
+                    .opacity(areNudgeButtonsEnabled ? 1 : 0.5)
                     .frame(
                         width: StockOrderPriceInputLayout.nudgeGlyphSize,
                         height: StockOrderPriceInputLayout.nudgeGlyphSize
@@ -369,6 +373,7 @@ struct StockOrderPriceInput: View {
         .buttonStyle(
             StockOrderNudgePressStyle(reduceMotion: reduceMotion)
         )
+        .disabled(!areNudgeButtonsEnabled)
         .accessibilityLabel(accessibilityLabel)
         .accessibilityIdentifier(identifier)
     }

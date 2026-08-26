@@ -141,6 +141,8 @@ struct StockOrderQuantityInput: View {
     let quickInputColumns: [StockOrderQuantityQuickInputColumn]
     let inputMode: StockOrderQuantityInputMode
     let showsValidationError: Bool
+    let areNudgeButtonsEnabled: Bool
+    let showsQuickInputValues: Bool
     let onDecrease: () -> Void
     let onIncrease: () -> Void
     let onQuickInput: (StockOrderQuantityQuickInputItem) -> Void
@@ -157,6 +159,8 @@ struct StockOrderQuantityInput: View {
         inputMode: StockOrderQuantityInputMode = .wholeNumber,
         showsValidationError: Bool = false,
         initiallyShowsQuickInput: Bool = false,
+        areNudgeButtonsEnabled: Bool = true,
+        showsQuickInputValues: Bool = true,
         onDecrease: @escaping () -> Void = {},
         onIncrease: @escaping () -> Void = {},
         onQuickInput: @escaping (StockOrderQuantityQuickInputItem) -> Void = { _ in }
@@ -166,6 +170,8 @@ struct StockOrderQuantityInput: View {
         self.quickInputColumns = quickInputColumns
         self.inputMode = inputMode
         self.showsValidationError = showsValidationError
+        self.areNudgeButtonsEnabled = areNudgeButtonsEnabled
+        self.showsQuickInputValues = showsQuickInputValues
         self.onDecrease = onDecrease
         self.onIncrease = onIncrease
         self.onQuickInput = onQuickInput
@@ -232,6 +238,7 @@ struct StockOrderQuantityInput: View {
             if hasQuickInput {
                 StockOrderQuantityQuickInputPanel(
                     columns: quickInputColumns,
+                    showsValues: showsQuickInputValues,
                     onSelect: selectQuickInput
                 )
                 .padding(.horizontal, StockOrderQuantityInputLayout.horizontalPadding)
@@ -469,6 +476,7 @@ struct StockOrderQuantityInput: View {
                 Image(assetName)
                     .resizable()
                     .scaledToFit()
+                    .opacity(areNudgeButtonsEnabled ? 1 : 0.5)
                     .frame(
                         width: StockOrderQuantityInputLayout.nudgeGlyphSize,
                         height: StockOrderQuantityInputLayout.nudgeGlyphSize
@@ -481,6 +489,7 @@ struct StockOrderQuantityInput: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(StockOrderNudgePressStyle(reduceMotion: reduceMotion))
+        .disabled(!areNudgeButtonsEnabled)
         .accessibilityLabel(accessibilityLabel)
         .accessibilityIdentifier(identifier)
     }
@@ -515,6 +524,7 @@ struct StockOrderQuantityInput: View {
         guard hasQuickInput else { return }
 
         dismissActiveInput()
+        HapticManager.instance.impactHaptic(type: .medium)
         withAnimation(StockOrderMotion.expansion(reduceMotion: reduceMotion)) {
             isQuickInputPresented.toggle()
         }
@@ -576,6 +586,7 @@ private enum StockOrderQuantityInputLayout {
 
 private struct StockOrderQuantityQuickInputPanel: View {
     let columns: [StockOrderQuantityQuickInputColumn]
+    let showsValues: Bool
     let onSelect: (StockOrderQuantityQuickInputItem) -> Void
 
     @Environment(\.demoLanguage) private var language
@@ -714,7 +725,7 @@ private struct StockOrderQuantityQuickInputPanel: View {
                     .foregroundColor(Color("color-text-90"))
                     .lineLimit(1)
 
-                Text(option.displayQuantity)
+                Text(showsValues ? option.displayQuantity : "--")
                     .modifier(
                         CustomFontModifier(
                             size: 14,
@@ -735,6 +746,7 @@ private struct StockOrderQuantityQuickInputPanel: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(PlainButtonStyle())
+        .disabled(!showsValues)
         .background(column.tone.color.opacity(0.1))
         .clipShape(
             RoundedRectangle(
@@ -743,7 +755,7 @@ private struct StockOrderQuantityQuickInputPanel: View {
             )
         )
         .accessibilityLabel(
-            "\(column.title), \(option.fractionLabel), \(option.displayQuantity)"
+            "\(column.title), \(option.fractionLabel), \(showsValues ? option.displayQuantity : "--")"
         )
         .accessibilityIdentifier(
             "stockOrder.quantityInput.quickInput.\(column.id).\(option.id)"

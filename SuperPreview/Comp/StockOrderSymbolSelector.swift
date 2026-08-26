@@ -235,6 +235,8 @@ struct StockOrderSymbolInput: View {
 
     private var chartToggle: some View {
         Button {
+            HapticManager.instance.impactHaptic(type: .medium)
+
             withAnimation(
                 StockOrderMotion.expansion(reduceMotion: accessibilityReduceMotion)
             ) {

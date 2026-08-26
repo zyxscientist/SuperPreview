@@ -412,8 +412,8 @@ private enum StockOrderTodayOrderLayout {
     static let informationHeight: CGFloat = 46
     static let leftAreaWidth: CGFloat = 201
     static let rightAreaWidth: CGFloat = 201
-    static let sideAndStatusWidth: CGFloat = 91
-    static let productWidth: CGFloat = 102
+    static let sideAndStatusWidth: CGFloat = 101
+    static let productWidth: CGFloat = 92
     static let priceWidth: CGFloat = 90
     static let quantityWidth: CGFloat = 103
     static let majorColumnSpacing: CGFloat = 8

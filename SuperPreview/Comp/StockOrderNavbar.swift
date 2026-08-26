@@ -113,13 +113,13 @@ struct StockOrderNavbar: View {
     private func titleWithBuyingPower(_ buyingPower: StockOrderBuyingPower) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             Text(accountTitle)
-                .modifier(CustomFontModifier(size: 14, font: .bold, lineHeight: 20))
+                .modifier(CustomFontModifier(size: 16, font: .bold, lineHeight: 24))
                 .foregroundColor(Color("color-text-30"))
                 .lineLimit(1)
                 .minimumScaleFactor(0.75)
                 .frame(
                     width: StockOrderNavbarLayout.titleWidth,
-                    height: StockOrderNavbarLayout.rowHeight,
+                    height: StockOrderNavbarLayout.accountTitleHeight,
                     alignment: .leading
                 )
 
@@ -127,13 +127,13 @@ struct StockOrderNavbar: View {
                 Text("\(language.text(.maximumBuyingPower)):")
                 Text(buyingPower.displayValue)
             }
-            .modifier(CustomFontModifier(size: 14, font: .medium, lineHeight: 20))
+            .modifier(CustomFontModifier(size: 12, font: .regular, lineHeight: 16))
             .foregroundColor(Color("color-text-30"))
             .lineLimit(1)
             .minimumScaleFactor(0.75)
             .frame(
                 width: StockOrderNavbarLayout.titleWidth,
-                height: StockOrderNavbarLayout.rowHeight,
+                height: StockOrderNavbarLayout.buyingPowerHeight,
                 alignment: .leading
             )
             .accessibilityElement(children: .combine)
@@ -156,7 +156,8 @@ private enum StockOrderNavbarLayout {
     static let leadingTitleSpacing: CGFloat = 2
     static let iconSize: CGFloat = 24
     static let titleWidth: CGFloat = 240
-    static let rowHeight: CGFloat = 20
+    static let accountTitleHeight: CGFloat = 24
+    static let buyingPowerHeight: CGFloat = 16
     static let height: CGFloat = 40
 }
 

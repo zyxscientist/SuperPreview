@@ -499,8 +499,8 @@ private enum StockOrderOrdersAndPositionsLayout {
     static let headerHeight: CGFloat = 32
     static let headerLeftWidth: CGFloat = 201
     static let headerRightWidth: CGFloat = 201
-    static let headerStatusWidth: CGFloat = 75
-    static let headerNameWidth: CGFloat = 102
+    static let headerStatusWidth: CGFloat = 85
+    static let headerNameWidth: CGFloat = 92
     static let headerPriceWidth: CGFloat = 90
     static let headerQuantityWidth: CGFloat = 87
     static let headerColumnSpacing: CGFloat = 8

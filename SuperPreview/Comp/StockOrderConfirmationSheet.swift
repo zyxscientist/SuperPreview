@@ -75,8 +75,9 @@ struct StockOrderConfirmationData {
 ///
 /// The presentation is intentionally kept inside the component so the parent
 /// only supplies localized, presentation-ready order data and the final
-/// confirmation callback. Its card transition is a simple bottom-up ease-out,
-/// matching the existing non-spring ActionSheet behavior.
+/// confirmation callback. Its initial and explicit dismissal transitions stay
+/// as a simple bottom-up ease-out, while downward dragging follows the finger
+/// and either dismisses or rebounds like the native symbol-search sheet.
 struct StockOrderConfirmationSheet: View {
     let data: StockOrderConfirmationData
     let onConfirm: () -> Void
@@ -87,6 +88,7 @@ struct StockOrderConfirmationSheet: View {
     @State private var isMaskVisible = false
     @State private var isCardVisible = false
     @State private var isDismissing = false
+    @State private var cardDragOffset: CGFloat = 0
 
     init(
         data: StockOrderConfirmationData,
@@ -98,11 +100,20 @@ struct StockOrderConfirmationSheet: View {
 
     var body: some View {
         GeometryReader { proxy in
+            let dragProgress = min(
+                max(cardDragOffset / max(proxy.size.height, 1), 0),
+                1
+            )
+
             ZStack(alignment: .bottom) {
-                dismissalMask
+                dismissalMask(dragProgress: dragProgress)
 
                 confirmationCard
-                    .offset(y: isCardVisible ? 0 : proxy.size.height)
+                    .offset(
+                        y: isCardVisible
+                            ? cardDragOffset
+                            : proxy.size.height
+                    )
                     .animation(
                         reduceMotion
                             ? nil
@@ -119,12 +130,13 @@ struct StockOrderConfirmationSheet: View {
         .accessibilityIdentifier("stockOrder.confirmationSheet")
     }
 
-    private var dismissalMask: some View {
+    private func dismissalMask(dragProgress: CGFloat) -> some View {
         Button(action: dismissSheet) {
             Color.black
                 .opacity(
                     isMaskVisible
                         ? StockOrderConfirmationSheetLayout.maskOpacity
+                            * (1 - dragProgress)
                         : 0
                 )
                 .ignoresSafeArea()
@@ -163,6 +175,8 @@ struct StockOrderConfirmationSheet: View {
             )
         )
         .accessibilityIdentifier("stockOrder.confirmationSheet.card")
+        .contentShape(Rectangle())
+        .simultaneousGesture(cardDragGesture)
     }
 
     private var sheetHandle: some View {
@@ -316,6 +330,8 @@ struct StockOrderConfirmationSheet: View {
     private func present() {
         guard !isDismissing else { return }
 
+        cardDragOffset = 0
+
         if reduceMotion {
             isMaskVisible = true
             isCardVisible = true
@@ -327,6 +343,59 @@ struct StockOrderConfirmationSheet: View {
 
             isMaskVisible = true
             isCardVisible = true
+        }
+    }
+
+    private var cardDragGesture: some Gesture {
+        DragGesture(
+            minimumDistance: StockOrderConfirmationSheetLayout.dragMinimumDistance,
+            coordinateSpace: .local
+        )
+        .onChanged(updateCardDrag)
+        .onEnded(endCardDrag)
+    }
+
+    private func updateCardDrag(_ value: DragGesture.Value) {
+        guard isCardVisible, !isDismissing else { return }
+
+        let isVerticalDrag = abs(value.translation.height) >= abs(value.translation.width)
+        let nextOffset = isVerticalDrag ? max(0, value.translation.height) : 0
+        var transaction = Transaction()
+        transaction.disablesAnimations = true
+
+        withTransaction(transaction) {
+            cardDragOffset = nextOffset
+        }
+    }
+
+    private func endCardDrag(_ value: DragGesture.Value) {
+        guard isCardVisible, !isDismissing else { return }
+
+        let isVerticalDrag = abs(value.translation.height) >= abs(value.translation.width)
+        let translation = max(0, value.translation.height)
+        let projectedTranslation = max(0, value.predictedEndTranslation.height)
+        let shouldDismiss = isVerticalDrag && (
+            translation >= StockOrderConfirmationSheetLayout.dragDismissalDistance
+                || projectedTranslation
+                    >= StockOrderConfirmationSheetLayout.dragProjectedDismissalDistance
+        )
+
+        if shouldDismiss {
+            dismissSheet()
+        } else {
+            resetCardDrag()
+        }
+    }
+
+    private func resetCardDrag() {
+        guard cardDragOffset != 0 else { return }
+
+        if reduceMotion {
+            cardDragOffset = 0
+        } else {
+            withAnimation(StockOrderConfirmationSheetLayout.dragResetAnimation) {
+                cardDragOffset = 0
+            }
         }
     }
 
@@ -380,6 +449,14 @@ private enum StockOrderConfirmationSheetLayout {
     static let maskOpacity: CGFloat = 0.3
     static let maskFadeDuration: TimeInterval = 0.3
     static let cardTransitionDuration: TimeInterval = 0.3
+    static let dragMinimumDistance: CGFloat = 2
+    static let dragDismissalDistance: CGFloat = 120
+    static let dragProjectedDismissalDistance: CGFloat = 220
+    static let dragResetAnimation = Animation.spring(
+        response: 0.35,
+        dampingFraction: 0.86,
+        blendDuration: 0.15
+    )
 }
 
 private struct StockOrderConfirmationSheetPreviewHarness: View {
