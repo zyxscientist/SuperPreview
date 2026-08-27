@@ -359,38 +359,20 @@ struct WatchlistRedesignTabs: View {
     @Binding var selectedTab: String
     let fontSize: CGFloat
     @Environment(\.demoLanguage) private var language
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    private var selectionAnimation: Animation? {
+        reduceMotion ? nil : .smooth(duration: 0.32, extraBounce: 0)
+    }
 
     var body: some View {
         HStack(spacing: 0) {
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 2) {
-                    ForEach(tabs, id: \.self) { tab in
-                        let isSelected = selectedTab == tab
-
-                        Button(action: {
-                            var transaction = Transaction()
-                            transaction.disablesAnimations = true
-                            withTransaction(transaction) {
-                                selectedTab = tab
-                            }
-                        }) {
-                            Text(language.watchlistTabTitle(tab))
-                                .modifier(CustomFontModifier(size: fontSize, font: isSelected ? .bold : .regular, lineHeight: 24))
-                                .foregroundColor(isSelected ? Color("color-text-30") : Color("color-text-60"))
-                                .padding(.horizontal, 14)
-                                .frame(height: 32)
-                                .modifier(WatchlistRedesignTabSelectionBackground(isSelected: isSelected))
-                        }
-                        .accessibilityIdentifier("watchlist.tab.\(tab)")
-                    }
-                }
-                .padding(.leading, 10)
-                .padding(.trailing, 48)
-                .padding(.vertical, 8)
-                .transaction { transaction in
-                    transaction.disablesAnimations = true
-                    transaction.animation = nil
-                }
+                tabButtons
+                    .padding(.leading, 10)
+                    .padding(.trailing, 48)
+                    .padding(.vertical, 8)
+                    .animation(selectionAnimation, value: selectedTab)
             }
 
             ZStack(alignment: .trailing) {
@@ -407,22 +389,77 @@ struct WatchlistRedesignTabs: View {
         .frame(height: 48)
         .background(Color("color-base-1"))
     }
-}
 
-private struct WatchlistRedesignTabSelectionBackground: ViewModifier {
-    let isSelected: Bool
+    private var tabButtons: some View {
+        // There is one persistent selection surface rather than a group of glass
+        // surfaces. Keeping it outside GlassEffectContainer preserves the normal
+        // background-to-foreground order: glass first, then the tab labels.
+        tabButtonRow
+    }
+
+    private var tabButtonRow: some View {
+        HStack(spacing: 2) {
+            ForEach(tabs, id: \.self) { tab in
+                let isSelected = selectedTab == tab
+
+                Button {
+                    guard selectedTab != tab else { return }
+                    selectedTab = tab
+                } label: {
+                    Text(language.watchlistTabTitle(tab))
+                        .modifier(CustomFontModifier(size: fontSize, font: isSelected ? .bold : .regular, lineHeight: 24))
+                        .foregroundColor(isSelected ? Color("color-text-30") : Color("color-text-60"))
+                        .padding(.horizontal, 14)
+                        .frame(height: 32)
+                        .transaction { transaction in
+                            transaction.animation = nil
+                        }
+                        .anchorPreference(
+                            key: WatchlistRedesignTabFramePreferenceKey.self,
+                            value: .bounds
+                        ) { anchor in
+                            [tab: anchor]
+                        }
+                }
+                .accessibilityAddTraits(isSelected ? .isSelected : [])
+                .accessibilityIdentifier("watchlist.tab.\(tab)")
+            }
+        }
+        .backgroundPreferenceValue(WatchlistRedesignTabFramePreferenceKey.self) { anchors in
+            GeometryReader { proxy in
+                if let selectedAnchor = anchors[selectedTab] {
+                    let selectedFrame = proxy[selectedAnchor]
+
+                    selectionGlassBackground
+                        .frame(width: selectedFrame.width, height: selectedFrame.height)
+                        .position(x: selectedFrame.midX, y: selectedFrame.midY)
+                }
+            }
+        }
+    }
 
     @ViewBuilder
-    func body(content: Content) -> some View {
-        if isSelected {
-            if #available(iOS 26.0, *) {
-                content.glassEffect(.regular.interactive(), in: Capsule())
-            } else {
-                content.background(Color("color-base-r"), in: Capsule())
-            }
+    private var selectionGlassBackground: some View {
+        if #available(iOS 26.0, *) {
+            Color.clear
+                .glassEffect(.regular, in: Capsule())
+                .allowsHitTesting(false)
+                .accessibilityHidden(true)
         } else {
-            content.background(Color("color-base-1"), in: Capsule())
+            Capsule()
+                .fill(Color("color-base-r"))
         }
+    }
+}
+
+private struct WatchlistRedesignTabFramePreferenceKey: PreferenceKey {
+    static var defaultValue: [String: Anchor<CGRect>] = [:]
+
+    static func reduce(
+        value: inout [String: Anchor<CGRect>],
+        nextValue: () -> [String: Anchor<CGRect>]
+    ) {
+        value.merge(nextValue(), uniquingKeysWith: { _, newValue in newValue })
     }
 }
 

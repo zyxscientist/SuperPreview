@@ -12,6 +12,7 @@ import SwiftUI
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
+    private var hasUpdatedAppIconForCurrentSession = false
 
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
@@ -41,6 +42,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneDidBecomeActive(_ scene: UIScene) {
         // Called when the scene has moved from an inactive state to an active state.
         // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
+        DispatchQueue.main.async { [weak self] in
+            self?.updateAppIconForCurrentSystem()
+        }
     }
 
     func sceneWillResignActive(_ scene: UIScene) {
@@ -59,6 +63,31 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // to restore the scene back to its current state.
     }
 
+    private func updateAppIconForCurrentSystem() {
+        guard !hasUpdatedAppIconForCurrentSession, !PreviewRuntime.isUITesting else { return }
+
+        let application = UIApplication.shared
+        guard application.supportsAlternateIcons else { return }
+
+        let desiredIconName: String?
+        if #available(iOS 27.0, *) {
+            desiredIconName = "logo"
+        } else {
+            desiredIconName = nil
+        }
+
+        guard application.alternateIconName != desiredIconName else {
+            hasUpdatedAppIconForCurrentSession = true
+            return
+        }
+        hasUpdatedAppIconForCurrentSession = true
+
+        application.setAlternateIconName(desiredIconName) { error in
+            if let error {
+                print("Unable to update the app icon: \(error.localizedDescription)")
+            }
+        }
+    }
+
 
 }
-

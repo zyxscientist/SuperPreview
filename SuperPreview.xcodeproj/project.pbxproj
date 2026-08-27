@@ -96,6 +96,7 @@
 		84F400012F81000000ABC001 /* JakartaMonospacedComparisonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F400002F81000000ABC001 /* JakartaMonospacedComparisonView.swift */; };
 		84F500012F82000000ABC001 /* LiquidGlassResearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F500002F82000000ABC001 /* LiquidGlassResearchView.swift */; };
 		84F600012F83000000ABC001 /* DemoLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F600002F83000000ABC001 /* DemoLocalization.swift */; };
+		84F700022F84000000ABC001 /* logo.icon in Resources */ = {isa = PBXBuildFile; fileRef = 84F700012F84000000ABC001 /* logo.icon */; };
 		A1B2C3D4E5F6000000000011 /* StockOrderMotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000001 /* StockOrderMotion.swift */; };
 		A1B2C3D4E5F6000000000012 /* StockOrderNavbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000002 /* StockOrderNavbar.swift */; };
 		A1B2C3D4E5F6000000000013 /* StockOrderSymbolModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000003 /* StockOrderSymbolModels.swift */; };
@@ -264,6 +265,7 @@
 		84F400002F81000000ABC001 /* JakartaMonospacedComparisonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JakartaMonospacedComparisonView.swift; sourceTree = "<group>"; };
 		84F500002F82000000ABC001 /* LiquidGlassResearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassResearchView.swift; sourceTree = "<group>"; };
 		84F600002F83000000ABC001 /* DemoLocalization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoLocalization.swift; sourceTree = "<group>"; };
+		84F700012F84000000ABC001 /* logo.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = logo.icon; sourceTree = "<group>"; };
 		A1B2C3D4E5F6000000000001 /* StockOrderMotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderMotion.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6000000000002 /* StockOrderNavbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderNavbar.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6000000000003 /* StockOrderSymbolModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderSymbolModels.swift; sourceTree = "<group>"; };
@@ -675,6 +677,7 @@
 				84008BF12CAA709D0094E05E /* IntradayCardsView.swift */,
 				C2FFC802252216F000B79A40 /* MainView.swift */,
 				C2A0247E24FB5319004930F0 /* Assets.xcassets */,
+				84F700012F84000000ABC001 /* logo.icon */,
 				C2A0248624FB5319004930F0 /* Info.plist */,
 				C2330E4D2851D83200382AE1 /* Font */,
 				C2A0248024FB5319004930F0 /* Preview Content */,
@@ -843,6 +846,7 @@
 			files = (
 				C2A0248224FB5319004930F0 /* Preview Assets.xcassets in Resources */,
 				C2A0247F24FB5319004930F0 /* Assets.xcassets in Resources */,
+				84F700022F84000000ABC001 /* logo.icon in Resources */,
 				C2405EC02851F89600A30210 /* MiSans-Medium.ttf in Resources */,
 				C2330E522851DA7A00382AE1 /* PlusJakartaSans-Regular.ttf in Resources */,
 				C2330E532851DA7A00382AE1 /* PlusJakartaSans-Medium.ttf in Resources */,

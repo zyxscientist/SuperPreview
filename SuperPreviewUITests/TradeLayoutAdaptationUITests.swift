@@ -200,6 +200,28 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         assertInAppNotificationFrame(banner)
     }
 
+    func testWatchlistSelectionGlassTracksHorizontalPaging() throws {
+        enterWatchlist()
+
+        let allTab = waitFor("watchlist.tab.全部")
+        let hongKongTab = waitFor("watchlist.tab.港股")
+        XCTAssertTrue(allTab.isSelected)
+
+        app.swipeLeft()
+
+        let selectionExpectation = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "selected == true"),
+            object: hongKongTab
+        )
+        XCTAssertEqual(
+            XCTWaiter.wait(for: [selectionExpectation], timeout: 5),
+            .completed,
+            "The selected HeaderTab should follow horizontal paging"
+        )
+        XCTAssertFalse(allTab.isSelected)
+        XCTAssertTrue(hongKongTab.isSelected)
+    }
+
     func testTradeInAppNotificationRepeatsAndStops() throws {
         enterTrade()
 
