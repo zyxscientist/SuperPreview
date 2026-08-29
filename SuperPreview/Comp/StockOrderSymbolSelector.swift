@@ -164,7 +164,7 @@ struct StockOrderSymbolInput: View {
             .buttonStyle(PlainButtonStyle())
             .frame(maxWidth: .infinity, minHeight: 44, maxHeight: 44)
             .accessibilityLabel(language.text(.stockInputPlaceholder))
-            .accessibilityIdentifier("stsockOrder.symbolInput.emptyField")
+            .accessibilityIdentifier("stockOrder.symbolInput.emptyField")
         }
         .padding(.horizontal, 16)
         .frame(height: 44)

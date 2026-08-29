@@ -13,6 +13,7 @@ import SwiftUI
 struct StockOrderDemoView: View {
     @StateObject private var viewModel: StockOrderDemoViewModel
     @State private var confirmationSide: StockOrderConfirmationSide?
+    @State private var confirmationConfirmCount = 0
     @State private var isPriceTargetMenuPresented = false
     @State private var isShowingDebugPanel = false
     @State private var debugLanguage: DemoLanguage?
@@ -71,12 +72,18 @@ struct StockOrderDemoView: View {
         .ignoresSafeArea(.keyboard, edges: .bottom)
         .background(Color("color-base-1"))
         .toolbar(.hidden, for: .navigationBar)
-        .fullScreenCover(item: $confirmationSide) { side in
+        .interactiveBottomCard(item: $confirmationSide) { side in
             StockOrderConfirmationSheet(
-                data: viewModel.confirmationData(for: side, language: activeLanguage)
+                data: viewModel.confirmationData(for: side, language: activeLanguage),
+                onCancel: {
+                    confirmationSide = nil
+                },
+                onConfirm: {
+                    confirmationConfirmCount += 1
+                    confirmationSide = nil
+                }
             )
             .environment(\.demoLanguage, activeLanguage)
-            .presentationBackground(.clear)
         }
         .sheet(isPresented: $isShowingDebugPanel) {
             StockOrderDebugPanel(language: debugLanguageBinding)
@@ -97,6 +104,14 @@ struct StockOrderDemoView: View {
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockOrder.demo")
+        .overlay(alignment: .topLeading) {
+            if PreviewRuntime.isUITesting {
+                Text("\(confirmationConfirmCount)")
+                    .frame(width: 1, height: 1)
+                    .opacity(0.01)
+                    .accessibilityIdentifier("stockOrder.confirmation.confirmCount")
+            }
+        }
         .environment(\.demoLanguage, activeLanguage)
     }
 
@@ -282,12 +297,7 @@ struct StockOrderDemoView: View {
 
         guard viewModel.selection != nil else { return }
 
-        var transaction = Transaction()
-        transaction.disablesAnimations = true
-
-        withTransaction(transaction) {
-            confirmationSide = side
-        }
+        confirmationSide = side
     }
 
     private func dismissInput() {

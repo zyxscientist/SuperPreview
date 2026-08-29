@@ -13,6 +13,13 @@ xcuserdata/
 *.xcodeproj/*
 !*.xcodeproj/project.pbxproj
 !*.xcodeproj/xcshareddata/
+!*.xcodeproj/xcshareddata/swiftpm/
+!*.xcodeproj/xcshareddata/swiftpm/Package.resolved
+!*.xcodeproj/project.xcworkspace/
+!*.xcodeproj/project.xcworkspace/xcshareddata/
+!*.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/
+!*.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+*.xcodeproj/project.xcworkspace/contents.xcworkspacedata
 !*.xcworkspace/contents.xcworkspacedata
 /*.gcno
 **/xcshareddata/WorkspaceSettings.xcsettings
