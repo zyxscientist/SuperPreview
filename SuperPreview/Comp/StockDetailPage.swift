@@ -24,9 +24,11 @@ struct StockDetailPage: View {
     @State private var relatedInfoInteraction = StockDetailRelatedInfoInteractionState()
     @State private var quoteScrollOffset: CGFloat = 0
     @State private var isShowingDebugSheet = false
+    @State private var debugLanguage: DemoLanguage?
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.demoLanguage) private var language
+    @AppStorage(DemoLanguage.storageKey) private var storedDemoLanguage = DemoLanguage.simplifiedChinese
 
     init(
         instrument: StockDetailInstrument,
@@ -71,7 +73,7 @@ struct StockDetailPage: View {
                         onBack: handleBack,
                         onShare: { isShowingDebugSheet = true },
                         trailingAction: .debug,
-                        shareAccessibilityLabel: language.text(.debug)
+                        shareAccessibilityLabel: activeLanguage.text(.debug)
                     )
 
                     StockDetailPageHeaderTabs(
@@ -97,13 +99,21 @@ struct StockDetailPage: View {
         .toolbar(.hidden, for: .navigationBar)
         .navigationBarBackButtonHidden(true)
         .sheet(isPresented: $isShowingDebugSheet) {
-            StockDetailDebugSheet(selection: $activeInstrument)
+            StockDetailDebugSheet(
+                selection: $activeInstrument,
+                language: debugLanguageBinding
+            )
+            .environment(\.demoLanguage, activeLanguage)
         }
         .onChange(of: activeInstrument) { _, _ in
             resetPageState()
         }
+        .onChange(of: language) { _, newLanguage in
+            debugLanguage = newLanguage
+        }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockDetail.page")
+        .environment(\.demoLanguage, activeLanguage)
     }
 
     private var configuration: StockDetailPageConfiguration {
@@ -260,14 +270,21 @@ struct StockDetailPage: View {
     }
 
     private var disclaimerText: String {
-        switch language {
-        case .simplifiedChinese:
-            "提示:本页面仅供阁下参考，并非有鱼智能科技有限公司(以下简称「有鱼」)的官方立场，亦不构成任何投资决策的招揽、邀约和建议。由于资料或数据可能得自第三方，有鱼将尽可能确认资料来源之可靠性，但有鱼并不对第三方所提供数据或资料之准确性负责，且有鱼不会就本页面所载任何资料、预测及/或意见的公平性、准确性、时限性、完整性或正确性，以及任何该等预测及/或意见所依据的基准作出任何明文或暗示的保证、陈述、担保或承诺而负责或承担法律责任。务请阁下注意，投资涉及风险，证券及投资的价值可升亦可跌，过往的表现不一定可以预示日后的表现。如有疑问，请咨询阁下的专业顾问。"
-        case .traditionalChinese:
-            "提示:本頁面僅供閣下參考，並非有魚智能科技有限公司(以下簡稱「有魚」)的官方立場，亦不構成任何投資決策的招攬、邀約和建議。由於資料或數據可能得自第三方，有魚將盡可能確認資料來源之可靠性，但有魚並不對第三方所提供數據或資料之準確性負責，且有魚不會就本頁面所載任何資料、預測及/或意見的公平性、準確性、時限性、完整性或正確性，以及任何該等預測及/或意見所依據的基準作出任何明文或暗示的保證、陳述、擔保或承諾而負責或承擔法律責任。務請閣下注意，投資涉及風險，證券及投資的價值可升亦可跌，過往的表現不一定可以預示日後的表現。如有疑問，請諮詢閣下的專業顧問。"
-        case .english:
-            "Notice: This page is for reference only and does not represent the official position of Yuu Smart Technology Limited (\"Yuu\"), nor does it constitute a solicitation, invitation, or recommendation to make any investment decision. Information may come from third parties. Yuu makes no express or implied representation or warranty as to its fairness, accuracy, timeliness, completeness, or correctness. Investment involves risk, and the value of securities and investments may rise or fall. Past performance is not indicative of future results. Please consult your professional adviser if you have any questions."
-        }
+        activeLanguage.text(.stockDetailDisclaimer)
+    }
+
+    private var activeLanguage: DemoLanguage {
+        debugLanguage ?? language
+    }
+
+    private var debugLanguageBinding: Binding<DemoLanguage> {
+        Binding(
+            get: { activeLanguage },
+            set: { newLanguage in
+                debugLanguage = newLanguage
+                storedDemoLanguage = newLanguage
+            }
+        )
     }
 
     private var fixedBottomActionBar: some View {
@@ -399,20 +416,21 @@ private struct StockDetailPageEmptyView: View {
 
 private struct StockDetailDebugSheet: View {
     @Binding var selection: StockDetailInstrument
+    @Binding var language: DemoLanguage
 
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.demoLanguage) private var language
+    @Environment(\.demoLanguage) private var interfaceLanguage
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                Text(language.text(.debug))
+                Text(interfaceLanguage.text(.debug))
                     .modifier(CustomFontModifier(size: 20, font: .bold, lineHeight: 28))
                     .foregroundColor(Color("color-text-30"))
 
                 Spacer()
 
-                Button(language.text(.done)) {
+                Button(interfaceLanguage.text(.done)) {
                     dismiss()
                 }
                 .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
@@ -422,6 +440,11 @@ private struct StockDetailDebugSheet: View {
             .padding(.horizontal, 20)
             .padding(.top, 20)
             .padding(.bottom, 12)
+
+            DemoLanguagePicker(language: $language)
+                .padding(.horizontal, 20)
+                .padding(.bottom, 12)
+                .accessibilityIdentifier("stockDetail.debug.language")
 
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 8) {
@@ -481,62 +504,12 @@ private struct StockDetailDebugSheet: View {
 
     private func variantTitle(for instrument: StockDetailInstrument) -> String {
         let variant = StockDetailPageVariant(instrument: instrument)
-
-        return switch (variant, language) {
-        case (.hongKongStock, .simplifiedChinese):
-            "港股正股"
-        case (.hongKongStock, .traditionalChinese):
-            "港股正股"
-        case (.hongKongStock, .english):
-            "HK Stock"
-        case (.hongKongETF, .simplifiedChinese):
-            "港股 ETF"
-        case (.hongKongETF, .traditionalChinese):
-            "港股 ETF"
-        case (.hongKongETF, .english):
-            "HK ETF"
-        case (.usStock, .simplifiedChinese):
-            "美股正股"
-        case (.usStock, .traditionalChinese):
-            "美股正股"
-        case (.usStock, .english):
-            "US Stock"
-        case (.usETF, .simplifiedChinese):
-            "美股 ETF"
-        case (.usETF, .traditionalChinese):
-            "美股 ETF"
-        case (.usETF, .english):
-            "US ETF"
-        case (.aShareStock, .simplifiedChinese):
-            "沪深正股"
-        case (.aShareStock, .traditionalChinese):
-            "滬深正股"
-        case (.aShareStock, .english):
-            "A-Share Stock"
-        case (.aShareETF, .simplifiedChinese):
-            "沪深 ETF"
-        case (.aShareETF, .traditionalChinese):
-            "滬深 ETF"
-        case (.aShareETF, .english):
-            "A-Share ETF"
-        case (.crypto, .simplifiedChinese):
-            "加密货币"
-        case (.crypto, .traditionalChinese):
-            "加密貨幣"
-        case (.crypto, .english):
-            "Crypto"
-        case (.fallback, .simplifiedChinese):
-            "其他"
-        case (.fallback, .traditionalChinese):
-            "其他"
-        case (.fallback, .english):
-            "Other"
-        }
+        return interfaceLanguage.text(variant.debugTitleKey)
     }
 
     private func displayName(for instrument: StockDetailInstrument) -> String {
         instrument.localizationID.map {
-            language.securityName(id: $0, fallback: instrument.fallbackName)
+            interfaceLanguage.securityName(id: $0, fallback: instrument.fallbackName)
         } ?? instrument.fallbackName
     }
 }

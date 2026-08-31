@@ -157,55 +157,29 @@ enum StockDetailPageTab: String, Hashable, Identifiable {
     var id: String { rawValue }
 
     func title(for language: DemoLanguage) -> String {
-        switch (self, language) {
-        case (.quote, .simplifiedChinese):
-            "报价"
-        case (.quote, .traditionalChinese):
-            "報價"
-        case (.quote, .english):
-            "Quote"
-        case (.warrants, .simplifiedChinese):
-            "轮证"
-        case (.warrants, .traditionalChinese):
-            "輪證"
-        case (.warrants, .english):
-            "Warrants"
-        case (.options, .simplifiedChinese):
-            "期权"
-        case (.options, .traditionalChinese):
-            "期權"
-        case (.options, .english):
-            "Options"
-        case (.etf, _):
-            "ETF"
-        case (.data, .simplifiedChinese):
-            "数据"
-        case (.data, .traditionalChinese):
-            "數據"
-        case (.data, .english):
-            "Data"
-        case (.analysis, .simplifiedChinese), (.analysis, .traditionalChinese):
-            "分析"
-        case (.analysis, .english):
-            "Analysis"
-        case (.news, .simplifiedChinese):
-            "资讯"
-        case (.news, .traditionalChinese):
-            "資訊"
-        case (.news, .english):
-            "News"
-        case (.financials, .simplifiedChinese):
-            "财务"
-        case (.financials, .traditionalChinese):
-            "財務"
-        case (.financials, .english):
-            "Financials"
-        case (.overview, .simplifiedChinese):
-            "简况"
-        case (.overview, .traditionalChinese):
-            "簡況"
-        case (.overview, .english):
-            "Overview"
+        language.text(copyKey)
+    }
+
+    private var copyKey: DemoCopyKey {
+        switch self {
+        case .quote:
+            .stockDetailTabQuote
+        case .warrants:
+            .stockDetailTabWarrants
+        case .options:
+            .stockDetailTabOptions
+        case .etf:
+            .stockDetailTabETF
+        case .data:
+            .stockDetailTabData
+        case .analysis:
+            .stockDetailTabAnalysis
+        case .news:
+            .stockDetailTabNews
+        case .financials:
+            .stockDetailTabFinancials
+        case .overview:
+            .stockDetailTabOverview
         }
     }
 
@@ -225,6 +199,27 @@ enum StockDetailPageVariant: String, Hashable, Identifiable {
     case fallback
 
     var id: String { rawValue }
+
+    var debugTitleKey: DemoCopyKey {
+        switch self {
+        case .hongKongStock:
+            .stockDetailVariantHongKongStock
+        case .hongKongETF:
+            .stockDetailVariantHongKongETF
+        case .usStock:
+            .stockDetailVariantUSStock
+        case .usETF:
+            .stockDetailVariantUSETF
+        case .aShareStock:
+            .stockDetailVariantAShareStock
+        case .aShareETF:
+            .stockDetailVariantAShareETF
+        case .crypto:
+            .stockDetailVariantCrypto
+        case .fallback:
+            .stockDetailVariantOther
+        }
+    }
 
     init(instrument: StockDetailInstrument) {
         switch (instrument.market, instrument.kind) {

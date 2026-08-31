@@ -66,6 +66,14 @@ enum DemoCopyKey {
     case stockDetailPreMarketTrading, stockDetailAfterHoursTrading
     case stockDetailHigh, stockDetailLow, stockDetailTurnover, zeroValue
     case viewMarketBadgeDetails, currentPrice, expandQuoteDetails, collapseQuoteDetails
+    case stockDetailDisclaimer
+    case stockDetailTabQuote, stockDetailTabWarrants, stockDetailTabOptions, stockDetailTabETF
+    case stockDetailTabData, stockDetailTabAnalysis, stockDetailTabNews
+    case stockDetailTabFinancials, stockDetailTabOverview
+    case stockDetailVariantHongKongStock, stockDetailVariantHongKongETF
+    case stockDetailVariantUSStock, stockDetailVariantUSETF
+    case stockDetailVariantAShareStock, stockDetailVariantAShareETF
+    case stockDetailVariantCrypto, stockDetailVariantOther
     case orderType, limitOrder, enhancedLimitOrder, marketOrder
     case auctionLimitOrder, auctionMarketOrder, oddLotOrder, conditionalOrder
     case orderStatusHeader, symbolHeader, orderPriceHeader, quantityFilledHeader
@@ -294,6 +302,28 @@ private enum DemoCopy {
         .currentPrice: ("现价", "現價", "Last price"),
         .expandQuoteDetails: ("展开更多行情数据", "展開更多行情資料", "Expand quote details"),
         .collapseQuoteDetails: ("收起更多行情数据", "收起更多行情資料", "Collapse quote details"),
+        .stockDetailDisclaimer: (
+            "提示:本页面仅供阁下参考，并非有鱼智能科技有限公司(以下简称「有鱼」)的官方立场，亦不构成任何投资决策的招揽、邀约和建议。由于资料或数据可能得自第三方，有鱼将尽可能确认资料来源之可靠性，但有鱼并不对第三方所提供数据或资料之准确性负责，且有鱼不会就本页面所载任何资料、预测及/或意见的公平性、准确性、时限性、完整性或正确性，以及任何该等预测及/或意见所依据的基准作出任何明文或暗示的保证、陈述、担保或承诺而负责或承担法律责任。务请阁下注意，投资涉及风险，证券及投资的价值可升亦可跌，过往的表现不一定可以预示日后的表现。如有疑问，请咨询阁下的专业顾问。",
+            "提示:本頁面僅供閣下參考，並非有魚智能科技有限公司(以下簡稱「有魚」)的官方立場，亦不構成任何投資決策的招攬、邀約和建議。由於資料或數據可能得自第三方，有魚將盡可能確認資料來源之可靠性，但有魚並不對第三方所提供數據或資料之準確性負責，且有魚不會就本頁面所載任何資料、預測及/或意見的公平性、準確性、時限性、完整性或正確性，以及任何該等預測及/或意見所依據的基準作出任何明文或暗示的保證、陳述、擔保或承諾而負責或承擔法律責任。務請閣下注意，投資涉及風險，證券及投資的價值可升亦可跌，過往的表現不一定可以預示日後的表現。如有疑問，請諮詢閣下的專業顧問。",
+            "Notice: This page is for reference only and does not represent the official position of Yuu Smart Technology Limited (\"Yuu\"), nor does it constitute a solicitation, invitation, or recommendation to make any investment decision. Information may come from third parties. Yuu makes no express or implied representation or warranty as to its fairness, accuracy, timeliness, completeness, or correctness. Investment involves risk, and the value of securities and investments may rise or fall. Past performance is not indicative of future results. Please consult your professional adviser if you have any questions."
+        ),
+        .stockDetailTabQuote: ("报价", "報價", "Quote"),
+        .stockDetailTabWarrants: ("轮证", "輪證", "Warrants"),
+        .stockDetailTabOptions: ("期权", "期權", "Options"),
+        .stockDetailTabETF: ("ETF", "ETF", "ETF"),
+        .stockDetailTabData: ("数据", "數據", "Data"),
+        .stockDetailTabAnalysis: ("分析", "分析", "Analysis"),
+        .stockDetailTabNews: ("资讯", "資訊", "News"),
+        .stockDetailTabFinancials: ("财务", "財務", "Financials"),
+        .stockDetailTabOverview: ("简况", "簡況", "Overview"),
+        .stockDetailVariantHongKongStock: ("港股正股", "港股正股", "HK Stock"),
+        .stockDetailVariantHongKongETF: ("港股 ETF", "港股 ETF", "HK ETF"),
+        .stockDetailVariantUSStock: ("美股正股", "美股正股", "US Stock"),
+        .stockDetailVariantUSETF: ("美股 ETF", "美股 ETF", "US ETF"),
+        .stockDetailVariantAShareStock: ("沪深正股", "滬深正股", "A-Share Stock"),
+        .stockDetailVariantAShareETF: ("沪深 ETF", "滬深 ETF", "A-Share ETF"),
+        .stockDetailVariantCrypto: ("加密货币", "加密貨幣", "Crypto"),
+        .stockDetailVariantOther: ("其他", "其他", "Other"),
         .orderType: ("类型", "類型", "Type"),
         .limitOrder: ("限价单", "限價單", "Limit Order"),
         .enhancedLimitOrder: ("增强限价单", "增強限價單", "Enhanced Limit Order"),

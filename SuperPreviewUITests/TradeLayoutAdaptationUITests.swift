@@ -186,6 +186,49 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         XCTAssertEqual(waitFor("watchlist.debug.status.changeHeader").label, "Chg%")
     }
 
+    func testStockDetailDebugLanguageSelectionUpdatesPage() throws {
+        let detailEntry = waitFor("compare.stockDetailUSCommonStock")
+        let componentLibrary = waitFor("compare.componentLibrary")
+
+        for _ in 0..<6 where !detailEntry.isHittable {
+            componentLibrary.swipeUp()
+        }
+
+        XCTAssertTrue(
+            detailEntry.isHittable,
+            "Stock detail entry should be reachable in the component library"
+        )
+        detailEntry.tap()
+
+        XCTAssertTrue(waitFor("stockDetail.usCommonStockPage").exists)
+        waitFor("stockDetail.navbar.debug").tap()
+        XCTAssertTrue(waitFor("stockDetail.debug.sheet").exists)
+        selectStockDetailLanguage("简体中文")
+        dismissStockDetailDebugPanel()
+        XCTAssertEqual(waitFor("stockDetail.page.headerTab.quote").label, "报价")
+
+        waitFor("stockDetail.navbar.debug").tap()
+        XCTAssertTrue(waitFor("stockDetail.debug.sheet").exists)
+        XCTAssertTrue(waitFor("stockDetail.debug.language").exists)
+
+        selectStockDetailLanguage("English")
+        dismissStockDetailDebugPanel()
+        XCTAssertEqual(waitFor("stockDetail.page.headerTab.quote").label, "Quote")
+        XCTAssertEqual(waitFor("stockDetail.bottomActionBar.trade").label, "Trade")
+        XCTAssertTrue(waitFor("stockDetail.page.disclaimer").label.hasPrefix("Notice:"))
+
+        waitFor("stockDetail.navbar.debug").tap()
+        selectStockDetailLanguage("繁體中文")
+        dismissStockDetailDebugPanel()
+        XCTAssertEqual(waitFor("stockDetail.page.headerTab.quote").label, "報價")
+        XCTAssertTrue(waitFor("stockDetail.page.disclaimer").label.hasPrefix("提示:本頁面"))
+
+        waitFor("stockDetail.navbar.debug").tap()
+        selectStockDetailLanguage("简体中文")
+        dismissStockDetailDebugPanel()
+        XCTAssertEqual(waitFor("stockDetail.page.headerTab.quote").label, "报价")
+    }
+
     func testWatchlistInAppNotificationMatchesViewport() throws {
         enterWatchlist()
 
@@ -315,6 +358,19 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
     private func enterTrade() {
         waitFor("compare.newTrade").tap()
         XCTAssertTrue(waitFor("trade.root").exists)
+    }
+
+    private func selectStockDetailLanguage(_ language: String) {
+        let option = app.buttons[language].firstMatch
+        XCTAssertTrue(option.waitForExistence(timeout: 5), "Missing language option: \(language)")
+        option.tap()
+        _ = waitFor("stockDetail.debug.sheet", timeout: 5)
+    }
+
+    private func dismissStockDetailDebugPanel() {
+        let sheet = waitFor("stockDetail.debug.sheet")
+        waitFor("stockDetail.debug.done").tap()
+        waitForDisappearance(sheet)
     }
 
     private func dismissDebugPanel() {
