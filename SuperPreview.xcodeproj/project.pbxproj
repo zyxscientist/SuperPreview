@@ -180,6 +180,12 @@
 		D1A4C6E0F2174A3B9C8D0015 /* StockDetailQuoteData.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D0014 /* StockDetailQuoteData.swift */; };
 		D1A4C6E0F2174A3B9C8D0017 /* StockDetailQuoteDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D0016 /* StockDetailQuoteDetails.swift */; };
 		D1A4C6E0F2174A3B9C8D0019 /* StockDetailRelatedInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D0018 /* StockDetailRelatedInfo.swift */; };
+		D1A4C6E0F2174A3B9C8D0021 /* StockDetailChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D0020 /* StockDetailChart.swift */; };
+		D1A4C6E0F2174A3B9C8D0023 /* StockDetailBadgeInfoSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D0022 /* StockDetailBadgeInfoSheet.swift */; };
+		D1A4C6E0F2174A3B9C8D0025 /* StockDetailCapitalDistribution.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D0024 /* StockDetailCapitalDistribution.swift */; };
+		D1A4C6E0F2174A3B9C8D0027 /* StockDetailMoneyFlowTrend.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D0026 /* StockDetailMoneyFlowTrend.swift */; };
+		D1A4C6E0F2174A3B9C8D0029 /* StockDetailOrderBook.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D0028 /* StockDetailOrderBook.swift */; };
+		D1A4C6E0F2174A3B9C8D0031 /* StockDetailBrokerOrderBook.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D0030 /* StockDetailBrokerOrderBook.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -358,6 +364,12 @@
 		D1A4C6E0F2174A3B9C8D0014 /* StockDetailQuoteData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailQuoteData.swift; sourceTree = "<group>"; };
 		D1A4C6E0F2174A3B9C8D0016 /* StockDetailQuoteDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailQuoteDetails.swift; sourceTree = "<group>"; };
 		D1A4C6E0F2174A3B9C8D0018 /* StockDetailRelatedInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailRelatedInfo.swift; sourceTree = "<group>"; };
+		D1A4C6E0F2174A3B9C8D0020 /* StockDetailChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailChart.swift; sourceTree = "<group>"; };
+		D1A4C6E0F2174A3B9C8D0022 /* StockDetailBadgeInfoSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailBadgeInfoSheet.swift; sourceTree = "<group>"; };
+		D1A4C6E0F2174A3B9C8D0024 /* StockDetailCapitalDistribution.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailCapitalDistribution.swift; sourceTree = "<group>"; };
+		D1A4C6E0F2174A3B9C8D0026 /* StockDetailMoneyFlowTrend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailMoneyFlowTrend.swift; sourceTree = "<group>"; };
+		D1A4C6E0F2174A3B9C8D0028 /* StockDetailOrderBook.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailOrderBook.swift; sourceTree = "<group>"; };
+		D1A4C6E0F2174A3B9C8D0030 /* StockDetailBrokerOrderBook.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailBrokerOrderBook.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -577,6 +589,12 @@
 		84F200022F78000000ABC001 /* Comp */ = {
 			isa = PBXGroup;
 			children = (
+				D1A4C6E0F2174A3B9C8D0030 /* StockDetailBrokerOrderBook.swift */,
+				D1A4C6E0F2174A3B9C8D0028 /* StockDetailOrderBook.swift */,
+				D1A4C6E0F2174A3B9C8D0026 /* StockDetailMoneyFlowTrend.swift */,
+				D1A4C6E0F2174A3B9C8D0024 /* StockDetailCapitalDistribution.swift */,
+				D1A4C6E0F2174A3B9C8D0022 /* StockDetailBadgeInfoSheet.swift */,
+				D1A4C6E0F2174A3B9C8D0020 /* StockDetailChart.swift */,
 				D1A4C6E0F2174A3B9C8D0018 /* StockDetailRelatedInfo.swift */,
 				D1A4C6E0F2174A3B9C8D0016 /* StockDetailQuoteDetails.swift */,
 				D1A4C6E0F2174A3B9C8D0014 /* StockDetailQuoteData.swift */,
@@ -945,6 +963,12 @@
 				D1A4C6E0F2174A3B9C8D0015 /* StockDetailQuoteData.swift in Sources */,
 				D1A4C6E0F2174A3B9C8D0017 /* StockDetailQuoteDetails.swift in Sources */,
 				D1A4C6E0F2174A3B9C8D0019 /* StockDetailRelatedInfo.swift in Sources */,
+				D1A4C6E0F2174A3B9C8D0021 /* StockDetailChart.swift in Sources */,
+				D1A4C6E0F2174A3B9C8D0023 /* StockDetailBadgeInfoSheet.swift in Sources */,
+				D1A4C6E0F2174A3B9C8D0025 /* StockDetailCapitalDistribution.swift in Sources */,
+				D1A4C6E0F2174A3B9C8D0027 /* StockDetailMoneyFlowTrend.swift in Sources */,
+				D1A4C6E0F2174A3B9C8D0029 /* StockDetailOrderBook.swift in Sources */,
+				D1A4C6E0F2174A3B9C8D0031 /* StockDetailBrokerOrderBook.swift in Sources */,
 				84F300012F80000000ABC001 /* MainTabBar.swift in Sources */,
 				84F2001E2F7D000000ABC001 /* TradeAggregationDemoView.swift in Sources */,
 				84F300032F76000000ABC001 /* TradeAggregationDemoViewModel.swift in Sources */,

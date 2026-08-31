@@ -1,0 +1,16 @@
+{
+  "images" : [
+    {
+      "filename" : "stock_detail_capital_distribution_ring.svg",
+      "idiom" : "universal",
+      "scale" : "1x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  },
+  "properties" : {
+    "preserves-vector-representation" : true
+  }
+}

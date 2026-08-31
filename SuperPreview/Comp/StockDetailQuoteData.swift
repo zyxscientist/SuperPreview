@@ -211,6 +211,7 @@ struct StockDetailQuoteData: View {
     @Binding var isExpanded: Bool
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var isShowingBadgeInfoSheet = false
 
     init(data: StockDetailQuoteDataModel, isExpanded: Binding<Bool>) {
         self.data = data
@@ -233,6 +234,12 @@ struct StockDetailQuoteData: View {
         .background(Color("color-base-1"))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockDetail.quoteData")
+        .interactiveBottomCard(isPresented: $isShowingBadgeInfoSheet) {
+            StockDetailBadgeInfoSheet(
+                market: data.market,
+                badges: data.badges
+            )
+        }
     }
 
     private var header: some View {
@@ -241,20 +248,30 @@ struct StockDetailQuoteData: View {
 
             Spacer(minLength: StockDetailQuoteDataLayout.headerMinimumSpacer)
 
-            HStack(spacing: StockDetailQuoteDataLayout.badgeSpacing) {
-                ForEach(data.badges, id: \.self) { badge in
-                    Image(badge.rawValue)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(
-                            width: StockDetailQuoteDataLayout.badgeSize,
-                            height: StockDetailQuoteDataLayout.badgeSize
-                        )
-                        .accessibilityHidden(true)
+            if !data.badges.isEmpty {
+                Button {
+                    isShowingBadgeInfoSheet = true
+                } label: {
+                    HStack(spacing: StockDetailQuoteDataLayout.badgeSpacing) {
+                        ForEach(data.badges, id: \.self) { badge in
+                            Image(badge.rawValue)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(
+                                    width: StockDetailQuoteDataLayout.badgeSize,
+                                    height: StockDetailQuoteDataLayout.badgeSize
+                                )
+                                .accessibilityHidden(true)
+                        }
+                    }
                 }
+                .buttonStyle(PlainButtonStyle())
+                .frame(height: StockDetailQuoteDataLayout.timestampHeight)
+                .contentShape(Rectangle())
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("查看市场标识详情")
+                .accessibilityIdentifier("stockDetail.quoteData.badges")
             }
-            .accessibilityElement(children: .ignore)
-            .accessibilityLabel("市场标识")
         }
         .frame(height: StockDetailQuoteDataLayout.timestampHeight)
         .accessibilityIdentifier("stockDetail.quoteData.header")
@@ -661,8 +678,10 @@ struct StockDetailQuoteData_Previews: PreviewProvider {
             StockDetailQuoteDataPreviewHarness(data: .us, initiallyExpanded: true)
                 .previewDisplayName("US · Expanded")
 
-            StockDetailQuoteData(data: .hongKong, isExpanded: .constant(false))
-                .previewDisplayName("Hong Kong · Closed")
+            // Tap the market badges in Canvas to present the same
+            // finger-tracking bottom card used in the stock-detail page.
+            StockDetailQuoteDataPreviewHarness(data: .hongKong)
+                .previewDisplayName("Hong Kong · Badge Sheet")
 
             StockDetailQuoteData(data: .aShare, isExpanded: .constant(false))
                 .previewDisplayName("A Share · Halted")

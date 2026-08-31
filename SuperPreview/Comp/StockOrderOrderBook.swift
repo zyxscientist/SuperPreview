@@ -24,6 +24,15 @@ enum StockOrderBookDepth: Int, CaseIterable, Equatable {
     }
 }
 
+/// Controls whether a depth book is disclosed interactively or rendered as a
+/// fixed, fully visible market-data surface.
+enum StockOrderBookPresentation: Equatable {
+    /// The stock-order form keeps its existing expandable disclosure affordance.
+    case interactive
+    /// Stock-detail market data shows every supported level without a control.
+    case fixedDepth
+}
+
 struct StockOrderBookDistribution: Equatable {
     let bidPercentage: String
     let askPercentage: String
@@ -84,6 +93,8 @@ struct StockOrderBook: View {
     let distribution: StockOrderBookDistribution
     let bidLevels: [StockOrderBookLevel]
     let askLevels: [StockOrderBookLevel]
+    let presentation: StockOrderBookPresentation
+    let fixedLevelCount: Int?
     @Binding var isExpanded: Bool
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -94,12 +105,16 @@ struct StockOrderBook: View {
         distribution: StockOrderBookDistribution,
         bidLevels: [StockOrderBookLevel],
         askLevels: [StockOrderBookLevel],
-        isExpanded: Binding<Bool> = .constant(false)
+        isExpanded: Binding<Bool> = .constant(false),
+        presentation: StockOrderBookPresentation = .interactive,
+        fixedLevelCount: Int? = nil
     ) {
         self.depth = depth
         self.distribution = distribution
         self.bidLevels = bidLevels
         self.askLevels = askLevels
+        self.presentation = presentation
+        self.fixedLevelCount = fixedLevelCount.map { max($0, 0) }
         self._isExpanded = isExpanded
     }
 
@@ -114,7 +129,7 @@ struct StockOrderBook: View {
             alignment: .top
         )
         .overlay(alignment: .bottom) {
-            if depth.supportsExpansion {
+            if showsExpansionControl {
                 expansionOverlay
             }
         }
@@ -129,11 +144,23 @@ struct StockOrderBook: View {
     }
 
     private var isShowingExpandedLevels: Bool {
-        depth.supportsExpansion && isExpanded
+        depth.supportsExpansion && (presentation == .fixedDepth || isExpanded)
+    }
+
+    private var showsExpansionControl: Bool {
+        depth.supportsExpansion && presentation == .interactive
     }
 
     private var presentationHeight: CGFloat {
         if depth.supportsExpansion {
+            if presentation == .fixedDepth {
+                return StockOrderBookLayout.topPadding
+                    + StockOrderBookLayout.summaryHeight
+                    + StockOrderBookLayout.sectionSpacing
+                    + CGFloat(displayedLevelCount) * StockOrderBookLayout.fixedLevelHeight
+                    + StockOrderBookLayout.bottomPadding
+            }
+
             return isShowingExpandedLevels
                 ? expandedContentBottom + StockOrderBookLayout.expanderTapHeight + StockOrderBookLayout.bottomPadding
                 : StockOrderBookLayout.collapsedContainerHeight
@@ -239,25 +266,51 @@ struct StockOrderBook: View {
 
     private var expandedLevels: some View {
         VStack(spacing: 0) {
-            ForEach(0..<depth.rawValue, id: \.self) { index in
+            ForEach(0..<displayedLevelCount, id: \.self) { index in
                 HStack(spacing: 0) {
                     StockOrderBookExpandedCell(
                         level: bidLevels[safe: index],
                         side: .bid,
-                        rank: index + 1
+                        rank: index + 1,
+                        isBestLevel: index == 0,
+                        leadingPadding: expandedCellLeadingPadding,
+                        trailingPadding: StockOrderBookLayout.expandedCellTrailingPadding
                     )
 
                     StockOrderBookExpandedCell(
                         level: askLevels[safe: index],
                         side: .ask,
-                        rank: index + 1
+                        rank: index + 1,
+                        isBestLevel: index == 0,
+                        leadingPadding: expandedCellLeadingPadding,
+                        trailingPadding: StockOrderBookLayout.expandedCellTrailingPadding
                     )
                 }
-                .frame(height: StockOrderBookLayout.expandedLevelHeight)
+                .frame(height: expandedLevelHeight)
             }
         }
         .clipShape(RoundedRectangle(cornerRadius: StockOrderBookLayout.cornerRadius, style: .continuous))
         .accessibilityIdentifier("stockOrder.orderBook.expandedLevels")
+    }
+
+    private var expandedLevelHeight: CGFloat {
+        presentation == .fixedDepth
+            ? StockOrderBookLayout.fixedLevelHeight
+            : StockOrderBookLayout.expandedLevelHeight
+    }
+
+    private var displayedLevelCount: Int {
+        if presentation == .fixedDepth {
+            return fixedLevelCount ?? depth.rawValue
+        }
+
+        return depth.rawValue
+    }
+
+    private var expandedCellLeadingPadding: CGFloat {
+        presentation == .fixedDepth
+            ? StockOrderBookLayout.fixedCellLeadingPadding
+            : StockOrderBookLayout.expandedCellLeadingPadding
     }
 
     private var expansionButton: some View {
@@ -327,7 +380,12 @@ private enum StockOrderBookLayout {
     static let distributionBarHeight: CGFloat = 6
     static let compactLevelHeight: CGFloat = 40
     static let expandedLevelHeight: CGFloat = 27
+    static let fixedLevelHeight: CGFloat = 28
     static let cornerRadius: CGFloat = 6
+    static let expandedCellLeadingPadding: CGFloat = 6
+    static let fixedCellLeadingPadding: CGFloat = 8
+    static let expandedCellTrailingPadding: CGFloat = 8
+    static let brokerLeadingGroupOffset: CGFloat = -10
     static let expanderIconWidth: CGFloat = 16
     static let expanderIconHeight: CGFloat = 10
     static let expanderTapHeight: CGFloat = 10
@@ -409,10 +467,13 @@ private struct StockOrderBookExpandedCell: View {
     let level: StockOrderBookLevel?
     let side: StockOrderBookSide
     let rank: Int
+    let isBestLevel: Bool
+    let leadingPadding: CGFloat
+    let trailingPadding: CGFloat
 
     var body: some View {
         ZStack {
-            side.color.opacity(0.05)
+            side.color.opacity(isBestLevel ? 0.10 : 0.05)
 
             GeometryReader { proxy in
                 side.color.opacity(0.15)
@@ -435,8 +496,8 @@ private struct StockOrderBookExpandedCell: View {
                 StockOrderBookVolumeText(level: level, fontSize: 12, lineHeight: 16)
                     .foregroundColor(Color("color-text-30"))
             }
-            .padding(.leading, 6)
-            .padding(.trailing, 8)
+            .padding(.leading, leadingPadding)
+            .padding(.trailing, trailingPadding)
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel(accessibilityLabel)
@@ -459,7 +520,6 @@ private struct StockOrderBookRankBadge: View {
     var body: some View {
         Text("\(rank)")
             .modifier(CustomFontModifier(size: 8, font: .regular, lineHeight: 9))
-            .monospacedDigit()
             .foregroundColor(.white)
             .frame(width: 13, height: 13)
             .background(color)
@@ -474,16 +534,21 @@ private struct StockOrderBookVolumeText: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            Text(level?.quantity ?? "")
-
             if let brokerCount = level?.brokerCount {
-                Text("(")
-                    .padding(.leading, 3)
+                HStack(spacing: 0) {
+                    Text(level?.quantity ?? "")
+
+                    Text("(")
+                        .padding(.leading, 3)
+                }
+                .offset(x: StockOrderBookLayout.brokerLeadingGroupOffset)
 
                 Text(brokerCount)
                     .frame(width: fontSize == 12 ? 25 : 28, alignment: .trailing)
 
                 Text(")")
+            } else {
+                Text(level?.quantity ?? "")
             }
         }
         .modifier(CustomFontModifier(size: fontSize, font: .regular, lineHeight: lineHeight))
