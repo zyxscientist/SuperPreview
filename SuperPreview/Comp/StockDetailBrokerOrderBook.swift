@@ -76,6 +76,8 @@ struct StockDetailBrokerOrderBookData: Equatable {
 struct StockDetailBrokerOrderBook: View {
     let data: StockDetailBrokerOrderBookData
 
+    @Environment(\.demoLanguage) private var language
+
     init(data: StockDetailBrokerOrderBookData = .mock) {
         self.data = data
     }
@@ -96,11 +98,11 @@ struct StockDetailBrokerOrderBook: View {
 
     private var header: some View {
         HStack(spacing: 0) {
-            Text("买盘经纪")
+            Text(language.text(.brokerBuy))
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             HStack(spacing: 0) {
-                Text("卖盘经纪")
+                Text(language.text(.brokerSell))
 
                 Spacer(minLength: 0)
 
@@ -110,7 +112,7 @@ struct StockDetailBrokerOrderBook: View {
                         width: StockDetailBrokerOrderBookLayout.depthGlyphSize,
                         height: StockDetailBrokerOrderBookLayout.depthGlyphSize
                     )
-                    .accessibilityLabel("十档")
+                    .accessibilityLabel(language.text(.tenLevels))
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -225,12 +227,12 @@ private enum StockDetailBrokerOrderBookSide {
         }
     }
 
-    var accessibilityName: String {
+    func accessibilityName(for language: DemoLanguage) -> String {
         switch self {
         case .bid:
-            "买盘"
+            language.text(.buyOrderBook)
         case .ask:
-            "卖盘"
+            language.text(.sellOrderBook)
         }
     }
 }
@@ -238,6 +240,8 @@ private enum StockDetailBrokerOrderBookSide {
 private struct StockDetailBrokerOrderBookLevelCell: View {
     let level: StockDetailBrokerOrderBookLevel
     let side: StockDetailBrokerOrderBookSide
+
+    @Environment(\.demoLanguage) private var language
 
     var body: some View {
         ZStack {
@@ -290,9 +294,20 @@ private struct StockDetailBrokerOrderBookLevelCell: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel(
-            "\(side.accessibilityName)第\(level.rank)档，价格\(level.price)，数量\(level.quantity)，经纪商\(level.brokerCount)家"
-        )
+        .accessibilityLabel(levelAccessibilityLabel)
+    }
+
+    private var levelAccessibilityLabel: String {
+        let sideName = side.accessibilityName(for: language)
+
+        switch language {
+        case .simplifiedChinese:
+            return "\(sideName)第\(level.rank)档，\(language.text(.price))\(level.price)，\(language.text(.quantity))\(level.quantity)，\(language.text(.brokerCount))\(level.brokerCount)家"
+        case .traditionalChinese:
+            return "\(sideName)第\(level.rank)檔，\(language.text(.price))\(level.price)，\(language.text(.quantity))\(level.quantity)，\(language.text(.brokerCount))\(level.brokerCount)家"
+        case .english:
+            return "\(sideName) \(level.rank), \(language.text(.price)) \(level.price), \(language.text(.quantity)) \(level.quantity), \(level.brokerCount) \(language.text(.brokerCount))"
+        }
     }
 
     private var rowTextFont: CustomFontModifier {
@@ -307,6 +322,8 @@ private struct StockDetailBrokerOrderBookLevelCell: View {
 private struct StockDetailBrokerOrderBookSeatCell: View {
     let seat: StockDetailBrokerOrderBookSeat
     let side: StockDetailBrokerOrderBookSide
+
+    @Environment(\.demoLanguage) private var language
 
     var body: some View {
         HStack(spacing: StockDetailBrokerOrderBookLayout.rowContentSpacing) {
@@ -333,7 +350,19 @@ private struct StockDetailBrokerOrderBookSeatCell: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         .background(side.tint.opacity(StockDetailBrokerOrderBookLayout.seatBackgroundOpacity))
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(side.accessibilityName)经纪商席位\(seat.code)，\(seat.brokerName)")
+        .accessibilityLabel(seatAccessibilityLabel)
+    }
+
+    private var seatAccessibilityLabel: String {
+        let sideName = side.accessibilityName(for: language)
+        let brokerSeat = language.text(.brokerSeat)
+
+        switch language {
+        case .simplifiedChinese, .traditionalChinese:
+            return "\(sideName)\(brokerSeat)\(seat.code)，\(seat.brokerName)"
+        case .english:
+            return "\(sideName) \(brokerSeat) \(seat.code), \(seat.brokerName)"
+        }
     }
 }
 

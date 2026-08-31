@@ -21,6 +21,10 @@ struct StockDetailCapitalDistributionData: Hashable {
     let outflowTotal: String
     let outflowTitle: String
     let breakdowns: [StockDetailCapitalDistributionBreakdown]
+    private let localizedUnit: StockDetailQuoteLocalizedText?
+    private let localizedNetFlowTitle: StockDetailQuoteLocalizedText?
+    private let localizedInflowTitle: StockDetailQuoteLocalizedText?
+    private let localizedOutflowTitle: StockDetailQuoteLocalizedText?
 
     init(
         date: String,
@@ -32,7 +36,11 @@ struct StockDetailCapitalDistributionData: Hashable {
         inflowTitle: String,
         outflowTotal: String,
         outflowTitle: String,
-        breakdowns: [StockDetailCapitalDistributionBreakdown]
+        breakdowns: [StockDetailCapitalDistributionBreakdown],
+        localizedUnit: StockDetailQuoteLocalizedText? = nil,
+        localizedNetFlowTitle: StockDetailQuoteLocalizedText? = nil,
+        localizedInflowTitle: StockDetailQuoteLocalizedText? = nil,
+        localizedOutflowTitle: StockDetailQuoteLocalizedText? = nil
     ) {
         self.date = date
         self.time = time
@@ -44,6 +52,26 @@ struct StockDetailCapitalDistributionData: Hashable {
         self.outflowTotal = outflowTotal
         self.outflowTitle = outflowTitle
         self.breakdowns = breakdowns
+        self.localizedUnit = localizedUnit
+        self.localizedNetFlowTitle = localizedNetFlowTitle
+        self.localizedInflowTitle = localizedInflowTitle
+        self.localizedOutflowTitle = localizedOutflowTitle
+    }
+
+    fileprivate func displayUnit(for language: DemoLanguage) -> String {
+        localizedUnit?.text(for: language) ?? unit
+    }
+
+    fileprivate func displayNetFlowTitle(for language: DemoLanguage) -> String {
+        localizedNetFlowTitle?.text(for: language) ?? netFlowTitle
+    }
+
+    fileprivate func displayInflowTitle(for language: DemoLanguage) -> String {
+        localizedInflowTitle?.text(for: language) ?? inflowTitle
+    }
+
+    fileprivate func displayOutflowTitle(for language: DemoLanguage) -> String {
+        localizedOutflowTitle?.text(for: language) ?? outflowTitle
     }
 }
 
@@ -57,6 +85,7 @@ struct StockDetailCapitalDistributionBreakdown: Hashable, Identifiable {
     let inflowBarFraction: CGFloat
     let outflowBarFraction: CGFloat
     let orderSize: StockDetailCapitalDistributionOrderSize
+    private let localizedCategory: StockDetailQuoteLocalizedText?
 
     var id: String { category }
 
@@ -68,7 +97,8 @@ struct StockDetailCapitalDistributionBreakdown: Hashable, Identifiable {
         outflowAmount: String,
         inflowBarFraction: CGFloat,
         outflowBarFraction: CGFloat,
-        orderSize: StockDetailCapitalDistributionOrderSize
+        orderSize: StockDetailCapitalDistributionOrderSize,
+        localizedCategory: StockDetailQuoteLocalizedText? = nil
     ) {
         self.category = category
         self.inflowShare = inflowShare
@@ -78,6 +108,11 @@ struct StockDetailCapitalDistributionBreakdown: Hashable, Identifiable {
         self.inflowBarFraction = inflowBarFraction
         self.outflowBarFraction = outflowBarFraction
         self.orderSize = orderSize
+        self.localizedCategory = localizedCategory
+    }
+
+    fileprivate func displayCategory(for language: DemoLanguage) -> String {
+        localizedCategory?.text(for: language) ?? category
     }
 }
 
@@ -93,6 +128,8 @@ enum StockDetailCapitalDistributionOrderSize: Hashable {
 /// not attach a tap action.
 struct StockDetailCapitalDistribution: View {
     let data: StockDetailCapitalDistributionData
+
+    @Environment(\.demoLanguage) private var language
 
     init(data: StockDetailCapitalDistributionData = .mock) {
         self.data = data
@@ -118,7 +155,7 @@ struct StockDetailCapitalDistribution: View {
     private var header: some View {
         VStack(alignment: .leading, spacing: StockDetailCapitalDistributionLayout.headerSpacing) {
             HStack(spacing: StockDetailCapitalDistributionLayout.titleToGlyphSpacing) {
-                Text("当日资金分布")
+                Text(language.text(.capitalDistribution))
                     .modifier(
                         CustomFontModifier(
                             size: StockDetailCapitalDistributionLayout.titleFontSize,
@@ -147,7 +184,7 @@ struct StockDetailCapitalDistribution: View {
 
                 Spacer(minLength: 0)
 
-                Text(data.unit)
+                Text(data.displayUnit(for: language))
                     .modifier(
                         CustomFontModifier(
                             size: StockDetailCapitalDistributionLayout.metadataFontSize,
@@ -208,7 +245,7 @@ struct StockDetailCapitalDistribution: View {
                     )
                     .foregroundColor(Color("color-stock-detail-capital-inflow-regular"))
 
-                Text(data.netFlowTitle)
+                Text(data.displayNetFlowTitle(for: language))
                     .modifier(
                         CustomFontModifier(
                             size: StockDetailCapitalDistributionLayout.netFlowTitleFontSize,
@@ -224,7 +261,7 @@ struct StockDetailCapitalDistribution: View {
             height: StockDetailCapitalDistributionLayout.ringSize
         )
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("净流 \(data.netFlow)")
+        .accessibilityLabel("\(data.displayNetFlowTitle(for: language)) \(data.netFlow)")
     }
 
     private var totals: some View {
@@ -232,12 +269,12 @@ struct StockDetailCapitalDistribution: View {
             HStack(spacing: 0) {
                 Text(data.inflowTotal)
                     .foregroundColor(Color("color-stock-detail-capital-inflow-regular"))
-                Text(":\(data.inflowTitle)")
+                Text(":\(data.displayInflowTitle(for: language))")
                     .foregroundColor(Color("color-text-30"))
             }
 
             HStack(spacing: 0) {
-                Text("\(data.outflowTitle):")
+                Text("\(data.displayOutflowTitle(for: language)):")
                     .foregroundColor(Color("color-text-30"))
                 Text(data.outflowTotal)
                     .foregroundColor(Color("color-stock-detail-capital-outflow-regular"))
@@ -282,7 +319,7 @@ struct StockDetailCapitalDistribution: View {
         if direction == .inflow {
             HStack(spacing: StockDetailCapitalDistributionLayout.legendItemSpacing) {
                 legendMarker(color: breakdown.orderSize.inflowColor)
-                legendLabel(breakdown.category)
+                legendLabel(breakdown.displayCategory(for: language))
                 Spacer(minLength: StockDetailCapitalDistributionLayout.legendMinimumSpacer)
                 legendShare(breakdown.inflowShare)
             }
@@ -290,7 +327,7 @@ struct StockDetailCapitalDistribution: View {
             HStack(spacing: StockDetailCapitalDistributionLayout.legendItemSpacing) {
                 legendShare(breakdown.outflowShare)
                 Spacer(minLength: StockDetailCapitalDistributionLayout.legendMinimumSpacer)
-                legendLabel(breakdown.category)
+                legendLabel(breakdown.displayCategory(for: language))
                 legendMarker(color: breakdown.orderSize.outflowColor)
             }
         }
@@ -358,7 +395,7 @@ struct StockDetailCapitalDistribution: View {
                 alignment: .trailing
             )
 
-            Text(breakdown.category)
+            Text(breakdown.displayCategory(for: language))
                 .modifier(
                     CustomFontModifier(
                         size: StockDetailCapitalDistributionLayout.barFontSize,
@@ -467,7 +504,12 @@ extension StockDetailCapitalDistributionData {
                 outflowAmount: "10.99",
                 inflowBarFraction: 1,
                 outflowBarFraction: 1,
-                orderSize: .large
+                orderSize: .large,
+                localizedCategory: .init(
+                    simplifiedChinese: "大单",
+                    traditionalChinese: "大單",
+                    english: "Large"
+                )
             ),
             StockDetailCapitalDistributionBreakdown(
                 category: "中单",
@@ -477,7 +519,12 @@ extension StockDetailCapitalDistributionData {
                 outflowAmount: "4.37",
                 inflowBarFraction: 0.48,
                 outflowBarFraction: 0.52,
-                orderSize: .medium
+                orderSize: .medium,
+                localizedCategory: .init(
+                    simplifiedChinese: "中单",
+                    traditionalChinese: "中單",
+                    english: "Medium"
+                )
             ),
             StockDetailCapitalDistributionBreakdown(
                 category: "小单",
@@ -487,9 +534,34 @@ extension StockDetailCapitalDistributionData {
                 outflowAmount: "1.02",
                 inflowBarFraction: 0.18,
                 outflowBarFraction: 0.24,
-                orderSize: .small
+                orderSize: .small,
+                localizedCategory: .init(
+                    simplifiedChinese: "小单",
+                    traditionalChinese: "小單",
+                    english: "Small"
+                )
             )
-        ]
+        ],
+        localizedUnit: .init(
+            simplifiedChinese: "单位：万",
+            traditionalChinese: "單位：萬",
+            english: "Unit: 10K"
+        ),
+        localizedNetFlowTitle: .init(
+            simplifiedChinese: "净流",
+            traditionalChinese: "淨流",
+            english: "Net flow"
+        ),
+        localizedInflowTitle: .init(
+            simplifiedChinese: "流入",
+            traditionalChinese: "流入",
+            english: "Inflow"
+        ),
+        localizedOutflowTitle: .init(
+            simplifiedChinese: "流出",
+            traditionalChinese: "流出",
+            english: "Outflow"
+        )
     )
 }
 

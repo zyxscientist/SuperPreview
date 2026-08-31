@@ -45,6 +45,7 @@ enum DemoCopyKey {
     case slow, medium, fast, mixed
     case all, hkStocks, chinaAShares, usStocks, etfs, custom
     case name, price, enterPrice, decreasePrice, increasePrice, priceAction
+    case share
     case quantity, enterQuantity, minimumQuantity, decreaseQuantity, increaseQuantity
     case quickQuantityInput, hideQuickQuantityInput
     case amount, estimatedAmount, atMarketPrice, marketPrice, buyingUsesMargin
@@ -60,7 +61,11 @@ enum DemoCopyKey {
     case changePercent, preMarket, afterHours
     case stockInputPlaceholder, searchPlaceholder, search, cancel, clear, delete
     case recentSearches, clearSearchHistory, noSearchResult, networkUnavailable, refreshNow
-    case expandChart, collapseChart, closingAuction, volatilityCoolingOff, priceRange
+    case expand, collapse, expandChart, collapseChart, closingAuction, volatilityCoolingOff, priceRange
+    case stockDetailTradingSession, stockDetailClosedSession, stockDetailHaltedSession
+    case stockDetailPreMarketTrading, stockDetailAfterHoursTrading
+    case stockDetailHigh, stockDetailLow, stockDetailTurnover, zeroValue
+    case viewMarketBadgeDetails, currentPrice, expandQuoteDetails, collapseQuoteDetails
     case orderType, limitOrder, enhancedLimitOrder, marketOrder
     case auctionLimitOrder, auctionMarketOrder, oddLotOrder, conditionalOrder
     case orderStatusHeader, symbolHeader, orderPriceHeader, quantityFilledHeader
@@ -69,7 +74,13 @@ enum DemoCopyKey {
     case buy, sell, unlockTrading, orderPendingSubmission, orderPendingFill, orderPartiallyFilled
     case orderFilled, orderFailed, orderExpired, orderCancelled, amendOrder, cancelOrder
     case addToWatchlist, editWatchlist
-    case watchlist, trade, wealth, news, markets, me
+    case adrConversionPrice, relativeToHKStock, relativeToUSStock
+    case resultsAnnouncement, exDividendInformation, extendedHoursQuote
+    case addEarningsCalendarReminder, removeEarningsCalendarReminder, added, notAdded
+    case brokerBuy, brokerSell, tenLevels, brokerSeat, brokerCount
+    case capitalDistribution, netFlow, inflow, outflow, largeOrder, mediumOrder, smallOrder
+    case unitTenThousands, moneyFlowTrend
+    case watchlist, trade, reminder, wealth, news, markets, me
     case stocks, funds, virtualAssets, cryptocurrency, positions, positionDetails
     case totalAssets, totalProfitLoss, netAssets, todayProfitLoss, yesterdayProfitLoss
     case securitiesMarketValue, totalCash, positionProfitLoss
@@ -201,6 +212,7 @@ private enum DemoCopy {
         .custom: ("自定义", "自訂", "Custom"),
         .name: ("名称", "名稱", "Name"),
         .price: ("价格", "價格", "Price"),
+        .share: ("分享", "分享", "Share"),
         .enterPrice: ("输入价格", "輸入價格", "Enter Price"),
         .decreasePrice: ("降低价格", "降低價格", "Decrease price"),
         .increasePrice: ("提高价格", "提高價格", "Increase price"),
@@ -262,11 +274,26 @@ private enum DemoCopy {
         .noSearchResult: ("无搜索结果", "無搜尋結果", "No results"),
         .networkUnavailable: ("网络不可用", "網絡不可用", "Network Unavailable"),
         .refreshNow: ("立即刷新", "立即重新整理", "Refresh now"),
+        .expand: ("展开", "展開", "Expand"),
+        .collapse: ("收起", "收起", "Collapse"),
         .expandChart: ("展开图表", "展開圖表", "Open Chart"),
         .collapseChart: ("收起图表", "收起圖表", "Collapse Chart"),
         .closingAuction: ("竞价时段", "競價時段", "CAS"),
         .volatilityCoolingOff: ("冷静期", "冷靜期", "VCM"),
         .priceRange: ("价格范围", "價格範圍", "Price range"),
+        .stockDetailTradingSession: ("交易中", "交易中", "Trading"),
+        .stockDetailClosedSession: ("已收盘", "已收市", "Closed"),
+        .stockDetailHaltedSession: ("停牌", "停牌", "Halted"),
+        .stockDetailPreMarketTrading: ("盘前交易中", "盤前交易中", "Pre-market trading"),
+        .stockDetailAfterHoursTrading: ("盘后交易中", "盤後交易中", "After-hours trading"),
+        .stockDetailHigh: ("最高", "最高", "High"),
+        .stockDetailLow: ("最低", "最低", "Low"),
+        .stockDetailTurnover: ("成交额", "成交額", "Turnover"),
+        .zeroValue: ("零值", "零值", "Zero"),
+        .viewMarketBadgeDetails: ("查看市场标识详情", "查看市場標識詳情", "View market badge details"),
+        .currentPrice: ("现价", "現價", "Last price"),
+        .expandQuoteDetails: ("展开更多行情数据", "展開更多行情資料", "Expand quote details"),
+        .collapseQuoteDetails: ("收起更多行情数据", "收起更多行情資料", "Collapse quote details"),
         .orderType: ("类型", "類型", "Type"),
         .limitOrder: ("限价单", "限價單", "Limit Order"),
         .enhancedLimitOrder: ("增强限价单", "增強限價單", "Enhanced Limit Order"),
@@ -301,8 +328,33 @@ private enum DemoCopy {
         .cancelOrder: ("撤单", "撤單", "Cancel"),
         .addToWatchlist: ("添加自选", "加入自選", "Add to Watchlist"),
         .editWatchlist: ("编辑自选", "編輯自選", "Edit Watchlist"),
+        .adrConversionPrice: ("ADR换算价", "ADR換算價", "ADR conversion price"),
+        .relativeToHKStock: ("相对港股", "相對港股", "vs HK stock"),
+        .relativeToUSStock: ("相对美股", "相對美股", "vs US stock"),
+        .resultsAnnouncement: ("公布业绩", "公布業績", "Results announcement"),
+        .exDividendInformation: ("除权除息信息", "除權除息資訊", "Ex-dividend information"),
+        .extendedHoursQuote: ("盘前盘后行情", "盤前盤後行情", "Extended-hours quote"),
+        .addEarningsCalendarReminder: ("添加业绩日历提醒", "加入業績日曆提醒", "Add earnings calendar reminder"),
+        .removeEarningsCalendarReminder: ("移除业绩日历提醒", "移除業績日曆提醒", "Remove earnings calendar reminder"),
+        .added: ("已添加", "已加入", "Added"),
+        .notAdded: ("未添加", "未加入", "Not added"),
+        .brokerBuy: ("买盘经纪", "買盤經紀", "Bid brokers"),
+        .brokerSell: ("卖盘经纪", "賣盤經紀", "Ask brokers"),
+        .tenLevels: ("十档", "十檔", "10 levels"),
+        .brokerSeat: ("经纪商席位", "經紀商席位", "Broker seat"),
+        .brokerCount: ("经纪商", "經紀商", "brokers"),
+        .capitalDistribution: ("当日资金分布", "當日資金分布", "Daily capital distribution"),
+        .netFlow: ("净流", "淨流", "Net flow"),
+        .inflow: ("流入", "流入", "Inflow"),
+        .outflow: ("流出", "流出", "Outflow"),
+        .largeOrder: ("大单", "大單", "Large"),
+        .mediumOrder: ("中单", "中單", "Medium"),
+        .smallOrder: ("小单", "小單", "Small"),
+        .unitTenThousands: ("单位：万", "單位：萬", "Unit: 10K"),
+        .moneyFlowTrend: ("资金流向趋势", "資金流向趨勢", "Money flow trend"),
         .watchlist: ("自选", "自選", "Watchlist"),
         .trade: ("交易", "交易", "Trade"),
+        .reminder: ("提醒", "提醒", "Reminder"),
         .wealth: ("理财", "理財", "Wealth"),
         .news: ("资讯", "資訊", "News"),
         .markets: ("市场", "市場", "Markets"),

@@ -17,6 +17,8 @@ struct StockDetailMoneyFlowTrendData: Hashable {
     let zeroValue: String
     let startTime: String
     let endTime: String
+    private let localizedTitle: StockDetailQuoteLocalizedText?
+    private let localizedUnit: StockDetailQuoteLocalizedText?
 
     init(
         title: String,
@@ -25,7 +27,9 @@ struct StockDetailMoneyFlowTrendData: Hashable {
         lowerValue: String,
         zeroValue: String,
         startTime: String,
-        endTime: String
+        endTime: String,
+        localizedTitle: StockDetailQuoteLocalizedText? = nil,
+        localizedUnit: StockDetailQuoteLocalizedText? = nil
     ) {
         self.title = title
         self.unit = unit
@@ -34,6 +38,16 @@ struct StockDetailMoneyFlowTrendData: Hashable {
         self.zeroValue = zeroValue
         self.startTime = startTime
         self.endTime = endTime
+        self.localizedTitle = localizedTitle
+        self.localizedUnit = localizedUnit
+    }
+
+    fileprivate func displayTitle(for language: DemoLanguage) -> String {
+        localizedTitle?.text(for: language) ?? title
+    }
+
+    fileprivate func displayUnit(for language: DemoLanguage) -> String {
+        localizedUnit?.text(for: language) ?? unit
     }
 }
 
@@ -43,6 +57,8 @@ struct StockDetailMoneyFlowTrendData: Hashable {
 /// expose selection, scrolling, or any other chart interaction.
 struct StockDetailMoneyFlowTrend: View {
     let data: StockDetailMoneyFlowTrendData
+
+    @Environment(\.demoLanguage) private var language
 
     init(data: StockDetailMoneyFlowTrendData = .mock) {
         self.data = data
@@ -67,7 +83,7 @@ struct StockDetailMoneyFlowTrend: View {
 
     private var header: some View {
         HStack(spacing: StockDetailMoneyFlowTrendLayout.headerSpacing) {
-            Text(data.title)
+            Text(data.displayTitle(for: language))
                 .modifier(
                     CustomFontModifier(
                         size: StockDetailMoneyFlowTrendLayout.titleFontSize,
@@ -80,7 +96,7 @@ struct StockDetailMoneyFlowTrend: View {
 
             Spacer(minLength: 0)
 
-            Text(data.unit)
+            Text(data.displayUnit(for: language))
                 .modifier(
                     CustomFontModifier(
                         size: StockDetailMoneyFlowTrendLayout.unitFontSize,
@@ -109,9 +125,7 @@ struct StockDetailMoneyFlowTrend: View {
         }
         .frame(height: StockDetailMoneyFlowTrendLayout.chartHeight)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel(
-            "资金流向趋势，最高 \(data.upperValue)，最低 \(data.lowerValue)，零值 \(data.zeroValue)"
-        )
+        .accessibilityLabel(chartAccessibilityLabel)
     }
 
     private var chartGrid: some View {
@@ -134,6 +148,16 @@ struct StockDetailMoneyFlowTrend: View {
             }
         }
         .frame(height: StockDetailMoneyFlowTrendLayout.chartHeight)
+    }
+
+    private var chartAccessibilityLabel: String {
+        let separator = language == .english ? ", " : "，"
+        return [
+            data.displayTitle(for: language),
+            "\(language.text(.stockDetailHigh)) \(data.upperValue)",
+            "\(language.text(.stockDetailLow)) \(data.lowerValue)",
+            "\(language.text(.zeroValue)) \(data.zeroValue)"
+        ].joined(separator: separator)
     }
 
     private var chartValueLabels: some View {
@@ -224,7 +248,17 @@ extension StockDetailMoneyFlowTrendData {
         lowerValue: "+2099.11",
         zeroValue: "0.00",
         startTime: "9:30",
-        endTime: "16:00"
+        endTime: "16:00",
+        localizedTitle: .init(
+            simplifiedChinese: "资金流向趋势",
+            traditionalChinese: "資金流向趨勢",
+            english: "Money flow trend"
+        ),
+        localizedUnit: .init(
+            simplifiedChinese: "单位：万",
+            traditionalChinese: "單位：萬",
+            english: "Unit: 10K"
+        )
     )
 }
 

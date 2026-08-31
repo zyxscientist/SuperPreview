@@ -9,11 +9,11 @@ enum StockOrderTodayOrderSide: String, Hashable {
     case buy
     case sell
 
-    fileprivate var titleKey: DemoCopyKey {
+    var titleKey: DemoCopyKey {
         self == .buy ? .buy : .sell
     }
 
-    fileprivate var color: Color {
+    var color: Color {
         self == .buy ? Color("color-utility3-red") : Color("color-utility3-green")
     }
 }
@@ -27,7 +27,7 @@ enum StockOrderTodayOrderStatus: String, CaseIterable, Hashable {
     case expired
     case cancelled
 
-    fileprivate var titleKey: DemoCopyKey {
+    var titleKey: DemoCopyKey {
         switch self {
         case .pending: .orderPendingSubmission
         case .submitted: .orderPendingFill
@@ -39,7 +39,7 @@ enum StockOrderTodayOrderStatus: String, CaseIterable, Hashable {
         }
     }
 
-    fileprivate var iconAssetName: String {
+    var iconAssetName: String {
         switch self {
         case .pending, .submitted: "stock_order_today_pending"
         case .partiallyFilled: "stock_order_today_processing"

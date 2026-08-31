@@ -32,19 +32,26 @@ struct StockDetailRelatedInfoQuote: Hashable {
     let change: String?
     let changePercent: String?
     let tone: StockDetailRelatedInfoTone
+    private let localizedTitle: StockDetailQuoteLocalizedText?
 
     init(
         title: String,
         price: String,
         change: String? = nil,
         changePercent: String? = nil,
-        tone: StockDetailRelatedInfoTone
+        tone: StockDetailRelatedInfoTone,
+        localizedTitle: StockDetailQuoteLocalizedText? = nil
     ) {
         self.title = title
         self.price = price
         self.change = change
         self.changePercent = changePercent
         self.tone = tone
+        self.localizedTitle = localizedTitle
+    }
+
+    fileprivate func displayTitle(for language: DemoLanguage) -> String {
+        localizedTitle?.text(for: language) ?? title
     }
 }
 
@@ -52,17 +59,31 @@ struct StockDetailRelatedInfoMetric: Hashable, Identifiable {
     let label: String
     let value: String
     let tone: StockDetailRelatedInfoTone
+    private let localizedLabel: StockDetailQuoteLocalizedText?
+    private let localizedValue: StockDetailQuoteLocalizedText?
 
     var id: String { label }
 
     init(
         label: String,
         value: String,
-        tone: StockDetailRelatedInfoTone = .primary
+        tone: StockDetailRelatedInfoTone = .primary,
+        localizedLabel: StockDetailQuoteLocalizedText? = nil,
+        localizedValue: StockDetailQuoteLocalizedText? = nil
     ) {
         self.label = label
         self.value = value
         self.tone = tone
+        self.localizedLabel = localizedLabel
+        self.localizedValue = localizedValue
+    }
+
+    fileprivate func displayLabel(for language: DemoLanguage) -> String {
+        localizedLabel?.text(for: language) ?? label
+    }
+
+    fileprivate func displayValue(for language: DemoLanguage) -> String {
+        localizedValue?.text(for: language) ?? value
     }
 }
 
@@ -71,17 +92,24 @@ struct StockDetailRelatedInfoConnection: Hashable {
     let trailingLabel: String?
     let trailingValue: String?
     let trailingTone: StockDetailRelatedInfoTone
+    private let localizedTrailingLabel: StockDetailQuoteLocalizedText?
 
     init(
         quote: StockDetailRelatedInfoQuote,
         trailingLabel: String? = nil,
         trailingValue: String? = nil,
-        trailingTone: StockDetailRelatedInfoTone = .primary
+        trailingTone: StockDetailRelatedInfoTone = .primary,
+        localizedTrailingLabel: StockDetailQuoteLocalizedText? = nil
     ) {
         self.quote = quote
         self.trailingLabel = trailingLabel
         self.trailingValue = trailingValue
         self.trailingTone = trailingTone
+        self.localizedTrailingLabel = localizedTrailingLabel
+    }
+
+    fileprivate func displayTrailingLabel(for language: DemoLanguage) -> String? {
+        localizedTrailingLabel?.text(for: language) ?? trailingLabel
     }
 }
 
@@ -94,6 +122,8 @@ struct StockDetailRelatedInfoADRConnection: Hashable {
     let relativeChangePercent: String
     let relativeTone: StockDetailRelatedInfoTone
     let relatedQuote: StockDetailRelatedInfoQuote?
+    private let localizedConversionTitle: StockDetailQuoteLocalizedText?
+    private let localizedRelativeTitle: StockDetailQuoteLocalizedText?
 
     init(
         conversionTitle: String,
@@ -103,7 +133,9 @@ struct StockDetailRelatedInfoADRConnection: Hashable {
         relativeChange: String,
         relativeChangePercent: String,
         relativeTone: StockDetailRelatedInfoTone,
-        relatedQuote: StockDetailRelatedInfoQuote? = nil
+        relatedQuote: StockDetailRelatedInfoQuote? = nil,
+        localizedConversionTitle: StockDetailQuoteLocalizedText? = nil,
+        localizedRelativeTitle: StockDetailQuoteLocalizedText? = nil
     ) {
         self.conversionTitle = conversionTitle
         self.conversionPrice = conversionPrice
@@ -113,6 +145,16 @@ struct StockDetailRelatedInfoADRConnection: Hashable {
         self.relativeChangePercent = relativeChangePercent
         self.relativeTone = relativeTone
         self.relatedQuote = relatedQuote
+        self.localizedConversionTitle = localizedConversionTitle
+        self.localizedRelativeTitle = localizedRelativeTitle
+    }
+
+    fileprivate func displayConversionTitle(for language: DemoLanguage) -> String {
+        localizedConversionTitle?.text(for: language) ?? conversionTitle
+    }
+
+    fileprivate func displayRelativeTitle(for language: DemoLanguage) -> String {
+        localizedRelativeTitle?.text(for: language) ?? relativeTitle
     }
 }
 
@@ -120,31 +162,76 @@ struct StockDetailRelatedInfoRange: Hashable {
     let title: String
     let rangeLabel: String
     let rangeValue: String
+    private let localizedTitle: StockDetailQuoteLocalizedText?
+    private let localizedRangeLabel: StockDetailQuoteLocalizedText?
 
-    init(title: String, rangeLabel: String, rangeValue: String) {
+    init(
+        title: String,
+        rangeLabel: String,
+        rangeValue: String,
+        localizedTitle: StockDetailQuoteLocalizedText? = nil,
+        localizedRangeLabel: StockDetailQuoteLocalizedText? = nil
+    ) {
         self.title = title
         self.rangeLabel = rangeLabel
         self.rangeValue = rangeValue
+        self.localizedTitle = localizedTitle
+        self.localizedRangeLabel = localizedRangeLabel
+    }
+
+    fileprivate func displayTitle(for language: DemoLanguage) -> String {
+        localizedTitle?.text(for: language) ?? title
+    }
+
+    fileprivate func displayRangeLabel(for language: DemoLanguage) -> String {
+        localizedRangeLabel?.text(for: language) ?? rangeLabel
     }
 }
 
 struct StockDetailRelatedInfoFinancialReport: Hashable {
     let date: String
     let event: String
+    private let localizedDate: StockDetailQuoteLocalizedText?
+    private let localizedEvent: StockDetailQuoteLocalizedText?
 
-    init(date: String, event: String) {
+    init(
+        date: String,
+        event: String,
+        localizedDate: StockDetailQuoteLocalizedText? = nil,
+        localizedEvent: StockDetailQuoteLocalizedText? = nil
+    ) {
         self.date = date
         self.event = event
+        self.localizedDate = localizedDate
+        self.localizedEvent = localizedEvent
+    }
+
+    fileprivate func displayDate(for language: DemoLanguage) -> String {
+        localizedDate?.text(for: language) ?? date
+    }
+
+    fileprivate func displayEvent(for language: DemoLanguage) -> String {
+        localizedEvent?.text(for: language) ?? event
     }
 }
 
 struct StockDetailRelatedInfoCashDividend: Hashable {
     let summary: String
     let details: [StockDetailRelatedInfoMetric]
+    private let localizedSummary: StockDetailQuoteLocalizedText?
 
-    init(summary: String, details: [StockDetailRelatedInfoMetric]) {
+    init(
+        summary: String,
+        details: [StockDetailRelatedInfoMetric],
+        localizedSummary: StockDetailQuoteLocalizedText? = nil
+    ) {
         self.summary = summary
         self.details = details
+        self.localizedSummary = localizedSummary
+    }
+
+    fileprivate func displaySummary(for language: DemoLanguage) -> String {
+        localizedSummary?.text(for: language) ?? summary
     }
 }
 
@@ -171,6 +258,8 @@ struct StockDetailRelatedInfoExtendedHours: Hashable {
     let changePercent: String?
     let timestamp: String
     let metrics: [StockDetailRelatedInfoMetric]
+    private let localizedSessionTitle: StockDetailQuoteLocalizedText?
+    private let localizedTimestamp: StockDetailQuoteLocalizedText?
 
     init(
         state: StockDetailRelatedInfoExtendedHoursState,
@@ -179,7 +268,9 @@ struct StockDetailRelatedInfoExtendedHours: Hashable {
         change: String? = nil,
         changePercent: String? = nil,
         timestamp: String,
-        metrics: [StockDetailRelatedInfoMetric]
+        metrics: [StockDetailRelatedInfoMetric],
+        localizedSessionTitle: StockDetailQuoteLocalizedText? = nil,
+        localizedTimestamp: StockDetailQuoteLocalizedText? = nil
     ) {
         self.state = state
         self.sessionTitle = sessionTitle
@@ -188,6 +279,16 @@ struct StockDetailRelatedInfoExtendedHours: Hashable {
         self.changePercent = changePercent
         self.timestamp = timestamp
         self.metrics = metrics
+        self.localizedSessionTitle = localizedSessionTitle
+        self.localizedTimestamp = localizedTimestamp
+    }
+
+    fileprivate func displaySessionTitle(for language: DemoLanguage) -> String {
+        localizedSessionTitle?.text(for: language) ?? sessionTitle
+    }
+
+    fileprivate func displayTimestamp(for language: DemoLanguage) -> String {
+        localizedTimestamp?.text(for: language) ?? timestamp
     }
 }
 
@@ -242,6 +343,7 @@ struct StockDetailRelatedInfo: View {
     @Binding var interactionState: StockDetailRelatedInfoInteractionState
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.demoLanguage) private var language
 
     init(
         items: [StockDetailRelatedInfoItem],
@@ -332,7 +434,7 @@ struct StockDetailRelatedInfo: View {
         HStack(spacing: StockDetailRelatedInfoLayout.connectionGroupSpacing) {
             quoteRow(connection.quote)
 
-            if let trailingLabel = connection.trailingLabel,
+            if let trailingLabel = connection.displayTrailingLabel(for: language),
                 let trailingValue = connection.trailingValue {
                 HStack(spacing: StockDetailRelatedInfoLayout.quoteSpacing) {
                     relatedText(trailingLabel)
@@ -360,7 +462,7 @@ struct StockDetailRelatedInfo: View {
         ) {
             HStack(spacing: 0) {
                 HStack(spacing: StockDetailRelatedInfoLayout.quoteSpacing) {
-                    relatedText(connection.conversionTitle)
+                    relatedText(connection.displayConversionTitle(for: language))
                     relatedText(connection.conversionPrice, tone: connection.conversionTone)
                 }
 
@@ -368,7 +470,7 @@ struct StockDetailRelatedInfo: View {
 
                 HStack(spacing: StockDetailRelatedInfoLayout.trailingControlSpacing) {
                     HStack(spacing: StockDetailRelatedInfoLayout.quoteSpacing) {
-                        relatedText(connection.relativeTitle)
+                        relatedText(connection.displayRelativeTitle(for: language))
                         relatedText(connection.relativeChange, tone: connection.relativeTone)
                         relatedText(connection.relativeChangePercent, tone: connection.relativeTone)
                     }
@@ -376,7 +478,7 @@ struct StockDetailRelatedInfo: View {
                     if canExpand {
                         disclosureButton(
                             isExpanded: isExpanded,
-                            accessibilityLabel: "ADR换算价",
+                            accessibilityLabel: language.text(.adrConversionPrice),
                             action: onToggle
                         )
                     }
@@ -401,10 +503,10 @@ struct StockDetailRelatedInfo: View {
                     glyph("stock_order_associate_info_cas", size: StockDetailRelatedInfoLayout.leadingGlyphSize)
                 }
 
-                relatedText(range.title)
+                relatedText(range.displayTitle(for: language))
             }
 
-            relatedText(range.rangeLabel, tone: .secondary)
+            relatedText(range.displayRangeLabel(for: language), tone: .secondary)
             relatedText(range.rangeValue)
         }
         .lineLimit(1)
@@ -421,10 +523,10 @@ struct StockDetailRelatedInfo: View {
             HStack(spacing: StockDetailRelatedInfoLayout.financialReportContentSpacing) {
                 HStack(spacing: StockDetailRelatedInfoLayout.rangeTitleSpacing) {
                     glyph("assciate_info_financial_report", size: StockDetailRelatedInfoLayout.leadingGlyphSize)
-                    relatedText(report.date)
+                    relatedText(report.displayDate(for: language))
                 }
 
-                relatedText(report.event)
+                relatedText(report.displayEvent(for: language))
             }
             .lineLimit(1)
             .minimumScaleFactor(0.7)
@@ -456,7 +558,7 @@ struct StockDetailRelatedInfo: View {
                     glyph("assciate_info_dividen", size: StockDetailRelatedInfoLayout.leadingGlyphSize)
                         .padding(.top, StockDetailRelatedInfoLayout.cashDividendGlyphTopOffset)
 
-                    Text(dividend.summary)
+                    Text(dividend.displaySummary(for: language))
                         .modifier(
                             CustomFontModifier(
                                 size: StockDetailRelatedInfoLayout.fontSize,
@@ -473,7 +575,7 @@ struct StockDetailRelatedInfo: View {
                 if canExpand {
                     disclosureButton(
                         isExpanded: isExpanded,
-                        accessibilityLabel: "除权除息信息",
+                        accessibilityLabel: language.text(.exDividendInformation),
                         action: onToggle
                     )
                 }
@@ -493,7 +595,7 @@ struct StockDetailRelatedInfo: View {
             ForEach(details) { detail in
                 HStack(spacing: 0) {
                     relatedText(
-                        detail.label,
+                        detail.displayLabel(for: language),
                         tone: .secondary,
                         size: StockDetailRelatedInfoLayout.detailFontSize
                     )
@@ -501,7 +603,7 @@ struct StockDetailRelatedInfo: View {
                     Spacer(minLength: 0)
 
                     relatedText(
-                        detail.value,
+                        detail.displayValue(for: language),
                         tone: detail.tone,
                         size: StockDetailRelatedInfoLayout.detailFontSize
                     )
@@ -527,7 +629,7 @@ struct StockDetailRelatedInfo: View {
         ) {
             HStack(spacing: 0) {
                 HStack(spacing: StockDetailRelatedInfoLayout.quoteSpacing) {
-                    relatedText(hours.sessionTitle)
+                    relatedText(hours.displaySessionTitle(for: language))
                     relatedText(hours.price, tone: hours.state.quoteTone)
 
                     if let change = hours.change {
@@ -542,12 +644,12 @@ struct StockDetailRelatedInfo: View {
                 Spacer(minLength: 0)
 
                 HStack(spacing: StockDetailRelatedInfoLayout.trailingControlSpacing) {
-                    relatedText(hours.timestamp, tone: .secondary)
+                    relatedText(hours.displayTimestamp(for: language), tone: .secondary)
 
                     if canExpand {
                         disclosureButton(
                             isExpanded: isExpanded,
-                            accessibilityLabel: "盘前盘后行情",
+                            accessibilityLabel: language.text(.extendedHoursQuote),
                             action: onToggle
                         )
                     }
@@ -578,11 +680,11 @@ struct StockDetailRelatedInfo: View {
         ) {
             ForEach(metrics) { metric in
                 HStack(spacing: StockDetailRelatedInfoLayout.metricSpacing) {
-                    relatedText(metric.label, tone: .secondary)
+                    relatedText(metric.displayLabel(for: language), tone: .secondary)
 
                     Spacer(minLength: 0)
 
-                    relatedText(metric.value, tone: metric.tone, font: .medium)
+                    relatedText(metric.displayValue(for: language), tone: metric.tone, font: .medium)
                 }
                 .frame(height: StockDetailRelatedInfoLayout.lineHeight)
             }
@@ -592,7 +694,7 @@ struct StockDetailRelatedInfo: View {
 
     private func quoteRow(_ quote: StockDetailRelatedInfoQuote) -> some View {
         HStack(spacing: StockDetailRelatedInfoLayout.quoteSpacing) {
-            relatedText(quote.title)
+            relatedText(quote.displayTitle(for: language))
             relatedText(quote.price, tone: quote.tone)
 
             if let change = quote.change {
@@ -626,8 +728,12 @@ struct StockDetailRelatedInfo: View {
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .accessibilityLabel(isExpanded ? "收起\(accessibilityLabel)" : "展开\(accessibilityLabel)")
-        .accessibilityValue(isExpanded ? "已展开" : "已收起")
+        .accessibilityLabel(
+            language == .english
+                ? "\(language.text(isExpanded ? .collapse : .expand)) \(accessibilityLabel)"
+                : "\(language.text(isExpanded ? .collapse : .expand))\(accessibilityLabel)"
+        )
+        .accessibilityValue(language.text(isExpanded ? .expanded : .collapsed))
     }
 
     private func calendarButton(
@@ -649,8 +755,10 @@ struct StockDetailRelatedInfo: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .accessibilityLabel(isAdded ? "移除业绩日历提醒" : "添加业绩日历提醒")
-        .accessibilityValue(isAdded ? "已添加" : "未添加")
+        .accessibilityLabel(
+            language.text(isAdded ? .removeEarningsCalendarReminder : .addEarningsCalendarReminder)
+        )
+        .accessibilityValue(language.text(isAdded ? .added : .notAdded))
     }
 
     private func glyph(_ assetName: String, size: CGFloat) -> some View {
@@ -791,13 +899,37 @@ private extension View {
     }
 }
 
+private extension StockDetailQuoteLocalizedText {
+    static func related(
+        _ simplifiedChinese: String,
+        traditionalChinese: String? = nil,
+        english: String
+    ) -> Self {
+        Self(
+            simplifiedChinese: simplifiedChinese,
+            traditionalChinese: traditionalChinese,
+            english: english
+        )
+    }
+}
+
 private enum StockDetailRelatedInfoPreviewData {
     static let financialReport = StockDetailRelatedInfoItem(
         id: "financial-report",
         content: .financialReport(
             StockDetailRelatedInfoFinancialReport(
                 date: "2026/08/10(香港)",
-                event: "公布业绩"
+                event: "公布业绩",
+                localizedDate: .related(
+                    "2026/08/10(香港)",
+                    traditionalChinese: "2026/08/10(香港)",
+                    english: "2026/08/10 (HK)"
+                ),
+                localizedEvent: .related(
+                    "公布业绩",
+                    traditionalChinese: "公布業績",
+                    english: "Results announcement"
+                )
             )
         )
     )
@@ -808,10 +940,39 @@ private enum StockDetailRelatedInfoPreviewData {
             StockDetailRelatedInfoCashDividend(
                 summary: "除权除息日:2026/06/13  每股派息3.40001HKD 超过截断",
                 details: [
-                    .init(label: "除权除息日", value: "2026/05/29"),
-                    .init(label: "股权登记日", value: "2026/05/28"),
-                    .init(label: "派息日", value: "2026/06/13")
-                ]
+                    .init(
+                        label: "除权除息日",
+                        value: "2026/05/29",
+                        localizedLabel: .related(
+                            "除权除息日",
+                            traditionalChinese: "除權除息日",
+                            english: "Ex-dividend date"
+                        )
+                    ),
+                    .init(
+                        label: "股权登记日",
+                        value: "2026/05/28",
+                        localizedLabel: .related(
+                            "股权登记日",
+                            traditionalChinese: "股權登記日",
+                            english: "Record date"
+                        )
+                    ),
+                    .init(
+                        label: "派息日",
+                        value: "2026/06/13",
+                        localizedLabel: .related(
+                            "派息日",
+                            traditionalChinese: "派息日",
+                            english: "Payment date"
+                        )
+                    )
+                ],
+                localizedSummary: .related(
+                    "除权除息日:2026/06/13  每股派息3.40001HKD 超过截断",
+                    traditionalChinese: "除權除息日:2026/06/13  每股派息3.40001HKD 超過截斷",
+                    english: "Ex-dividend date: 2026/06/13  Dividend per share 3.40001 HKD exceeds truncation"
+                )
             )
         )
     )
@@ -822,7 +983,17 @@ private enum StockDetailRelatedInfoPreviewData {
             StockDetailRelatedInfoRange(
                 title: "竞价时段",
                 rangeLabel: "价格范围",
-                rangeValue: "16.400 ~ 16.800"
+                rangeValue: "16.400 ~ 16.800",
+                localizedTitle: .related(
+                    "竞价时段",
+                    traditionalChinese: "競價時段",
+                    english: "CAS"
+                ),
+                localizedRangeLabel: .related(
+                    "价格范围",
+                    traditionalChinese: "價格範圍",
+                    english: "Price range"
+                )
             )
         )
     )
@@ -833,7 +1004,17 @@ private enum StockDetailRelatedInfoPreviewData {
             StockDetailRelatedInfoRange(
                 title: "冷静期",
                 rangeLabel: "价格范围",
-                rangeValue: "16.400 ~ 16.800"
+                rangeValue: "16.400 ~ 16.800",
+                localizedTitle: .related(
+                    "冷静期",
+                    traditionalChinese: "冷靜期",
+                    english: "VCM"
+                ),
+                localizedRangeLabel: .related(
+                    "价格范围",
+                    traditionalChinese: "價格範圍",
+                    english: "Price range"
+                )
             )
         )
     )
@@ -854,7 +1035,22 @@ private enum StockDetailRelatedInfoPreviewData {
                     price: "12.300",
                     change: "+2.22",
                     changePercent: "+1.23%",
-                    tone: .positive
+                    tone: .positive,
+                    localizedTitle: .related(
+                        "阿里巴巴",
+                        traditionalChinese: "阿里巴巴",
+                        english: "Alibaba"
+                    )
+                ),
+                localizedConversionTitle: .related(
+                    "ADR换算价",
+                    traditionalChinese: "ADR換算價",
+                    english: "ADR conversion price"
+                ),
+                localizedRelativeTitle: .related(
+                    "相对港股",
+                    traditionalChinese: "相對港股",
+                    english: "vs HK stock"
                 )
             )
         )
@@ -869,10 +1065,20 @@ private enum StockDetailRelatedInfoPreviewData {
                     price: "293.860",
                     change: "+0.540",
                     changePercent: "+0.18%",
-                    tone: .positive
+                    tone: .positive,
+                    localizedTitle: .related(
+                        "H股",
+                        traditionalChinese: "H股",
+                        english: "H share"
+                    )
                 ),
                 trailingLabel: "溢价(H/A)",
-                trailingValue: "-0.34%"
+                trailingValue: "-0.34%",
+                localizedTrailingLabel: .related(
+                    "溢价(H/A)",
+                    traditionalChinese: "溢價(H/A)",
+                    english: "Premium (H/A)"
+                )
             )
         )
     )
@@ -886,7 +1092,12 @@ private enum StockDetailRelatedInfoPreviewData {
                     price: "12.300",
                     change: "+2.22",
                     changePercent: "+1.23%",
-                    tone: .positive
+                    tone: .positive,
+                    localizedTitle: .related(
+                        "腾讯控股",
+                        traditionalChinese: "騰訊控股",
+                        english: "Tencent"
+                    )
                 )
             )
         )
@@ -901,7 +1112,12 @@ private enum StockDetailRelatedInfoPreviewData {
                     price: "293.860",
                     change: "+0.540",
                     changePercent: "+0.18%",
-                    tone: .positive
+                    tone: .positive,
+                    localizedTitle: .related(
+                        "人民币柜台",
+                        traditionalChinese: "人民幣櫃台",
+                        english: "CNY counter"
+                    )
                 )
             )
         )
@@ -918,11 +1134,65 @@ private enum StockDetailRelatedInfoPreviewData {
                 changePercent: "+1.23%",
                 timestamp: "8:01 美东",
                 metrics: [
-                    .init(label: "最高价", value: "12.65", tone: .positive),
-                    .init(label: "成交额", value: "4001.22万"),
-                    .init(label: "最低价", value: "12.45", tone: .negative),
-                    .init(label: "成交量", value: "44.99万股")
-                ]
+                    .init(
+                        label: "最高价",
+                        value: "12.65",
+                        tone: .positive,
+                        localizedLabel: .related(
+                            "最高价",
+                            traditionalChinese: "最高價",
+                            english: "High"
+                        )
+                    ),
+                    .init(
+                        label: "成交额",
+                        value: "4001.22万",
+                        localizedLabel: .related(
+                            "成交额",
+                            traditionalChinese: "成交額",
+                            english: "Turnover"
+                        ),
+                        localizedValue: .related(
+                            "4001.22万",
+                            traditionalChinese: "4001.22萬",
+                            english: "40.0122M"
+                        )
+                    ),
+                    .init(
+                        label: "最低价",
+                        value: "12.45",
+                        tone: .negative,
+                        localizedLabel: .related(
+                            "最低价",
+                            traditionalChinese: "最低價",
+                            english: "Low"
+                        )
+                    ),
+                    .init(
+                        label: "成交量",
+                        value: "44.99万股",
+                        localizedLabel: .related(
+                            "成交量",
+                            traditionalChinese: "成交量",
+                            english: "Volume"
+                        ),
+                        localizedValue: .related(
+                            "44.99万股",
+                            traditionalChinese: "44.99萬股",
+                            english: "449.9K shares"
+                        )
+                    )
+                ],
+                localizedSessionTitle: .related(
+                    "盘前",
+                    traditionalChinese: "盤前",
+                    english: "Pre-market"
+                ),
+                localizedTimestamp: .related(
+                    "8:01 美东",
+                    traditionalChinese: "8:01 美東",
+                    english: "8:01 ET"
+                )
             )
         )
     )
@@ -943,7 +1213,22 @@ private enum StockDetailRelatedInfoPreviewData {
                     price: "12.300",
                     change: "+2.22",
                     changePercent: "+1.23%",
-                    tone: .positive
+                    tone: .positive,
+                    localizedTitle: .related(
+                        "阿里巴巴",
+                        traditionalChinese: "阿里巴巴",
+                        english: "Alibaba"
+                    )
+                ),
+                localizedConversionTitle: .related(
+                    "港股换算价",
+                    traditionalChinese: "港股換算價",
+                    english: "HK stock conversion price"
+                ),
+                localizedRelativeTitle: .related(
+                    "相对美股",
+                    traditionalChinese: "相對美股",
+                    english: "vs US stock"
                 )
             )
         )

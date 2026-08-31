@@ -186,6 +186,13 @@
 		D1A4C6E0F2174A3B9C8D0027 /* StockDetailMoneyFlowTrend.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D0026 /* StockDetailMoneyFlowTrend.swift */; };
 		D1A4C6E0F2174A3B9C8D0029 /* StockDetailOrderBook.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D0028 /* StockDetailOrderBook.swift */; };
 		D1A4C6E0F2174A3B9C8D0031 /* StockDetailBrokerOrderBook.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D0030 /* StockDetailBrokerOrderBook.swift */; };
+		D1A4C6E0F2174A3B9C8D0033 /* StockDetailTransactionModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D0032 /* StockDetailTransactionModule.swift */; };
+		D1A4C6E0F2174A3B9C8D0035 /* StockDetailTransactionTrade.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D0034 /* StockDetailTransactionTrade.swift */; };
+		D1A4C6E0F2174A3B9C8D0037 /* StockDetailTransactionPosition.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D0036 /* StockDetailTransactionPosition.swift */; };
+		D1A4C6E0F2174A3B9C8D0039 /* StockDetailTransactionOrders.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D0038 /* StockDetailTransactionOrders.swift */; };
+		D1A4C6E0F2174A3B9C8D0041 /* StockDetailTransactionHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D0040 /* StockDetailTransactionHistory.swift */; };
+		D1A4C6E0F2174A3B9C8D0043 /* StockDetailTransactionHistoryOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D0042 /* StockDetailTransactionHistoryOrder.swift */; };
+		D1A4C6E0F2174A3B9C8D0045 /* StockDetailBottomActionBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D0044 /* StockDetailBottomActionBar.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -370,6 +377,13 @@
 		D1A4C6E0F2174A3B9C8D0026 /* StockDetailMoneyFlowTrend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailMoneyFlowTrend.swift; sourceTree = "<group>"; };
 		D1A4C6E0F2174A3B9C8D0028 /* StockDetailOrderBook.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailOrderBook.swift; sourceTree = "<group>"; };
 		D1A4C6E0F2174A3B9C8D0030 /* StockDetailBrokerOrderBook.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailBrokerOrderBook.swift; sourceTree = "<group>"; };
+		D1A4C6E0F2174A3B9C8D0032 /* StockDetailTransactionModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailTransactionModule.swift; sourceTree = "<group>"; };
+		D1A4C6E0F2174A3B9C8D0034 /* StockDetailTransactionTrade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailTransactionTrade.swift; sourceTree = "<group>"; };
+		D1A4C6E0F2174A3B9C8D0036 /* StockDetailTransactionPosition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailTransactionPosition.swift; sourceTree = "<group>"; };
+		D1A4C6E0F2174A3B9C8D0038 /* StockDetailTransactionOrders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailTransactionOrders.swift; sourceTree = "<group>"; };
+		D1A4C6E0F2174A3B9C8D0040 /* StockDetailTransactionHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailTransactionHistory.swift; sourceTree = "<group>"; };
+		D1A4C6E0F2174A3B9C8D0042 /* StockDetailTransactionHistoryOrder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailTransactionHistoryOrder.swift; sourceTree = "<group>"; };
+		D1A4C6E0F2174A3B9C8D0044 /* StockDetailBottomActionBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailBottomActionBar.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -589,6 +603,13 @@
 		84F200022F78000000ABC001 /* Comp */ = {
 			isa = PBXGroup;
 			children = (
+				D1A4C6E0F2174A3B9C8D0044 /* StockDetailBottomActionBar.swift */,
+				D1A4C6E0F2174A3B9C8D0042 /* StockDetailTransactionHistoryOrder.swift */,
+				D1A4C6E0F2174A3B9C8D0040 /* StockDetailTransactionHistory.swift */,
+				D1A4C6E0F2174A3B9C8D0038 /* StockDetailTransactionOrders.swift */,
+				D1A4C6E0F2174A3B9C8D0036 /* StockDetailTransactionPosition.swift */,
+				D1A4C6E0F2174A3B9C8D0034 /* StockDetailTransactionTrade.swift */,
+				D1A4C6E0F2174A3B9C8D0032 /* StockDetailTransactionModule.swift */,
 				D1A4C6E0F2174A3B9C8D0030 /* StockDetailBrokerOrderBook.swift */,
 				D1A4C6E0F2174A3B9C8D0028 /* StockDetailOrderBook.swift */,
 				D1A4C6E0F2174A3B9C8D0026 /* StockDetailMoneyFlowTrend.swift */,
@@ -969,6 +990,13 @@
 				D1A4C6E0F2174A3B9C8D0027 /* StockDetailMoneyFlowTrend.swift in Sources */,
 				D1A4C6E0F2174A3B9C8D0029 /* StockDetailOrderBook.swift in Sources */,
 				D1A4C6E0F2174A3B9C8D0031 /* StockDetailBrokerOrderBook.swift in Sources */,
+				D1A4C6E0F2174A3B9C8D0033 /* StockDetailTransactionModule.swift in Sources */,
+				D1A4C6E0F2174A3B9C8D0035 /* StockDetailTransactionTrade.swift in Sources */,
+				D1A4C6E0F2174A3B9C8D0037 /* StockDetailTransactionPosition.swift in Sources */,
+				D1A4C6E0F2174A3B9C8D0039 /* StockDetailTransactionOrders.swift in Sources */,
+				D1A4C6E0F2174A3B9C8D0041 /* StockDetailTransactionHistory.swift in Sources */,
+				D1A4C6E0F2174A3B9C8D0043 /* StockDetailTransactionHistoryOrder.swift in Sources */,
+				D1A4C6E0F2174A3B9C8D0045 /* StockDetailBottomActionBar.swift in Sources */,
 				84F300012F80000000ABC001 /* MainTabBar.swift in Sources */,
 				84F2001E2F7D000000ABC001 /* TradeAggregationDemoView.swift in Sources */,
 				84F300032F76000000ABC001 /* TradeAggregationDemoViewModel.swift in Sources */,

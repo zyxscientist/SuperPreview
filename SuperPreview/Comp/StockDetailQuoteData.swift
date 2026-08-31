@@ -65,6 +65,21 @@ enum StockDetailTradingSession: Hashable {
         }
     }
 
+    fileprivate func localizedTitle(for language: DemoLanguage) -> String {
+        switch self {
+        case .trading:
+            language.text(.stockDetailTradingSession)
+        case .closed:
+            language.text(.stockDetailClosedSession)
+        case .halted:
+            language.text(.stockDetailHaltedSession)
+        case .preMarketTrading:
+            language.text(.stockDetailPreMarketTrading)
+        case .afterHoursTrading:
+            language.text(.stockDetailAfterHoursTrading)
+        }
+    }
+
     fileprivate var color: Color {
         switch self {
         case .trading, .preMarketTrading, .afterHoursTrading:
@@ -94,17 +109,24 @@ struct StockDetailQuoteTimestamp: Hashable {
     let date: String
     let time: String
     let timeZone: String?
+    private let localizedTimeZone: StockDetailQuoteLocalizedText?
 
     init(
         session: StockDetailTradingSession,
         date: String,
         time: String,
-        timeZone: String? = nil
+        timeZone: String? = nil,
+        localizedTimeZone: StockDetailQuoteLocalizedText? = nil
     ) {
         self.session = session
         self.date = date
         self.time = time
         self.timeZone = timeZone
+        self.localizedTimeZone = localizedTimeZone
+    }
+
+    fileprivate func displayTimeZone(for language: DemoLanguage) -> String? {
+        localizedTimeZone?.text(for: language) ?? timeZone
     }
 }
 
@@ -157,6 +179,8 @@ struct StockDetailQuoteSummaryItem: Hashable, Identifiable {
     let label: String
     let value: String
     let tone: Tone
+    private let localizedLabel: StockDetailQuoteLocalizedText?
+    private let localizedValue: StockDetailQuoteLocalizedText?
 
     var id: String { label }
 
@@ -164,6 +188,29 @@ struct StockDetailQuoteSummaryItem: Hashable, Identifiable {
         self.label = label
         self.value = value
         self.tone = tone
+        self.localizedLabel = nil
+        self.localizedValue = nil
+    }
+
+    init(
+        localizedLabel: StockDetailQuoteLocalizedText,
+        value: String,
+        localizedValue: StockDetailQuoteLocalizedText? = nil,
+        tone: Tone = .primary
+    ) {
+        self.label = localizedLabel.simplifiedChinese
+        self.value = value
+        self.tone = tone
+        self.localizedLabel = localizedLabel
+        self.localizedValue = localizedValue
+    }
+
+    func displayLabel(for language: DemoLanguage) -> String {
+        localizedLabel?.text(for: language) ?? label
+    }
+
+    func displayValue(for language: DemoLanguage) -> String {
+        localizedValue?.text(for: language) ?? value
     }
 }
 
@@ -211,6 +258,7 @@ struct StockDetailQuoteData: View {
     @Binding var isExpanded: Bool
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.demoLanguage) private var language
     @State private var isShowingBadgeInfoSheet = false
 
     init(data: StockDetailQuoteDataModel, isExpanded: Binding<Bool>) {
@@ -269,7 +317,7 @@ struct StockDetailQuoteData: View {
                 .frame(height: StockDetailQuoteDataLayout.timestampHeight)
                 .contentShape(Rectangle())
                 .accessibilityElement(children: .ignore)
-                .accessibilityLabel("查看市场标识详情")
+                .accessibilityLabel(language.text(.viewMarketBadgeDetails))
                 .accessibilityIdentifier("stockDetail.quoteData.badges")
             }
         }
@@ -288,13 +336,13 @@ struct StockDetailQuoteData: View {
                     )
             }
 
-            Text(data.timestamp.session.title)
+            Text(data.timestamp.session.localizedTitle(for: language))
 
             if data.timestamp.session.showsTimestamp {
                 Text(data.timestamp.date)
                 Text(data.timestamp.time)
 
-                if let timeZone = data.timestamp.timeZone {
+                if let timeZone = data.timestamp.displayTimeZone(for: language) {
                     Text(timeZone)
                 }
             }
@@ -368,14 +416,14 @@ struct StockDetailQuoteData: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("现价 \(data.price)，\(data.change)，\(data.changePercent)")
+        .accessibilityLabel(priceAccessibilityLabel)
     }
 
     private var summary: some View {
         VStack(alignment: .leading, spacing: StockDetailQuoteDataLayout.summarySpacing) {
             ForEach(data.summaryItems.prefix(3)) { item in
                 HStack(spacing: StockDetailQuoteDataLayout.summaryItemSpacing) {
-                    Text(item.label)
+                    Text(item.displayLabel(for: language))
                         .modifier(
                             CustomFontModifier(
                                 size: 12,
@@ -387,7 +435,7 @@ struct StockDetailQuoteData: View {
 
                     Spacer(minLength: 0)
 
-                    Text(item.value)
+                    Text(item.displayValue(for: language))
                         .modifier(
                             CustomFontModifier(
                                 size: 12,
@@ -433,19 +481,30 @@ struct StockDetailQuoteData: View {
                 )
         }
         .buttonStyle(PlainButtonStyle())
-        .accessibilityLabel(isShowingDetails ? "收起更多行情数据" : "展开更多行情数据")
+        .accessibilityLabel(
+            language.text(isShowingDetails ? .collapseQuoteDetails : .expandQuoteDetails)
+        )
         .accessibilityIdentifier("stockDetail.quoteData.expand")
     }
 
     private var timestampAccessibilityLabel: String {
         [
-            data.timestamp.session.title,
+            data.timestamp.session.localizedTitle(for: language),
             data.timestamp.date,
             data.timestamp.time,
-            data.timestamp.timeZone
+            data.timestamp.displayTimeZone(for: language)
         ]
         .compactMap { $0 }
-        .joined(separator: "，")
+        .joined(separator: language == .english ? ", " : "，")
+    }
+
+    private var priceAccessibilityLabel: String {
+        let separator = language == .english ? ", " : "，"
+        return [
+            "\(language.text(.currentPrice)) \(data.price)",
+            data.change,
+            data.changePercent
+        ].joined(separator: separator)
     }
 
     private var showsExpansionControl: Bool {
@@ -560,16 +619,33 @@ private extension StockDetailQuoteDataModel {
             session: .trading,
             date: "04/03",
             time: "14:44:01",
-            timeZone: "(美东)"
+            timeZone: "(美东)",
+            localizedTimeZone: .init(
+                simplifiedChinese: "(美东)",
+                traditionalChinese: "(美東)",
+                english: "(ET)"
+            )
         ),
         price: "1,776.740",
         change: "+1.079",
         changePercent: "+0.25%",
         trend: .up,
         summaryItems: [
-            StockDetailQuoteSummaryItem(label: "最高", value: "1,788.80", tone: .positive),
-            StockDetailQuoteSummaryItem(label: "最低", value: "1,766.03", tone: .negative),
-            StockDetailQuoteSummaryItem(label: "成交额", value: "3.42亿")
+            StockDetailQuoteSummaryItem(
+                localizedLabel: .init(simplifiedChinese: "最高", english: "High"),
+                value: "1,788.80",
+                tone: .positive
+            ),
+            StockDetailQuoteSummaryItem(
+                localizedLabel: .init(simplifiedChinese: "最低", english: "Low"),
+                value: "1,766.03",
+                tone: .negative
+            ),
+            StockDetailQuoteSummaryItem(
+                localizedLabel: .init(simplifiedChinese: "成交额", traditionalChinese: "成交額", english: "Turnover"),
+                value: "3.42亿",
+                localizedValue: .init(simplifiedChinese: "3.42亿", traditionalChinese: "3.42億", english: "342M")
+            )
         ],
         details: .stockHongKongOrUS
     )
@@ -586,9 +662,21 @@ private extension StockDetailQuoteDataModel {
         changePercent: "-0.45%",
         trend: .down,
         summaryItems: [
-            StockDetailQuoteSummaryItem(label: "最高", value: "20.080", tone: .positive),
-            StockDetailQuoteSummaryItem(label: "最低", value: "19.780", tone: .negative),
-            StockDetailQuoteSummaryItem(label: "成交额", value: "17.29亿")
+            StockDetailQuoteSummaryItem(
+                localizedLabel: .init(simplifiedChinese: "最高", english: "High"),
+                value: "20.080",
+                tone: .positive
+            ),
+            StockDetailQuoteSummaryItem(
+                localizedLabel: .init(simplifiedChinese: "最低", english: "Low"),
+                value: "19.780",
+                tone: .negative
+            ),
+            StockDetailQuoteSummaryItem(
+                localizedLabel: .init(simplifiedChinese: "成交额", traditionalChinese: "成交額", english: "Turnover"),
+                value: "17.29亿",
+                localizedValue: .init(simplifiedChinese: "17.29亿", traditionalChinese: "17.29億", english: "1.729B")
+            )
         ],
         details: .stockHongKongOrUS
     )
@@ -605,9 +693,21 @@ private extension StockDetailQuoteDataModel {
         changePercent: "+0.94%",
         trend: .up,
         summaryItems: [
-            StockDetailQuoteSummaryItem(label: "最高", value: "1,953.30", tone: .positive),
-            StockDetailQuoteSummaryItem(label: "最低", value: "1,921.76", tone: .negative),
-            StockDetailQuoteSummaryItem(label: "成交额", value: "1.96万亿")
+            StockDetailQuoteSummaryItem(
+                localizedLabel: .init(simplifiedChinese: "最高", english: "High"),
+                value: "1,953.30",
+                tone: .positive
+            ),
+            StockDetailQuoteSummaryItem(
+                localizedLabel: .init(simplifiedChinese: "最低", english: "Low"),
+                value: "1,921.76",
+                tone: .negative
+            ),
+            StockDetailQuoteSummaryItem(
+                localizedLabel: .init(simplifiedChinese: "成交额", traditionalChinese: "成交額", english: "Turnover"),
+                value: "1.96万亿",
+                localizedValue: .init(simplifiedChinese: "1.96万亿", traditionalChinese: "1.96萬億", english: "1.96T")
+            )
         ],
         details: .stockAShare
     )
@@ -632,16 +732,33 @@ private extension StockDetailQuoteDataModel {
             session: .preMarketTrading,
             date: "04/03",
             time: "08:44:01",
-            timeZone: "(美东)"
+            timeZone: "(美东)",
+            localizedTimeZone: .init(
+                simplifiedChinese: "(美东)",
+                traditionalChinese: "(美東)",
+                english: "(ET)"
+            )
         ),
         price: "1,770.840",
         change: "-5.900",
         changePercent: "-0.33%",
         trend: .down,
         summaryItems: [
-            StockDetailQuoteSummaryItem(label: "最高", value: "1,788.80", tone: .positive),
-            StockDetailQuoteSummaryItem(label: "最低", value: "1,766.03", tone: .negative),
-            StockDetailQuoteSummaryItem(label: "成交额", value: "3.42亿")
+            StockDetailQuoteSummaryItem(
+                localizedLabel: .init(simplifiedChinese: "最高", english: "High"),
+                value: "1,788.80",
+                tone: .positive
+            ),
+            StockDetailQuoteSummaryItem(
+                localizedLabel: .init(simplifiedChinese: "最低", english: "Low"),
+                value: "1,766.03",
+                tone: .negative
+            ),
+            StockDetailQuoteSummaryItem(
+                localizedLabel: .init(simplifiedChinese: "成交额", traditionalChinese: "成交額", english: "Turnover"),
+                value: "3.42亿",
+                localizedValue: .init(simplifiedChinese: "3.42亿", traditionalChinese: "3.42億", english: "342M")
+            )
         ],
         details: .stockHongKongOrUS
     )
@@ -652,16 +769,33 @@ private extension StockDetailQuoteDataModel {
             session: .afterHoursTrading,
             date: "04/03",
             time: "18:44:01",
-            timeZone: "(美东)"
+            timeZone: "(美东)",
+            localizedTimeZone: .init(
+                simplifiedChinese: "(美东)",
+                traditionalChinese: "(美東)",
+                english: "(ET)"
+            )
         ),
         price: "1,781.240",
         change: "+4.500",
         changePercent: "+0.25%",
         trend: .up,
         summaryItems: [
-            StockDetailQuoteSummaryItem(label: "最高", value: "1,788.80", tone: .positive),
-            StockDetailQuoteSummaryItem(label: "最低", value: "1,766.03", tone: .negative),
-            StockDetailQuoteSummaryItem(label: "成交额", value: "3.42亿")
+            StockDetailQuoteSummaryItem(
+                localizedLabel: .init(simplifiedChinese: "最高", english: "High"),
+                value: "1,788.80",
+                tone: .positive
+            ),
+            StockDetailQuoteSummaryItem(
+                localizedLabel: .init(simplifiedChinese: "最低", english: "Low"),
+                value: "1,766.03",
+                tone: .negative
+            ),
+            StockDetailQuoteSummaryItem(
+                localizedLabel: .init(simplifiedChinese: "成交额", traditionalChinese: "成交額", english: "Turnover"),
+                value: "3.42亿",
+                localizedValue: .init(simplifiedChinese: "3.42亿", traditionalChinese: "3.42億", english: "342M")
+            )
         ],
         details: .stockHongKongOrUS
     )

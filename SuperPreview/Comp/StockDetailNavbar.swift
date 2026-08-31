@@ -43,6 +43,7 @@ struct StockDetailNavbarQuote: Equatable {
     let change: String
     let changePercent: String
     let trend: Trend
+    private let session: StockDetailTradingSession?
 
     init(
         sessionTitle: String,
@@ -56,6 +57,39 @@ struct StockDetailNavbarQuote: Equatable {
         self.change = change
         self.changePercent = changePercent
         self.trend = trend
+        self.session = nil
+    }
+
+    init(
+        session: StockDetailTradingSession,
+        price: String,
+        change: String,
+        changePercent: String,
+        trend: Trend
+    ) {
+        self.sessionTitle = ""
+        self.price = price
+        self.change = change
+        self.changePercent = changePercent
+        self.trend = trend
+        self.session = session
+    }
+
+    func localizedSessionTitle(for language: DemoLanguage) -> String {
+        guard let session else { return sessionTitle }
+
+        switch session {
+        case .trading:
+            return language.text(.stockDetailTradingSession)
+        case .closed:
+            return language.text(.stockDetailClosedSession)
+        case .halted:
+            return language.text(.stockDetailHaltedSession)
+        case .preMarketTrading:
+            return language.text(.stockDetailPreMarketTrading)
+        case .afterHoursTrading:
+            return language.text(.stockDetailAfterHoursTrading)
+        }
     }
 }
 
@@ -71,8 +105,10 @@ struct StockDetailNavbar: View {
     let quoteRevealProgress: CGFloat
     let onBack: () -> Void
     let onShare: () -> Void
-    let backAccessibilityLabel: String
-    let shareAccessibilityLabel: String
+    let backAccessibilityLabel: String?
+    let shareAccessibilityLabel: String?
+
+    @Environment(\.demoLanguage) private var language
 
     init(
         symbol: String,
@@ -81,8 +117,8 @@ struct StockDetailNavbar: View {
         quoteRevealProgress: CGFloat = 0,
         onBack: @escaping () -> Void = {},
         onShare: @escaping () -> Void = {},
-        backAccessibilityLabel: String = "返回",
-        shareAccessibilityLabel: String = "分享"
+        backAccessibilityLabel: String? = nil,
+        shareAccessibilityLabel: String? = nil
     ) {
         self.symbol = symbol
         self.name = name
@@ -106,7 +142,7 @@ struct StockDetailNavbar: View {
                     height: StockDetailNavbarLayout.height
                 )
                 .contentShape(Rectangle())
-                .accessibilityLabel(backAccessibilityLabel)
+                .accessibilityLabel(backAccessibilityLabel ?? language.text(.back))
                 .accessibilityIdentifier("stockDetail.navbar.back")
 
                 titleContent
@@ -123,7 +159,7 @@ struct StockDetailNavbar: View {
                 height: StockDetailNavbarLayout.height
             )
             .contentShape(Rectangle())
-            .accessibilityLabel(shareAccessibilityLabel)
+            .accessibilityLabel(shareAccessibilityLabel ?? language.text(.share))
             .accessibilityIdentifier("stockDetail.navbar.share")
         }
         .padding(.horizontal, StockDetailNavbarLayout.horizontalPadding)
@@ -165,7 +201,7 @@ struct StockDetailNavbar: View {
     private var titleRow: some View {
         HStack(spacing: StockDetailNavbarLayout.titleSpacing(for: revealProgress)) {
             Text(symbol)
-            Text(name)
+            Text(displayName)
         }
         .modifier(CustomFontModifier(size: 16, font: .bold, lineHeight: 24))
         .foregroundColor(Color("color-text-30"))
@@ -180,7 +216,7 @@ struct StockDetailNavbar: View {
 
     private func quoteRow(_ quote: StockDetailNavbarQuote) -> some View {
         HStack(spacing: StockDetailNavbarLayout.quoteGroupSpacing) {
-            Text(quote.sessionTitle)
+            Text(quote.localizedSessionTitle(for: language))
                 .foregroundColor(Color("color-text-30"))
 
             HStack(spacing: StockDetailNavbarLayout.quoteValueSpacing) {
@@ -237,10 +273,21 @@ struct StockDetailNavbar: View {
 
     private var titleAccessibilityLabel: String {
         guard let quote, revealProgress >= 0.5 else {
-            return "\(symbol) \(name)"
+            return "\(symbol) \(displayName)"
         }
 
-        return "\(symbol) \(name)，\(quote.sessionTitle)，\(quote.price)，\(quote.change)，\(quote.changePercent)"
+        let separator = language == .english ? ", " : "，"
+        return [
+            "\(symbol) \(displayName)",
+            quote.localizedSessionTitle(for: language),
+            quote.price,
+            quote.change,
+            quote.changePercent
+        ].joined(separator: separator)
+    }
+
+    private var displayName: String {
+        language.watchlistName(symbol: symbol, fallback: name)
     }
 }
 
@@ -286,7 +333,7 @@ private struct StockDetailNavbarPreviewHarness: View {
 
 private extension StockDetailNavbarQuote {
     static let preview = StockDetailNavbarQuote(
-        sessionTitle: "交易中",
+        session: .trading,
         price: "1,776.740",
         change: "+1.079",
         changePercent: "+0.25%",
