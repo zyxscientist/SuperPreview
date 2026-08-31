@@ -93,6 +93,11 @@ struct StockDetailNavbarQuote: Equatable {
     }
 }
 
+enum StockDetailNavbarTrailingAction: Hashable {
+    case share
+    case debug
+}
+
 /// A stock-detail navigation bar with a scroll-driven quote reveal.
 ///
 /// `quoteRevealProgress` is normalized to `0...1`. The future detail page
@@ -105,6 +110,7 @@ struct StockDetailNavbar: View {
     let quoteRevealProgress: CGFloat
     let onBack: () -> Void
     let onShare: () -> Void
+    let trailingAction: StockDetailNavbarTrailingAction
     let backAccessibilityLabel: String?
     let shareAccessibilityLabel: String?
 
@@ -117,6 +123,7 @@ struct StockDetailNavbar: View {
         quoteRevealProgress: CGFloat = 0,
         onBack: @escaping () -> Void = {},
         onShare: @escaping () -> Void = {},
+        trailingAction: StockDetailNavbarTrailingAction = .share,
         backAccessibilityLabel: String? = nil,
         shareAccessibilityLabel: String? = nil
     ) {
@@ -126,6 +133,7 @@ struct StockDetailNavbar: View {
         self.quoteRevealProgress = quoteRevealProgress
         self.onBack = onBack
         self.onShare = onShare
+        self.trailingAction = trailingAction
         self.backAccessibilityLabel = backAccessibilityLabel
         self.shareAccessibilityLabel = shareAccessibilityLabel
     }
@@ -151,16 +159,14 @@ struct StockDetailNavbar: View {
             Spacer(minLength: 0)
 
             Button(action: onShare) {
-                glyph("share-Right")
+                trailingActionContent
             }
             .buttonStyle(PlainButtonStyle())
-            .frame(
-                width: StockDetailNavbarLayout.iconSize,
-                height: StockDetailNavbarLayout.height
-            )
+            .frame(minWidth: StockDetailNavbarLayout.iconSize)
+            .frame(height: StockDetailNavbarLayout.height)
             .contentShape(Rectangle())
-            .accessibilityLabel(shareAccessibilityLabel ?? language.text(.share))
-            .accessibilityIdentifier("stockDetail.navbar.share")
+            .accessibilityLabel(shareAccessibilityLabel ?? trailingActionAccessibilityLabel)
+            .accessibilityIdentifier(trailingActionAccessibilityIdentifier)
         }
         .padding(.horizontal, StockDetailNavbarLayout.horizontalPadding)
         .frame(
@@ -256,6 +262,42 @@ struct StockDetailNavbar: View {
                 width: StockDetailNavbarLayout.iconSize,
                 height: StockDetailNavbarLayout.iconSize
             )
+    }
+
+    @ViewBuilder
+    private var trailingActionContent: some View {
+        switch trailingAction {
+        case .share:
+            glyph("share-Right")
+        case .debug:
+            Text(language.text(.debug))
+                .modifier(
+                    CustomFontModifier(
+                        size: 13,
+                        font: .medium,
+                        lineHeight: 16
+                    )
+                )
+                .foregroundColor(Color("color-text-30"))
+        }
+    }
+
+    private var trailingActionAccessibilityLabel: String {
+        switch trailingAction {
+        case .share:
+            language.text(.share)
+        case .debug:
+            language.text(.debug)
+        }
+    }
+
+    private var trailingActionAccessibilityIdentifier: String {
+        switch trailingAction {
+        case .share:
+            "stockDetail.navbar.share"
+        case .debug:
+            "stockDetail.navbar.debug"
+        }
     }
 
     private var revealProgress: CGFloat {

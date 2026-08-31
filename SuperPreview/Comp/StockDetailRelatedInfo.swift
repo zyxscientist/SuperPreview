@@ -343,6 +343,7 @@ struct StockDetailRelatedInfo: View {
     @Binding var interactionState: StockDetailRelatedInfoInteractionState
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.colorScheme) private var colorScheme
     @Environment(\.demoLanguage) private var language
 
     init(
@@ -376,10 +377,18 @@ struct StockDetailRelatedInfo: View {
             .padding(.horizontal, StockDetailRelatedInfoLayout.rowHorizontalPadding)
             .padding(.vertical, StockDetailRelatedInfoLayout.rowVerticalPadding)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color("color-scale-1"))
+            .background(rowBackground(for: item))
             .clipShape(rowShape(at: index))
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("stockDetail.relatedInfo.\(item.id)")
+    }
+
+    private func rowBackground(for item: StockDetailRelatedInfoItem) -> Color {
+        if case let .extendedHours(hours) = item.content, hours.state == .trading {
+            return StockDetailLiveQuoteBackground.color(for: colorScheme)
+        }
+
+        return Color("color-scale-1")
     }
 
     @ViewBuilder
@@ -454,43 +463,42 @@ struct StockDetailRelatedInfo: View {
     ) -> some View {
         let canExpand = connection.relatedQuote != nil
 
-        return VStack(
-            alignment: .leading,
-            spacing: isExpanded && canExpand
-                ? StockDetailRelatedInfoLayout.adrExpandedSpacing
-                : 0
-        ) {
-            HStack(spacing: 0) {
-                HStack(spacing: StockDetailRelatedInfoLayout.quoteSpacing) {
-                    relatedText(connection.displayConversionTitle(for: language))
-                    relatedText(connection.conversionPrice, tone: connection.conversionTone)
-                }
-
-                Spacer(minLength: 0)
-
-                HStack(spacing: StockDetailRelatedInfoLayout.trailingControlSpacing) {
+        return StockDetailRelatedInfoExpandableRow(
+            isExpanded: isExpanded,
+            spacing: StockDetailRelatedInfoLayout.adrExpandedSpacing,
+            header: {
+                HStack(spacing: 0) {
                     HStack(spacing: StockDetailRelatedInfoLayout.quoteSpacing) {
-                        relatedText(connection.displayRelativeTitle(for: language))
-                        relatedText(connection.relativeChange, tone: connection.relativeTone)
-                        relatedText(connection.relativeChangePercent, tone: connection.relativeTone)
+                        relatedText(connection.displayConversionTitle(for: language))
+                        relatedText(connection.conversionPrice, tone: connection.conversionTone)
                     }
 
-                    if canExpand {
-                        disclosureButton(
-                            isExpanded: isExpanded,
-                            accessibilityLabel: language.text(.adrConversionPrice),
-                            action: onToggle
-                        )
+                    Spacer(minLength: 0)
+
+                    HStack(spacing: StockDetailRelatedInfoLayout.trailingControlSpacing) {
+                        HStack(spacing: StockDetailRelatedInfoLayout.quoteSpacing) {
+                            relatedText(connection.displayRelativeTitle(for: language))
+                            relatedText(connection.relativeChange, tone: connection.relativeTone)
+                            relatedText(connection.relativeChangePercent, tone: connection.relativeTone)
+                        }
+
+                        if canExpand {
+                            disclosureButton(
+                                isExpanded: isExpanded,
+                                accessibilityLabel: language.text(.adrConversionPrice),
+                                action: onToggle
+                            )
+                        }
                     }
                 }
+                .lineLimit(1)
+            },
+            details: {
+                if let relatedQuote = connection.relatedQuote {
+                    quoteRow(relatedQuote)
+                }
             }
-            .lineLimit(1)
-
-            if let relatedQuote = connection.relatedQuote {
-                quoteRow(relatedQuote)
-                    .stockDetailRelatedInfoExpansion(isExpanded: isExpanded)
-            }
-        }
+        )
     }
 
     private func rangeRow(
@@ -544,48 +552,45 @@ struct StockDetailRelatedInfo: View {
     ) -> some View {
         let canExpand = !dividend.details.isEmpty
 
-        return VStack(
-            alignment: .leading,
-            spacing: isExpanded && canExpand
-                ? StockDetailRelatedInfoLayout.cashDividendExpandedSpacing
-                : 0
-        ) {
-            HStack(
-                alignment: isExpanded && canExpand ? .top : .center,
-                spacing: StockDetailRelatedInfoLayout.cashDividendHeaderSpacing
-            ) {
-                HStack(alignment: .top, spacing: StockDetailRelatedInfoLayout.cashDividendLeadingSpacing) {
-                    glyph("assciate_info_dividen", size: StockDetailRelatedInfoLayout.leadingGlyphSize)
-                        .padding(.top, StockDetailRelatedInfoLayout.cashDividendGlyphTopOffset)
+        return StockDetailRelatedInfoExpandableRow(
+            isExpanded: isExpanded,
+            spacing: StockDetailRelatedInfoLayout.cashDividendExpandedSpacing,
+            header: {
+                HStack(
+                    alignment: isExpanded && canExpand ? .top : .center,
+                    spacing: StockDetailRelatedInfoLayout.cashDividendHeaderSpacing
+                ) {
+                    HStack(alignment: .top, spacing: StockDetailRelatedInfoLayout.cashDividendLeadingSpacing) {
+                        glyph("assciate_info_dividen", size: StockDetailRelatedInfoLayout.leadingGlyphSize)
+                            .padding(.top, StockDetailRelatedInfoLayout.cashDividendGlyphTopOffset)
 
-                    Text(dividend.displaySummary(for: language))
-                        .modifier(
-                            CustomFontModifier(
-                                size: StockDetailRelatedInfoLayout.fontSize,
-                                font: .regular,
-                                lineHeight: StockDetailRelatedInfoLayout.lineHeight
+                        Text(dividend.displaySummary(for: language))
+                            .modifier(
+                                CustomFontModifier(
+                                    size: StockDetailRelatedInfoLayout.fontSize,
+                                    font: .regular,
+                                    lineHeight: StockDetailRelatedInfoLayout.lineHeight
+                                )
                             )
+                            .foregroundColor(StockDetailRelatedInfoTone.primary.color)
+                            .lineLimit(isExpanded && canExpand ? nil : 1)
+                            .fixedSize(horizontal: false, vertical: isExpanded && canExpand)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                    if canExpand {
+                        disclosureButton(
+                            isExpanded: isExpanded,
+                            accessibilityLabel: language.text(.exDividendInformation),
+                            action: onToggle
                         )
-                        .foregroundColor(StockDetailRelatedInfoTone.primary.color)
-                        .lineLimit(isExpanded && canExpand ? nil : 1)
-                        .fixedSize(horizontal: false, vertical: isExpanded && canExpand)
+                    }
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-
-                if canExpand {
-                    disclosureButton(
-                        isExpanded: isExpanded,
-                        accessibilityLabel: language.text(.exDividendInformation),
-                        action: onToggle
-                    )
-                }
-            }
-
-            if canExpand {
+            },
+            details: {
                 dividendDetails(dividend.details)
-                    .stockDetailRelatedInfoExpansion(isExpanded: isExpanded)
             }
-        }
+        )
     }
 
     private func dividendDetails(
@@ -621,47 +626,44 @@ struct StockDetailRelatedInfo: View {
     ) -> some View {
         let canExpand = !hours.metrics.isEmpty
 
-        return VStack(
-            alignment: .leading,
-            spacing: isExpanded && canExpand
-                ? StockDetailRelatedInfoLayout.extendedHoursExpandedSpacing
-                : 0
-        ) {
-            HStack(spacing: 0) {
-                HStack(spacing: StockDetailRelatedInfoLayout.quoteSpacing) {
-                    relatedText(hours.displaySessionTitle(for: language))
-                    relatedText(hours.price, tone: hours.state.quoteTone)
+        return StockDetailRelatedInfoExpandableRow(
+            isExpanded: isExpanded,
+            spacing: StockDetailRelatedInfoLayout.extendedHoursExpandedSpacing,
+            header: {
+                HStack(spacing: 0) {
+                    HStack(spacing: StockDetailRelatedInfoLayout.quoteSpacing) {
+                        relatedText(hours.displaySessionTitle(for: language))
+                        relatedText(hours.price, tone: hours.state.quoteTone)
 
-                    if let change = hours.change {
-                        relatedText(change, tone: hours.state.quoteTone)
+                        if let change = hours.change {
+                            relatedText(change, tone: hours.state.quoteTone)
+                        }
+
+                        if let changePercent = hours.changePercent {
+                            relatedText(changePercent, tone: hours.state.quoteTone)
+                        }
                     }
 
-                    if let changePercent = hours.changePercent {
-                        relatedText(changePercent, tone: hours.state.quoteTone)
+                    Spacer(minLength: 0)
+
+                    HStack(spacing: StockDetailRelatedInfoLayout.trailingControlSpacing) {
+                        relatedText(hours.displayTimestamp(for: language), tone: .secondary)
+
+                        if canExpand {
+                            disclosureButton(
+                                isExpanded: isExpanded,
+                                accessibilityLabel: language.text(.extendedHoursQuote),
+                                action: onToggle
+                            )
+                        }
                     }
                 }
-
-                Spacer(minLength: 0)
-
-                HStack(spacing: StockDetailRelatedInfoLayout.trailingControlSpacing) {
-                    relatedText(hours.displayTimestamp(for: language), tone: .secondary)
-
-                    if canExpand {
-                        disclosureButton(
-                            isExpanded: isExpanded,
-                            accessibilityLabel: language.text(.extendedHoursQuote),
-                            action: onToggle
-                        )
-                    }
-                }
-            }
-            .lineLimit(1)
-
-            if canExpand {
+                .lineLimit(1)
+            },
+            details: {
                 extendedHoursMetrics(hours.metrics)
-                    .stockDetailRelatedInfoExpansion(isExpanded: isExpanded)
             }
-        }
+        )
     }
 
     private func extendedHoursMetrics(
@@ -842,6 +844,38 @@ struct StockDetailRelatedInfo: View {
     }
 }
 
+private struct StockDetailRelatedInfoExpandableRow<Header: View, Details: View>: View {
+    let isExpanded: Bool
+    let spacing: CGFloat
+    let header: Header
+    let details: Details
+
+    init(
+        isExpanded: Bool,
+        spacing: CGFloat,
+        @ViewBuilder header: () -> Header,
+        @ViewBuilder details: () -> Details
+    ) {
+        self.isExpanded = isExpanded
+        self.spacing = spacing
+        self.header = header()
+        self.details = details()
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: isExpanded ? spacing : 0) {
+            // The header remains outside the clipped detail content. This
+            // keeps the collapse control in the original collapsed row.
+            header
+
+            details
+                .stockDetailRelatedInfoExpansion(isExpanded: isExpanded)
+        }
+        .frame(maxWidth: .infinity, alignment: .topLeading)
+    }
+}
+
+
 private enum StockDetailRelatedInfoLayout {
     static let topPadding: CGFloat = 8
     static let horizontalPadding: CGFloat = 16
@@ -913,7 +947,7 @@ private extension StockDetailQuoteLocalizedText {
     }
 }
 
-private enum StockDetailRelatedInfoPreviewData {
+enum StockDetailRelatedInfoPreviewData {
     static let financialReport = StockDetailRelatedInfoItem(
         id: "financial-report",
         content: .financialReport(

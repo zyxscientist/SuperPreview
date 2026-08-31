@@ -103,6 +103,13 @@ enum StockDetailTradingSession: Hashable {
     }
 }
 
+enum StockDetailLiveQuoteBackground {
+    static func color(for colorScheme: ColorScheme) -> Color {
+        Color("color-brand-blue")
+            .opacity(colorScheme == .dark ? 0.15 : 0.05)
+    }
+}
+
 /// Timestamp data displayed at the top leading edge of a quote component.
 struct StockDetailQuoteTimestamp: Hashable {
     let session: StockDetailTradingSession
@@ -258,6 +265,7 @@ struct StockDetailQuoteData: View {
     @Binding var isExpanded: Bool
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.colorScheme) private var colorScheme
     @Environment(\.demoLanguage) private var language
     @State private var isShowingBadgeInfoSheet = false
 
@@ -456,6 +464,8 @@ struct StockDetailQuoteData: View {
 
     private var expansionControl: some View {
         Button {
+            HapticManager.instance.impactHaptic(type: .medium)
+
             withAnimation(StockOrderMotion.expansion(reduceMotion: reduceMotion)) {
                 isExpanded.toggle()
             }
@@ -535,7 +545,7 @@ struct StockDetailQuoteData: View {
     private var timestampBackground: some View {
         switch data.timestamp.session {
         case .trading, .preMarketTrading, .afterHoursTrading:
-            Color("color-brand-blue").opacity(0.05)
+            StockDetailLiveQuoteBackground.color(for: colorScheme)
         case .closed:
             Color("color-scale-1")
         case .halted:

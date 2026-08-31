@@ -9,7 +9,7 @@
 import Foundation
 import SwiftUI
 
-enum WatchlistRedesignMarket {
+enum WatchlistRedesignMarket: String, Hashable {
     case hk
     case cn
     case us
@@ -78,10 +78,10 @@ enum WatchlistRedesignPriceSimulationSpeed: String, CaseIterable, Identifiable {
 }
 
 struct WatchlistRedesignItem: Identifiable {
-    let id = UUID()
     let name: String
     let symbol: String
     let market: WatchlistRedesignMarket
+    let instrumentKind: StockDetailInstrumentKind
     var price: String
     var secondaryPrice: String?
     var changePercent: String
@@ -90,6 +90,38 @@ struct WatchlistRedesignItem: Identifiable {
     let miniKPoints: [CGFloat]
     let tagAssets: [String]
     let isPinned: Bool
+
+    init(
+        name: String,
+        symbol: String,
+        market: WatchlistRedesignMarket,
+        instrumentKind: StockDetailInstrumentKind = .stock,
+        price: String,
+        secondaryPrice: String?,
+        changePercent: String,
+        trend: WatchlistRedesignTrend,
+        session: WatchlistRedesignSession,
+        miniKPoints: [CGFloat],
+        tagAssets: [String],
+        isPinned: Bool
+    ) {
+        self.name = name
+        self.symbol = symbol
+        self.market = market
+        self.instrumentKind = instrumentKind
+        self.price = price
+        self.secondaryPrice = secondaryPrice
+        self.changePercent = changePercent
+        self.trend = trend
+        self.session = session
+        self.miniKPoints = miniKPoints
+        self.tagAssets = tagAssets
+        self.isPinned = isPinned
+    }
+
+    var id: String {
+        "\(market.rawValue):\(symbol)"
+    }
 }
 
 class WatchlistRedesignViewModel: ObservableObject {
@@ -277,6 +309,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 name: "恒生科技ETF",
                 symbol: "03032",
                 market: .hk,
+                instrumentKind: .etf,
                 price: "4.812",
                 secondaryPrice: nil,
                 changePercent: "2.02%",
@@ -290,6 +323,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 name: "纳指100ETF",
                 symbol: "513100",
                 market: .cn,
+                instrumentKind: .etf,
                 price: "1.482",
                 secondaryPrice: nil,
                 changePercent: "0.61%",
@@ -303,6 +337,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 name: "贝莱德世界能源基金",
                 symbol: "LU012376428",
                 market: .fund,
+                instrumentKind: .fund,
                 price: "16.920",
                 secondaryPrice: nil,
                 changePercent: "0.01%",
@@ -316,6 +351,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 name: "先锋标普500ETF",
                 symbol: "VOO",
                 market: .us,
+                instrumentKind: .etf,
                 price: "512.330",
                 secondaryPrice: "512.330",
                 changePercent: "0.38%",
@@ -329,6 +365,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 name: "纳指100ETF",
                 symbol: "QQQ",
                 market: .us,
+                instrumentKind: .etf,
                 price: "473.180",
                 secondaryPrice: "473.180",
                 changePercent: "0.52%",
@@ -345,6 +382,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 name: "比特币/美元",
                 symbol: "BTC/USD",
                 market: .crypto,
+                instrumentKind: .crypto,
                 price: "66666.61",
                 secondaryPrice: nil,
                 changePercent: "6.66%",
@@ -358,6 +396,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 name: "以太坊/美元",
                 symbol: "ETH/USD",
                 market: .crypto,
+                instrumentKind: .crypto,
                 price: "3468.82",
                 secondaryPrice: nil,
                 changePercent: "2.14%",
@@ -384,6 +423,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 name: "安硕中国大盘ETF",
                 symbol: "FXI",
                 market: .us,
+                instrumentKind: .etf,
                 price: "27.650",
                 secondaryPrice: "27.650",
                 changePercent: "0.00%",

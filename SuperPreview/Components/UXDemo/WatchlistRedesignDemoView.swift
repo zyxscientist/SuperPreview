@@ -160,7 +160,7 @@ struct WatchlistRedesignNavigableRow: View {
 
     var body: some View {
         if shouldNavigateOnTap {
-            NavigationLink(destination: WatchlistRedesignDetailPlaceholder()) {
+            NavigationLink(destination: destination) {
                 WatchlistRedesignRow(item: item, isMiniKVisible: isMiniKVisible)
             }
             .buttonStyle(WatchlistRedesignRowPressStyle(baseColor: item.backgroundColor))
@@ -169,6 +169,15 @@ struct WatchlistRedesignNavigableRow: View {
                 WatchlistRedesignRow(item: item, isMiniKVisible: isMiniKVisible)
             }
             .buttonStyle(WatchlistRedesignRowPressStyle(baseColor: item.backgroundColor))
+        }
+    }
+
+    @ViewBuilder
+    private var destination: some View {
+        if item.instrumentKind == .fund || item.market == .fund {
+            WatchlistRedesignDetailPlaceholder()
+        } else {
+            StockDetailPage(instrument: item.stockDetailInstrument)
         }
     }
 }

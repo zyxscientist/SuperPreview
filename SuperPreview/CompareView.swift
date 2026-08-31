@@ -286,6 +286,21 @@ struct CompareTab5View: View {
             )
             .accessibilityIdentifier("compare.stockOrder")
             // 结束
+
+            NavigationLink(
+                destination: StockDetailUSCommonStockPage(),
+                label: {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(stockDetailUSCommonStockTitle)
+                            .font(.system(size: 16, weight: .semibold, design: .default))
+                        Text("Stock Detail · US Common Stock")
+                            .foregroundColor(.gray)
+                            .font(.system(size: 13, weight: .regular, design: .monospaced))
+                    }
+                }
+            )
+            .accessibilityIdentifier("compare.stockDetailUSCommonStock")
+            // 结束
             
             NavigationLink(
                 destination: MacroDataCenterView(),
@@ -377,6 +392,17 @@ struct CompareTab5View: View {
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("compare.componentLibrary")
         .background(Color("color-base-0"))
+    }
+
+    private var stockDetailUSCommonStockTitle: String {
+        switch demoLanguage {
+        case .simplifiedChinese:
+            "美股正股详情页"
+        case .traditionalChinese:
+            "美股正股詳情頁"
+        case .english:
+            "US Common Stock Detail"
+        }
     }
 }
 

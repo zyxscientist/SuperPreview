@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		63214F5BCEEA418392E5883B /* InteractiveBottomCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C97C767D76C43C68A2243E7 /* InteractiveBottomCard.swift */; };
+		81B2E43879114C8C8709AF34 /* Transmission in Frameworks */ = {isa = PBXBuildFile; productRef = 2267041125BC4BE6B1EF94CB /* Transmission */; };
 		83571D872F6943F3004C4213 /* PriceRefreshAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83571D862F6943F3004C4213 /* PriceRefreshAnimationView.swift */; };
 		84008BF22CAA709E0094E05E /* IntradayCardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84008BF12CAA709D0094E05E /* IntradayCardsView.swift */; };
 		84008BF52CAA89250094E05E /* OrderBookTapeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84008BF42CAA89250094E05E /* OrderBookTapeView.swift */; };
@@ -120,8 +122,6 @@
 		A1B2C3D4E5F6000000000033 /* StockOrderDemoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000032 /* StockOrderDemoViewModel.swift */; };
 		A1B2C3D4E5F6000000000035 /* StockOrderDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000034 /* StockOrderDemoView.swift */; };
 		A1B2C3D4E5F6000000000036 /* StockOrderConfirmationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000037 /* StockOrderConfirmationSheet.swift */; };
-		63214F5BCEEA418392E5883B /* InteractiveBottomCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C97C767D76C43C68A2243E7 /* InteractiveBottomCard.swift */; };
-		81B2E43879114C8C8709AF34 /* Transmission in Frameworks */ = {isa = PBXBuildFile; productRef = 2267041125BC4BE6B1EF94CB /* Transmission */; };
 		AA1700030000000000000001 /* TradeLayoutAdaptationUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1700010000000000000001 /* TradeLayoutAdaptationUITests.swift */; };
 		AA17000D0000000000000001 /* StockOrderConfirmationSheetUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA17000C0000000000000001 /* StockOrderConfirmationSheetUITests.swift */; };
 		C205D216250C7AA400F302ED /* SnapshotShortcutGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C205D215250C7AA400F302ED /* SnapshotShortcutGridView.swift */; };
@@ -193,9 +193,13 @@
 		D1A4C6E0F2174A3B9C8D0041 /* StockDetailTransactionHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D0040 /* StockDetailTransactionHistory.swift */; };
 		D1A4C6E0F2174A3B9C8D0043 /* StockDetailTransactionHistoryOrder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D0042 /* StockDetailTransactionHistoryOrder.swift */; };
 		D1A4C6E0F2174A3B9C8D0045 /* StockDetailBottomActionBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D0044 /* StockDetailBottomActionBar.swift */; };
+		D1A4C6E0F2174A3B9C8D0047 /* StockDetailUSCommonStockPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D0046 /* StockDetailUSCommonStockPage.swift */; };
+		D1A4C6E0F2174A3B9C8D0049 /* StockDetailPageConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D0048 /* StockDetailPageConfiguration.swift */; };
+		D1A4C6E0F2174A3B9C8D004B /* StockDetailPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D004A /* StockDetailPage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7C97C767D76C43C68A2243E7 /* InteractiveBottomCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractiveBottomCard.swift; sourceTree = "<group>"; };
 		83571D862F6943F3004C4213 /* PriceRefreshAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceRefreshAnimationView.swift; sourceTree = "<group>"; };
 		84008BF12CAA709D0094E05E /* IntradayCardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntradayCardsView.swift; sourceTree = "<group>"; };
 		84008BF42CAA89250094E05E /* OrderBookTapeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderBookTapeView.swift; sourceTree = "<group>"; };
@@ -309,10 +313,9 @@
 		A1B2C3D4E5F6000000000032 /* StockOrderDemoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderDemoViewModel.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6000000000034 /* StockOrderDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderDemoView.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6000000000037 /* StockOrderConfirmationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderConfirmationSheet.swift; sourceTree = "<group>"; };
-		7C97C767D76C43C68A2243E7 /* InteractiveBottomCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractiveBottomCard.swift; sourceTree = "<group>"; };
 		AA1700010000000000000001 /* TradeLayoutAdaptationUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeLayoutAdaptationUITests.swift; sourceTree = "<group>"; };
-		AA17000C0000000000000001 /* StockOrderConfirmationSheetUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderConfirmationSheetUITests.swift; sourceTree = "<group>"; };
 		AA1700020000000000000001 /* SuperPreviewUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SuperPreviewUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA17000C0000000000000001 /* StockOrderConfirmationSheetUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderConfirmationSheetUITests.swift; sourceTree = "<group>"; };
 		C205D215250C7AA400F302ED /* SnapshotShortcutGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotShortcutGridView.swift; sourceTree = "<group>"; };
 		C2310CB628F54CF100259834 /* NavigationBarModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarModifier.swift; sourceTree = "<group>"; };
 		C2330E452851CB9100382AE1 /* CompareView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompareView.swift; sourceTree = "<group>"; };
@@ -384,6 +387,9 @@
 		D1A4C6E0F2174A3B9C8D0040 /* StockDetailTransactionHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailTransactionHistory.swift; sourceTree = "<group>"; };
 		D1A4C6E0F2174A3B9C8D0042 /* StockDetailTransactionHistoryOrder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailTransactionHistoryOrder.swift; sourceTree = "<group>"; };
 		D1A4C6E0F2174A3B9C8D0044 /* StockDetailBottomActionBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailBottomActionBar.swift; sourceTree = "<group>"; };
+		D1A4C6E0F2174A3B9C8D0046 /* StockDetailUSCommonStockPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailUSCommonStockPage.swift; sourceTree = "<group>"; };
+		D1A4C6E0F2174A3B9C8D0048 /* StockDetailPageConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailPageConfiguration.swift; sourceTree = "<group>"; };
+		D1A4C6E0F2174A3B9C8D004A /* StockDetailPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailPage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -603,6 +609,9 @@
 		84F200022F78000000ABC001 /* Comp */ = {
 			isa = PBXGroup;
 			children = (
+				D1A4C6E0F2174A3B9C8D004A /* StockDetailPage.swift */,
+				D1A4C6E0F2174A3B9C8D0048 /* StockDetailPageConfiguration.swift */,
+				D1A4C6E0F2174A3B9C8D0046 /* StockDetailUSCommonStockPage.swift */,
 				D1A4C6E0F2174A3B9C8D0044 /* StockDetailBottomActionBar.swift */,
 				D1A4C6E0F2174A3B9C8D0042 /* StockDetailTransactionHistoryOrder.swift */,
 				D1A4C6E0F2174A3B9C8D0040 /* StockDetailTransactionHistory.swift */,
@@ -847,10 +856,10 @@
 			);
 			dependencies = (
 			);
+			name = SuperPreview;
 			packageProductDependencies = (
 				2267041125BC4BE6B1EF94CB /* Transmission */,
 			);
-			name = SuperPreview;
 			productName = SuperPreview;
 			productReference = C2A0247524FB5315004930F0 /* SuperPreview.app */;
 			productType = "com.apple.product-type.application";
@@ -896,25 +905,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		C9F8E2F2ED514F3E9A82589B /* XCRemoteSwiftPackageReference "Transmission" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/nathantannar4/Transmission.git";
-			requirement = {
-				kind = exactVersion;
-				version = 2.14.4;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		2267041125BC4BE6B1EF94CB /* Transmission */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C9F8E2F2ED514F3E9A82589B /* XCRemoteSwiftPackageReference "Transmission" */;
-			productName = Transmission;
-		};
-/* End XCSwiftPackageProductDependency section */
 
 /* Begin PBXResourcesBuildPhase section */
 		AA1700070000000000000001 /* Resources */ = {
@@ -997,6 +987,9 @@
 				D1A4C6E0F2174A3B9C8D0041 /* StockDetailTransactionHistory.swift in Sources */,
 				D1A4C6E0F2174A3B9C8D0043 /* StockDetailTransactionHistoryOrder.swift in Sources */,
 				D1A4C6E0F2174A3B9C8D0045 /* StockDetailBottomActionBar.swift in Sources */,
+				D1A4C6E0F2174A3B9C8D0047 /* StockDetailUSCommonStockPage.swift in Sources */,
+				D1A4C6E0F2174A3B9C8D0049 /* StockDetailPageConfiguration.swift in Sources */,
+				D1A4C6E0F2174A3B9C8D004B /* StockDetailPage.swift in Sources */,
 				84F300012F80000000ABC001 /* MainTabBar.swift in Sources */,
 				84F2001E2F7D000000ABC001 /* TradeAggregationDemoView.swift in Sources */,
 				84F300032F76000000ABC001 /* TradeAggregationDemoViewModel.swift in Sources */,
@@ -1365,6 +1358,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		C9F8E2F2ED514F3E9A82589B /* XCRemoteSwiftPackageReference "Transmission" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/nathantannar4/Transmission.git";
+			requirement = {
+				kind = exactVersion;
+				version = 2.14.4;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2267041125BC4BE6B1EF94CB /* Transmission */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C9F8E2F2ED514F3E9A82589B /* XCRemoteSwiftPackageReference "Transmission" */;
+			productName = Transmission;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = C2A0246D24FB5315004930F0 /* Project object */;
 }
