@@ -558,7 +558,7 @@ private enum StockDetailUSCommonStockPageMockData {
                     localizedEvent: .init(
                         simplifiedChinese: "公布业绩",
                         traditionalChinese: "公布業績",
-                        english: "Results announcement"
+                        english: "Earning Release"
                     )
                 )
             )
@@ -575,7 +575,7 @@ private enum StockDetailUSCommonStockPageMockData {
                             localizedLabel: .init(
                                 simplifiedChinese: "除权除息日",
                                 traditionalChinese: "除權除息日",
-                                english: "Ex-dividend date"
+                                english: "Ex-Date"
                             )
                         ),
                         .init(
@@ -600,7 +600,7 @@ private enum StockDetailUSCommonStockPageMockData {
                     localizedSummary: .init(
                         simplifiedChinese: "除权除息日:2026/06/13  每股派息3.40001 USD 超过截断",
                         traditionalChinese: "除權除息日:2026/06/13  每股派息3.40001 USD 超過截斷",
-                        english: "Ex-dividend date: 2026/06/13  Dividend per share 3.40001 USD exceeds truncation"
+                        english: "Ex-Date 2026/06/13  Dividend per share 3.40001 USD exceeds truncation"
                     )
                 )
             )

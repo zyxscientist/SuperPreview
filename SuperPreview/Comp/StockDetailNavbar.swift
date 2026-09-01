@@ -86,9 +86,9 @@ struct StockDetailNavbarQuote: Equatable {
         case .halted:
             return language.text(.stockDetailHaltedSession)
         case .preMarketTrading:
-            return language.text(.stockDetailPreMarketTrading)
+            return language.text(.stockDetailPreMarketNavbar)
         case .afterHoursTrading:
-            return language.text(.stockDetailAfterHoursTrading)
+            return language.text(.stockDetailAfterHoursNavbar)
         }
     }
 }

@@ -434,7 +434,7 @@ struct StockDetailQuoteData: View {
                     Text(item.displayLabel(for: language))
                         .modifier(
                             CustomFontModifier(
-                                size: 12,
+                                size: 13,
                                 font: .regular,
                                 lineHeight: 16
                             )
@@ -446,7 +446,7 @@ struct StockDetailQuoteData: View {
                     Text(item.displayValue(for: language))
                         .modifier(
                             CustomFontModifier(
-                                size: 12,
+                                size: 13,
                                 font: .medium,
                                 lineHeight: 16
                             )

@@ -252,7 +252,7 @@ extension StockDetailMoneyFlowTrendData {
         localizedTitle: .init(
             simplifiedChinese: "资金流向趋势",
             traditionalChinese: "資金流向趨勢",
-            english: "Money flow trend"
+            english: "Money Flow"
         ),
         localizedUnit: .init(
             simplifiedChinese: "单位：万",

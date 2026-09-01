@@ -467,16 +467,16 @@ enum StockDetailPageConfigurationFactory {
             session = .afterHoursTrading
         }
 
-        let timeZone: StockDetailQuoteLocalizedText
+        let timeZone: StockDetailQuoteLocalizedText?
         switch instrument.market {
         case .hongKong:
-            timeZone = .init(simplifiedChinese: "(香港)", traditionalChinese: "(香港)", english: "(HKT)")
+            timeZone = nil
         case .us:
             timeZone = .init(simplifiedChinese: "(美东)", traditionalChinese: "(美東)", english: "(ET)")
         case .aShare:
-            timeZone = .init(simplifiedChinese: "(北京)", traditionalChinese: "(北京)", english: "(CST)")
+            timeZone = nil
         case .crypto:
-            timeZone = .init(simplifiedChinese: "(UTC)", traditionalChinese: "(UTC)", english: "(UTC)")
+            timeZone = nil
         case .fund:
             timeZone = .init(simplifiedChinese: "(北京)", traditionalChinese: "(北京)", english: "(CST)")
         }
@@ -523,17 +523,17 @@ enum StockDetailPageConfigurationFactory {
         switch variant {
         case .hongKongStock:
             return [
-                StockDetailRelatedInfoPreviewData.shareConnection,
-                StockDetailRelatedInfoPreviewData.dualCounter,
                 StockDetailRelatedInfoPreviewData.financialReport,
                 StockDetailRelatedInfoPreviewData.cashDividend,
                 StockDetailRelatedInfoPreviewData.cas,
-                StockDetailRelatedInfoPreviewData.vcm
+                StockDetailRelatedInfoPreviewData.vcm,
+                StockDetailRelatedInfoPreviewData.shareConnection,
+                StockDetailRelatedInfoPreviewData.dualCounter
             ]
         case .hongKongETF:
             return [
-                StockDetailRelatedInfoPreviewData.shareConnection,
-                StockDetailRelatedInfoPreviewData.financialReport
+                StockDetailRelatedInfoPreviewData.financialReport,
+                StockDetailRelatedInfoPreviewData.shareConnection
             ]
         case .usStock:
             return [
@@ -544,8 +544,8 @@ enum StockDetailPageConfigurationFactory {
             return [StockDetailRelatedInfoPreviewData.financialReport] + extendedHoursItems(for: instrument)
         case .aShareStock:
             return [
-                StockDetailRelatedInfoPreviewData.aShareConnection,
-                StockDetailRelatedInfoPreviewData.financialReport
+                StockDetailRelatedInfoPreviewData.financialReport,
+                StockDetailRelatedInfoPreviewData.aShareConnection
             ]
         case .aShareETF:
             return [StockDetailRelatedInfoPreviewData.aShareConnection]

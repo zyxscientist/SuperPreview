@@ -86,6 +86,7 @@ struct StockDetailCapitalDistributionBreakdown: Hashable, Identifiable {
     let outflowBarFraction: CGFloat
     let orderSize: StockDetailCapitalDistributionOrderSize
     private let localizedCategory: StockDetailQuoteLocalizedText?
+    private let categoryLocalizationKey: DemoCopyKey?
 
     var id: String { category }
 
@@ -98,7 +99,8 @@ struct StockDetailCapitalDistributionBreakdown: Hashable, Identifiable {
         inflowBarFraction: CGFloat,
         outflowBarFraction: CGFloat,
         orderSize: StockDetailCapitalDistributionOrderSize,
-        localizedCategory: StockDetailQuoteLocalizedText? = nil
+        localizedCategory: StockDetailQuoteLocalizedText? = nil,
+        categoryLocalizationKey: DemoCopyKey? = nil
     ) {
         self.category = category
         self.inflowShare = inflowShare
@@ -109,10 +111,14 @@ struct StockDetailCapitalDistributionBreakdown: Hashable, Identifiable {
         self.outflowBarFraction = outflowBarFraction
         self.orderSize = orderSize
         self.localizedCategory = localizedCategory
+        self.categoryLocalizationKey = categoryLocalizationKey
     }
 
     fileprivate func displayCategory(for language: DemoLanguage) -> String {
-        localizedCategory?.text(for: language) ?? category
+        if let categoryLocalizationKey {
+            return language.text(categoryLocalizationKey)
+        }
+        return localizedCategory?.text(for: language) ?? category
     }
 }
 
@@ -505,11 +511,7 @@ extension StockDetailCapitalDistributionData {
                 inflowBarFraction: 1,
                 outflowBarFraction: 1,
                 orderSize: .large,
-                localizedCategory: .init(
-                    simplifiedChinese: "大单",
-                    traditionalChinese: "大單",
-                    english: "Large"
-                )
+                categoryLocalizationKey: .largeOrder
             ),
             StockDetailCapitalDistributionBreakdown(
                 category: "中单",
@@ -520,11 +522,7 @@ extension StockDetailCapitalDistributionData {
                 inflowBarFraction: 0.48,
                 outflowBarFraction: 0.52,
                 orderSize: .medium,
-                localizedCategory: .init(
-                    simplifiedChinese: "中单",
-                    traditionalChinese: "中單",
-                    english: "Medium"
-                )
+                categoryLocalizationKey: .mediumOrder
             ),
             StockDetailCapitalDistributionBreakdown(
                 category: "小单",
@@ -535,11 +533,7 @@ extension StockDetailCapitalDistributionData {
                 inflowBarFraction: 0.18,
                 outflowBarFraction: 0.24,
                 orderSize: .small,
-                localizedCategory: .init(
-                    simplifiedChinese: "小单",
-                    traditionalChinese: "小單",
-                    english: "Small"
-                )
+                categoryLocalizationKey: .smallOrder
             )
         ],
         localizedUnit: .init(

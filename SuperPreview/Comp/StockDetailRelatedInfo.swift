@@ -962,7 +962,7 @@ enum StockDetailRelatedInfoPreviewData {
                 localizedEvent: .related(
                     "公布业绩",
                     traditionalChinese: "公布業績",
-                    english: "Results announcement"
+                    english: "Earning Release"
                 )
             )
         )
@@ -980,7 +980,7 @@ enum StockDetailRelatedInfoPreviewData {
                         localizedLabel: .related(
                             "除权除息日",
                             traditionalChinese: "除權除息日",
-                            english: "Ex-dividend date"
+                            english: "Ex-Date"
                         )
                     ),
                     .init(
@@ -1005,7 +1005,7 @@ enum StockDetailRelatedInfoPreviewData {
                 localizedSummary: .related(
                     "除权除息日:2026/06/13  每股派息3.40001HKD 超过截断",
                     traditionalChinese: "除權除息日:2026/06/13  每股派息3.40001HKD 超過截斷",
-                    english: "Ex-dividend date: 2026/06/13  Dividend per share 3.40001 HKD exceeds truncation"
+                    english: "Ex-Date: 2026/06/13  Dividend per share 3.40001 HKD exceeds truncation"
                 )
             )
         )

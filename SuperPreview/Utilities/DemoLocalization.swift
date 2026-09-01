@@ -64,6 +64,7 @@ enum DemoCopyKey {
     case expand, collapse, expandChart, collapseChart, closingAuction, volatilityCoolingOff, priceRange
     case stockDetailTradingSession, stockDetailClosedSession, stockDetailHaltedSession
     case stockDetailPreMarketTrading, stockDetailAfterHoursTrading
+    case stockDetailPreMarketNavbar, stockDetailAfterHoursNavbar
     case stockDetailHigh, stockDetailLow, stockDetailTurnover, zeroValue
     case viewMarketBadgeDetails, currentPrice, expandQuoteDetails, collapseQuoteDetails
     case stockDetailDisclaimer
@@ -294,6 +295,8 @@ private enum DemoCopy {
         .stockDetailHaltedSession: ("停牌", "停牌", "Halted"),
         .stockDetailPreMarketTrading: ("盘前交易中", "盤前交易中", "Pre-market trading"),
         .stockDetailAfterHoursTrading: ("盘后交易中", "盤後交易中", "After-hours trading"),
+        .stockDetailPreMarketNavbar: ("盘前交易中", "盤前交易中", "Pre-market"),
+        .stockDetailAfterHoursNavbar: ("盘后交易中", "盤後交易中", "After-hours"),
         .stockDetailHigh: ("最高", "最高", "High"),
         .stockDetailLow: ("最低", "最低", "Low"),
         .stockDetailTurnover: ("成交额", "成交額", "Turnover"),
@@ -361,7 +364,7 @@ private enum DemoCopy {
         .adrConversionPrice: ("ADR换算价", "ADR換算價", "ADR conversion price"),
         .relativeToHKStock: ("相对港股", "相對港股", "vs HK stock"),
         .relativeToUSStock: ("相对美股", "相對美股", "vs US stock"),
-        .resultsAnnouncement: ("公布业绩", "公布業績", "Results announcement"),
+        .resultsAnnouncement: ("公布业绩", "公布業績", "Earning Release"),
         .exDividendInformation: ("除权除息信息", "除權除息資訊", "Ex-dividend information"),
         .extendedHoursQuote: ("盘前盘后行情", "盤前盤後行情", "Extended-hours quote"),
         .addEarningsCalendarReminder: ("添加业绩日历提醒", "加入業績日曆提醒", "Add earnings calendar reminder"),
@@ -373,15 +376,15 @@ private enum DemoCopy {
         .tenLevels: ("十档", "十檔", "10 levels"),
         .brokerSeat: ("经纪商席位", "經紀商席位", "Broker seat"),
         .brokerCount: ("经纪商", "經紀商", "brokers"),
-        .capitalDistribution: ("当日资金分布", "當日資金分布", "Daily capital distribution"),
+        .capitalDistribution: ("资金分布", "資金分布", "Capital Distribution"),
         .netFlow: ("净流", "淨流", "Net flow"),
         .inflow: ("流入", "流入", "Inflow"),
         .outflow: ("流出", "流出", "Outflow"),
-        .largeOrder: ("大单", "大單", "Large"),
-        .mediumOrder: ("中单", "中單", "Medium"),
-        .smallOrder: ("小单", "小單", "Small"),
+        .largeOrder: ("大单", "大單", "L"),
+        .mediumOrder: ("中单", "中單", "M"),
+        .smallOrder: ("小单", "小單", "S"),
         .unitTenThousands: ("单位：万", "單位：萬", "Unit: 10K"),
-        .moneyFlowTrend: ("资金流向趋势", "資金流向趨勢", "Money flow trend"),
+        .moneyFlowTrend: ("资金流向", "資金流向", "Money Flow"),
         .watchlist: ("自选", "自選", "Watchlist"),
         .trade: ("交易", "交易", "Trade"),
         .reminder: ("提醒", "提醒", "Reminder"),
