@@ -229,6 +229,58 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         XCTAssertEqual(waitFor("stockDetail.page.headerTab.quote").label, "报价")
     }
 
+    func testStockDetailShuffleUsesWatchlistSnapshotAndExitsToSelectedInstrument() throws {
+        enterWatchlist()
+
+        let firstRow = waitFor("watchlist.row.hk:09988")
+        XCTAssertTrue(firstRow.isHittable)
+        firstRow.tap()
+
+        XCTAssertTrue(waitFor("stockDetail.page").exists)
+        waitFor("stockDetail.bottomActionBar.shuffle").tap()
+
+        let shuffleRoot = waitFor("stockDetail.shuffle.root")
+        XCTAssertTrue(waitFor("stockDetail.shuffle.close").exists)
+        let firstSymbol = waitFor("stockDetail.shuffle.symbol.hongKong:09988")
+        XCTAssertTrue(firstSymbol.isSelected)
+        XCTAssertFalse(
+            app.descendants(matching: .any)["stockDetail.shuffle.symbol.fund:LU012376428"].exists,
+            "Funds must not enter the Shuffle snapshot"
+        )
+
+        let secondSymbol = waitFor("stockDetail.shuffle.symbol.hongKong:00700")
+        secondSymbol.tap()
+        let selectedExpectation = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "selected == true"),
+            object: secondSymbol
+        )
+        XCTAssertEqual(
+            XCTWaiter.wait(for: [selectedExpectation], timeout: 2),
+            .completed,
+            "The symbol bar should select the fast-jumped instrument"
+        )
+
+        let thirdSymbol = waitFor("stockDetail.shuffle.symbol.hongKong:01810")
+        shuffleRoot.swipeUp()
+        let swipeExpectation = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "selected == true"),
+            object: thirdSymbol
+        )
+        XCTAssertEqual(
+            XCTWaiter.wait(for: [swipeExpectation], timeout: 2),
+            .completed,
+            "An upward swipe should advance to the next instrument"
+        )
+
+        waitFor("stockDetail.shuffle.close").tap()
+        waitForDisappearance(shuffleRoot)
+        XCTAssertTrue(waitFor("stockDetail.page").exists)
+        XCTAssertTrue(
+            waitFor("stockDetail.navbar.title").label.contains("01810"),
+            "Exiting Shuffle should keep the currently viewed instrument"
+        )
+    }
+
     func testWatchlistInAppNotificationMatchesViewport() throws {
         enterWatchlist()
 

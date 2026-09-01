@@ -196,6 +196,7 @@
 		D1A4C6E0F2174A3B9C8D0047 /* StockDetailUSCommonStockPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D0046 /* StockDetailUSCommonStockPage.swift */; };
 		D1A4C6E0F2174A3B9C8D0049 /* StockDetailPageConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D0048 /* StockDetailPageConfiguration.swift */; };
 		D1A4C6E0F2174A3B9C8D004B /* StockDetailPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D004A /* StockDetailPage.swift */; };
+		D1A4C6E0F2174A3B9C8D004D /* StockDetailShuffleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D004C /* StockDetailShuffleView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -390,6 +391,7 @@
 		D1A4C6E0F2174A3B9C8D0046 /* StockDetailUSCommonStockPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailUSCommonStockPage.swift; sourceTree = "<group>"; };
 		D1A4C6E0F2174A3B9C8D0048 /* StockDetailPageConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailPageConfiguration.swift; sourceTree = "<group>"; };
 		D1A4C6E0F2174A3B9C8D004A /* StockDetailPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailPage.swift; sourceTree = "<group>"; };
+		D1A4C6E0F2174A3B9C8D004C /* StockDetailShuffleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailShuffleView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -613,6 +615,7 @@
 				D1A4C6E0F2174A3B9C8D0048 /* StockDetailPageConfiguration.swift */,
 				D1A4C6E0F2174A3B9C8D0046 /* StockDetailUSCommonStockPage.swift */,
 				D1A4C6E0F2174A3B9C8D0044 /* StockDetailBottomActionBar.swift */,
+				D1A4C6E0F2174A3B9C8D004C /* StockDetailShuffleView.swift */,
 				D1A4C6E0F2174A3B9C8D0042 /* StockDetailTransactionHistoryOrder.swift */,
 				D1A4C6E0F2174A3B9C8D0040 /* StockDetailTransactionHistory.swift */,
 				D1A4C6E0F2174A3B9C8D0038 /* StockDetailTransactionOrders.swift */,
@@ -990,6 +993,7 @@
 				D1A4C6E0F2174A3B9C8D0047 /* StockDetailUSCommonStockPage.swift in Sources */,
 				D1A4C6E0F2174A3B9C8D0049 /* StockDetailPageConfiguration.swift in Sources */,
 				D1A4C6E0F2174A3B9C8D004B /* StockDetailPage.swift in Sources */,
+				D1A4C6E0F2174A3B9C8D004D /* StockDetailShuffleView.swift in Sources */,
 				84F300012F80000000ABC001 /* MainTabBar.swift in Sources */,
 				84F2001E2F7D000000ABC001 /* TradeAggregationDemoView.swift in Sources */,
 				84F300032F76000000ABC001 /* TradeAggregationDemoViewModel.swift in Sources */,

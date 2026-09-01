@@ -94,8 +94,14 @@ struct StockDetailNavbarQuote: Equatable {
 }
 
 enum StockDetailNavbarTrailingAction: Hashable {
+    case none
     case share
     case debug
+}
+
+enum StockDetailNavbarPresentation: Hashable {
+    case standard
+    case shuffle
 }
 
 /// A stock-detail navigation bar with a scroll-driven quote reveal.
@@ -111,6 +117,7 @@ struct StockDetailNavbar: View {
     let onBack: () -> Void
     let onShare: () -> Void
     let trailingAction: StockDetailNavbarTrailingAction
+    let presentation: StockDetailNavbarPresentation
     let backAccessibilityLabel: String?
     let shareAccessibilityLabel: String?
 
@@ -124,6 +131,7 @@ struct StockDetailNavbar: View {
         onBack: @escaping () -> Void = {},
         onShare: @escaping () -> Void = {},
         trailingAction: StockDetailNavbarTrailingAction = .share,
+        presentation: StockDetailNavbarPresentation = .standard,
         backAccessibilityLabel: String? = nil,
         shareAccessibilityLabel: String? = nil
     ) {
@@ -134,49 +142,81 @@ struct StockDetailNavbar: View {
         self.onBack = onBack
         self.onShare = onShare
         self.trailingAction = trailingAction
+        self.presentation = presentation
         self.backAccessibilityLabel = backAccessibilityLabel
         self.shareAccessibilityLabel = shareAccessibilityLabel
     }
 
     var body: some View {
         HStack(spacing: 0) {
-            HStack(spacing: StockDetailNavbarLayout.leadingTitleSpacing) {
-                Button(action: onBack) {
-                    glyph("back-Left")
+            if presentation == .shuffle {
+                shuffleTitleContent
+            } else {
+                HStack(spacing: StockDetailNavbarLayout.leadingTitleSpacing) {
+                    Button(action: onBack) {
+                        glyph("back-Left")
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    .frame(
+                        width: StockDetailNavbarLayout.iconSize,
+                        height: StockDetailNavbarLayout.height
+                    )
+                    .contentShape(Rectangle())
+                    .accessibilityLabel(backAccessibilityLabel ?? language.text(.back))
+                    .accessibilityIdentifier("stockDetail.navbar.back")
+
+                    titleContent
                 }
-                .buttonStyle(PlainButtonStyle())
-                .frame(
-                    width: StockDetailNavbarLayout.iconSize,
-                    height: StockDetailNavbarLayout.height
-                )
-                .contentShape(Rectangle())
-                .accessibilityLabel(backAccessibilityLabel ?? language.text(.back))
-                .accessibilityIdentifier("stockDetail.navbar.back")
 
-                titleContent
+                Spacer(minLength: 0)
+
+                if trailingAction != .none {
+                    Button(action: onShare) {
+                        trailingActionContent
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    .frame(minWidth: StockDetailNavbarLayout.iconSize)
+                    .frame(height: StockDetailNavbarLayout.height)
+                    .contentShape(Rectangle())
+                    .accessibilityLabel(shareAccessibilityLabel ?? trailingActionAccessibilityLabel)
+                    .accessibilityIdentifier(trailingActionAccessibilityIdentifier)
+                }
             }
-
-            Spacer(minLength: 0)
-
-            Button(action: onShare) {
-                trailingActionContent
-            }
-            .buttonStyle(PlainButtonStyle())
-            .frame(minWidth: StockDetailNavbarLayout.iconSize)
-            .frame(height: StockDetailNavbarLayout.height)
-            .contentShape(Rectangle())
-            .accessibilityLabel(shareAccessibilityLabel ?? trailingActionAccessibilityLabel)
-            .accessibilityIdentifier(trailingActionAccessibilityIdentifier)
         }
         .padding(.horizontal, StockDetailNavbarLayout.horizontalPadding)
         .frame(
             maxWidth: .infinity,
-            minHeight: StockDetailNavbarLayout.height,
-            maxHeight: StockDetailNavbarLayout.height
+            minHeight: presentation == .shuffle
+                ? StockDetailNavbarLayout.shuffleHeight
+                : StockDetailNavbarLayout.height,
+            maxHeight: presentation == .shuffle
+                ? StockDetailNavbarLayout.shuffleHeight
+                : StockDetailNavbarLayout.height
         )
         .background(Color("color-base-1"))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockDetail.navbar")
+    }
+
+    private var shuffleTitleContent: some View {
+        HStack(spacing: StockDetailNavbarLayout.shuffleTitleSpacing) {
+            Text(symbol)
+            Text(displayName)
+        }
+        .modifier(
+            CustomFontModifier(
+                size: StockDetailNavbarLayout.shuffleTitleFontSize,
+                font: .bold,
+                lineHeight: StockDetailNavbarLayout.shuffleTitleLineHeight
+            )
+        )
+        .foregroundColor(Color("color-text-30"))
+        .lineLimit(1)
+        .minimumScaleFactor(0.75)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(symbol) \(displayName)")
+        .accessibilityIdentifier("stockDetail.navbar.title")
     }
 
     private var titleContent: some View {
@@ -267,6 +307,8 @@ struct StockDetailNavbar: View {
     @ViewBuilder
     private var trailingActionContent: some View {
         switch trailingAction {
+        case .none:
+            EmptyView()
         case .share:
             glyph("share-Right")
         case .debug:
@@ -284,6 +326,8 @@ struct StockDetailNavbar: View {
 
     private var trailingActionAccessibilityLabel: String {
         switch trailingAction {
+        case .none:
+            ""
         case .share:
             language.text(.share)
         case .debug:
@@ -293,6 +337,8 @@ struct StockDetailNavbar: View {
 
     private var trailingActionAccessibilityIdentifier: String {
         switch trailingAction {
+        case .none:
+            "stockDetail.navbar.none"
         case .share:
             "stockDetail.navbar.share"
         case .debug:
@@ -345,6 +391,10 @@ private enum StockDetailNavbarLayout {
     static let quoteRestingOffset: CGFloat = 42
     static let titleLift: CGFloat = 8
     static let quoteLift: CGFloat = 16
+    static let shuffleHeight: CGFloat = 52
+    static let shuffleTitleSpacing: CGFloat = 4
+    static let shuffleTitleFontSize: CGFloat = 20
+    static let shuffleTitleLineHeight: CGFloat = 32
     static let quoteGroupSpacing: CGFloat = 8
     static let quoteValueSpacing: CGFloat = 4
     static let quoteTrendIconSize: CGFloat = 12

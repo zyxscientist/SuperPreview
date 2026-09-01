@@ -141,6 +141,18 @@ struct WatchlistRedesignListPage: View {
     let isMiniKVisible: Bool
     let bottomContentClearance: CGFloat
 
+    private var shuffleInstruments: [StockDetailInstrument] {
+        var seen = Set<String>()
+
+        return items.compactMap { item in
+            guard item.instrumentKind != .fund, item.market != .fund else { return nil }
+
+            let instrument = item.stockDetailInstrument
+            guard seen.insert(instrument.id).inserted else { return nil }
+            return instrument
+        }
+    }
+
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 0) {
@@ -148,7 +160,8 @@ struct WatchlistRedesignListPage: View {
                     WatchlistRedesignNavigableRow(
                         item: item,
                         shouldNavigateOnTap: shouldNavigateOnRowTap,
-                        isMiniKVisible: isMiniKVisible
+                        isMiniKVisible: isMiniKVisible,
+                        shuffleInstruments: shuffleInstruments
                     )
                 }
 
@@ -168,6 +181,7 @@ struct WatchlistRedesignNavigableRow: View {
     let item: WatchlistRedesignItem
     let shouldNavigateOnTap: Bool
     let isMiniKVisible: Bool
+    let shuffleInstruments: [StockDetailInstrument]
 
     var body: some View {
         if shouldNavigateOnTap {
@@ -175,11 +189,13 @@ struct WatchlistRedesignNavigableRow: View {
                 WatchlistRedesignRow(item: item, isMiniKVisible: isMiniKVisible)
             }
             .buttonStyle(WatchlistRedesignRowPressStyle(baseColor: item.backgroundColor))
+            .accessibilityIdentifier("watchlist.row.\(item.id)")
         } else {
             Button(action: {}) {
                 WatchlistRedesignRow(item: item, isMiniKVisible: isMiniKVisible)
             }
             .buttonStyle(WatchlistRedesignRowPressStyle(baseColor: item.backgroundColor))
+            .accessibilityIdentifier("watchlist.row.\(item.id)")
         }
     }
 
@@ -188,7 +204,10 @@ struct WatchlistRedesignNavigableRow: View {
         if item.instrumentKind == .fund || item.market == .fund {
             WatchlistRedesignDetailPlaceholder()
         } else {
-            StockDetailPage(instrument: item.stockDetailInstrument)
+            StockDetailPage(
+                instrument: item.stockDetailInstrument,
+                shuffleInstruments: shuffleInstruments
+            )
         }
     }
 }

@@ -5,7 +5,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PROJECT_PATH="$ROOT_DIR/SuperPreview.xcodeproj"
 SCHEME="SuperPreview"
-RUNTIME="com.apple.CoreSimulator.SimRuntime.iOS-26-5"
+RUNTIME="com.apple.CoreSimulator.SimRuntime.iOS-27-0"
 RESULTS_DIR="${RESULTS_DIR:-$(mktemp -d "${TMPDIR:-/tmp}/superpreview-layout-results.XXXXXX")}"
 
 find_device() {
@@ -36,7 +36,7 @@ run_case() {
     udid="$(find_device "$device_name")"
 
     if [[ -z "$udid" ]]; then
-        echo "No available $device_name on iOS 26.5" >&2
+        echo "No available $device_name on iOS 27.0" >&2
         return 1
     fi
 
@@ -72,4 +72,4 @@ if [[ "$failed" -ne 0 ]]; then
     exit 1
 fi
 
-echo "All iPhone 17 Pro / Pro Max portrait layout cases passed."
+echo "All iPhone 17 Pro / Pro Max portrait layout cases passed on iOS 27.0."

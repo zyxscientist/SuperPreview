@@ -14,17 +14,20 @@ struct StockDetailBottomActionBar: View {
     let onTrade: () -> Void
     let onWatchlist: () -> Void
     let onReminder: () -> Void
+    let onShuffle: () -> Void
 
     @Environment(\.demoLanguage) private var language
 
     init(
         onTrade: @escaping () -> Void = {},
         onWatchlist: @escaping () -> Void = {},
-        onReminder: @escaping () -> Void = {}
+        onReminder: @escaping () -> Void = {},
+        onShuffle: @escaping () -> Void = {}
     ) {
         self.onTrade = onTrade
         self.onWatchlist = onWatchlist
         self.onReminder = onReminder
+        self.onShuffle = onShuffle
     }
 
     var body: some View {
@@ -98,7 +101,10 @@ struct StockDetailBottomActionBar: View {
                 utilityButton(
                     title: language.text(.shuffle),
                     iconAssetName: "stock_detail_shuffle",
-                    action: {},
+                    action: {
+                        HapticManager.instance.impactHaptic(type: .medium)
+                        onShuffle()
+                    },
                     identifier: "shuffle"
                 )
             }

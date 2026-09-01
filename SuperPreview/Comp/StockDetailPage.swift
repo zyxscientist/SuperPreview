@@ -5,6 +5,23 @@
 
 import SwiftUI
 
+/// Keeps the relatively expensive mock-page assembly out of SwiftUI's body
+/// recomputation path. The cache is scoped to one detail-page lifetime so a
+/// changed instrument value still gets a fresh configuration key.
+final class StockDetailPageConfigurationCache: ObservableObject {
+    private var storage: [StockDetailInstrument: StockDetailPageConfiguration] = [:]
+
+    func configuration(for instrument: StockDetailInstrument) -> StockDetailPageConfiguration {
+        if let cachedConfiguration = storage[instrument] {
+            return cachedConfiguration
+        }
+
+        let configuration = StockDetailPageConfigurationFactory.make(for: instrument)
+        storage[instrument] = configuration
+        return configuration
+    }
+}
+
 /// The shared detail-page shell. The active instrument supplies the page
 /// configuration, while the shell owns only navigation, paging, scroll reveal,
 /// debug switching, and the fixed bottom action bar.
@@ -17,6 +34,9 @@ struct StockDetailPage: View {
     let onTrade: () -> Void
     let onWatchlist: () -> Void
     let onReminder: () -> Void
+    let shuffleInstruments: [StockDetailInstrument]?
+    let presentationMode: StockDetailPagePresentationMode
+    let configurationOverride: StockDetailPageConfiguration?
 
     @State private var activeInstrument: StockDetailInstrument
     @State private var selectedTab: StockDetailPageTab
@@ -24,6 +44,8 @@ struct StockDetailPage: View {
     @State private var relatedInfoInteraction = StockDetailRelatedInfoInteractionState()
     @State private var quoteScrollOffset: CGFloat = 0
     @State private var isShowingDebugSheet = false
+    @State private var shuffleSession: StockDetailShuffleSession?
+    @StateObject private var configurationCache: StockDetailPageConfigurationCache
 
     @EnvironmentObject private var demoLanguageStore: DemoLanguageStore
     @Environment(\.dismiss) private var dismiss
@@ -31,6 +53,9 @@ struct StockDetailPage: View {
     init(
         instrument: StockDetailInstrument,
         initialTab: StockDetailPageTab = .quote,
+        shuffleInstruments: [StockDetailInstrument]? = nil,
+        presentationMode: StockDetailPagePresentationMode = .standard,
+        configuration: StockDetailPageConfiguration? = nil,
         onBack: (() -> Void)? = nil,
         onRefresh: @escaping () -> Void = {},
         onOrderConfirmed: @escaping (StockOrderConfirmationSide) -> Void = { _ in },
@@ -43,7 +68,7 @@ struct StockDetailPage: View {
         onWatchlist: @escaping () -> Void = {},
         onReminder: @escaping () -> Void = {}
     ) {
-        let initialConfiguration = StockDetailPageConfigurationFactory.make(for: instrument)
+        let initialTabs = configuration?.tabs ?? StockDetailPageVariant(instrument: instrument).tabs
 
         self.onBack = onBack
         self.onRefresh = onRefresh
@@ -53,14 +78,20 @@ struct StockDetailPage: View {
         self.onTrade = onTrade
         self.onWatchlist = onWatchlist
         self.onReminder = onReminder
+        self.shuffleInstruments = shuffleInstruments
+        self.presentationMode = presentationMode
+        self.configurationOverride = configuration
         _activeInstrument = State(initialValue: instrument)
         _selectedTab = State(
-            initialValue: initialConfiguration.tabs.contains(initialTab) ? initialTab : .quote
+            initialValue: initialTabs.contains(initialTab) ? initialTab : .quote
         )
+        _configurationCache = StateObject(wrappedValue: StockDetailPageConfigurationCache())
     }
 
     var body: some View {
         GeometryReader { geometry in
+            let pageConfiguration = configuration
+
             ZStack(alignment: .bottom) {
                 VStack(spacing: 0) {
                     StockDetailNavbar(
@@ -69,19 +100,24 @@ struct StockDetailPage: View {
                         quote: navbarQuote,
                         quoteRevealProgress: navbarRevealProgress,
                         onBack: handleBack,
-                        onShare: { isShowingDebugSheet = true },
-                        trailingAction: .debug,
+                        onShare: handleDebugAction,
+                        trailingAction: presentationMode == .standard ? .debug : .none,
+                        presentation: presentationMode == .shuffleCard ? .shuffle : .standard,
                         shareAccessibilityLabel: activeLanguage.text(.debug)
                     )
 
                     StockDetailPageHeaderTabs(
-                        tabs: configuration.tabs,
+                        tabs: pageConfiguration.tabs,
                         selection: $selectedTab
                     )
 
                     TabView(selection: $selectedTab) {
-                        ForEach(configuration.tabs) { tab in
-                            page(for: tab, viewportWidth: geometry.size.width)
+                        ForEach(pageConfiguration.tabs) { tab in
+                            page(
+                                for: tab,
+                                configuration: pageConfiguration,
+                                viewportWidth: geometry.size.width
+                            )
                                 .tag(tab)
                         }
                     }
@@ -89,18 +125,31 @@ struct StockDetailPage: View {
                     .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                 }
 
-                fixedBottomActionBar
+                if presentationMode == .standard {
+                    fixedBottomActionBar
+                }
             }
             .ignoresSafeArea(.container, edges: .bottom)
         }
         .background(Color("color-base-1"))
         .toolbar(.hidden, for: .navigationBar)
         .navigationBarBackButtonHidden(true)
-        .sheet(isPresented: $isShowingDebugSheet) {
+        .sheet(isPresented: debugSheetIsPresented) {
             StockDetailDebugSheet(
                 selection: $activeInstrument,
                 language: debugLanguageBinding
             )
+            .environment(\.demoLanguage, activeLanguage)
+        }
+        .fullScreenCover(
+            item: shuffleSessionBinding
+        ) { session in
+            StockDetailShuffleView(
+                instruments: session.instruments,
+                initialInstrumentID: session.initialInstrumentID,
+                onExit: exitShuffle(to:)
+            )
+            .environmentObject(demoLanguageStore)
             .environment(\.demoLanguage, activeLanguage)
         }
         .onChange(of: activeInstrument) { _, _ in
@@ -112,23 +161,27 @@ struct StockDetailPage: View {
     }
 
     private var configuration: StockDetailPageConfiguration {
-        StockDetailPageConfigurationFactory.make(for: activeInstrument)
+        configurationOverride ?? configurationCache.configuration(for: activeInstrument)
     }
 
     private func page(
         for tab: StockDetailPageTab,
+        configuration: StockDetailPageConfiguration,
         viewportWidth: CGFloat
     ) -> some View {
         Group {
             if tab == .quote {
-                quotePage(viewportWidth: viewportWidth)
+                quotePage(configuration: configuration, viewportWidth: viewportWidth)
             } else {
                 StockDetailPageEmptyView(tab: tab)
             }
         }
     }
 
-    private func quotePage(viewportWidth: CGFloat) -> some View {
+    private func quotePage(
+        configuration: StockDetailPageConfiguration,
+        viewportWidth: CGFloat
+    ) -> some View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(spacing: 0) {
                 StockDetailQuoteData(
@@ -171,7 +224,7 @@ struct StockDetailPage: View {
                 }
 
                 if configuration.variant.showsMoneyFlow {
-                    moneyFlowCard
+                    moneyFlowCard(data: configuration.moneyFlowData)
                 }
 
                 disclaimer
@@ -190,12 +243,14 @@ struct StockDetailPage: View {
     }
 
     private var navbarQuote: StockDetailNavbarQuote {
-        StockDetailNavbarQuote(
-            session: configuration.quoteData.timestamp.session,
-            price: configuration.quoteData.price,
-            change: configuration.quoteData.change,
-            changePercent: configuration.quoteData.changePercent,
-            trend: configuration.quoteData.trend.navbarTrend
+        let pageConfiguration = configuration
+
+        return StockDetailNavbarQuote(
+            session: pageConfiguration.quoteData.timestamp.session,
+            price: pageConfiguration.quoteData.price,
+            change: pageConfiguration.quoteData.change,
+            changePercent: pageConfiguration.quoteData.changePercent,
+            trend: pageConfiguration.quoteData.trend.navbarTrend
         )
     }
 
@@ -216,6 +271,50 @@ struct StockDetailPage: View {
         }
     }
 
+    private func handleDebugAction() {
+        guard presentationMode == .standard else { return }
+        isShowingDebugSheet = true
+    }
+
+    private func presentShuffle() {
+        guard presentationMode == .standard else { return }
+
+        let snapshot = normalizedShuffleInstruments
+        guard !snapshot.isEmpty else { return }
+
+        shuffleSession = StockDetailShuffleSession(
+            instruments: snapshot,
+            initialInstrumentID: activeInstrument.id
+        )
+    }
+
+    private func exitShuffle(to instrument: StockDetailInstrument) {
+        activeInstrument = instrument
+        shuffleSession = nil
+    }
+
+    private var normalizedShuffleInstruments: [StockDetailInstrument] {
+        guard activeInstrument.kind != .fund, activeInstrument.market != .fund else {
+            return []
+        }
+
+        guard let shuffleInstruments, !shuffleInstruments.isEmpty else {
+            return [activeInstrument]
+        }
+
+        var seen = Set<String>()
+        let filtered = shuffleInstruments.filter { instrument in
+            guard instrument.kind != .fund, instrument.market != .fund else { return false }
+            return seen.insert(instrument.id).inserted
+        }
+
+        guard filtered.contains(where: { $0.id == activeInstrument.id }) else {
+            return [activeInstrument]
+        }
+
+        return filtered
+    }
+
     private func resetPageState() {
         selectedTab = .quote
         isQuoteDetailsExpanded = false
@@ -223,8 +322,8 @@ struct StockDetailPage: View {
         quoteScrollOffset = 0
     }
 
-    private var moneyFlowCard: some View {
-        StockDetailMoneyFlowTrend(data: configuration.moneyFlowData)
+    private func moneyFlowCard(data: StockDetailMoneyFlowTrendData) -> some View {
+        StockDetailMoneyFlowTrend(data: data)
             .padding(.vertical, StockDetailPageLayout.moneyFlowCardPadding)
             .frame(maxWidth: .infinity)
             .background(Color("color-base-1"))
@@ -272,6 +371,14 @@ struct StockDetailPage: View {
         demoLanguageStore.language
     }
 
+    private var debugSheetIsPresented: Binding<Bool> {
+        presentationMode == .standard ? $isShowingDebugSheet : .constant(false)
+    }
+
+    private var shuffleSessionBinding: Binding<StockDetailShuffleSession?> {
+        presentationMode == .standard ? $shuffleSession : .constant(nil)
+    }
+
     private var debugLanguageBinding: Binding<DemoLanguage> {
         Binding(
             get: { demoLanguageStore.language },
@@ -284,7 +391,8 @@ struct StockDetailPage: View {
             StockDetailBottomActionBar(
                 onTrade: onTrade,
                 onWatchlist: onWatchlist,
-                onReminder: onReminder
+                onReminder: onReminder,
+                onShuffle: presentShuffle
             )
             .frame(height: StockDetailPageLayout.bottomBarHeight)
 
