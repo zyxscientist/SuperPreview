@@ -245,7 +245,7 @@ struct StockDetailTransactionTrade: View {
                         lineHeight: StockDetailTransactionTradeLayout.actionLineHeight
                     )
                 )
-                .foregroundColor(Color("color-text-r"))
+                .foregroundColor(.white)
                 .lineLimit(1)
                 .padding(.horizontal, StockDetailTransactionTradeLayout.actionHorizontalPadding)
                 .frame(maxWidth: .infinity)

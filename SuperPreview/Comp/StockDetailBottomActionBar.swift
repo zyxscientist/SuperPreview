@@ -7,9 +7,9 @@ import SwiftUI
 
 /// The fixed bottom actions used by the stock-detail page.
 ///
-/// The bar keeps the two utility actions at 60 points each and lets the
-/// primary action use the remaining width. This matches the 370-point Figma
-/// frame on a 402-point canvas while still fitting narrower devices.
+/// The bar keeps each utility action at 60 points and lets the primary action
+/// use the remaining width. The utility actions are grouped together so the
+/// primary action has the single 8-point gap shown in the Figma layout.
 struct StockDetailBottomActionBar: View {
     let onTrade: () -> Void
     let onWatchlist: () -> Void
@@ -58,7 +58,7 @@ struct StockDetailBottomActionBar: View {
     }
 
     private var actionButtons: some View {
-        HStack(spacing: StockDetailBottomActionBarLayout.actionSpacing) {
+        HStack(spacing: 0) {
             Button(action: onTrade) {
                 Text(language.text(.trade))
                     .modifier(
@@ -80,20 +80,31 @@ struct StockDetailBottomActionBar: View {
             .accessibilityLabel(language.text(.trade))
             .accessibilityIdentifier("stockDetail.bottomActionBar.trade")
 
-            utilityButton(
-                title: language.text(.watchlist),
-                iconAssetName: "Favorite",
-                action: onWatchlist,
-                identifier: "watchlist"
-            )
+            HStack(spacing: 0) {
+                utilityButton(
+                    title: language.text(.watchlist),
+                    iconAssetName: "Favorite",
+                    action: onWatchlist,
+                    identifier: "watchlist"
+                )
 
-            utilityButton(
-                title: language.text(.reminder),
-                iconAssetName: "Alert-Inactive",
-                action: onReminder,
-                identifier: "reminder"
-            )
+                utilityButton(
+                    title: language.text(.reminder),
+                    iconAssetName: "Alert-Inactive",
+                    action: onReminder,
+                    identifier: "reminder"
+                )
+
+                utilityButton(
+                    title: language.text(.shuffle),
+                    iconAssetName: "stock_detail_shuffle",
+                    action: {},
+                    identifier: "shuffle"
+                )
+            }
+            .padding(.leading, StockDetailBottomActionBarLayout.primaryToUtilitySpacing)
         }
+        .padding(.trailing, StockDetailBottomActionBarLayout.contentTrailingPadding)
     }
 
     private func utilityButton(
@@ -147,7 +158,8 @@ private enum StockDetailBottomActionBarLayout {
     static let utilityButtonWidth: CGFloat = 60
     static let iconSize: CGFloat = 24
     static let iconTitleSpacing: CGFloat = 4
-    static let actionSpacing: CGFloat = 8
+    static let primaryToUtilitySpacing: CGFloat = 8
+    static let contentTrailingPadding: CGFloat = 8
     static let primaryFontSize: CGFloat = 16
     static let utilityFontSize: CGFloat = 10
     static let fallbackShadowRadius: CGFloat = 20

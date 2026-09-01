@@ -19,7 +19,7 @@ struct WatchlistRedesignDemoView: View {
     @State private var isInAppNotificationSimulationEnabled = false
     @State private var isMultipleInAppNotificationSimulationEnabled = false
     @State private var selectedMainTab: AppTab = .tab1
-    @AppStorage(DemoLanguage.storageKey) private var demoLanguage = DemoLanguage.simplifiedChinese
+    @EnvironmentObject private var demoLanguageStore: DemoLanguageStore
 
     private var priceSimulationTaskID: String {
         "\(isPriceSimulationEnabled)-\(priceSimulationSpeed.rawValue)"
@@ -83,7 +83,7 @@ struct WatchlistRedesignDemoView: View {
         )
         .sheet(isPresented: $isShowingDebugPanel) {
             WatchlistRedesignDebugPanel(
-                language: $demoLanguage,
+                language: demoLanguageBinding,
                 shouldNavigateOnRowTap: $shouldNavigateOnRowTap,
                 tabBarFontSize: $tabBarFontSize,
                 isPriceSimulationEnabled: $isPriceSimulationEnabled,
@@ -121,6 +121,17 @@ struct WatchlistRedesignDemoView: View {
             }
         }
         .environment(\.demoLanguage, demoLanguage)
+    }
+
+    private var demoLanguage: DemoLanguage {
+        demoLanguageStore.language
+    }
+
+    private var demoLanguageBinding: Binding<DemoLanguage> {
+        Binding(
+            get: { demoLanguageStore.language },
+            set: { demoLanguageStore.language = $0 }
+        )
     }
 }
 
@@ -912,5 +923,6 @@ struct WatchlistRedesignDemoViewPreviews: PreviewProvider {
         NavigationView {
             WatchlistRedesignDemoView()
         }
+        .environmentObject(DemoLanguageStore(initialLanguage: .simplifiedChinese))
     }
 }

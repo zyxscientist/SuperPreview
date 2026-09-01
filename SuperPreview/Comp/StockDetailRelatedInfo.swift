@@ -948,25 +948,46 @@ private extension StockDetailQuoteLocalizedText {
 }
 
 enum StockDetailRelatedInfoPreviewData {
-    static let financialReport = StockDetailRelatedInfoItem(
+    static let financialReport = makeFinancialReport(
         id: "financial-report",
-        content: .financialReport(
-            StockDetailRelatedInfoFinancialReport(
-                date: "2026/08/10(香港)",
-                event: "公布业绩",
-                localizedDate: .related(
-                    "2026/08/10(香港)",
-                    traditionalChinese: "2026/08/10(香港)",
-                    english: "2026/08/10 (HK)"
-                ),
-                localizedEvent: .related(
-                    "公布业绩",
-                    traditionalChinese: "公布業績",
-                    english: "Earning Release"
+        simplifiedDate: "2026/08/10",
+        traditionalDate: "2026/08/10",
+        englishDate: "2026/08/10"
+    )
+
+    static let usFinancialReport = makeFinancialReport(
+        id: "us-financial-report",
+        simplifiedDate: "2026/08/10(美东)",
+        traditionalDate: "2026/08/10(美東)",
+        englishDate: "2026/08/10 (ET)"
+    )
+
+    private static func makeFinancialReport(
+        id: String,
+        simplifiedDate: String,
+        traditionalDate: String,
+        englishDate: String
+    ) -> StockDetailRelatedInfoItem {
+        StockDetailRelatedInfoItem(
+            id: id,
+            content: .financialReport(
+                StockDetailRelatedInfoFinancialReport(
+                    date: simplifiedDate,
+                    event: "公布业绩",
+                    localizedDate: .related(
+                        simplifiedDate,
+                        traditionalChinese: traditionalDate,
+                        english: englishDate
+                    ),
+                    localizedEvent: .related(
+                        "公布业绩",
+                        traditionalChinese: "公布業績",
+                        english: "Earning Release"
+                    )
                 )
             )
         )
-    )
+    }
 
     static let cashDividend = StockDetailRelatedInfoItem(
         id: "cash-dividend",

@@ -18,7 +18,7 @@ struct TradeAggregationDemoView: View {
     @State private var isMultipleInAppNotificationSimulationEnabled = false
     @State private var selectedMainTab: AppTab = .tab2
     @State private var isShowingStockOrder = false
-    @AppStorage(DemoLanguage.storageKey) private var demoLanguage = DemoLanguage.simplifiedChinese
+    @EnvironmentObject private var demoLanguageStore: DemoLanguageStore
 
     var body: some View {
         GeometryReader { geometry in
@@ -136,7 +136,7 @@ struct TradeAggregationDemoView: View {
         .toolbarBackground(.visible, for: .navigationBar)
         .sheet(isPresented: $isShowingDebugPanel) {
             TradeAggregationDebugPanel(
-                language: $demoLanguage,
+                language: demoLanguageBinding,
                 isLiveDataEnabled: $isLiveDataEnabled,
                 isMRTestingEnabled: $isMRTestingEnabled,
                 isSummerAdvertisementEnabled: $isSummerAdvertisementEnabled,
@@ -192,6 +192,17 @@ struct TradeAggregationDemoView: View {
             }
         }
         .id("\(selectedCategory.rawValue)-\(isMRTestingActive)")
+    }
+
+    private var demoLanguage: DemoLanguage {
+        demoLanguageStore.language
+    }
+
+    private var demoLanguageBinding: Binding<DemoLanguage> {
+        Binding(
+            get: { demoLanguageStore.language },
+            set: { demoLanguageStore.language = $0 }
+        )
     }
 
     private var isQuickMenuPinned: Bool {
@@ -653,6 +664,7 @@ struct TradeAggregationDemoView_Previews: PreviewProvider {
                 TradeAggregationDemoView()
             }
             .navigationViewStyle(StackNavigationViewStyle())
+            .environmentObject(DemoLanguageStore(initialLanguage: .simplifiedChinese))
             .previewLayout(.fixed(width: 402, height: 874))
             .previewDisplayName("iPhone 17 Pro · 402×874")
 
@@ -660,6 +672,7 @@ struct TradeAggregationDemoView_Previews: PreviewProvider {
                 TradeAggregationDemoView()
             }
             .navigationViewStyle(StackNavigationViewStyle())
+            .environmentObject(DemoLanguageStore(initialLanguage: .simplifiedChinese))
             .previewLayout(.fixed(width: 440, height: 956))
             .previewDisplayName("iPhone 17 Pro Max · 440×956")
         }

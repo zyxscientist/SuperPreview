@@ -27,6 +27,27 @@ enum DemoLanguage: String, CaseIterable, Identifiable {
     }
 }
 
+/// The language selected in any of the large demo pages is shared by the
+/// entire demo surface and persisted for the next launch.
+final class DemoLanguageStore: ObservableObject {
+    @Published var language: DemoLanguage {
+        didSet {
+            guard oldValue != language else { return }
+            UserDefaults.standard.set(language.rawValue, forKey: DemoLanguage.storageKey)
+        }
+    }
+
+    init(initialLanguage: DemoLanguage? = nil) {
+        if let initialLanguage {
+            language = initialLanguage
+        } else {
+            language = UserDefaults.standard.string(forKey: DemoLanguage.storageKey)
+                .flatMap(DemoLanguage.init(rawValue:))
+                ?? .simplifiedChinese
+        }
+    }
+}
+
 private struct DemoLanguageKey: EnvironmentKey {
     static let defaultValue = DemoLanguage.simplifiedChinese
 }
@@ -90,6 +111,7 @@ enum DemoCopyKey {
     case capitalDistribution, netFlow, inflow, outflow, largeOrder, mediumOrder, smallOrder
     case unitTenThousands, moneyFlowTrend
     case watchlist, trade, reminder, wealth, news, markets, me
+    case shuffle
     case stocks, funds, virtualAssets, cryptocurrency, positions, positionDetails
     case totalAssets, totalProfitLoss, netAssets, todayProfitLoss, yesterdayProfitLoss
     case securitiesMarketValue, totalCash, positionProfitLoss
@@ -388,6 +410,7 @@ private enum DemoCopy {
         .watchlist: ("自选", "自選", "Watchlist"),
         .trade: ("交易", "交易", "Trade"),
         .reminder: ("提醒", "提醒", "Reminder"),
+        .shuffle: ("Shuffle", "Shuffle", "Shuffle"),
         .wealth: ("理财", "理財", "Wealth"),
         .news: ("资讯", "資訊", "News"),
         .markets: ("市场", "市場", "Markets"),

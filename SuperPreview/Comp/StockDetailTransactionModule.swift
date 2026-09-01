@@ -100,6 +100,7 @@ struct StockDetailTransactionModule: View {
     let onLoadMore: () -> Void
 
     @State private var selection: StockDetailTransactionModuleTab?
+    @State private var displayedSelection: StockDetailTransactionModuleTab?
 
     init(
         symbol: StockOrderSymbol,
@@ -124,6 +125,7 @@ struct StockDetailTransactionModule: View {
         self.onOrderAction = onOrderAction
         self.onLoadMore = onLoadMore
         _selection = State(initialValue: initialSelection)
+        _displayedSelection = State(initialValue: initialSelection)
     }
 
     var body: some View {
@@ -139,7 +141,7 @@ struct StockDetailTransactionModule: View {
 
     @ViewBuilder
     private var selectedContent: some View {
-        switch selection {
+        switch displayedSelection {
         case .trade:
             StockDetailTransactionTrade(
                 symbol: symbol,
@@ -185,14 +187,19 @@ struct StockDetailTransactionModule: View {
     }
 
     private func updateSelection(_ newSelection: StockDetailTransactionModuleTab?) {
-        let shouldRevealContent = selection == nil && newSelection != nil
+        let isCurrentlyExpanded = selection != nil
+        let shouldBeExpanded = newSelection != nil
+        let shouldAnimateExpansionState = isCurrentlyExpanded != shouldBeExpanded
 
-        if shouldRevealContent {
+        if shouldAnimateExpansionState {
             withAnimation(
                 SubAssetCardMotion.expansion(
                     reduceMotion: accessibilityReduceMotion
                 )
             ) {
+                if let newSelection {
+                    displayedSelection = newSelection
+                }
                 selection = newSelection
             }
             return
@@ -201,6 +208,9 @@ struct StockDetailTransactionModule: View {
         var transaction = Transaction()
         transaction.animation = nil
         withTransaction(transaction) {
+            if let newSelection {
+                displayedSelection = newSelection
+            }
             selection = newSelection
         }
     }

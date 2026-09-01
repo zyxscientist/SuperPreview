@@ -548,12 +548,12 @@ private enum StockDetailUSCommonStockPageMockData {
             id: "us-financial-report",
             content: .financialReport(
                 StockDetailRelatedInfoFinancialReport(
-                    date: "2026/08/10(香港)",
+                    date: "2026/08/10(美东)",
                     event: "公布业绩",
                     localizedDate: .init(
-                        simplifiedChinese: "2026/08/10(香港)",
-                        traditionalChinese: "2026/08/10(香港)",
-                        english: "2026/08/10 (HK)"
+                        simplifiedChinese: "2026/08/10(美东)",
+                        traditionalChinese: "2026/08/10(美東)",
+                        english: "2026/08/10 (ET)"
                     ),
                     localizedEvent: .init(
                         simplifiedChinese: "公布业绩",
@@ -766,15 +766,18 @@ struct StockDetailUSCommonStockPage_Previews: PreviewProvider {
         Group {
             StockDetailUSCommonStockPage()
                 .environment(\.demoLanguage, .simplifiedChinese)
+                .environmentObject(DemoLanguageStore(initialLanguage: .simplifiedChinese))
                 .previewDisplayName("可交互 · 美股正股 · 报价")
 
             StockDetailUSCommonStockPage()
                 .environment(\.demoLanguage, .english)
+                .environmentObject(DemoLanguageStore(initialLanguage: .english))
                 .preferredColorScheme(.dark)
                 .previewDisplayName("Swipe tabs · English · Dark")
 
             StockDetailUSCommonStockPage(initialTab: .options)
                 .environment(\.demoLanguage, .simplifiedChinese)
+                .environmentObject(DemoLanguageStore(initialLanguage: .simplifiedChinese))
                 .previewDisplayName("期权 · 空白页 · 底部操作栏固定")
         }
         .previewLayout(.fixed(width: 402, height: 874))

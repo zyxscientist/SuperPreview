@@ -24,11 +24,9 @@ struct StockDetailPage: View {
     @State private var relatedInfoInteraction = StockDetailRelatedInfoInteractionState()
     @State private var quoteScrollOffset: CGFloat = 0
     @State private var isShowingDebugSheet = false
-    @State private var debugLanguage: DemoLanguage?
 
+    @EnvironmentObject private var demoLanguageStore: DemoLanguageStore
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.demoLanguage) private var language
-    @AppStorage(DemoLanguage.storageKey) private var storedDemoLanguage = DemoLanguage.simplifiedChinese
 
     init(
         instrument: StockDetailInstrument,
@@ -107,9 +105,6 @@ struct StockDetailPage: View {
         }
         .onChange(of: activeInstrument) { _, _ in
             resetPageState()
-        }
-        .onChange(of: language) { _, newLanguage in
-            debugLanguage = newLanguage
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockDetail.page")
@@ -274,16 +269,13 @@ struct StockDetailPage: View {
     }
 
     private var activeLanguage: DemoLanguage {
-        debugLanguage ?? language
+        demoLanguageStore.language
     }
 
     private var debugLanguageBinding: Binding<DemoLanguage> {
         Binding(
-            get: { activeLanguage },
-            set: { newLanguage in
-                debugLanguage = newLanguage
-                storedDemoLanguage = newLanguage
-            }
+            get: { demoLanguageStore.language },
+            set: { demoLanguageStore.language = $0 }
         )
     }
 
@@ -565,31 +557,38 @@ struct StockDetailPage_Previews: PreviewProvider {
         Group {
             StockDetailPage(instrument: StockDetailDebugSamples.all[0])
                 .environment(\.demoLanguage, .simplifiedChinese)
+                .environmentObject(DemoLanguageStore(initialLanguage: .simplifiedChinese))
                 .previewDisplayName("港股正股 · 可交互")
 
             StockDetailPage(instrument: StockDetailDebugSamples.all[1])
                 .environment(\.demoLanguage, .english)
+                .environmentObject(DemoLanguageStore(initialLanguage: .english))
                 .preferredColorScheme(.dark)
                 .previewDisplayName("HK ETF · English · Dark")
 
             StockDetailPage(instrument: StockDetailDebugSamples.all[2])
                 .environment(\.demoLanguage, .simplifiedChinese)
+                .environmentObject(DemoLanguageStore(initialLanguage: .simplifiedChinese))
                 .previewDisplayName("美股正股 · Debug 可切换")
 
             StockDetailPage(instrument: StockDetailDebugSamples.all[3])
                 .environment(\.demoLanguage, .english)
+                .environmentObject(DemoLanguageStore(initialLanguage: .english))
                 .previewDisplayName("US ETF · English")
 
             StockDetailPage(instrument: StockDetailDebugSamples.all[4])
                 .environment(\.demoLanguage, .simplifiedChinese)
+                .environmentObject(DemoLanguageStore(initialLanguage: .simplifiedChinese))
                 .previewDisplayName("沪深正股")
 
             StockDetailPage(instrument: StockDetailDebugSamples.all[5])
                 .environment(\.demoLanguage, .english)
+                .environmentObject(DemoLanguageStore(initialLanguage: .english))
                 .previewDisplayName("A-Share ETF · English")
 
             StockDetailPage(instrument: StockDetailDebugSamples.all[6])
                 .environment(\.demoLanguage, .simplifiedChinese)
+                .environmentObject(DemoLanguageStore(initialLanguage: .simplifiedChinese))
                 .previewDisplayName("加密货币")
         }
         .previewLayout(.fixed(width: 402, height: 874))

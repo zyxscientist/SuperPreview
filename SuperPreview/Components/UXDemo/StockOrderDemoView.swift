@@ -16,12 +16,10 @@ struct StockOrderDemoView: View {
     @State private var confirmationConfirmCount = 0
     @State private var isPriceTargetMenuPresented = false
     @State private var isShowingDebugPanel = false
-    @State private var debugLanguage: DemoLanguage?
     @State private var focusedInput: StockOrderFormInputFocus?
 
-    @AppStorage(DemoLanguage.storageKey) private var storedDemoLanguage = DemoLanguage.simplifiedChinese
+    @EnvironmentObject private var demoLanguageStore: DemoLanguageStore
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.demoLanguage) private var language
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     init(initialSelection: StockOrderSymbol? = nil) {
@@ -98,9 +96,6 @@ struct StockOrderDemoView: View {
         }
         .onChange(of: viewModel.orderType) { _, _ in
             dismissInput()
-        }
-        .onChange(of: language) { _, newLanguage in
-            debugLanguage = newLanguage
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockOrder.demo")
@@ -306,16 +301,13 @@ struct StockOrderDemoView: View {
     }
 
     private var activeLanguage: DemoLanguage {
-        debugLanguage ?? language
+        demoLanguageStore.language
     }
 
     private var debugLanguageBinding: Binding<DemoLanguage> {
         Binding(
-            get: { activeLanguage },
-            set: { newLanguage in
-                debugLanguage = newLanguage
-                storedDemoLanguage = newLanguage
-            }
+            get: { demoLanguageStore.language },
+            set: { demoLanguageStore.language = $0 }
         )
     }
 }
@@ -370,23 +362,28 @@ struct StockOrderDemoView_Previews: PreviewProvider {
         Group {
             StockOrderDemoView()
                 .environment(\.demoLanguage, .simplifiedChinese)
+                .environmentObject(DemoLanguageStore(initialLanguage: .simplifiedChinese))
                 .previewDisplayName("Empty · Simplified Chinese")
 
             StockOrderDemoView(initialSelection: .previewSymbol(id: "09988"))
                 .environment(\.demoLanguage, .traditionalChinese)
+                .environmentObject(DemoLanguageStore(initialLanguage: .traditionalChinese))
                 .previewDisplayName("HK · Traditional Chinese")
 
             StockOrderDemoView(initialSelection: .previewSymbol(id: "NVDA"))
                 .environment(\.demoLanguage, .english)
+                .environmentObject(DemoLanguageStore(initialLanguage: .english))
                 .preferredColorScheme(.dark)
                 .previewDisplayName("US · English · Dark")
 
             StockOrderDemoView(initialSelection: .previewSymbol(id: "600388"))
                 .environment(\.demoLanguage, .simplifiedChinese)
+                .environmentObject(DemoLanguageStore(initialLanguage: .simplifiedChinese))
                 .previewDisplayName("A Share · Simplified Chinese")
 
             StockOrderDemoView(initialSelection: .previewSymbol(id: "BTC/USD"))
                 .environment(\.demoLanguage, .english)
+                .environmentObject(DemoLanguageStore(initialLanguage: .english))
                 .previewDisplayName("Crypto · English")
         }
         .previewLayout(.fixed(width: 402, height: 874))

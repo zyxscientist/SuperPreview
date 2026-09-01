@@ -12,6 +12,7 @@ struct MainView: View {
     
     @State var selectedTab: AppTab = .tab1
     @State var marketOpen = true
+    @StateObject private var demoLanguageStore = DemoLanguageStore()
     private let isPreview = PreviewRuntime.isRunning || PreviewRuntime.isUITesting
     
     var body: some View {
@@ -70,6 +71,10 @@ struct MainView: View {
                 // Fallback on earlier versions
             }
         }
+        // Inject above NavigationView so every NavigationLink destination gets
+        // the same language store as the source page.
+        .environmentObject(demoLanguageStore)
+        .environment(\.demoLanguage, demoLanguageStore.language)
         .overlay {
             if !isPreview {
                 LaunchScreen()

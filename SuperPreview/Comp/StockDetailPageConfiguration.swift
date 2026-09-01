@@ -537,11 +537,11 @@ enum StockDetailPageConfigurationFactory {
             ]
         case .usStock:
             return [
-                StockDetailRelatedInfoPreviewData.financialReport,
+                StockDetailRelatedInfoPreviewData.usFinancialReport,
                 StockDetailRelatedInfoPreviewData.cashDividend
             ] + extendedHoursItems(for: instrument)
         case .usETF:
-            return [StockDetailRelatedInfoPreviewData.financialReport] + extendedHoursItems(for: instrument)
+            return [StockDetailRelatedInfoPreviewData.usFinancialReport] + extendedHoursItems(for: instrument)
         case .aShareStock:
             return [
                 StockDetailRelatedInfoPreviewData.financialReport,

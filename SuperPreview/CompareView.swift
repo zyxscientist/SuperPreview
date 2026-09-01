@@ -10,13 +10,13 @@ import SwiftUI
 
 
 struct CompareView: View {
-    @AppStorage(DemoLanguage.storageKey) private var demoLanguage = DemoLanguage.simplifiedChinese
+    @EnvironmentObject private var demoLanguageStore: DemoLanguageStore
 
     var body: some View {
         VStack(spacing: 0.0) {
             CompareHeaderTabsView()
         }
-        .environment(\.demoLanguage, demoLanguage)
+        .environment(\.demoLanguage, demoLanguageStore.language)
     }
 }
 
@@ -27,6 +27,7 @@ static var previews: some View {
                 .edgesIgnoringSafeArea(.all)
             CompareView()
         }
+        .environmentObject(DemoLanguageStore(initialLanguage: .simplifiedChinese))
         .preferredColorScheme(.dark)
     }
 }
