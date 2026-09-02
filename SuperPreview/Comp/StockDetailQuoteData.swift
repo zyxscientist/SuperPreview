@@ -263,15 +263,21 @@ struct StockDetailQuoteDataModel: Hashable {
 struct StockDetailQuoteData: View {
     let data: StockDetailQuoteDataModel
     @Binding var isExpanded: Bool
+    let onBadgesTap: (() -> Void)?
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.demoLanguage) private var language
     @State private var isShowingBadgeInfoSheet = false
 
-    init(data: StockDetailQuoteDataModel, isExpanded: Binding<Bool>) {
+    init(
+        data: StockDetailQuoteDataModel,
+        isExpanded: Binding<Bool>,
+        onBadgesTap: (() -> Void)? = nil
+    ) {
         self.data = data
         _isExpanded = isExpanded
+        self.onBadgesTap = onBadgesTap
     }
 
     var body: some View {
@@ -306,7 +312,11 @@ struct StockDetailQuoteData: View {
 
             if !data.badges.isEmpty {
                 Button {
-                    isShowingBadgeInfoSheet = true
+                    if let onBadgesTap {
+                        onBadgesTap()
+                    } else {
+                        isShowingBadgeInfoSheet = true
+                    }
                 } label: {
                     HStack(spacing: StockDetailQuoteDataLayout.badgeSpacing) {
                         ForEach(data.badges, id: \.self) { badge in
@@ -388,7 +398,6 @@ struct StockDetailQuoteData: View {
             }
         }
         .frame(height: StockDetailQuoteDataLayout.priceSectionHeight)
-        .accessibilityIdentifier("stockDetail.quoteData.priceSection")
     }
 
     private var priceChange: some View {
@@ -494,6 +503,7 @@ struct StockDetailQuoteData: View {
         .accessibilityLabel(
             language.text(isShowingDetails ? .collapseQuoteDetails : .expandQuoteDetails)
         )
+        .accessibilityValue(language.text(isShowingDetails ? .expanded : .collapsed))
         .accessibilityIdentifier("stockDetail.quoteData.expand")
     }
 

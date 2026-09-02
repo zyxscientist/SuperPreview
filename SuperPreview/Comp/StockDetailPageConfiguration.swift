@@ -311,15 +311,18 @@ struct StockDetailPageConfiguration {
     let relatedItems: [StockDetailRelatedInfoItem]
     let orderBookData: StockDetailOrderBookData?
     let brokerOrderBookData: StockDetailBrokerOrderBookData?
-    let capitalDistributionData: StockDetailCapitalDistributionData
-    let moneyFlowData: StockDetailMoneyFlowTrendData
-    let positionState: StockDetailTransactionPositionState
-    let transactionOrders: [StockOrderTodayOrderItem]
-    let historyOrders: [StockDetailTransactionHistoryOrderData]
+    let capitalDistributionData: StockDetailCapitalDistributionData?
+    let moneyFlowData: StockDetailMoneyFlowTrendData?
+    let positionState: StockDetailTransactionPositionState?
+    let transactionOrders: [StockOrderTodayOrderItem]?
+    let historyOrders: [StockDetailTransactionHistoryOrderData]?
 }
 
 enum StockDetailPageConfigurationFactory {
-    static func make(for instrument: StockDetailInstrument) -> StockDetailPageConfiguration {
+    static func make(
+        for instrument: StockDetailInstrument,
+        includesBelowChartComponents: Bool = true
+    ) -> StockDetailPageConfiguration {
         let variant = StockDetailPageVariant(instrument: instrument)
         let symbol = makeOrderSymbol(for: instrument)
         let quoteData = makeQuoteData(for: instrument, variant: variant)
@@ -331,13 +334,27 @@ enum StockDetailPageConfigurationFactory {
             tabs: variant.tabs,
             quoteData: quoteData,
             relatedItems: variant.showsRelatedInfo ? relatedItems(for: instrument, variant: variant) : [],
-            orderBookData: variant.showsOrderBook ? orderBookData(for: instrument) : nil,
-            brokerOrderBookData: variant.showsBrokerOrderBook ? brokerOrderBookData(for: instrument) : nil,
-            capitalDistributionData: .mock,
-            moneyFlowData: .mock,
-            positionState: positionState(for: instrument),
-            transactionOrders: transactionOrders(for: instrument),
-            historyOrders: historyOrders(for: instrument)
+            orderBookData: includesBelowChartComponents && variant.showsOrderBook
+                ? orderBookData(for: instrument)
+                : nil,
+            brokerOrderBookData: includesBelowChartComponents && variant.showsBrokerOrderBook
+                ? brokerOrderBookData(for: instrument)
+                : nil,
+            capitalDistributionData: includesBelowChartComponents && variant.showsCapitalDistribution
+                ? .mock
+                : nil,
+            moneyFlowData: includesBelowChartComponents && variant.showsMoneyFlow
+                ? .mock
+                : nil,
+            positionState: includesBelowChartComponents && variant.showsTransactionModule
+                ? positionState(for: instrument)
+                : nil,
+            transactionOrders: includesBelowChartComponents && variant.showsTransactionModule
+                ? transactionOrders(for: instrument)
+                : nil,
+            historyOrders: includesBelowChartComponents && variant.showsTransactionModule
+                ? historyOrders(for: instrument)
+                : nil
         )
     }
 
@@ -522,13 +539,13 @@ enum StockDetailPageConfigurationFactory {
     ) -> [StockDetailRelatedInfoItem] {
         switch variant {
         case .hongKongStock:
+            // A regular HK stock should not present every exchange-specific
+            // feature at once. CAS, VCM, linked quotes, and dual counters
+            // are eligibility- or event-dependent and can be added by the
+            // real data source when they actually apply.
             return [
                 StockDetailRelatedInfoPreviewData.financialReport,
-                StockDetailRelatedInfoPreviewData.cashDividend,
-                StockDetailRelatedInfoPreviewData.cas,
-                StockDetailRelatedInfoPreviewData.vcm,
-                StockDetailRelatedInfoPreviewData.shareConnection,
-                StockDetailRelatedInfoPreviewData.dualCounter
+                StockDetailRelatedInfoPreviewData.cashDividend
             ]
         case .hongKongETF:
             return [

@@ -243,6 +243,8 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         XCTAssertTrue(waitFor("stockDetail.shuffle.close").exists)
         let firstSymbol = waitFor("stockDetail.shuffle.symbol.hongKong:09988")
         XCTAssertTrue(firstSymbol.isSelected)
+        waitForCommittedInstrument("hongKong:09988")
+        waitForParentCommittedInstrument("hongKong:09988")
         XCTAssertFalse(
             app.descendants(matching: .any)["stockDetail.shuffle.symbol.fund:LU012376428"].exists,
             "Funds must not enter the Shuffle snapshot"
@@ -259,6 +261,8 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
             .completed,
             "The symbol bar should select the fast-jumped instrument"
         )
+        waitForCommittedInstrument("hongKong:00700")
+        waitForParentCommittedInstrument("hongKong:00700")
 
         let thirdSymbol = waitFor("stockDetail.shuffle.symbol.hongKong:01810")
         shuffleRoot.swipeUp()
@@ -271,6 +275,8 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
             .completed,
             "An upward swipe should advance to the next instrument"
         )
+        waitForCommittedInstrument("hongKong:01810")
+        waitForParentCommittedInstrument("hongKong:01810")
 
         waitFor("stockDetail.shuffle.close").tap()
         waitForDisappearance(shuffleRoot)
@@ -279,6 +285,150 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
             waitFor("stockDetail.navbar.title").label.contains("01810"),
             "Exiting Shuffle should keep the currently viewed instrument"
         )
+    }
+
+    func testStockDetailShuffleCurrentCardTapExitsToSelectedInstrument() throws {
+        enterWatchlist()
+
+        let firstRow = waitFor("watchlist.row.hk:09988")
+        XCTAssertTrue(firstRow.isHittable)
+        firstRow.tap()
+
+        XCTAssertTrue(waitFor("stockDetail.page").exists)
+        waitFor("stockDetail.bottomActionBar.shuffle").tap()
+
+        let shuffleRoot = waitFor("stockDetail.shuffle.root")
+        let secondSymbol = waitFor("stockDetail.shuffle.symbol.hongKong:00700")
+        secondSymbol.tap()
+        waitForCommittedInstrument("hongKong:00700")
+        waitForParentCommittedInstrument("hongKong:00700")
+
+        waitFor("stockDetail.shuffle.card.current").tap()
+        waitForDisappearance(shuffleRoot)
+        XCTAssertTrue(waitFor("stockDetail.page").exists)
+        XCTAssertTrue(
+            waitFor("stockDetail.navbar.title").label.contains("00700"),
+            "Tapping the current Shuffle card should exit to the selected instrument"
+        )
+    }
+
+    func testStockDetailShuffleAdjacentCardTapExitsToTappedInstrument() throws {
+        enterWatchlist()
+
+        let firstRow = waitFor("watchlist.row.hk:09988")
+        XCTAssertTrue(firstRow.isHittable)
+        firstRow.tap()
+
+        XCTAssertTrue(waitFor("stockDetail.page").exists)
+        waitFor("stockDetail.bottomActionBar.shuffle").tap()
+
+        let shuffleRoot = waitFor("stockDetail.shuffle.root")
+        let nextCard = waitFor("stockDetail.shuffle.card.next")
+        let appFrame = app.windows.firstMatch.frame
+        XCTAssertTrue(nextCard.frame.intersects(appFrame), "The next-card peek should be visible")
+
+        nextCard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.04)).tap()
+        waitForParentCommittedInstrument("hongKong:00700")
+        waitForDisappearance(shuffleRoot)
+        XCTAssertTrue(waitFor("stockDetail.page").exists)
+        XCTAssertTrue(
+            waitFor("stockDetail.navbar.title").label.contains("00700"),
+            "Tapping the next Shuffle card should exit to that instrument"
+        )
+    }
+
+    func testStockDetailShuffleQuoteExpansionIsSharedPersistedAndIndependent() throws {
+        enterWatchlist()
+
+        let firstRow = waitFor("watchlist.row.hk:09988")
+        XCTAssertTrue(firstRow.isHittable)
+        firstRow.tap()
+
+        XCTAssertTrue(waitFor("stockDetail.page").exists)
+        waitFor("stockDetail.bottomActionBar.shuffle").tap()
+
+        let shuffleRoot = waitFor("stockDetail.shuffle.root")
+        XCTAssertFalse(
+            shuffleRoot.descendants(matching: .any)
+                .matching(identifier: "stockDetail.page.headerTabs")
+                .firstMatch
+                .exists,
+            "Shuffle should not render the DetailPage tab bar"
+        )
+        let expansionButtons = shuffleRoot
+            .descendants(matching: .button)
+            .matching(identifier: "stockDetail.quoteData.expand")
+        XCTAssertGreaterThanOrEqual(
+            expansionButtons.count,
+            1,
+            "Shuffle should expose the current card's QuoteData expansion control"
+        )
+
+        let expansion = expansionButtons.firstMatch
+        XCTAssertTrue(expansion.waitForExistence(timeout: 5))
+        XCTAssertEqual(
+            expansion.value as? String,
+            "已展开",
+            "Shuffle QuoteData should be expanded by default"
+        )
+        expansion.tap()
+        XCTAssertTrue(waitFor("stockDetail.shuffle.root").exists)
+
+        for index in 0..<expansionButtons.count {
+            XCTAssertEqual(
+                expansionButtons.element(boundBy: index).value as? String,
+                "已收起",
+                "All visible Shuffle cards should share the collapsed state"
+            )
+        }
+
+        expansion.tap()
+        for index in 0..<expansionButtons.count {
+            XCTAssertEqual(
+                expansionButtons.element(boundBy: index).value as? String,
+                "已展开",
+                "All visible Shuffle cards should share the expanded state"
+            )
+        }
+
+        waitFor("stockDetail.shuffle.symbol.hongKong:00700").tap()
+        waitForCommittedInstrument("hongKong:00700")
+        XCTAssertEqual(
+            expansionButtons.firstMatch.value as? String,
+            "已展开",
+            "Changing instruments must preserve the shared Shuffle expansion state"
+        )
+
+        waitFor("stockDetail.shuffle.close").tap()
+        waitForDisappearance(shuffleRoot)
+        let detailExpansion = app.buttons["stockDetail.quoteData.expand"].firstMatch
+        XCTAssertTrue(detailExpansion.waitForExistence(timeout: 5))
+        XCTAssertEqual(
+            detailExpansion.value as? String,
+            "已收起",
+            "Shuffle expansion must not expand the underlying DetailPage"
+        )
+
+        waitFor("stockDetail.bottomActionBar.shuffle").tap()
+        let reopenedShuffle = waitFor("stockDetail.shuffle.root")
+        let reopenedCurrentCard = reopenedShuffle
+            .descendants(matching: .any)
+            .matching(identifier: "stockDetail.shuffle.card.current")
+            .firstMatch
+        XCTAssertTrue(reopenedCurrentCard.waitForExistence(timeout: 5))
+        let reopenedExpansion = reopenedCurrentCard
+            .descendants(matching: .button)
+            .matching(identifier: "stockDetail.quoteData.expand")
+            .firstMatch
+        XCTAssertTrue(reopenedExpansion.waitForExistence(timeout: 5))
+        XCTAssertEqual(
+            reopenedExpansion.value as? String,
+            "已展开",
+            "Shuffle expansion should be restored from local storage"
+        )
+
+        reopenedExpansion.tap()
+        XCTAssertEqual(reopenedExpansion.value as? String, "已收起")
     }
 
     func testWatchlistInAppNotificationMatchesViewport() throws {
@@ -464,6 +614,48 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         let button = app.buttons[label].firstMatch
         XCTAssertTrue(button.waitForExistence(timeout: timeout), "Missing button: \(label)")
         return button
+    }
+
+    private func waitForCommittedInstrument(
+        _ expectedID: String,
+        timeout: TimeInterval = 2,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        let status = waitFor("stockDetail.shuffle.committedInstrument", timeout: timeout)
+        let expectation = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "label == %@", expectedID),
+            object: status
+        )
+        let result = XCTWaiter.wait(for: [expectation], timeout: timeout)
+        XCTAssertEqual(
+            result,
+            .completed,
+            "Shuffle selection was not committed to the parent detail page: \(expectedID)",
+            file: file,
+            line: line
+        )
+    }
+
+    private func waitForParentCommittedInstrument(
+        _ expectedID: String,
+        timeout: TimeInterval = 2,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        let status = waitFor("stockDetail.committedInstrument", timeout: timeout)
+        let expectation = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "label == %@", expectedID),
+            object: status
+        )
+        let result = XCTWaiter.wait(for: [expectation], timeout: timeout)
+        XCTAssertEqual(
+            result,
+            .completed,
+            "Presenting DetailPage did not commit the Shuffle exit instrument: \(expectedID)",
+            file: file,
+            line: line
+        )
     }
 
     private func assertWidth(of element: XCUIElement, equals expected: CGFloat, file: StaticString = #filePath, line: UInt = #line) {

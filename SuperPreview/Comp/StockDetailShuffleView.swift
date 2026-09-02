@@ -5,6 +5,7 @@
 
 import Foundation
 import SwiftUI
+import UIKit
 
 enum StockDetailPagePresentationMode: Equatable {
     case standard
@@ -14,12 +15,14 @@ enum StockDetailPagePresentationMode: Equatable {
 struct StockDetailShuffleSession: Identifiable {
     let id = UUID()
     let instruments: [StockDetailInstrument]
-    let initialInstrumentID: String
 
-    init(instruments: [StockDetailInstrument], initialInstrumentID: String) {
+    init(instruments: [StockDetailInstrument]) {
         self.instruments = instruments
-        self.initialInstrumentID = initialInstrumentID
     }
+}
+
+enum StockDetailShuffleStorageKey {
+    static let quoteDataIsExpanded = "stockDetail.shuffle.quoteData.isExpanded"
 }
 
 /// A full-screen, vertically paged presentation of the current watchlist
@@ -27,23 +30,23 @@ struct StockDetailShuffleSession: Identifiable {
 /// smaller, clipped surface; the pager owns the only active gesture.
 struct StockDetailShuffleView: View {
     let instruments: [StockDetailInstrument]
+    @Binding private var selection: StockDetailInstrument
     let onExit: (StockDetailInstrument) -> Void
 
-    @State private var currentIndex: Int
+    @AppStorage(StockDetailShuffleStorageKey.quoteDataIsExpanded)
+    private var isQuoteDataExpanded = true
     @State private var symbolSelectionRequest: Int?
 
     init(
         instruments: [StockDetailInstrument],
-        initialInstrumentID: String,
+        selection: Binding<StockDetailInstrument>,
         onExit: @escaping (StockDetailInstrument) -> Void = { _ in }
     ) {
         let normalizedInstruments = Self.uniqueInstruments(instruments)
 
         self.instruments = normalizedInstruments
+        self._selection = selection
         self.onExit = onExit
-        _currentIndex = State(
-            initialValue: normalizedInstruments.firstIndex(where: { $0.id == initialInstrumentID }) ?? 0
-        )
     }
 
     var body: some View {
@@ -52,18 +55,14 @@ struct StockDetailShuffleView: View {
             ZStack(alignment: .topLeading) {
                 Color.black
 
-                StockDetailShufflePager(
-                    instruments: instruments,
-                    currentIndex: $currentIndex,
-                    symbolSelectionRequest: $symbolSelectionRequest,
-                    canvasSize: canvasSize,
-                    onExit: onExit
-                )
+                pagerWithScrollSurface(canvasSize: canvasSize)
+
+                topFrost
             }
             .overlay(alignment: .bottomLeading) {
                 StockDetailShuffleSymbolBar(
                     instruments: instruments,
-                    currentIndex: currentIndex,
+                    currentIndex: selectedIndex,
                     totalWidth: max(canvasSize.width - ShuffleLayout.symbolBarHorizontalInset * 2, 0),
                     onClose: exitToCurrentInstrument,
                     onSelect: { targetIndex in
@@ -78,6 +77,14 @@ struct StockDetailShuffleView: View {
                         + ShuffleLayout.symbolBarBottomInset
                 )
             }
+            .overlay(alignment: .topLeading) {
+                if PreviewRuntime.isUITesting {
+                    Text(selection.id)
+                        .frame(width: 1, height: 1)
+                        .accessibilityIdentifier("stockDetail.shuffle.committedInstrument")
+                        .allowsHitTesting(false)
+                }
+            }
             .frame(width: canvasSize.width, height: canvasSize.height)
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("stockDetail.shuffle.root")
@@ -86,9 +93,69 @@ struct StockDetailShuffleView: View {
         .ignoresSafeArea()
     }
 
+    private func pagerWithScrollSurface(canvasSize: CGSize) -> some View {
+        ScrollView(.vertical, showsIndicators: false) {
+            pager(canvasSize: canvasSize)
+                .background {
+                    StockDetailShuffleScrollPositionProbe()
+                }
+        }
+        // The pager owns the vertical gesture. This gesture-disabled system
+        // ScrollView is only the scrollable surface accessibility relies on to
+        // bring off-screen card content (such as the quote expansion control)
+        // into view when a UI test or VoiceOver asks for it.
+        .scrollDisabled(true)
+    }
+
+    private func pager(canvasSize: CGSize) -> some View {
+        StockDetailShufflePager(
+            instruments: instruments,
+            currentIndex: selectedIndexBinding,
+            symbolSelectionRequest: $symbolSelectionRequest,
+            quoteDataIsExpanded: $isQuoteDataExpanded,
+            canvasSize: canvasSize,
+            onExit: onExit
+        )
+    }
+
+    /// A soft, screen-wide frost across the top edge. The gradient mask keeps
+    /// it strongest at the very top and fades it out just past the card's top
+    /// edge, so the card only catches a faint veil instead of a hard band.
+    private var topFrost: some View {
+        Rectangle()
+            .fill(.ultraThinMaterial)
+            .frame(height: ShuffleLayout.topFrostHeight)
+            .mask(
+                LinearGradient(
+                    stops: [
+                        .init(color: .white, location: 0),
+                        .init(color: .clear, location: 1)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
+            .allowsHitTesting(false)
+            .accessibilityHidden(true)
+    }
+
     private func exitToCurrentInstrument() {
-        guard instruments.indices.contains(currentIndex) else { return }
-        onExit(instruments[currentIndex])
+        guard instruments.indices.contains(selectedIndex) else { return }
+        onExit(instruments[selectedIndex])
+    }
+
+    private var selectedIndex: Int {
+        instruments.firstIndex(where: { $0.id == selection.id }) ?? 0
+    }
+
+    private var selectedIndexBinding: Binding<Int> {
+        Binding(
+            get: { selectedIndex },
+            set: { newIndex in
+                guard instruments.indices.contains(newIndex) else { return }
+                selection = instruments[newIndex]
+            }
+        )
     }
 
     private static func uniqueInstruments(_ instruments: [StockDetailInstrument]) -> [StockDetailInstrument] {
@@ -101,6 +168,62 @@ struct StockDetailShuffleView: View {
     }
 }
 
+/// The scroll surface rests at `-adjustedContentInset.top` (its safe-area
+/// inset), which would push the fixed pager down. Pin the offset to zero so
+/// the card geometry stays unchanged while accessibility scrolling works.
+private struct StockDetailShuffleScrollPositionProbe: UIViewRepresentable {
+    func makeUIView(context: Context) -> StockDetailShuffleScrollPositionProbeView {
+        StockDetailShuffleScrollPositionProbeView()
+    }
+
+    func updateUIView(
+        _ uiView: StockDetailShuffleScrollPositionProbeView,
+        context: Context
+    ) {
+        uiView.scheduleUpdate()
+    }
+}
+
+private final class StockDetailShuffleScrollPositionProbeView: UIView {
+    private var isUpdateScheduled = false
+
+    override func didMoveToWindow() {
+        super.didMoveToWindow()
+        scheduleUpdate()
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        scheduleUpdate()
+    }
+
+    func scheduleUpdate() {
+        guard !isUpdateScheduled else { return }
+        isUpdateScheduled = true
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            isUpdateScheduled = false
+            configureContainingScrollView()
+        }
+    }
+
+    private func configureContainingScrollView() {
+        var ancestor = superview
+
+        while let view = ancestor {
+            if let scrollView = view as? UIScrollView {
+                if scrollView.contentOffset != .zero {
+                    scrollView.setContentOffset(.zero, animated: false)
+                }
+                return
+            }
+
+            ancestor = view.superview
+        }
+    }
+}
+
 /// Owns the high-frequency gesture state. The parent only receives an index
 /// update after a page settles, so the symbol bar and the surrounding cover do
 /// not invalidate on every drag sample.
@@ -108,6 +231,7 @@ private struct StockDetailShufflePager: View {
     let instruments: [StockDetailInstrument]
     @Binding var currentIndex: Int
     @Binding var symbolSelectionRequest: Int?
+    @Binding var quoteDataIsExpanded: Bool
     let canvasSize: CGSize
     let onExit: (StockDetailInstrument) -> Void
 
@@ -126,12 +250,14 @@ private struct StockDetailShufflePager: View {
         instruments: [StockDetailInstrument],
         currentIndex: Binding<Int>,
         symbolSelectionRequest: Binding<Int?>,
+        quoteDataIsExpanded: Binding<Bool>,
         canvasSize: CGSize,
         onExit: @escaping (StockDetailInstrument) -> Void
     ) {
         self.instruments = instruments
         self._currentIndex = currentIndex
         self._symbolSelectionRequest = symbolSelectionRequest
+        self._quoteDataIsExpanded = quoteDataIsExpanded
         self.canvasSize = canvasSize
         self.onExit = onExit
         _configurationCache = StateObject(wrappedValue: StockDetailPageConfigurationCache())
@@ -147,6 +273,7 @@ private struct StockDetailShufflePager: View {
             instruments: instruments,
             currentIndex: currentIndex,
             stagedTargetIndex: stagedTargetIndex,
+            quoteDataIsExpanded: $quoteDataIsExpanded,
             canvasSize: canvasSize,
             cardWidth: cardWidth,
             cardHeight: cardHeight,
@@ -163,6 +290,11 @@ private struct StockDetailShufflePager: View {
         // participate in every drag frame.
         .offset(y: dragOffset)
         .frame(width: canvasSize.width, height: canvasSize.height, alignment: .topLeading)
+        // The previous card intentionally lives above the viewport. Clip the
+        // pager to its own bounds so the system fullScreenCover dismissal
+        // cannot move that off-screen card into view while the cover slides
+        // away.
+        .clipped()
         .contentShape(Rectangle())
         .simultaneousGesture(
             pagerGesture(cardHeight: cardHeight, stride: stride)
@@ -365,6 +497,7 @@ private struct StockDetailShuffleCardDeck: View, Equatable {
     let instruments: [StockDetailInstrument]
     let currentIndex: Int
     let stagedTargetIndex: Int?
+    @Binding var quoteDataIsExpanded: Bool
     let canvasSize: CGSize
     let cardWidth: CGFloat
     let cardHeight: CGFloat
@@ -377,6 +510,7 @@ private struct StockDetailShuffleCardDeck: View, Equatable {
     static func == (lhs: StockDetailShuffleCardDeck, rhs: StockDetailShuffleCardDeck) -> Bool {
         lhs.currentIndex == rhs.currentIndex
             && lhs.stagedTargetIndex == rhs.stagedTargetIndex
+            && lhs.quoteDataIsExpanded == rhs.quoteDataIsExpanded
             && lhs.instruments.count == rhs.instruments.count
             && lhs.visibleInstrument(for: -1) == rhs.visibleInstrument(for: -1)
             && lhs.visibleInstrument(for: 0) == rhs.visibleInstrument(for: 0)
@@ -429,19 +563,22 @@ private struct StockDetailShuffleCardDeck: View, Equatable {
             slotName = "current"
         }
 
-        let pageConfiguration = configurationCache.configuration(for: instrument)
+        let pageConfiguration = configurationCache.configuration(
+            for: instrument,
+            includesBelowChartComponents: false
+        )
 
         return ZStack(alignment: .topLeading) {
             StockDetailPage(
                 instrument: instrument,
                 presentationMode: .shuffleCard,
-                configuration: pageConfiguration
+                configuration: pageConfiguration,
+                quoteDetailsExpansion: $quoteDataIsExpanded,
+                onShuffleCardInteraction: { onExit(instrument) }
             )
             .id(instrument.id)
             .frame(width: canvasSize.width, height: canvasSize.height)
             .scaleEffect(scale, anchor: .topLeading)
-            .allowsHitTesting(false)
-            .accessibilityHidden(true)
         }
         .frame(width: cardWidth, height: cardHeight, alignment: .topLeading)
         .background(Color("color-base-1"))
@@ -466,7 +603,7 @@ private struct StockDetailShuffleCardDeck: View, Equatable {
                 + CGFloat(relativePosition) * stride
         )
         .zIndex(relativePosition == 0 ? 2 : 1)
-        .accessibilityElement(children: .ignore)
+        .accessibilityElement(children: .contain)
         .accessibilityLabel(cardAccessibilityLabel(for: instrument))
         .accessibilityHint(language == .english ? "Opens the full detail page" : "打开完整详情页")
         .accessibilityAddTraits(.isButton)
@@ -622,7 +759,13 @@ private struct StockDetailShuffleSymbolBar: View {
 
 private enum ShuffleLayout {
     static let horizontalInset: CGFloat = 8
-    static let verticalPeek: CGFloat = 36
+    // Keep the current card below the iPhone 17 Pro Dynamic Island safe area.
+    // With an 874-point canvas and an 8-point card gap this yields a
+    // 750-point current card: 874 - (54 * 2) - (8 * 2).
+    static let verticalPeek: CGFloat = 54
+    // The frost fades to nothing just past the card's top edge
+    // (verticalPeek + cardGap = 62), so the card only catches its faint tail.
+    static let topFrostHeight: CGFloat = verticalPeek + cardGap + 22
     static let cardGap: CGFloat = 8
     static let cardCornerRadius: CGFloat = 20
 
@@ -655,7 +798,7 @@ struct StockDetailShuffleView_Previews: PreviewProvider {
         let sixInstrumentPreview = Array(StockDetailDebugSamples.all.prefix(6))
 
         Group {
-            StockDetailShuffleView(
+            StockDetailShufflePreviewHost(
                 instruments: StockDetailDebugSamples.all,
                 initialInstrumentID: StockDetailDebugSamples.all[2].id
             )
@@ -663,7 +806,7 @@ struct StockDetailShuffleView_Previews: PreviewProvider {
             .environmentObject(DemoLanguageStore(initialLanguage: .simplifiedChinese))
             .previewDisplayName("Both neighbors")
 
-            StockDetailShuffleView(
+            StockDetailShufflePreviewHost(
                 instruments: StockDetailDebugSamples.all,
                 initialInstrumentID: StockDetailDebugSamples.all[0].id
             )
@@ -671,7 +814,7 @@ struct StockDetailShuffleView_Previews: PreviewProvider {
             .environmentObject(DemoLanguageStore(initialLanguage: .simplifiedChinese))
             .previewDisplayName("No previous")
 
-            StockDetailShuffleView(
+            StockDetailShufflePreviewHost(
                 instruments: StockDetailDebugSamples.all,
                 initialInstrumentID: StockDetailDebugSamples.all[6].id
             )
@@ -679,7 +822,7 @@ struct StockDetailShuffleView_Previews: PreviewProvider {
             .environmentObject(DemoLanguageStore(initialLanguage: .simplifiedChinese))
             .previewDisplayName("No next")
 
-            StockDetailShuffleView(
+            StockDetailShufflePreviewHost(
                 instruments: [StockDetailDebugSamples.all[2]],
                 initialInstrumentID: StockDetailDebugSamples.all[2].id
             )
@@ -687,7 +830,7 @@ struct StockDetailShuffleView_Previews: PreviewProvider {
             .environmentObject(DemoLanguageStore(initialLanguage: .simplifiedChinese))
             .previewDisplayName("Single instrument")
 
-            StockDetailShuffleView(
+            StockDetailShufflePreviewHost(
                 instruments: sixInstrumentPreview,
                 initialInstrumentID: sixInstrumentPreview[3].id
             )
@@ -695,7 +838,7 @@ struct StockDetailShuffleView_Previews: PreviewProvider {
             .environmentObject(DemoLanguageStore(initialLanguage: .simplifiedChinese))
             .previewDisplayName("Six instruments · middle")
 
-            StockDetailShuffleView(
+            StockDetailShufflePreviewHost(
                 instruments: StockDetailDebugSamples.all,
                 initialInstrumentID: StockDetailDebugSamples.all[3].id
             )
@@ -706,7 +849,7 @@ struct StockDetailShuffleView_Previews: PreviewProvider {
         }
         .previewLayout(.fixed(width: 402, height: 874))
 
-        StockDetailShuffleView(
+        StockDetailShufflePreviewHost(
             instruments: StockDetailDebugSamples.all,
             initialInstrumentID: StockDetailDebugSamples.all[2].id
         )
@@ -715,5 +858,25 @@ struct StockDetailShuffleView_Previews: PreviewProvider {
         .preferredColorScheme(.dark)
         .previewLayout(.fixed(width: 440, height: 956))
         .previewDisplayName("iPhone Pro Max · English · Dark")
+    }
+}
+
+private struct StockDetailShufflePreviewHost: View {
+    let instruments: [StockDetailInstrument]
+
+    @State private var selection: StockDetailInstrument
+
+    init(instruments: [StockDetailInstrument], initialInstrumentID: String) {
+        self.instruments = instruments
+        _selection = State(
+            initialValue: instruments.first(where: { $0.id == initialInstrumentID }) ?? instruments[0]
+        )
+    }
+
+    var body: some View {
+        StockDetailShuffleView(
+            instruments: instruments,
+            selection: $selection
+        )
     }
 }

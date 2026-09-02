@@ -17,14 +17,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         if PreviewRuntime.isUITesting {
-            resetTradeAggregationStateForUITests()
+            resetPersistedUIStateForUITests()
         } else if !PreviewRuntime.isRunning {
             RunLoop.current.run(until: Date(timeIntervalSinceNow: 1.0))
         }
         return true
     }
 
-    private func resetTradeAggregationStateForUITests() {
+    private func resetPersistedUIStateForUITests() {
         let keys = [
             DemoLanguage.storageKey,
             TradeAggregationExpansionStorageKey.stockSubAssetCard,
@@ -32,7 +32,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             TradeAggregationExpansionStorageKey.virtualAssetSubAssetCard,
             TradeAggregationExpansionStorageKey.stockHoldingGroups,
             TradeAggregationExpansionStorageKey.fundHoldingGroups,
-            TradeAggregationExpansionStorageKey.virtualAssetHoldingGroups
+            TradeAggregationExpansionStorageKey.virtualAssetHoldingGroups,
+            StockDetailShuffleStorageKey.quoteDataIsExpanded
         ]
 
         for key in keys {

@@ -9,15 +9,31 @@ import SwiftUI
 /// recomputation path. The cache is scoped to one detail-page lifetime so a
 /// changed instrument value still gets a fresh configuration key.
 final class StockDetailPageConfigurationCache: ObservableObject {
-    private var storage: [StockDetailInstrument: StockDetailPageConfiguration] = [:]
+    private struct CacheKey: Hashable {
+        let instrument: StockDetailInstrument
+        let includesBelowChartComponents: Bool
+    }
 
-    func configuration(for instrument: StockDetailInstrument) -> StockDetailPageConfiguration {
-        if let cachedConfiguration = storage[instrument] {
+    private var storage: [CacheKey: StockDetailPageConfiguration] = [:]
+
+    func configuration(
+        for instrument: StockDetailInstrument,
+        includesBelowChartComponents: Bool = true
+    ) -> StockDetailPageConfiguration {
+        let key = CacheKey(
+            instrument: instrument,
+            includesBelowChartComponents: includesBelowChartComponents
+        )
+
+        if let cachedConfiguration = storage[key] {
             return cachedConfiguration
         }
 
-        let configuration = StockDetailPageConfigurationFactory.make(for: instrument)
-        storage[instrument] = configuration
+        let configuration = StockDetailPageConfigurationFactory.make(
+            for: instrument,
+            includesBelowChartComponents: includesBelowChartComponents
+        )
+        storage[key] = configuration
         return configuration
     }
 }
@@ -37,6 +53,8 @@ struct StockDetailPage: View {
     let shuffleInstruments: [StockDetailInstrument]?
     let presentationMode: StockDetailPagePresentationMode
     let configurationOverride: StockDetailPageConfiguration?
+    let quoteDetailsExpansion: Binding<Bool>?
+    let onShuffleCardInteraction: (() -> Void)?
 
     @State private var activeInstrument: StockDetailInstrument
     @State private var selectedTab: StockDetailPageTab
@@ -45,6 +63,7 @@ struct StockDetailPage: View {
     @State private var quoteScrollOffset: CGFloat = 0
     @State private var isShowingDebugSheet = false
     @State private var shuffleSession: StockDetailShuffleSession?
+    @State private var pendingShuffleExitInstrumentID: String?
     @StateObject private var configurationCache: StockDetailPageConfigurationCache
 
     @EnvironmentObject private var demoLanguageStore: DemoLanguageStore
@@ -56,6 +75,8 @@ struct StockDetailPage: View {
         shuffleInstruments: [StockDetailInstrument]? = nil,
         presentationMode: StockDetailPagePresentationMode = .standard,
         configuration: StockDetailPageConfiguration? = nil,
+        quoteDetailsExpansion: Binding<Bool>? = nil,
+        onShuffleCardInteraction: (() -> Void)? = nil,
         onBack: (() -> Void)? = nil,
         onRefresh: @escaping () -> Void = {},
         onOrderConfirmed: @escaping (StockOrderConfirmationSide) -> Void = { _ in },
@@ -81,6 +102,8 @@ struct StockDetailPage: View {
         self.shuffleInstruments = shuffleInstruments
         self.presentationMode = presentationMode
         self.configurationOverride = configuration
+        self.quoteDetailsExpansion = quoteDetailsExpansion
+        self.onShuffleCardInteraction = onShuffleCardInteraction
         _activeInstrument = State(initialValue: instrument)
         _selectedTab = State(
             initialValue: initialTabs.contains(initialTab) ? initialTab : .quote
@@ -106,34 +129,57 @@ struct StockDetailPage: View {
                         shareAccessibilityLabel: activeLanguage.text(.debug)
                     )
 
-                    StockDetailPageHeaderTabs(
-                        tabs: pageConfiguration.tabs,
-                        selection: $selectedTab
-                    )
-
-                    TabView(selection: $selectedTab) {
-                        ForEach(pageConfiguration.tabs) { tab in
-                            page(
-                                for: tab,
-                                configuration: pageConfiguration,
-                                viewportWidth: geometry.size.width
-                            )
-                                .tag(tab)
-                        }
+                    if presentationMode == .standard {
+                        StockDetailPageHeaderTabs(
+                            tabs: pageConfiguration.tabs,
+                            selection: $selectedTab,
+                            onInteraction: onShuffleCardInteraction
+                        )
                     }
-                    .id(activeInstrument.id)
-                    .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+
+                    if presentationMode == .shuffleCard {
+                        shuffleQuotePage(
+                            configuration: pageConfiguration,
+                            viewportWidth: geometry.size.width
+                        )
+                    } else {
+                        TabView(selection: $selectedTab) {
+                            ForEach(pageConfiguration.tabs) { tab in
+                                page(
+                                    for: tab,
+                                    configuration: pageConfiguration,
+                                    viewportWidth: geometry.size.width
+                                )
+                                    .tag(tab)
+                            }
+                        }
+                        .id(activeInstrument.id)
+                        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                    }
                 }
 
                 if presentationMode == .standard {
                     fixedBottomActionBar
                 }
             }
+            // Keep the navbar, tab container, and quote content in one
+            // identity boundary. Otherwise a cover dismissal can reveal a
+            // newly-updated navbar while the cached TabView is still drawing
+            // the instrument that was active when the cover opened.
+            .id(activeInstrument.id)
             .ignoresSafeArea(.container, edges: .bottom)
         }
         .background(Color("color-base-1"))
         .toolbar(.hidden, for: .navigationBar)
         .navigationBarBackButtonHidden(true)
+        .overlay(alignment: .topLeading) {
+            if PreviewRuntime.isUITesting, presentationMode == .standard {
+                Text(activeInstrument.id)
+                    .frame(width: 1, height: 1)
+                    .accessibilityIdentifier("stockDetail.committedInstrument")
+                    .allowsHitTesting(false)
+            }
+        }
         .sheet(isPresented: debugSheetIsPresented) {
             StockDetailDebugSheet(
                 selection: $activeInstrument,
@@ -142,18 +188,22 @@ struct StockDetailPage: View {
             .environment(\.demoLanguage, activeLanguage)
         }
         .fullScreenCover(
-            item: shuffleSessionBinding
+            item: shuffleSessionBinding,
+            onDismiss: {
+                pendingShuffleExitInstrumentID = nil
+            }
         ) { session in
             StockDetailShuffleView(
                 instruments: session.instruments,
-                initialInstrumentID: session.initialInstrumentID,
+                selection: $activeInstrument,
                 onExit: exitShuffle(to:)
             )
             .environmentObject(demoLanguageStore)
             .environment(\.demoLanguage, activeLanguage)
         }
-        .onChange(of: activeInstrument) { _, _ in
+        .onChange(of: activeInstrument) { _, newInstrument in
             resetPageState()
+            completePendingShuffleExitIfNeeded(for: newInstrument)
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockDetail.page")
@@ -186,7 +236,7 @@ struct StockDetailPage: View {
             VStack(spacing: 0) {
                 StockDetailQuoteData(
                     data: configuration.quoteData,
-                    isExpanded: $isQuoteDetailsExpanded
+                    isExpanded: quoteDetailsExpansionBinding
                 )
 
                 if !configuration.relatedItems.isEmpty {
@@ -199,16 +249,20 @@ struct StockDetailPage: View {
                 StockDetailChart()
 
                 if configuration.variant.showsTransactionModule {
-                    StockDetailTransactionModule(
-                        symbol: configuration.symbol,
-                        positionState: configuration.positionState,
-                        orders: configuration.transactionOrders,
-                        historyOrders: configuration.historyOrders,
-                        onRefresh: onRefresh,
-                        onOrderConfirmed: onOrderConfirmed,
-                        onOrderAction: onOrderAction,
-                        onLoadMore: onLoadMore
-                    )
+                    if let positionState = configuration.positionState,
+                       let transactionOrders = configuration.transactionOrders,
+                       let historyOrders = configuration.historyOrders {
+                        StockDetailTransactionModule(
+                            symbol: configuration.symbol,
+                            positionState: positionState,
+                            orders: transactionOrders,
+                            historyOrders: historyOrders,
+                            onRefresh: onRefresh,
+                            onOrderConfirmed: onOrderConfirmed,
+                            onOrderAction: onOrderAction,
+                            onLoadMore: onLoadMore
+                        )
+                    }
                 }
 
                 if let orderBookData = configuration.orderBookData {
@@ -219,12 +273,14 @@ struct StockDetailPage: View {
                     StockDetailBrokerOrderBook(data: brokerOrderBookData)
                 }
 
-                if configuration.variant.showsCapitalDistribution {
-                    StockDetailCapitalDistribution(data: configuration.capitalDistributionData)
+                if configuration.variant.showsCapitalDistribution,
+                   let capitalDistributionData = configuration.capitalDistributionData {
+                    StockDetailCapitalDistribution(data: capitalDistributionData)
                 }
 
-                if configuration.variant.showsMoneyFlow {
-                    moneyFlowCard(data: configuration.moneyFlowData)
+                if configuration.variant.showsMoneyFlow,
+                   let moneyFlowData = configuration.moneyFlowData {
+                    moneyFlowCard(data: moneyFlowData)
                 }
 
                 disclaimer
@@ -240,6 +296,53 @@ struct StockDetailPage: View {
         }
         .background(Color("color-base-1"))
         .accessibilityIdentifier("stockDetail.page.quotePage")
+    }
+
+    private func shuffleQuotePage(
+        configuration: StockDetailPageConfiguration,
+        viewportWidth: CGFloat
+    ) -> some View {
+        let chartHeight = viewportWidth / StockDetailChart.snapshotAspectRatio
+
+        return VStack(spacing: 0) {
+            StockDetailQuoteData(
+                data: configuration.quoteData,
+                isExpanded: quoteDetailsExpansionBinding,
+                onBadgesTap: onShuffleCardInteraction
+            )
+
+            if !configuration.relatedItems.isEmpty {
+                StockDetailRelatedInfo(
+                    items: configuration.relatedItems,
+                    interactionState: $relatedInfoInteraction,
+                    onInteraction: onShuffleCardInteraction
+                )
+            }
+
+            StockDetailChart()
+                // Keep the chart at its source aspect ratio. When the
+                // expanded quote content is taller than the Shuffle card,
+                // the page clips the overflow instead of offering the chart
+                // a smaller vertical proposal.
+                .frame(
+                    width: viewportWidth,
+                    height: chartHeight,
+                    alignment: .topLeading
+                )
+        }
+        .frame(width: viewportWidth, alignment: .topLeading)
+        // Shuffle omits everything below the chart. Keep the remaining page
+        // height flexible and pin the content to the same top edge instead of
+        // letting the outer bottom-aligned stack turn the difference into a
+        // blank area above the navbar.
+        .frame(maxHeight: .infinity, alignment: .topLeading)
+        .clipped()
+        .background(Color("color-base-1"))
+        .accessibilityIdentifier("stockDetail.page.quotePage")
+    }
+
+    private var quoteDetailsExpansionBinding: Binding<Bool> {
+        quoteDetailsExpansion ?? $isQuoteDetailsExpanded
     }
 
     private var navbarQuote: StockDetailNavbarQuote {
@@ -283,14 +386,55 @@ struct StockDetailPage: View {
         guard !snapshot.isEmpty else { return }
 
         shuffleSession = StockDetailShuffleSession(
-            instruments: snapshot,
-            initialInstrumentID: activeInstrument.id
+            instruments: snapshot
         )
     }
 
     private func exitShuffle(to instrument: StockDetailInstrument) {
-        activeInstrument = instrument
-        shuffleSession = nil
+        guard presentationMode == .standard, shuffleSession != nil else { return }
+
+        pendingShuffleExitInstrumentID = instrument.id
+
+        if activeInstrument.id != instrument.id {
+            commitActiveInstrumentWithoutAnimation(instrument)
+        } else {
+            // The current card has already committed the selection, but its
+            // presenting page may still be waiting for SwiftUI to render the
+            // corresponding content tree. Use the same next-run-loop exit
+            // path as a newly selected card instead of dismissing inline.
+            completePendingShuffleExitIfNeeded(for: instrument)
+        }
+    }
+
+    private func completePendingShuffleExitIfNeeded(for instrument: StockDetailInstrument) {
+        guard presentationMode == .standard,
+              pendingShuffleExitInstrumentID == instrument.id else {
+            return
+        }
+
+        // Task.yield() can resume before SwiftUI commits the presenting page's
+        // new layout. Queue dismissal on the next main-run-loop turn so the
+        // fullScreenCover's exit animation can only reveal the new instrument.
+        DispatchQueue.main.async {
+            guard pendingShuffleExitInstrumentID == instrument.id,
+                  shuffleSession != nil,
+                  activeInstrument.id == instrument.id else {
+                return
+            }
+
+            pendingShuffleExitInstrumentID = nil
+            shuffleSession = nil
+        }
+    }
+
+    private func commitActiveInstrumentWithoutAnimation(_ instrument: StockDetailInstrument) {
+        var transaction = Transaction()
+        transaction.animation = nil
+        transaction.disablesAnimations = true
+
+        withTransaction(transaction) {
+            activeInstrument = instrument
+        }
     }
 
     private var normalizedShuffleInstruments: [StockDetailInstrument] {
@@ -408,6 +552,7 @@ struct StockDetailPage: View {
 private struct StockDetailPageHeaderTabs: View {
     let tabs: [StockDetailPageTab]
     @Binding var selection: StockDetailPageTab
+    let onInteraction: (() -> Void)?
 
     @Environment(\.demoLanguage) private var language
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -438,6 +583,11 @@ private struct StockDetailPageHeaderTabs: View {
                 let isSelected = selection == tab
 
                 Button {
+                    if let onInteraction {
+                        onInteraction()
+                        return
+                    }
+
                     guard selection != tab else { return }
                     selection = tab
                 } label: {

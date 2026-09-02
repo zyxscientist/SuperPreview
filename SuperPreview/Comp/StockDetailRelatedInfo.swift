@@ -341,6 +341,7 @@ struct StockDetailRelatedInfoInteractionState: Hashable {
 struct StockDetailRelatedInfo: View {
     let items: [StockDetailRelatedInfoItem]
     @Binding var interactionState: StockDetailRelatedInfoInteractionState
+    let onInteraction: (() -> Void)?
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.colorScheme) private var colorScheme
@@ -348,10 +349,12 @@ struct StockDetailRelatedInfo: View {
 
     init(
         items: [StockDetailRelatedInfoItem],
-        interactionState: Binding<StockDetailRelatedInfoInteractionState>
+        interactionState: Binding<StockDetailRelatedInfoInteractionState>,
+        onInteraction: (() -> Void)? = nil
     ) {
         self.items = items
         _interactionState = interactionState
+        self.onInteraction = onInteraction
     }
 
     var body: some View {
@@ -407,7 +410,7 @@ struct StockDetailRelatedInfo: View {
             adrConnectionRow(
                 connection,
                 isExpanded: isExpanded,
-                onToggle: { toggleExpansion(for: item.id) }
+                onToggle: { handleInteraction { toggleExpansion(for: item.id) } }
             )
 
         case let .cas(range):
@@ -420,21 +423,21 @@ struct StockDetailRelatedInfo: View {
             financialReportRow(
                 report,
                 isCalendarAdded: isCalendarAdded(item),
-                onCalendarToggle: { toggleCalendar(for: item.id) }
+                onCalendarToggle: { handleInteraction { toggleCalendar(for: item.id) } }
             )
 
         case let .cashDividend(dividend):
             cashDividendRow(
                 dividend,
                 isExpanded: isExpanded,
-                onToggle: { toggleExpansion(for: item.id) }
+                onToggle: { handleInteraction { toggleExpansion(for: item.id) } }
             )
 
         case let .extendedHours(hours):
             extendedHoursRow(
                 hours,
                 isExpanded: isExpanded,
-                onToggle: { toggleExpansion(for: item.id) }
+                onToggle: { handleInteraction { toggleExpansion(for: item.id) } }
             )
         }
     }
@@ -841,6 +844,14 @@ struct StockDetailRelatedInfo: View {
         }
 
         interactionState.calendarAddedItemIDs = calendarIDs
+    }
+
+    private func handleInteraction(_ action: () -> Void) {
+        if let onInteraction {
+            onInteraction()
+        } else {
+            action()
+        }
     }
 }
 

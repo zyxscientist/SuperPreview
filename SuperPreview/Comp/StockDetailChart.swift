@@ -11,10 +11,12 @@ import SwiftUI
 /// snapshot used by the stock-order prototype until the chart interaction and
 /// rendering model are implemented.
 struct StockDetailChart: View {
+    static let snapshotAspectRatio: CGFloat = 402.0 / 409.0
+
     var body: some View {
         Image("stock_order_chart_snapshot")
             .resizable()
-            .aspectRatio(402.0 / 409.0, contentMode: .fit)
+            .aspectRatio(Self.snapshotAspectRatio, contentMode: .fit)
             .frame(maxWidth: .infinity)
             .accessibilityLabel("Stock chart preview")
             .accessibilityIdentifier("stockDetail.chart")
