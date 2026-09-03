@@ -104,7 +104,7 @@ struct MainView: View {
 
     func navigationBarTitle(selectedTab :AppTab) -> String {
         switch selectedTab {
-        case .tab1: return ""
+        case .tab1: return "自选"
         case .tab2: return "交易"
         case .tab3: return "理财"
         case .tab4: return "资讯"
@@ -124,9 +124,6 @@ private struct MainViewToolbarModifier: ViewModifier {
     func body(content: Content) -> some View {
         if selectedTab == .tab1 {
             content.toolbar {
-                ToolbarItemGroup(placement: .navigationBarLeading) {
-                    Image("navbar_logo_sc")
-                }
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
                     debugButton(
                         identifier: "watchlist.debug.open",

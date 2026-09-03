@@ -17,6 +17,14 @@ enum WatchlistRedesignMarket: String, Hashable {
     case fund
 }
 
+enum WatchlistRedesignTagAsset {
+    static let delayQuote = "watchlist_tag_delay_quote"
+    static let specialAttention = "watchlist_tag_special_attention"
+    static let holdings = "watchlist_tag_holdings"
+    static let alert = "price_alert"
+    static let financialReport = "watchlist_tag_financial_report"
+}
+
 enum WatchlistRedesignTrend {
     case up
     case down
@@ -265,7 +273,7 @@ struct WatchlistRedesignItem: Identifiable {
     var session: WatchlistRedesignSession
     let extendedHoursChange: String
     let miniKPoints: [CGFloat]
-    let tagAssets: [String]
+    var tagAssets: [String]
     let isPinned: Bool
 
     init(
@@ -358,7 +366,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 trend: .up,
                 session: .regular,
                 miniKPoints: upLine,
-                tagAssets: ["price_alert"],
+                tagAssets: [WatchlistRedesignTagAsset.alert],
                 isPinned: true
             ),
             WatchlistRedesignItem(
@@ -754,7 +762,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 trend: .up,
                 session: .afterHours(label: "盘后", change: "+0.08%"),
                 miniKPoints: upLine,
-                tagAssets: ["price_alert"],
+                tagAssets: [WatchlistRedesignTagAsset.alert],
                 isPinned: false
             ),
             WatchlistRedesignItem(
@@ -773,18 +781,24 @@ class WatchlistRedesignViewModel: ObservableObject {
             )
         ]
 
-        let allItems = hkItems + cnItems + usItems + etfItems + customItems
+        let taggedHKItems = hkItems.map { Self.applyingRandomizedTags(to: $0) }
+        let taggedCNItems = cnItems.map { Self.applyingRandomizedTags(to: $0) }
+        let taggedUSItems = usItems.map { Self.applyingRandomizedTags(to: $0) }
+        let taggedETFItems = etfItems.map { Self.applyingRandomizedTags(to: $0) }
+        let taggedCustomItems = customItems.map { Self.applyingRandomizedTags(to: $0) }
+
+        let allItems = taggedHKItems + taggedCNItems + taggedUSItems + taggedETFItems + taggedCustomItems
         // Some US-listed ETFs and ADRs live in the ETF/custom groups, so sort
         // by market here to keep every US-listed instrument together at the top.
         let allItemsWithUSFirst = allItems.filter { $0.market == .us } + allItems.filter { $0.market != .us }
 
         groupedItems = [
             "全部": allItemsWithUSFirst,
-            "港股": hkItems,
-            "沪深": cnItems,
-            "美股": usItems,
-            "ETFs": etfItems,
-            "自定义": customItems
+            "港股": taggedHKItems,
+            "沪深": taggedCNItems,
+            "美股": taggedUSItems,
+            "ETFs": taggedETFItems,
+            "自定义": taggedCustomItems
         ]
 
         refreshUSMarketSessions()
@@ -836,6 +850,56 @@ class WatchlistRedesignViewModel: ObservableObject {
                 updatedItem.trend = tick.trend
                 return updatedItem
             }
+        }
+    }
+
+    /// Keeps the demo's tag distribution stable between refreshes while still
+    /// making the selected rows look naturally random. Holding and financial
+    /// report markers intentionally use lower frequencies than the other tags.
+    private static func applyingRandomizedTags(to item: WatchlistRedesignItem) -> WatchlistRedesignItem {
+        guard item.instrumentKind == .stock else { return item }
+
+        var tags = item.tagAssets
+        let randomizedTagNames = [
+            WatchlistRedesignTagAsset.delayQuote,
+            WatchlistRedesignTagAsset.specialAttention,
+            WatchlistRedesignTagAsset.holdings,
+            WatchlistRedesignTagAsset.financialReport
+        ]
+        let randomizedTags: [(String, Bool)] = [
+            // Each marker uses a different salt so the rows do not cluster
+            // around the same symbols when the distribution changes.
+            (WatchlistRedesignTagAsset.delayQuote, stableTagHash(for: "\(item.symbol):delay") % 6 == 0),
+            (WatchlistRedesignTagAsset.specialAttention, stableTagHash(for: "\(item.symbol):special") % 10 < 3),
+            (WatchlistRedesignTagAsset.holdings, stableTagHash(for: "\(item.symbol):holding") % 11 == 0),
+            (WatchlistRedesignTagAsset.financialReport, stableTagHash(for: "\(item.symbol):financial") % 7 == 0)
+        ]
+
+        for (tag, shouldAdd) in randomizedTags where shouldAdd && !tags.contains(tag) {
+            tags.append(tag)
+        }
+
+        // A small additional chance makes stacked markers visible without
+        // making the already-rare holdings marker more common. The unique-tag
+        // check also guarantees that a row never renders duplicate delay icons.
+        if tags.contains(where: { randomizedTagNames.contains($0) }),
+           stableTagHash(for: "\(item.symbol):stack") % 17 == 0,
+           let extraTag = [
+               WatchlistRedesignTagAsset.specialAttention,
+               WatchlistRedesignTagAsset.financialReport,
+               WatchlistRedesignTagAsset.delayQuote
+           ].first(where: { !tags.contains($0) }) {
+            tags.append(extraTag)
+        }
+
+        var updatedItem = item
+        updatedItem.tagAssets = tags
+        return updatedItem
+    }
+
+    private static func stableTagHash(for symbol: String) -> UInt64 {
+        symbol.utf8.reduce(UInt64(1469598103934665603)) { hash, byte in
+            (hash ^ UInt64(byte)) &* UInt64(1099511628211)
         }
     }
 

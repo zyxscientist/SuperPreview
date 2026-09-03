@@ -771,6 +771,7 @@ struct WatchlistRedesignNameCell: View {
                     Image(asset)
                         .resizable()
                         .frame(width: 12, height: 12)
+                        .accessibilityHidden(true)
                 }
             }
             .padding(.leading, 16)
