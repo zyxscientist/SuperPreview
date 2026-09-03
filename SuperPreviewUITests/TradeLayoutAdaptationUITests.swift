@@ -259,7 +259,7 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
     func testStockDetailShuffleUsesWatchlistSnapshotAndExitsToSelectedInstrument() throws {
         enterWatchlist()
 
-        let firstRow = waitFor("watchlist.row.hk:09988")
+        let firstRow = waitFor("watchlist.row.us:NVDA")
         XCTAssertTrue(firstRow.isHittable)
         firstRow.tap()
 
@@ -268,16 +268,16 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
 
         let shuffleRoot = waitFor("stockDetail.shuffle.root")
         XCTAssertTrue(waitFor("stockDetail.shuffle.close").exists)
-        let firstSymbol = waitFor("stockDetail.shuffle.symbol.hongKong:09988")
+        let firstSymbol = waitFor("stockDetail.shuffle.symbol.us:NVDA")
         XCTAssertTrue(firstSymbol.isSelected)
-        waitForCommittedInstrument("hongKong:09988")
-        waitForParentCommittedInstrument("hongKong:09988")
+        waitForCommittedInstrument("us:NVDA")
+        waitForParentCommittedInstrument("us:NVDA")
         XCTAssertFalse(
             app.descendants(matching: .any)["stockDetail.shuffle.symbol.fund:LU012376428"].exists,
             "Funds must not enter the Shuffle snapshot"
         )
 
-        let secondSymbol = waitFor("stockDetail.shuffle.symbol.hongKong:00700")
+        let secondSymbol = waitFor("stockDetail.shuffle.symbol.us:AAPL")
         secondSymbol.tap()
         let selectedExpectation = XCTNSPredicateExpectation(
             predicate: NSPredicate(format: "selected == true"),
@@ -288,10 +288,10 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
             .completed,
             "The symbol bar should select the fast-jumped instrument"
         )
-        waitForCommittedInstrument("hongKong:00700")
-        waitForParentCommittedInstrument("hongKong:00700")
+        waitForCommittedInstrument("us:AAPL")
+        waitForParentCommittedInstrument("us:AAPL")
 
-        let thirdSymbol = waitFor("stockDetail.shuffle.symbol.hongKong:01810")
+        let thirdSymbol = waitFor("stockDetail.shuffle.symbol.us:TSLA")
         shuffleRoot.swipeUp()
         let swipeExpectation = XCTNSPredicateExpectation(
             predicate: NSPredicate(format: "selected == true"),
@@ -302,14 +302,14 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
             .completed,
             "An upward swipe should advance to the next instrument"
         )
-        waitForCommittedInstrument("hongKong:01810")
-        waitForParentCommittedInstrument("hongKong:01810")
+        waitForCommittedInstrument("us:TSLA")
+        waitForParentCommittedInstrument("us:TSLA")
 
         waitFor("stockDetail.shuffle.close").tap()
         waitForDisappearance(shuffleRoot)
         XCTAssertTrue(waitFor("stockDetail.page").exists)
         XCTAssertTrue(
-            waitFor("stockDetail.navbar.title").label.contains("01810"),
+            waitFor("stockDetail.navbar.title").label.contains("TSLA"),
             "Exiting Shuffle should keep the currently viewed instrument"
         )
     }
@@ -317,7 +317,7 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
     func testStockDetailShuffleCurrentCardTapExitsToSelectedInstrument() throws {
         enterWatchlist()
 
-        let firstRow = waitFor("watchlist.row.hk:09988")
+        let firstRow = waitFor("watchlist.row.us:NVDA")
         XCTAssertTrue(firstRow.isHittable)
         firstRow.tap()
 
@@ -325,16 +325,16 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         waitFor("stockDetail.bottomActionBar.shuffle").tap()
 
         let shuffleRoot = waitFor("stockDetail.shuffle.root")
-        let secondSymbol = waitFor("stockDetail.shuffle.symbol.hongKong:00700")
+        let secondSymbol = waitFor("stockDetail.shuffle.symbol.us:AAPL")
         secondSymbol.tap()
-        waitForCommittedInstrument("hongKong:00700")
-        waitForParentCommittedInstrument("hongKong:00700")
+        waitForCommittedInstrument("us:AAPL")
+        waitForParentCommittedInstrument("us:AAPL")
 
         waitFor("stockDetail.shuffle.card.current").tap()
         waitForDisappearance(shuffleRoot)
         XCTAssertTrue(waitFor("stockDetail.page").exists)
         XCTAssertTrue(
-            waitFor("stockDetail.navbar.title").label.contains("00700"),
+            waitFor("stockDetail.navbar.title").label.contains("AAPL"),
             "Tapping the current Shuffle card should exit to the selected instrument"
         )
     }
@@ -342,7 +342,7 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
     func testStockDetailShuffleAdjacentCardTapExitsToTappedInstrument() throws {
         enterWatchlist()
 
-        let firstRow = waitFor("watchlist.row.hk:09988")
+        let firstRow = waitFor("watchlist.row.us:NVDA")
         XCTAssertTrue(firstRow.isHittable)
         firstRow.tap()
 
@@ -355,11 +355,11 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         XCTAssertTrue(nextCard.frame.intersects(appFrame), "The next-card peek should be visible")
 
         nextCard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.04)).tap()
-        waitForParentCommittedInstrument("hongKong:00700")
+        waitForParentCommittedInstrument("us:AAPL")
         waitForDisappearance(shuffleRoot)
         XCTAssertTrue(waitFor("stockDetail.page").exists)
         XCTAssertTrue(
-            waitFor("stockDetail.navbar.title").label.contains("00700"),
+            waitFor("stockDetail.navbar.title").label.contains("AAPL"),
             "Tapping the next Shuffle card should exit to that instrument"
         )
     }
@@ -367,7 +367,7 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
     func testStockDetailShuffleQuoteExpansionIsSharedPersistedAndIndependent() throws {
         enterWatchlist()
 
-        let firstRow = waitFor("watchlist.row.hk:09988")
+        let firstRow = waitFor("watchlist.row.us:NVDA")
         XCTAssertTrue(firstRow.isHittable)
         firstRow.tap()
 
@@ -418,8 +418,8 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
             )
         }
 
-        waitFor("stockDetail.shuffle.symbol.hongKong:00700").tap()
-        waitForCommittedInstrument("hongKong:00700")
+        waitFor("stockDetail.shuffle.symbol.us:AAPL").tap()
+        waitForCommittedInstrument("us:AAPL")
         XCTAssertEqual(
             expansionButtons.firstMatch.value as? String,
             "已展开",

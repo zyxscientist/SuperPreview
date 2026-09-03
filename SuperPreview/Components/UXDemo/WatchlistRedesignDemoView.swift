@@ -20,6 +20,7 @@ struct WatchlistRedesignDemoView: View {
     @State private var isMultipleInAppNotificationSimulationEnabled = false
     @State private var selectedMainTab: AppTab = .tab1
     @EnvironmentObject private var demoLanguageStore: DemoLanguageStore
+    @Environment(\.scenePhase) private var scenePhase
 
     private var priceSimulationTaskID: String {
         "\(isPriceSimulationEnabled)-\(priceSimulationSpeed.rawValue)"
@@ -119,6 +120,23 @@ struct WatchlistRedesignDemoView: View {
                     }
                 }
             }
+        }
+        .task {
+            while !Task.isCancelled {
+                await MainActor.run {
+                    viewModel.refreshUSMarketSessions()
+                }
+
+                do {
+                    try await Task.sleep(nanoseconds: 15_000_000_000)
+                } catch {
+                    return
+                }
+            }
+        }
+        .onChange(of: scenePhase) { _, nextPhase in
+            guard nextPhase == .active else { return }
+            viewModel.refreshUSMarketSessions()
         }
         .environment(\.demoLanguage, demoLanguage)
     }
@@ -732,7 +750,7 @@ struct WatchlistRedesignPriceCell: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
 
-            if let secondaryPrice = item.secondaryPrice {
+            if let secondaryPrice = item.displayedSecondaryPrice {
                 Text(secondaryPrice)
                     .modifier(CustomFontModifier(size: 13, font: .medium, lineHeight: 16))
                     .monospacedDigit()

@@ -12,29 +12,42 @@ final class StockDetailPageConfigurationCache: ObservableObject {
     private struct CacheKey: Hashable {
         let instrument: StockDetailInstrument
         let includesBelowChartComponents: Bool
+        let usMarketPhase: USMarketTradingPhase?
     }
 
     private var storage: [CacheKey: StockDetailPageConfiguration] = [:]
 
     func configuration(
         for instrument: StockDetailInstrument,
-        includesBelowChartComponents: Bool = true
+        includesBelowChartComponents: Bool = true,
+        at date: Date = Date()
     ) -> StockDetailPageConfiguration {
         let key = CacheKey(
             instrument: instrument,
-            includesBelowChartComponents: includesBelowChartComponents
+            includesBelowChartComponents: includesBelowChartComponents,
+            usMarketPhase: StockDetailPageConfigurationFactory.currentUSMarketPhase(
+                for: instrument,
+                at: date
+            )
         )
 
+        let baseConfiguration: StockDetailPageConfiguration
         if let cachedConfiguration = storage[key] {
-            return cachedConfiguration
+            baseConfiguration = cachedConfiguration
+        } else {
+            let configuration = StockDetailPageConfigurationFactory.make(
+                for: instrument,
+                includesBelowChartComponents: includesBelowChartComponents,
+                now: date
+            )
+            storage[key] = configuration
+            baseConfiguration = configuration
         }
 
-        let configuration = StockDetailPageConfigurationFactory.make(
-            for: instrument,
-            includesBelowChartComponents: includesBelowChartComponents
+        return StockDetailPageConfigurationFactory.refreshingTimestamp(
+            in: baseConfiguration,
+            at: date
         )
-        storage[key] = configuration
-        return configuration
     }
 
     /// Builds and stores a configuration before the corresponding card is
@@ -77,10 +90,12 @@ struct StockDetailPage: View {
     @State private var isShowingDebugSheet = false
     @State private var shuffleSession: StockDetailShuffleSession?
     @State private var pendingShuffleExitInstrumentID: String?
+    @State private var detailTimestampDate = Date()
     @StateObject private var configurationCache: StockDetailPageConfigurationCache
 
     @EnvironmentObject private var demoLanguageStore: DemoLanguageStore
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.scenePhase) private var scenePhase
 
     init(
         instrument: StockDetailInstrument,
@@ -215,8 +230,28 @@ struct StockDetailPage: View {
             .environment(\.demoLanguage, activeLanguage)
         }
         .onChange(of: activeInstrument) { _, newInstrument in
+            detailTimestampDate = Date()
             resetPageState()
             completePendingShuffleExitIfNeeded(for: newInstrument)
+        }
+        .task(id: activeInstrument.market) {
+            guard activeInstrument.market == .us else { return }
+
+            while !Task.isCancelled {
+                await MainActor.run {
+                    detailTimestampDate = Date()
+                }
+
+                do {
+                    try await Task.sleep(nanoseconds: 1_000_000_000)
+                } catch {
+                    return
+                }
+            }
+        }
+        .onChange(of: scenePhase) { _, nextPhase in
+            guard nextPhase == .active, activeInstrument.market == .us else { return }
+            detailTimestampDate = Date()
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockDetail.page")
@@ -224,7 +259,24 @@ struct StockDetailPage: View {
     }
 
     private var configuration: StockDetailPageConfiguration {
-        configurationOverride ?? configurationCache.configuration(for: activeInstrument)
+        let includesBelowChartComponents = presentationMode != .shuffleCard
+
+        if activeInstrument.market == .us {
+            // Shuffle cards receive a prewarmed snapshot. U.S. details instead
+            // use their local phase-aware cache so the status can move from
+            // after-hours to closed while the card remains on screen.
+            return configurationCache.configuration(
+                for: activeInstrument,
+                includesBelowChartComponents: includesBelowChartComponents,
+                at: detailTimestampDate
+            )
+        }
+
+        return configurationOverride ?? configurationCache.configuration(
+            for: activeInstrument,
+            includesBelowChartComponents: includesBelowChartComponents,
+            at: detailTimestampDate
+        )
     }
 
     private func page(

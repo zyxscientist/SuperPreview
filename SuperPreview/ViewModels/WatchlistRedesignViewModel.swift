@@ -29,6 +29,131 @@ enum WatchlistRedesignSession {
     case afterHours(label: String, change: String)
 }
 
+enum WatchlistRedesignUSMarketPhase: Equatable {
+    case preMarket
+    case regular
+    case afterHours
+}
+
+/// The exchange's actual phase. The watchlist deliberately maps `.closed` to
+/// its carry-forward after-hours visual, while detail pages retain `.closed`.
+enum USMarketTradingPhase: Hashable {
+    case preMarket
+    case regular
+    case afterHours
+    case closed
+
+    var watchlistVisualPhase: WatchlistRedesignUSMarketPhase {
+        switch self {
+        case .preMarket:
+            .preMarket
+        case .regular:
+            .regular
+        case .afterHours, .closed:
+            .afterHours
+        }
+    }
+}
+
+/// Nasdaq's current U.S. equity schedule as of September 2026. `Date` is an
+/// absolute moment, so converting it with this fixed exchange timezone keeps
+/// the UI correct regardless of the device's configured timezone.
+enum USMarketSchedule {
+    private struct MarketDate: Hashable {
+        let year: Int
+        let month: Int
+        let day: Int
+    }
+
+    private static let easternTimeZone = TimeZone(identifier: "America/New_York")!
+    private static let easternCalendar: Calendar = {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = easternTimeZone
+        return calendar
+    }()
+    private static let preMarketOpenMinutes = 4 * 60
+    private static let regularOpenMinutes = 9 * 60 + 30
+    private static let regularCloseMinutes = 16 * 60
+    private static let afterHoursCloseMinutes = 20 * 60
+
+    // Nasdaq's published 2026 U.S. market closures.
+    private static let closedDates: Set<MarketDate> = [
+        .init(year: 2026, month: 1, day: 1),
+        .init(year: 2026, month: 1, day: 19),
+        .init(year: 2026, month: 2, day: 16),
+        .init(year: 2026, month: 4, day: 3),
+        .init(year: 2026, month: 5, day: 25),
+        .init(year: 2026, month: 6, day: 19),
+        .init(year: 2026, month: 7, day: 3),
+        .init(year: 2026, month: 9, day: 7),
+        .init(year: 2026, month: 11, day: 26),
+        .init(year: 2026, month: 12, day: 25)
+    ]
+
+    private static let earlyCloseDates: Set<MarketDate> = [
+        .init(year: 2026, month: 11, day: 27),
+        .init(year: 2026, month: 12, day: 24)
+    ]
+
+    static func tradingPhase(at date: Date) -> USMarketTradingPhase {
+        let components = easternCalendar.dateComponents(
+            [.year, .month, .day, .weekday, .hour, .minute],
+            from: date
+        )
+        guard
+            let year = components.year,
+            let month = components.month,
+            let day = components.day,
+            let weekday = components.weekday,
+            let hour = components.hour,
+            let minute = components.minute
+        else {
+            return .closed
+        }
+
+        let marketDate = MarketDate(year: year, month: month, day: day)
+        let isWeekend = weekday == 1 || weekday == 7
+        guard !isWeekend, !closedDates.contains(marketDate) else {
+            return .closed
+        }
+
+        let minutesAfterMidnight = hour * 60 + minute
+        let closeMinutes = earlyCloseDates.contains(marketDate) ? 13 * 60 : regularCloseMinutes
+
+        if minutesAfterMidnight < preMarketOpenMinutes {
+            return .closed
+        }
+        if minutesAfterMidnight < regularOpenMinutes {
+            return .preMarket
+        }
+        if minutesAfterMidnight < closeMinutes {
+            return .regular
+        }
+        if minutesAfterMidnight < afterHoursCloseMinutes {
+            return .afterHours
+        }
+
+        return .closed
+    }
+
+    static func easternTimestamp(at date: Date) -> (date: String, time: String) {
+        let components = easternCalendar.dateComponents(
+            [.month, .day, .hour, .minute, .second],
+            from: date
+        )
+
+        return (
+            date: String(format: "%02d/%02d", components.month ?? 1, components.day ?? 1),
+            time: String(
+                format: "%02d:%02d:%02d",
+                components.hour ?? 0,
+                components.minute ?? 0,
+                components.second ?? 0
+            )
+        )
+    }
+}
+
 enum WatchlistRedesignPriceSimulationSpeed: String, CaseIterable, Identifiable {
     case slow
     case medium
@@ -87,6 +212,7 @@ struct WatchlistRedesignItem: Identifiable {
     var changePercent: String
     var trend: WatchlistRedesignTrend
     var session: WatchlistRedesignSession
+    let extendedHoursChange: String
     let miniKPoints: [CGFloat]
     let tagAssets: [String]
     let isPinned: Bool
@@ -114,6 +240,7 @@ struct WatchlistRedesignItem: Identifiable {
         self.changePercent = changePercent
         self.trend = trend
         self.session = session
+        self.extendedHoursChange = session.extendedHoursChange ?? Self.defaultExtendedHoursChange(for: trend)
         self.miniKPoints = miniKPoints
         self.tagAssets = tagAssets
         self.isPinned = isPinned
@@ -122,11 +249,39 @@ struct WatchlistRedesignItem: Identifiable {
     var id: String {
         "\(market.rawValue):\(symbol)"
     }
+
+    var isShowingExtendedHoursVisual: Bool {
+        guard market == .us else { return false }
+
+        switch session {
+        case .regular:
+            return false
+        case .preMarket, .afterHours:
+            return true
+        }
+    }
+
+    var displayedSecondaryPrice: String? {
+        guard isShowingExtendedHoursVisual else { return nil }
+        return secondaryPrice ?? price
+    }
+
+    private static func defaultExtendedHoursChange(for trend: WatchlistRedesignTrend) -> String {
+        switch trend {
+        case .up:
+            return "+0.12%"
+        case .down:
+            return "-0.12%"
+        case .flat:
+            return "0.00%"
+        }
+    }
 }
 
 class WatchlistRedesignViewModel: ObservableObject {
     @Published var selectedTab = "全部"
     @Published private var groupedItems: [String: [WatchlistRedesignItem]] = [:]
+    private var usMarketPhase: WatchlistRedesignUSMarketPhase?
 
     let tabs = ["全部", "港股", "沪深", "美股", "ETFs", "自定义"]
 
@@ -139,6 +294,8 @@ class WatchlistRedesignViewModel: ObservableObject {
         let downLine = WatchlistRedesignViewModel.makeMiniKPoints(rising: false)
         let flatLine = Array(repeating: CGFloat(0.5), count: 50)
 
+        // Three arbitrary pinned examples; pinning is independent from the
+        // market ordering applied to the "全部" group below.
         let hkItems = [
             WatchlistRedesignItem(
                 name: "阿里巴巴-W",
@@ -164,7 +321,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 session: .regular,
                 miniKPoints: downLine,
                 tagAssets: [],
-                isPinned: true
+                isPinned: false
             ),
             WatchlistRedesignItem(
                 name: "小米集团-W",
@@ -177,7 +334,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 session: .regular,
                 miniKPoints: flatLine,
                 tagAssets: [],
-                isPinned: true
+                isPinned: false
             ),
             WatchlistRedesignItem(
                 name: "美团-W",
@@ -219,7 +376,7 @@ class WatchlistRedesignViewModel: ObservableObject {
                 session: .regular,
                 miniKPoints: downLine,
                 tagAssets: [],
-                isPinned: false
+                isPinned: true
             ),
             WatchlistRedesignItem(
                 name: "比亚迪",
@@ -299,6 +456,136 @@ class WatchlistRedesignViewModel: ObservableObject {
                 trend: .flat,
                 session: .regular,
                 miniKPoints: flatLine,
+                tagAssets: [],
+                isPinned: false
+            ),
+            WatchlistRedesignItem(
+                name: "亚马逊",
+                symbol: "AMZN",
+                market: .us,
+                price: "228.150",
+                secondaryPrice: nil,
+                changePercent: "1.42%",
+                trend: .up,
+                session: .regular,
+                miniKPoints: upLine,
+                tagAssets: [],
+                isPinned: true
+            ),
+            WatchlistRedesignItem(
+                name: "谷歌-A",
+                symbol: "GOOGL",
+                market: .us,
+                price: "202.470",
+                secondaryPrice: "202.470",
+                changePercent: "0.68%",
+                trend: .up,
+                session: .afterHours(label: "盘后", change: "+0.11%"),
+                miniKPoints: upLine,
+                tagAssets: [],
+                isPinned: false
+            ),
+            WatchlistRedesignItem(
+                name: "Meta",
+                symbol: "META",
+                market: .us,
+                price: "518.420",
+                secondaryPrice: nil,
+                changePercent: "2.17%",
+                trend: .up,
+                session: .regular,
+                miniKPoints: upLine,
+                tagAssets: [],
+                isPinned: false
+            ),
+            WatchlistRedesignItem(
+                name: "博通",
+                symbol: "AVGO",
+                market: .us,
+                price: "178.620",
+                secondaryPrice: "178.620",
+                changePercent: "1.05%",
+                trend: .down,
+                session: .afterHours(label: "盘后", change: "-0.08%"),
+                miniKPoints: downLine,
+                tagAssets: [],
+                isPinned: false
+            ),
+            WatchlistRedesignItem(
+                name: "AMD",
+                symbol: "AMD",
+                market: .us,
+                price: "164.880",
+                secondaryPrice: nil,
+                changePercent: "3.26%",
+                trend: .up,
+                session: .regular,
+                miniKPoints: upLine,
+                tagAssets: [],
+                isPinned: false
+            ),
+            WatchlistRedesignItem(
+                name: "奈飞",
+                symbol: "NFLX",
+                market: .us,
+                price: "689.120",
+                secondaryPrice: "689.120",
+                changePercent: "0.94%",
+                trend: .up,
+                session: .preMarket(label: "盘前", change: "+0.16%"),
+                miniKPoints: upLine,
+                tagAssets: [],
+                isPinned: false
+            ),
+            WatchlistRedesignItem(
+                name: "摩根大通",
+                symbol: "JPM",
+                market: .us,
+                price: "214.340",
+                secondaryPrice: nil,
+                changePercent: "0.38%",
+                trend: .up,
+                session: .regular,
+                miniKPoints: upLine,
+                tagAssets: [],
+                isPinned: false
+            ),
+            WatchlistRedesignItem(
+                name: "沃尔玛",
+                symbol: "WMT",
+                market: .us,
+                price: "102.760",
+                secondaryPrice: nil,
+                changePercent: "0.00%",
+                trend: .flat,
+                session: .regular,
+                miniKPoints: flatLine,
+                tagAssets: [],
+                isPinned: false
+            ),
+            WatchlistRedesignItem(
+                name: "可口可乐",
+                symbol: "KO",
+                market: .us,
+                price: "70.180",
+                secondaryPrice: nil,
+                changePercent: "0.52%",
+                trend: .up,
+                session: .regular,
+                miniKPoints: upLine,
+                tagAssets: [],
+                isPinned: false
+            ),
+            WatchlistRedesignItem(
+                name: "迪士尼",
+                symbol: "DIS",
+                market: .us,
+                price: "112.430",
+                secondaryPrice: nil,
+                changePercent: "1.31%",
+                trend: .down,
+                session: .regular,
+                miniKPoints: downLine,
                 tagAssets: [],
                 isPinned: false
             )
@@ -435,14 +722,37 @@ class WatchlistRedesignViewModel: ObservableObject {
             )
         ]
 
+        let allItems = hkItems + cnItems + usItems + etfItems + customItems
+        // Some US-listed ETFs and ADRs live in the ETF/custom groups, so sort
+        // by market here to keep every US-listed instrument together at the top.
+        let allItemsWithUSFirst = allItems.filter { $0.market == .us } + allItems.filter { $0.market != .us }
+
         groupedItems = [
-            "全部": hkItems + cnItems + usItems + etfItems + customItems,
+            "全部": allItemsWithUSFirst,
             "港股": hkItems,
             "沪深": cnItems,
             "美股": usItems,
             "ETFs": etfItems,
             "自定义": customItems
         ]
+
+        refreshUSMarketSessions()
+    }
+
+    func refreshUSMarketSessions(now: Date = Date()) {
+        let nextPhase = USMarketSchedule.tradingPhase(at: now).watchlistVisualPhase
+        guard nextPhase != usMarketPhase else { return }
+
+        usMarketPhase = nextPhase
+        groupedItems = groupedItems.mapValues { items in
+            items.map { item in
+                guard item.market == .us else { return item }
+
+                var updatedItem = item
+                updatedItem.session = .forUSMarketPhase(nextPhase, change: item.extendedHoursChange)
+                return updatedItem
+            }
+        }
     }
 
     func items(for tab: String) -> [WatchlistRedesignItem] {
@@ -473,7 +783,6 @@ class WatchlistRedesignViewModel: ObservableObject {
                 updatedItem.secondaryPrice = tick.secondaryPrice
                 updatedItem.changePercent = tick.changePercent
                 updatedItem.trend = tick.trend
-                updatedItem.session = tick.session
                 return updatedItem
             }
         }
@@ -517,7 +826,6 @@ private struct WatchlistRedesignPriceTick {
     let secondaryPrice: String?
     let changePercent: String
     let trend: WatchlistRedesignTrend
-    let session: WatchlistRedesignSession
 
     init(item: WatchlistRedesignItem) {
         let previousPrice = item.price.numericPrice
@@ -531,10 +839,9 @@ private struct WatchlistRedesignPriceTick {
         let nextTrend = WatchlistRedesignPriceTick.trend(for: signedChange)
 
         price = formattedPrice
-        secondaryPrice = item.showsExtendedHoursPrice ? item.extendedHoursPriceSource.formattedPrice(nextPrice) : nil
+        secondaryPrice = item.secondaryPrice.map { $0.formattedPrice(nextPrice) }
         changePercent = formattedChange
         trend = nextTrend
-        session = item.session.updating(changePercent: formattedChange, trend: nextTrend)
     }
 
     private static func priceDirection(for trend: WatchlistRedesignTrend) -> Double {
@@ -571,23 +878,6 @@ private struct WatchlistRedesignPriceTick {
 }
 
 private extension WatchlistRedesignItem {
-    var showsExtendedHoursPrice: Bool {
-        guard market == .us else {
-            return false
-        }
-
-        switch session {
-        case .regular:
-            return false
-        case .preMarket, .afterHours:
-            return true
-        }
-    }
-
-    var extendedHoursPriceSource: String {
-        secondaryPrice ?? price
-    }
-
     var signedChangePercent: Double {
         let value = changePercent.percentValue
 
@@ -629,25 +919,26 @@ private extension String {
 }
 
 private extension WatchlistRedesignSession {
-    func updating(changePercent: String, trend: WatchlistRedesignTrend) -> WatchlistRedesignSession {
-        let signedChangePercent: String
-
-        switch trend {
-        case .up:
-            signedChangePercent = "+\(changePercent)"
-        case .down:
-            signedChangePercent = "-\(changePercent)"
-        case .flat:
-            signedChangePercent = changePercent
-        }
-
+    var extendedHoursChange: String? {
         switch self {
         case .regular:
+            return nil
+        case .preMarket(_, let change), .afterHours(_, let change):
+            return change
+        }
+    }
+
+    static func forUSMarketPhase(
+        _ phase: WatchlistRedesignUSMarketPhase,
+        change: String
+    ) -> WatchlistRedesignSession {
+        switch phase {
+        case .preMarket:
+            return .preMarket(label: "盘前", change: change)
+        case .regular:
             return .regular
-        case .preMarket(let label, _):
-            return .preMarket(label: label, change: signedChangePercent)
-        case .afterHours(let label, _):
-            return .afterHours(label: label, change: signedChangePercent)
+        case .afterHours:
+            return .afterHours(label: "盘后", change: change)
         }
     }
 }

@@ -318,27 +318,74 @@ struct StockDetailPageConfiguration {
     let historyOrders: [StockDetailTransactionHistoryOrderData]?
 }
 
+fileprivate extension StockDetailPageConfiguration {
+    func replacingQuoteData(_ quoteData: StockDetailQuoteDataModel) -> StockDetailPageConfiguration {
+        StockDetailPageConfiguration(
+            instrument: instrument,
+            symbol: symbol,
+            variant: variant,
+            tabs: tabs,
+            quoteData: quoteData,
+            relatedItems: relatedItems,
+            orderBookData: orderBookData,
+            brokerOrderBookData: brokerOrderBookData,
+            capitalDistributionData: capitalDistributionData,
+            moneyFlowData: moneyFlowData,
+            positionState: positionState,
+            transactionOrders: transactionOrders,
+            historyOrders: historyOrders
+        )
+    }
+}
+
+fileprivate extension StockDetailQuoteDataModel {
+    func replacingTimestamp(_ timestamp: StockDetailQuoteTimestamp) -> StockDetailQuoteDataModel {
+        StockDetailQuoteDataModel(
+            market: market,
+            timestamp: timestamp,
+            badges: badges,
+            price: price,
+            change: change,
+            changePercent: changePercent,
+            trend: trend,
+            summaryItems: summaryItems,
+            details: details
+        )
+    }
+}
+
 enum StockDetailPageConfigurationFactory {
     static func make(
         for instrument: StockDetailInstrument,
-        includesBelowChartComponents: Bool = true
+        includesBelowChartComponents: Bool = true,
+        now: Date = Date()
     ) -> StockDetailPageConfiguration {
-        let variant = StockDetailPageVariant(instrument: instrument)
-        let symbol = makeOrderSymbol(for: instrument)
-        let quoteData = makeQuoteData(for: instrument, variant: variant)
+        let displayedInstrument = instrumentForCurrentUSMarketPhase(
+            instrument,
+            at: now
+        )
+        let variant = StockDetailPageVariant(instrument: displayedInstrument)
+        let symbol = makeOrderSymbol(for: displayedInstrument)
+        let quoteData = makeQuoteData(
+            for: displayedInstrument,
+            variant: variant,
+            now: now
+        )
 
         return StockDetailPageConfiguration(
-            instrument: instrument,
+            instrument: displayedInstrument,
             symbol: symbol,
             variant: variant,
             tabs: variant.tabs,
             quoteData: quoteData,
-            relatedItems: variant.showsRelatedInfo ? relatedItems(for: instrument, variant: variant) : [],
+            relatedItems: variant.showsRelatedInfo
+                ? relatedItems(for: displayedInstrument, variant: variant)
+                : [],
             orderBookData: includesBelowChartComponents && variant.showsOrderBook
-                ? orderBookData(for: instrument)
+                ? orderBookData(for: displayedInstrument)
                 : nil,
             brokerOrderBookData: includesBelowChartComponents && variant.showsBrokerOrderBook
-                ? brokerOrderBookData(for: instrument)
+                ? brokerOrderBookData(for: displayedInstrument)
                 : nil,
             capitalDistributionData: includesBelowChartComponents && variant.showsCapitalDistribution
                 ? .mock
@@ -347,15 +394,93 @@ enum StockDetailPageConfigurationFactory {
                 ? .mock
                 : nil,
             positionState: includesBelowChartComponents && variant.showsTransactionModule
-                ? positionState(for: instrument)
+                ? positionState(for: displayedInstrument)
                 : nil,
             transactionOrders: includesBelowChartComponents && variant.showsTransactionModule
-                ? transactionOrders(for: instrument)
+                ? transactionOrders(for: displayedInstrument)
                 : nil,
             historyOrders: includesBelowChartComponents && variant.showsTransactionModule
-                ? historyOrders(for: instrument)
+                ? historyOrders(for: displayedInstrument)
                 : nil
         )
+    }
+
+    /// Halted instruments retain their explicit exchange status. Every other
+    /// U.S. instrument is driven by the current U.S. exchange schedule.
+    static func currentUSMarketPhase(
+        for instrument: StockDetailInstrument,
+        at date: Date
+    ) -> USMarketTradingPhase? {
+        guard instrument.market == .us else { return nil }
+
+        if case .halted = instrument.quote.session {
+            return nil
+        }
+
+        return USMarketSchedule.tradingPhase(at: date)
+    }
+
+    /// The page cache keeps expensive structural data per trading phase. This
+    /// refresh only replaces the U.S. timestamp once per display tick.
+    static func refreshingTimestamp(
+        in configuration: StockDetailPageConfiguration,
+        at date: Date
+    ) -> StockDetailPageConfiguration {
+        guard currentUSMarketPhase(for: configuration.instrument, at: date) != nil else {
+            return configuration
+        }
+
+        return configuration.replacingQuoteData(
+            configuration.quoteData.replacingTimestamp(
+                timestamp(for: configuration.instrument, at: date)
+            )
+        )
+    }
+
+    private static func instrumentForCurrentUSMarketPhase(
+        _ instrument: StockDetailInstrument,
+        at date: Date
+    ) -> StockDetailInstrument {
+        guard let phase = currentUSMarketPhase(for: instrument, at: date) else {
+            return instrument
+        }
+
+        let extendedHoursChange = extendedHoursChange(for: instrument.quote)
+        let session: StockDetailInstrumentSession
+        switch phase {
+        case .preMarket:
+            session = .preMarket(change: extendedHoursChange)
+        case .regular:
+            session = .regular
+        case .afterHours:
+            session = .afterHours(change: extendedHoursChange)
+        case .closed:
+            session = .closed
+        }
+
+        return StockDetailInstrument(
+            symbol: instrument.symbol,
+            fallbackName: instrument.fallbackName,
+            localizationID: instrument.localizationID,
+            market: instrument.market,
+            kind: instrument.kind,
+            quote: StockDetailInstrumentQuote(
+                price: instrument.quote.price,
+                secondaryPrice: instrument.quote.secondaryPrice,
+                changePercent: instrument.quote.changePercent,
+                trend: instrument.quote.trend,
+                session: session
+            )
+        )
+    }
+
+    private static func extendedHoursChange(for quote: StockDetailInstrumentQuote) -> String {
+        switch quote.session {
+        case let .preMarket(change), let .afterHours(change):
+            return change
+        case .regular, .closed, .halted:
+            return signedPercent(quote.changePercent, trend: quote.trend)
+        }
     }
 
     private static func makeOrderSymbol(for instrument: StockDetailInstrument) -> StockOrderSymbol {
@@ -404,7 +529,8 @@ enum StockDetailPageConfigurationFactory {
 
     private static func makeQuoteData(
         for instrument: StockDetailInstrument,
-        variant: StockDetailPageVariant
+        variant: StockDetailPageVariant,
+        now: Date
     ) -> StockDetailQuoteDataModel {
         let fractionDigits = decimalPlaces(instrument.quote.price)
         let numericPrice = max(instrument.quote.price.numericStockDetailValue, 0)
@@ -427,7 +553,7 @@ enum StockDetailPageConfigurationFactory {
 
         return StockDetailQuoteDataModel(
             market: instrument.market.quoteMarket,
-            timestamp: timestamp(for: instrument),
+            timestamp: timestamp(for: instrument, at: now),
             price: instrument.quote.price,
             change: signedChange,
             changePercent: signedPercent(instrument.quote.changePercent, trend: instrument.quote.trend),
@@ -469,7 +595,10 @@ enum StockDetailPageConfigurationFactory {
         )
     }
 
-    private static func timestamp(for instrument: StockDetailInstrument) -> StockDetailQuoteTimestamp {
+    private static func timestamp(
+        for instrument: StockDetailInstrument,
+        at date: Date
+    ) -> StockDetailQuoteTimestamp {
         let session: StockDetailTradingSession
         switch instrument.quote.session {
         case .regular:
@@ -498,10 +627,17 @@ enum StockDetailPageConfigurationFactory {
             timeZone = .init(simplifiedChinese: "(北京)", traditionalChinese: "(北京)", english: "(CST)")
         }
 
+        let timestamp: (date: String, time: String)
+        if instrument.market == .us {
+            timestamp = USMarketSchedule.easternTimestamp(at: date)
+        } else {
+            timestamp = (date: "08/31", time: "14:44:01")
+        }
+
         return StockDetailQuoteTimestamp(
             session: session,
-            date: "08/31",
-            time: "14:44:01",
+            date: timestamp.date,
+            time: timestamp.time,
             localizedTimeZone: timeZone
         )
     }
@@ -958,6 +1094,16 @@ private enum StockDetailInstrumentLocalization {
         "AAPL": "wl-us-apple",
         "TSLA": "wl-us-tesla",
         "MSFT": "wl-us-microsoft",
+        "AMZN": "wl-us-amazon",
+        "GOOGL": "wl-us-alphabet-a",
+        "META": "wl-us-meta",
+        "AVGO": "wl-us-broadcom",
+        "AMD": "wl-us-amd",
+        "NFLX": "wl-us-netflix",
+        "JPM": "wl-us-jpmorgan",
+        "WMT": "wl-us-walmart",
+        "KO": "wl-us-coca-cola",
+        "DIS": "wl-us-disney",
         "03032": "wl-etf-hstech",
         "513100": "wl-etf-nasdaq-cn",
         "LU012376428": "wl-fund-energy",
