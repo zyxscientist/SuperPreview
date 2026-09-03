@@ -780,6 +780,7 @@ struct StockDetailUSCommonStockPage_Previews: PreviewProvider {
                 .environmentObject(DemoLanguageStore(initialLanguage: .simplifiedChinese))
                 .previewDisplayName("期权 · 空白页 · 底部操作栏固定")
         }
+        .environmentObject(DemoAppearanceStore())
         .previewLayout(.fixed(width: 402, height: 874))
     }
 }

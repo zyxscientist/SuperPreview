@@ -924,6 +924,7 @@ struct StockDetailShuffleView_Previews: PreviewProvider {
             .preferredColorScheme(.dark)
             .previewDisplayName("English · Dark")
         }
+        .environmentObject(DemoAppearanceStore())
         .previewLayout(.fixed(width: 402, height: 874))
 
         StockDetailShufflePreviewHost(
@@ -932,6 +933,7 @@ struct StockDetailShuffleView_Previews: PreviewProvider {
         )
         .environment(\.demoLanguage, .english)
         .environmentObject(DemoLanguageStore(initialLanguage: .english))
+        .environmentObject(DemoAppearanceStore())
         .preferredColorScheme(.dark)
         .previewLayout(.fixed(width: 440, height: 956))
         .previewDisplayName("iPhone Pro Max · English · Dark")

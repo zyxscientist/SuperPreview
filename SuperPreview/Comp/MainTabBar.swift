@@ -89,6 +89,7 @@ struct MainTabBar: UIViewRepresentable {
             selectedImage: UIImage(named: tab.activeImageName)
         )
         item.tag = tab.rawValue
+        item.accessibilityIdentifier = "mainTab.tab\(tab.rawValue + 1)"
         return item
     }
 
@@ -131,5 +132,85 @@ private struct MainTabBarContainerModifier: ViewModifier {
 extension View {
     func mainTabBar(selectedTab: Binding<AppTab>) -> some View {
         modifier(MainTabBarContainerModifier(selectedTab: selectedTab))
+    }
+
+    func mainTabBar(if isEnabled: Bool, selectedTab: Binding<AppTab>) -> some View {
+        modifier(ConditionalMainTabBarModifier(isEnabled: isEnabled, selectedTab: selectedTab))
+    }
+
+    func navigationBarDebugItem(
+        isEnabled: Bool,
+        title: String,
+        identifier: String,
+        action: @escaping () -> Void
+    ) -> some View {
+        modifier(
+            ConditionalNavigationBarDebugItemModifier(
+                isEnabled: isEnabled,
+                title: title,
+                identifier: identifier,
+                action: action
+            )
+        )
+    }
+
+    func navigationBarTitleIfEnabled(_ title: String, isEnabled: Bool) -> some View {
+        modifier(
+            ConditionalNavigationBarTitleModifier(
+                isEnabled: isEnabled,
+                title: title
+            )
+        )
+    }
+}
+
+private struct ConditionalMainTabBarModifier: ViewModifier {
+    let isEnabled: Bool
+    @Binding var selectedTab: AppTab
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if isEnabled {
+            content.mainTabBar(selectedTab: $selectedTab)
+        } else {
+            content
+        }
+    }
+}
+
+private struct ConditionalNavigationBarDebugItemModifier: ViewModifier {
+    let isEnabled: Bool
+    let title: String
+    let identifier: String
+    let action: () -> Void
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if isEnabled {
+            content.navigationBarItems(
+                trailing: Button(action: action) {
+                    Text(title)
+                        .modifier(CustomFontModifier(size: 13, font: .medium, lineHeight: 16))
+                        .foregroundColor(Color("color-text-30"))
+                }
+                .accessibilityIdentifier(identifier)
+            )
+        } else {
+            content
+        }
+    }
+}
+
+private struct ConditionalNavigationBarTitleModifier: ViewModifier {
+    let isEnabled: Bool
+    let title: String
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if isEnabled {
+            content.navigationBarTitle(title, displayMode: .inline)
+        } else {
+            content
+        }
     }
 }

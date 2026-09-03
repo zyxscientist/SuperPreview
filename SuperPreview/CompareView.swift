@@ -28,6 +28,7 @@ static var previews: some View {
             CompareView()
         }
         .environmentObject(DemoLanguageStore(initialLanguage: .simplifiedChinese))
+        .environmentObject(DemoAppearanceStore())
         .preferredColorScheme(.dark)
     }
 }

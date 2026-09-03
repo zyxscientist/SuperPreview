@@ -6,6 +6,9 @@
 import SwiftUI
 
 struct TradeAggregationDemoView: View {
+    private let showsMainTabBar: Bool
+    private let showsNavigationBarTitle: Bool
+    private let externalDebugPresentation: Binding<Bool>?
     @StateObject private var viewModel = TradeAggregationDemoViewModel()
     @State private var selectedCategory: AssetCategory = .stocks
     @State private var isNumberHidden = false
@@ -19,6 +22,17 @@ struct TradeAggregationDemoView: View {
     @State private var selectedMainTab: AppTab = .tab2
     @State private var isShowingStockOrder = false
     @EnvironmentObject private var demoLanguageStore: DemoLanguageStore
+    @EnvironmentObject private var demoAppearanceStore: DemoAppearanceStore
+
+    init(
+        showsMainTabBar: Bool = true,
+        showsNavigationBarTitle: Bool = true,
+        debugPresentation: Binding<Bool>? = nil
+    ) {
+        self.showsMainTabBar = showsMainTabBar
+        self.showsNavigationBarTitle = showsNavigationBarTitle
+        self.externalDebugPresentation = debugPresentation
+    }
 
     var body: some View {
         GeometryReader { geometry in
@@ -53,7 +67,10 @@ struct TradeAggregationDemoView: View {
                                 .frame(height: TradeAggregationLayout.standardVerticalSpacing)
                         }
 
-                        AssetCategoryTabBar(selection: $selectedCategory)
+                        AssetCategoryTabBar(
+                            selection: $selectedCategory,
+                            isReducedLiquidGlassUsageEnabled: demoAppearanceStore.isReducedLiquidGlassUsageEnabled
+                        )
 
                         selectedCategoryPage(viewportWidth: geometry.size.width)
                     }
@@ -116,33 +133,44 @@ struct TradeAggregationDemoView: View {
             .hidden()
             .accessibilityIdentifier("trade.stockOrder.navigation")
         )
-        .mainTabBar(selectedTab: $selectedMainTab)
+        .mainTabBar(if: showsMainTabBar, selectedTab: $selectedMainTab)
         .inAppNotificationSimulation(
             isEnabled: isInAppNotificationSimulationEnabled && !isShowingDebugPanel,
             isMultipleMessages: isMultipleInAppNotificationSimulationEnabled
         )
-        .navigationBarTitle(demoLanguage.text(.newTrade), displayMode: .inline)
-        .navigationBarItems(
-            trailing: Button(action: {
+        .navigationBarTitleIfEnabled(
+            demoLanguage.text(.newTrade),
+            isEnabled: showsNavigationBarTitle
+        )
+        .navigationBarDebugItem(
+            isEnabled: externalDebugPresentation == nil,
+            title: demoLanguage.text(.debug),
+            identifier: "trade.debug.open",
+            action: {
                 isShowingDebugPanel = true
-            }) {
-                Text(demoLanguage.text(.debug))
-                    .modifier(CustomFontModifier(size: 13, font: .medium, lineHeight: 16))
-                    .foregroundColor(Color("color-text-30"))
             }
-            .accessibilityIdentifier("trade.debug.open")
         )
         .toolbarBackground(Color("color-base-1"), for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
-        .sheet(isPresented: $isShowingDebugPanel) {
+        .sheet(
+            isPresented: $isShowingDebugPanel,
+            onDismiss: {
+                externalDebugPresentation?.wrappedValue = false
+            }
+        ) {
             TradeAggregationDebugPanel(
                 language: demoLanguageBinding,
                 isLiveDataEnabled: $isLiveDataEnabled,
                 isMRTestingEnabled: $isMRTestingEnabled,
                 isSummerAdvertisementEnabled: $isSummerAdvertisementEnabled,
                 isInAppNotificationSimulationEnabled: $isInAppNotificationSimulationEnabled,
-                isMultipleInAppNotificationSimulationEnabled: $isMultipleInAppNotificationSimulationEnabled
+                isMultipleInAppNotificationSimulationEnabled: $isMultipleInAppNotificationSimulationEnabled,
+                isReducedLiquidGlassUsageEnabled: reducedLiquidGlassUsageBinding
             )
+        }
+        .onChange(of: externalDebugPresentation?.wrappedValue ?? false) { _, isPresented in
+            guard isPresented != isShowingDebugPanel else { return }
+            isShowingDebugPanel = isPresented
         }
         .onPreferenceChange(TradeAggregationQuickMenuTopPreferenceKey.self) {
             quickMenuTopPositions.merge($0) { _, newValue in newValue }
@@ -202,6 +230,13 @@ struct TradeAggregationDemoView: View {
         Binding(
             get: { demoLanguageStore.language },
             set: { demoLanguageStore.language = $0 }
+        )
+    }
+
+    private var reducedLiquidGlassUsageBinding: Binding<Bool> {
+        Binding(
+            get: { demoAppearanceStore.isReducedLiquidGlassUsageEnabled },
+            set: { demoAppearanceStore.isReducedLiquidGlassUsageEnabled = $0 }
         )
     }
 
@@ -537,6 +572,7 @@ private struct TradeAggregationDebugPanel: View {
     @Binding var isSummerAdvertisementEnabled: Bool
     @Binding var isInAppNotificationSimulationEnabled: Bool
     @Binding var isMultipleInAppNotificationSimulationEnabled: Bool
+    @Binding var isReducedLiquidGlassUsageEnabled: Bool
     @Environment(\.dismiss) private var dismiss
     @Environment(\.demoLanguage) private var interfaceLanguage
 
@@ -557,6 +593,11 @@ private struct TradeAggregationDebugPanel: View {
             }
 
             DemoLanguagePicker(language: $language)
+
+            DemoLiquidGlassUsageToggle(
+                isReducedLiquidGlassUsageEnabled: $isReducedLiquidGlassUsageEnabled
+            )
+            .accessibilityIdentifier("trade.debug.reduceLiquidGlass")
 
             Toggle(isOn: $isLiveDataEnabled) {
                 VStack(alignment: .leading, spacing: 4) {
@@ -665,6 +706,7 @@ struct TradeAggregationDemoView_Previews: PreviewProvider {
             }
             .navigationViewStyle(StackNavigationViewStyle())
             .environmentObject(DemoLanguageStore(initialLanguage: .simplifiedChinese))
+            .environmentObject(DemoAppearanceStore())
             .previewLayout(.fixed(width: 402, height: 874))
             .previewDisplayName("iPhone 17 Pro · 402×874")
 
@@ -673,6 +715,7 @@ struct TradeAggregationDemoView_Previews: PreviewProvider {
             }
             .navigationViewStyle(StackNavigationViewStyle())
             .environmentObject(DemoLanguageStore(initialLanguage: .simplifiedChinese))
+            .environmentObject(DemoAppearanceStore())
             .previewLayout(.fixed(width: 440, height: 956))
             .previewDisplayName("iPhone 17 Pro Max · 440×956")
         }

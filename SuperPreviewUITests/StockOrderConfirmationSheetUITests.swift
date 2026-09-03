@@ -129,6 +129,8 @@ final class StockOrderConfirmationSheetUITests: XCTestCase {
     }
 
     private func enterStockOrder() {
+        waitFor("mainTab.tab6").tap()
+        XCTAssertTrue(waitFor("compare.componentLibrary").exists)
         waitFor("compare.stockOrder").tap()
         XCTAssertTrue(waitFor("stockOrder.demo").exists)
 

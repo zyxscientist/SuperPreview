@@ -48,6 +48,13 @@ final class DemoLanguageStore: ObservableObject {
     }
 }
 
+/// Appearance switches shared by the demo pages. The state intentionally lives
+/// above the individual pages so every debug panel controls the same visual
+/// treatment while the app is running.
+final class DemoAppearanceStore: ObservableObject {
+    @Published var isReducedLiquidGlassUsageEnabled = false
+}
+
 private struct DemoLanguageKey: EnvironmentKey {
     static let defaultValue = DemoLanguage.simplifiedChinese
 }
@@ -61,6 +68,7 @@ extension EnvironmentValues {
 
 enum DemoCopyKey {
     case newWatchlist, newTrade, stockOrderPage, debug, done, interfaceLanguage
+    case reduceLiquidGlassUsage, reduceLiquidGlassUsageDetails
     case navigateOnTap, navigateOnTapOn, navigateOnTapOff, tabBarFontSize
     case simulateQuoteUpdates, quoteUpdatesOn, quoteUpdatesOff, updateSpeed
     case slow, medium, fast, mixed
@@ -223,6 +231,8 @@ private enum DemoCopy {
         .debug: ("调试", "除錯", "Debug"),
         .done: ("完成", "完成", "Done"),
         .interfaceLanguage: ("界面语言", "介面語言", "Interface Language"),
+        .reduceLiquidGlassUsage: ("减少液态玻璃使用", "減少液態玻璃使用", "Reduce Liquid Glass"),
+        .reduceLiquidGlassUsageDetails: ("开启后，选中态恢复为实心 Capsule 样式", "開啟後，選中態恢復為實心 Capsule 樣式", "Selected states use the original solid Capsule style when enabled."),
         .navigateOnTap: ("点按后跳转", "點按後跳轉", "Navigate on Tap"),
         .navigateOnTapOn: ("开启后，松开点按会进入空白详情页", "開啟後，放開點按會進入空白詳情頁", "When enabled, releasing a tap opens the blank detail screen."),
         .navigateOnTapOff: ("关闭后，仅展示列表的点按背景效果", "關閉後，僅顯示列表的點按背景效果", "When disabled, taps only show the row press effect."),
@@ -678,6 +688,25 @@ struct DemoLanguagePicker: View {
             }
             .pickerStyle(.segmented)
             .accessibilityIdentifier("demo.language.picker")
+        }
+    }
+}
+
+struct DemoLiquidGlassUsageToggle: View {
+    @Binding var isReducedLiquidGlassUsageEnabled: Bool
+    @Environment(\.demoLanguage) private var interfaceLanguage
+
+    var body: some View {
+        Toggle(isOn: $isReducedLiquidGlassUsageEnabled) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(interfaceLanguage.text(.reduceLiquidGlassUsage))
+                    .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
+                    .foregroundColor(Color("color-text-30"))
+
+                Text(interfaceLanguage.text(.reduceLiquidGlassUsageDetails))
+                    .modifier(CustomFontModifier(size: 13, font: .regular, lineHeight: 16))
+                    .foregroundColor(Color("color-text-60"))
+            }
         }
     }
 }

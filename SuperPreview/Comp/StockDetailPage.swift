@@ -94,6 +94,7 @@ struct StockDetailPage: View {
     @StateObject private var configurationCache: StockDetailPageConfigurationCache
 
     @EnvironmentObject private var demoLanguageStore: DemoLanguageStore
+    @EnvironmentObject private var demoAppearanceStore: DemoAppearanceStore
     @Environment(\.dismiss) private var dismiss
     @Environment(\.scenePhase) private var scenePhase
 
@@ -161,7 +162,8 @@ struct StockDetailPage: View {
                         StockDetailPageHeaderTabs(
                             tabs: pageConfiguration.tabs,
                             selection: $selectedTab,
-                            onInteraction: onShuffleCardInteraction
+                            onInteraction: onShuffleCardInteraction,
+                            isReducedLiquidGlassUsageEnabled: demoAppearanceStore.isReducedLiquidGlassUsageEnabled
                         )
                     }
 
@@ -211,7 +213,8 @@ struct StockDetailPage: View {
         .sheet(isPresented: debugSheetIsPresented) {
             StockDetailDebugSheet(
                 selection: $activeInstrument,
-                language: debugLanguageBinding
+                language: debugLanguageBinding,
+                isReducedLiquidGlassUsageEnabled: reducedLiquidGlassUsageBinding
             )
             .environment(\.demoLanguage, activeLanguage)
         }
@@ -595,6 +598,13 @@ struct StockDetailPage: View {
         )
     }
 
+    private var reducedLiquidGlassUsageBinding: Binding<Bool> {
+        Binding(
+            get: { demoAppearanceStore.isReducedLiquidGlassUsageEnabled },
+            set: { demoAppearanceStore.isReducedLiquidGlassUsageEnabled = $0 }
+        )
+    }
+
     private var fixedBottomActionBar: some View {
         VStack(spacing: 0) {
             StockDetailBottomActionBar(
@@ -618,6 +628,7 @@ private struct StockDetailPageHeaderTabs: View {
     let tabs: [StockDetailPageTab]
     @Binding var selection: StockDetailPageTab
     let onInteraction: (() -> Void)?
+    let isReducedLiquidGlassUsageEnabled: Bool
 
     @Environment(\.demoLanguage) private var language
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -666,7 +677,7 @@ private struct StockDetailPageHeaderTabs: View {
                         )
                         .foregroundColor(
                             isSelected
-                                ? Color("color-text-30")
+                                ? (isReducedLiquidGlassUsageEnabled ? Color("color-text-r") : Color("color-text-30"))
                                 : Color("color-text-60")
                         )
                         .padding(.horizontal, StockDetailPageHeaderTabsLayout.itemHorizontalPadding)
@@ -692,7 +703,7 @@ private struct StockDetailPageHeaderTabs: View {
                 if let selectedAnchor = anchors[selection] {
                     let selectedFrame = proxy[selectedAnchor]
 
-                    selectionGlassBackground
+                    selectionBackground
                         .frame(width: selectedFrame.width, height: selectedFrame.height)
                         .position(x: selectedFrame.midX, y: selectedFrame.midY)
                 }
@@ -701,8 +712,13 @@ private struct StockDetailPageHeaderTabs: View {
     }
 
     @ViewBuilder
-    private var selectionGlassBackground: some View {
-        if #available(iOS 26.0, *) {
+    private var selectionBackground: some View {
+        if isReducedLiquidGlassUsageEnabled {
+            Capsule()
+                .fill(Color("color-base-r"))
+                .allowsHitTesting(false)
+                .accessibilityHidden(true)
+        } else if #available(iOS 26.0, *) {
             Color.clear
                 .glassEffect(.regular, in: Capsule())
                 .allowsHitTesting(false)
@@ -732,6 +748,7 @@ private struct StockDetailPageEmptyView: View {
 private struct StockDetailDebugSheet: View {
     @Binding var selection: StockDetailInstrument
     @Binding var language: DemoLanguage
+    @Binding var isReducedLiquidGlassUsageEnabled: Bool
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.demoLanguage) private var interfaceLanguage
@@ -760,6 +777,13 @@ private struct StockDetailDebugSheet: View {
                 .padding(.horizontal, 20)
                 .padding(.bottom, 12)
                 .accessibilityIdentifier("stockDetail.debug.language")
+
+            DemoLiquidGlassUsageToggle(
+                isReducedLiquidGlassUsageEnabled: $isReducedLiquidGlassUsageEnabled
+            )
+            .padding(.horizontal, 20)
+            .padding(.bottom, 12)
+            .accessibilityIdentifier("stockDetail.debug.reduceLiquidGlass")
 
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 8) {
@@ -914,6 +938,7 @@ struct StockDetailPage_Previews: PreviewProvider {
                 .environmentObject(DemoLanguageStore(initialLanguage: .simplifiedChinese))
                 .previewDisplayName("加密货币")
         }
+        .environmentObject(DemoAppearanceStore())
         .previewLayout(.fixed(width: 402, height: 874))
     }
 }

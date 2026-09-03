@@ -23,7 +23,16 @@ enum AssetCategory: String, CaseIterable, Identifiable {
 
 struct AssetCategoryTabBar: View {
     @Binding var selection: AssetCategory
+    let isReducedLiquidGlassUsageEnabled: Bool
     @Environment(\.demoLanguage) private var language
+
+    init(
+        selection: Binding<AssetCategory>,
+        isReducedLiquidGlassUsageEnabled: Bool = false
+    ) {
+        self._selection = selection
+        self.isReducedLiquidGlassUsageEnabled = isReducedLiquidGlassUsageEnabled
+    }
 
     var body: some View {
         ZStack(alignment: .trailing) {
@@ -61,13 +70,22 @@ struct AssetCategoryTabBar: View {
                         relativeTo: .subheadline
                     )
                 )
-                .foregroundColor(isSelected ? Color("color-text-30") : Color("color-text-60"))
+                .foregroundColor(
+                    isSelected
+                        ? (isReducedLiquidGlassUsageEnabled ? Color("color-text-r") : Color("color-text-30"))
+                        : Color("color-text-60")
+                )
                 .lineLimit(1)
                 .fixedSize(horizontal: true, vertical: false)
                 .frame(height: 20)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 4)
-                .modifier(AssetCategoryTabSelectionBackground(isSelected: isSelected))
+                .modifier(
+                    AssetCategoryTabSelectionBackground(
+                        isSelected: isSelected,
+                        isReducedLiquidGlassUsageEnabled: isReducedLiquidGlassUsageEnabled
+                    )
+                )
         }
         .buttonStyle(PlainButtonStyle())
         .frame(height: 48)
@@ -101,15 +119,18 @@ struct AssetCategoryTabBar: View {
 
 private struct AssetCategoryTabSelectionBackground: ViewModifier {
     let isSelected: Bool
+    let isReducedLiquidGlassUsageEnabled: Bool
 
     @ViewBuilder
     func body(content: Content) -> some View {
-        if isSelected {
+        if isSelected && !isReducedLiquidGlassUsageEnabled {
             if #available(iOS 26.0, *) {
                 content.glassEffect(.regular.interactive(), in: Capsule())
             } else {
                 content.background(Color("color-base-r"), in: Capsule())
             }
+        } else if isSelected {
+            content.background(Color("color-base-r"), in: Capsule())
         } else {
             content.background(Color("color-base-1"), in: Capsule())
         }

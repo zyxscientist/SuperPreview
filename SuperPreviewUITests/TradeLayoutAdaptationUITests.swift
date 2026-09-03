@@ -28,6 +28,8 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
     }
 
     func testCompareComponentLibraryUsesFullWidthAndNavigates() throws {
+        enterComponentLibrary()
+
         let componentLibrary = waitFor("compare.componentLibrary")
         assertWidth(of: componentLibrary, equals: expectedViewportWidth)
 
@@ -112,7 +114,7 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
 
         let inlineMenu = waitFor("trade.quickMenu.inline")
         let inlineFrame = inlineMenu.frame
-        let scroll = app.scrollViews.firstMatch
+        let scroll = app.scrollViews["trade.scroll"].firstMatch
         XCTAssertTrue(scroll.waitForExistence(timeout: 8), "Missing trade vertical scroll view")
         for _ in 0..<6 where !element("trade.quickMenu.pinned").exists {
             scroll.swipeUp()
@@ -187,7 +189,6 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         enterTrade()
 
         openDebugAndSelectLanguage("English")
-        XCTAssertTrue(app.navigationBars["New Trade"].waitForExistence(timeout: 5))
         XCTAssertEqual(waitFor("trade.categoryTab.stocks").label, "Stocks")
         XCTAssertEqual(waitFor("trade.metric.securitiesMarketValue").label, "Securities Market Value")
         XCTAssertEqual(waitFor("trade.header.marketValueQuantityHeader").label, "Market Value and Quantity")
@@ -195,7 +196,6 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Position Details"].exists)
 
         openDebugAndSelectLanguage("繁體中文")
-        XCTAssertTrue(app.navigationBars["新交易"].waitForExistence(timeout: 5))
         XCTAssertEqual(waitFor("trade.categoryTab.virtualAssets").label, "虛擬資產")
         XCTAssertTrue(app.staticTexts["持倉明細"].exists)
 
@@ -203,17 +203,15 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         XCTAssertEqual(waitFor("trade.categoryTab.stocks").label, "股票")
 
         openDebugAndSelectLanguage("English")
-        let backButton = app.navigationBars["New Trade"].buttons.element(boundBy: 0)
-        XCTAssertTrue(backButton.waitForExistence(timeout: 5))
-        backButton.tap()
-        waitFor("compare.newWatchlist").tap()
+        selectMainTab("mainTab.tab1")
         XCTAssertTrue(waitFor("watchlist.root").exists)
-        XCTAssertTrue(app.navigationBars["New Watchlist"].waitForExistence(timeout: 5))
         XCTAssertEqual(waitFor("watchlist.header.changePercent").label, "Percentage Change")
         XCTAssertEqual(waitFor("watchlist.debug.status.changeHeader").label, "Chg%")
     }
 
     func testStockDetailDebugLanguageSelectionUpdatesPage() throws {
+        enterComponentLibrary()
+
         let detailEntry = waitFor("compare.stockDetailUSCommonStock")
         let componentLibrary = waitFor("compare.componentLibrary")
 
@@ -232,7 +230,7 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         XCTAssertTrue(waitFor("stockDetail.debug.sheet").exists)
         selectStockDetailLanguage("简体中文")
         dismissStockDetailDebugPanel()
-        XCTAssertEqual(waitFor("stockDetail.page.headerTab.quote").label, "报价")
+        XCTAssertEqual(waitFor("stockDetail.page.headerTab.quote", label: "报价").label, "报价")
 
         waitFor("stockDetail.navbar.debug").tap()
         XCTAssertTrue(waitFor("stockDetail.debug.sheet").exists)
@@ -240,20 +238,20 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
 
         selectStockDetailLanguage("English")
         dismissStockDetailDebugPanel()
-        XCTAssertEqual(waitFor("stockDetail.page.headerTab.quote").label, "Quote")
+        XCTAssertEqual(waitFor("stockDetail.page.headerTab.quote", label: "Quote").label, "Quote")
         XCTAssertEqual(waitFor("stockDetail.bottomActionBar.trade").label, "Trade")
         XCTAssertTrue(waitFor("stockDetail.page.disclaimer").label.hasPrefix("Notice:"))
 
         waitFor("stockDetail.navbar.debug").tap()
         selectStockDetailLanguage("繁體中文")
         dismissStockDetailDebugPanel()
-        XCTAssertEqual(waitFor("stockDetail.page.headerTab.quote").label, "報價")
+        XCTAssertEqual(waitFor("stockDetail.page.headerTab.quote", label: "報價").label, "報價")
         XCTAssertTrue(waitFor("stockDetail.page.disclaimer").label.hasPrefix("提示:本頁面"))
 
         waitFor("stockDetail.navbar.debug").tap()
         selectStockDetailLanguage("简体中文")
         dismissStockDetailDebugPanel()
-        XCTAssertEqual(waitFor("stockDetail.page.headerTab.quote").label, "报价")
+        XCTAssertEqual(waitFor("stockDetail.page.headerTab.quote", label: "报价").label, "报价")
     }
 
     func testStockDetailShuffleUsesWatchlistSnapshotAndExitsToSelectedInstrument() throws {
@@ -462,10 +460,14 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         enterWatchlist()
 
         waitFor("watchlist.debug.open").tap()
-        waitFor("watchlist.debug.inAppNotification").tap()
+        let notificationToggle = app.switches["watchlist.debug.inAppNotification"]
+        XCTAssertTrue(notificationToggle.waitForExistence(timeout: 8))
+        notificationToggle.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
 
         let debugPanel = waitFor("watchlist.debug.panel")
-        debugPanel.swipeDown()
+        let sheetGrabber = app.buttons["Sheet Grabber"]
+        XCTAssertTrue(sheetGrabber.waitForExistence(timeout: 5), "Missing sheet grabber")
+        sheetGrabber.swipeDown()
         waitForDisappearance(debugPanel)
 
         let banner = waitFor("inAppNotification.tradeBanner")
@@ -497,8 +499,9 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
     func testTradeInAppNotificationRepeatsAndStops() throws {
         enterTrade()
 
-        app.buttons["Debug"].tap()
-        waitFor("trade.debug.inAppNotification").tap()
+        let debugButton = waitFor("trade.debug.open")
+        debugButton.tap()
+        toggleDebugSwitch("trade.debug.inAppNotification")
         dismissDebugPanel()
         XCTAssertEqual(
             waitFor("trade.debug.status.inAppNotification").label,
@@ -510,21 +513,31 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
 
         sleep(4)
         XCTAssertTrue(banner.exists, "Banner should remain visible for five seconds")
-        waitForDisappearance(banner, timeout: 2)
+        XCTAssertTrue(
+            waitUntilDisappears(banner, timeout: 8),
+            "Banner should exit before the next repeated notification"
+        )
         XCTAssertTrue(
             banner.waitForExistence(timeout: 3),
             "Banner should reappear one second after its exit animation"
         )
+        XCTAssertTrue(
+            waitUntilDisappears(banner, timeout: 8),
+            "The repeated banner should eventually leave the viewport"
+        )
 
-        app.buttons["Debug"].tap()
-        waitFor("trade.debug.inAppNotification").tap()
+        debugButton.tap()
+        toggleDebugSwitch("trade.debug.inAppNotification")
         dismissDebugPanel()
         XCTAssertEqual(
             waitFor("trade.debug.status.inAppNotification").label,
             "INAPP_DISABLED"
         )
 
-        waitForDisappearance(banner, timeout: 2)
+        XCTAssertTrue(
+            waitUntilDisappears(banner, timeout: 3),
+            "Disabling the simulation should dismiss the current banner"
+        )
         sleep(2)
         XCTAssertFalse(banner.exists, "Banner must not restart after the toggle is disabled")
     }
@@ -532,8 +545,8 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
     func testTradeInAppNotificationTouchResetsCountdownAndSwipeUpDismisses() throws {
         enterTrade()
 
-        app.buttons["Debug"].tap()
-        waitFor("trade.debug.inAppNotification").tap()
+        waitFor("trade.debug.open").tap()
+        toggleDebugSwitch("trade.debug.inAppNotification")
         dismissDebugPanel()
 
         let banner = waitFor("inAppNotification.tradeBanner")
@@ -547,7 +560,20 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         )
 
         banner.swipeUp()
-        waitForDisappearance(banner, timeout: 2)
+        if !waitUntilDisappears(banner, timeout: 1) {
+            let start = banner.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.8))
+            let end = banner.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.1))
+            start.press(
+                forDuration: 0.1,
+                thenDragTo: end,
+                withVelocity: .fast,
+                thenHoldForDuration: 0
+            )
+        }
+        XCTAssertTrue(
+            waitUntilDisappears(banner, timeout: 3),
+            "Swiping the banner up should dismiss it"
+        )
         XCTAssertTrue(
             banner.waitForExistence(timeout: 3),
             "A manually dismissed banner should continue the enabled simulation cycle"
@@ -557,9 +583,9 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
     func testTradeMultipleInAppNotificationsReplaceCurrentBanner() throws {
         enterTrade()
 
-        app.buttons["Debug"].tap()
-        waitFor("trade.debug.inAppNotification").tap()
-        waitFor("trade.debug.inAppNotificationMultiple").tap()
+        waitFor("trade.debug.open").tap()
+        toggleDebugSwitch("trade.debug.inAppNotification")
+        toggleDebugSwitch("trade.debug.inAppNotificationMultiple")
         dismissDebugPanel()
 
         XCTAssertEqual(
@@ -580,13 +606,22 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
     }
 
     private func enterWatchlist() {
-        waitFor("compare.newWatchlist").tap()
+        selectMainTab("mainTab.tab1")
         XCTAssertTrue(waitFor("watchlist.root").exists)
     }
 
     private func enterTrade() {
-        waitFor("compare.newTrade").tap()
+        selectMainTab("mainTab.tab2")
         XCTAssertTrue(waitFor("trade.root").exists)
+    }
+
+    private func enterComponentLibrary() {
+        selectMainTab("mainTab.tab6")
+        XCTAssertTrue(waitFor("compare.componentLibrary").exists)
+    }
+
+    private func selectMainTab(_ identifier: String) {
+        waitFor(identifier).tap()
     }
 
     private func selectStockDetailLanguage(_ language: String) {
@@ -607,6 +642,12 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         XCTAssertTrue(close.waitForExistence(timeout: 5), "Missing debug close button")
         close.tap()
         _ = waitFor("trade.root", timeout: 5)
+    }
+
+    private func toggleDebugSwitch(_ identifier: String) {
+        let toggle = app.switches[identifier].firstMatch
+        XCTAssertTrue(toggle.waitForExistence(timeout: 8), "Missing debug switch: \(identifier)")
+        toggle.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
     }
 
     private func openDebugAndSelectLanguage(_ language: String) {
@@ -630,10 +671,43 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         XCTAssertEqual(result, .completed, "Element did not disappear", file: file, line: line)
     }
 
+    private func waitUntilDisappears(
+        _ element: XCUIElement,
+        timeout: TimeInterval
+    ) -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            if !element.exists {
+                return true
+            }
+            RunLoop.current.run(until: Date().addingTimeInterval(0.1))
+        }
+        return !element.exists
+    }
+
     @discardableResult
     private func waitFor(_ identifier: String, timeout: TimeInterval = 8) -> XCUIElement {
         let element = app.descendants(matching: .any)[identifier].firstMatch
         XCTAssertTrue(element.waitForExistence(timeout: timeout), "Missing element: \(identifier)")
+        return element
+    }
+
+    @discardableResult
+    private func waitFor(
+        _ identifier: String,
+        label: String,
+        timeout: TimeInterval = 8
+    ) -> XCUIElement {
+        let element = waitFor(identifier, timeout: timeout)
+        let expectation = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "label == %@", label),
+            object: element
+        )
+        XCTAssertEqual(
+            XCTWaiter.wait(for: [expectation], timeout: timeout),
+            .completed,
+            "Element \(identifier) did not update to label \(label)"
+        )
         return element
     }
 

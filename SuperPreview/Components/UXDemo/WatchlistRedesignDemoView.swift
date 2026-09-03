@@ -9,6 +9,9 @@
 import SwiftUI
 
 struct WatchlistRedesignDemoView: View {
+    private let showsMainTabBar: Bool
+    private let showsNavigationBarTitle: Bool
+    private let externalDebugPresentation: Binding<Bool>?
     @StateObject private var viewModel = WatchlistRedesignViewModel()
     @State private var isShowingDebugPanel = false
     @State private var shouldNavigateOnRowTap = true
@@ -20,7 +23,18 @@ struct WatchlistRedesignDemoView: View {
     @State private var isMultipleInAppNotificationSimulationEnabled = false
     @State private var selectedMainTab: AppTab = .tab1
     @EnvironmentObject private var demoLanguageStore: DemoLanguageStore
+    @EnvironmentObject private var demoAppearanceStore: DemoAppearanceStore
     @Environment(\.scenePhase) private var scenePhase
+
+    init(
+        showsMainTabBar: Bool = true,
+        showsNavigationBarTitle: Bool = true,
+        debugPresentation: Binding<Bool>? = nil
+    ) {
+        self.showsMainTabBar = showsMainTabBar
+        self.showsNavigationBarTitle = showsNavigationBarTitle
+        self.externalDebugPresentation = debugPresentation
+    }
 
     private var priceSimulationTaskID: String {
         "\(isPriceSimulationEnabled)-\(priceSimulationSpeed.rawValue)"
@@ -32,7 +46,8 @@ struct WatchlistRedesignDemoView: View {
                 WatchlistRedesignTabs(
                     tabs: viewModel.tabs,
                     selectedTab: $viewModel.selectedTab,
-                    fontSize: tabBarFontSize
+                    fontSize: tabBarFontSize,
+                    isReducedLiquidGlassUsageEnabled: demoAppearanceStore.isReducedLiquidGlassUsageEnabled
                 )
                 WatchlistRedesignTableHeader(isMiniKVisible: $isMiniKVisible)
 
@@ -59,30 +74,42 @@ struct WatchlistRedesignDemoView: View {
                         .accessibilityIdentifier("watchlist.debug.status.language")
                     Text(demoLanguage.text(.changePercent))
                         .accessibilityIdentifier("watchlist.debug.status.changeHeader")
+                    Text(
+                        isInAppNotificationSimulationEnabled
+                            ? "INAPP_ENABLED"
+                            : "INAPP_DISABLED"
+                    )
+                    .accessibilityIdentifier("watchlist.debug.status.inAppNotification")
                 }
                 .frame(width: 1, height: 1)
                 .accessibilityElement(children: .contain)
                 .allowsHitTesting(false)
             }
         }
-        .mainTabBar(selectedTab: $selectedMainTab)
+        .mainTabBar(if: showsMainTabBar, selectedTab: $selectedMainTab)
         .inAppNotificationSimulation(
             isEnabled: isInAppNotificationSimulationEnabled && !isShowingDebugPanel,
             isMultipleMessages: isMultipleInAppNotificationSimulationEnabled
         )
         .accessibilityIdentifier("watchlist.root")
-        .navigationBarTitle(demoLanguage.text(.newWatchlist), displayMode: .inline)
-        .navigationBarItems(
-            trailing: Button(action: {
-                isShowingDebugPanel = true
-            }) {
-                Text(demoLanguage.text(.debug))
-                    .modifier(CustomFontModifier(size: 13, font: .medium, lineHeight: 16))
-                    .foregroundColor(Color("color-text-30"))
-            }
-            .accessibilityIdentifier("watchlist.debug.open")
+        .navigationBarTitleIfEnabled(
+            demoLanguage.text(.newWatchlist),
+            isEnabled: showsNavigationBarTitle
         )
-        .sheet(isPresented: $isShowingDebugPanel) {
+        .navigationBarDebugItem(
+            isEnabled: externalDebugPresentation == nil,
+            title: demoLanguage.text(.debug),
+            identifier: "watchlist.debug.open",
+            action: {
+                isShowingDebugPanel = true
+            }
+        )
+        .sheet(
+            isPresented: $isShowingDebugPanel,
+            onDismiss: {
+                externalDebugPresentation?.wrappedValue = false
+            }
+        ) {
             WatchlistRedesignDebugPanel(
                 language: demoLanguageBinding,
                 shouldNavigateOnRowTap: $shouldNavigateOnRowTap,
@@ -90,8 +117,14 @@ struct WatchlistRedesignDemoView: View {
                 isPriceSimulationEnabled: $isPriceSimulationEnabled,
                 priceSimulationSpeed: $priceSimulationSpeed,
                 isInAppNotificationSimulationEnabled: $isInAppNotificationSimulationEnabled,
-                isMultipleInAppNotificationSimulationEnabled: $isMultipleInAppNotificationSimulationEnabled
+                isMultipleInAppNotificationSimulationEnabled: $isMultipleInAppNotificationSimulationEnabled,
+                isReducedLiquidGlassUsageEnabled: reducedLiquidGlassUsageBinding
             )
+            .presentationDragIndicator(.visible)
+        }
+        .onChange(of: externalDebugPresentation?.wrappedValue ?? false) { _, isPresented in
+            guard isPresented != isShowingDebugPanel else { return }
+            isShowingDebugPanel = isPresented
         }
         .task(id: priceSimulationTaskID) {
             guard isPriceSimulationEnabled else { return }
@@ -149,6 +182,13 @@ struct WatchlistRedesignDemoView: View {
         Binding(
             get: { demoLanguageStore.language },
             set: { demoLanguageStore.language = $0 }
+        )
+    }
+
+    private var reducedLiquidGlassUsageBinding: Binding<Bool> {
+        Binding(
+            get: { demoAppearanceStore.isReducedLiquidGlassUsageEnabled },
+            set: { demoAppearanceStore.isReducedLiquidGlassUsageEnabled = $0 }
         )
     }
 }
@@ -307,6 +347,7 @@ struct WatchlistRedesignDebugPanel: View {
     @Binding var priceSimulationSpeed: WatchlistRedesignPriceSimulationSpeed
     @Binding var isInAppNotificationSimulationEnabled: Bool
     @Binding var isMultipleInAppNotificationSimulationEnabled: Bool
+    @Binding var isReducedLiquidGlassUsageEnabled: Bool
     @Environment(\.demoLanguage) private var interfaceLanguage
 
     var body: some View {
@@ -316,6 +357,11 @@ struct WatchlistRedesignDebugPanel: View {
                 .foregroundColor(Color("color-text-30"))
 
             DemoLanguagePicker(language: $language)
+
+            DemoLiquidGlassUsageToggle(
+                isReducedLiquidGlassUsageEnabled: $isReducedLiquidGlassUsageEnabled
+            )
+            .accessibilityIdentifier("watchlist.debug.reduceLiquidGlass")
 
             Toggle(isOn: $shouldNavigateOnRowTap) {
                 VStack(alignment: .leading, spacing: 4) {
@@ -415,6 +461,7 @@ struct WatchlistRedesignTabs: View {
     let tabs: [String]
     @Binding var selectedTab: String
     let fontSize: CGFloat
+    let isReducedLiquidGlassUsageEnabled: Bool
     @Environment(\.demoLanguage) private var language
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -465,7 +512,11 @@ struct WatchlistRedesignTabs: View {
                 } label: {
                     Text(language.watchlistTabTitle(tab))
                         .modifier(CustomFontModifier(size: fontSize, font: isSelected ? .bold : .regular, lineHeight: 24))
-                        .foregroundColor(isSelected ? Color("color-text-30") : Color("color-text-60"))
+                        .foregroundColor(
+                            isSelected
+                                ? (isReducedLiquidGlassUsageEnabled ? Color("color-text-r") : Color("color-text-30"))
+                                : Color("color-text-60")
+                        )
                         .padding(.horizontal, 14)
                         .frame(height: 32)
                         .transaction { transaction in
@@ -487,7 +538,7 @@ struct WatchlistRedesignTabs: View {
                 if let selectedAnchor = anchors[selectedTab] {
                     let selectedFrame = proxy[selectedAnchor]
 
-                    selectionGlassBackground
+                    selectionBackground
                         .frame(width: selectedFrame.width, height: selectedFrame.height)
                         .position(x: selectedFrame.midX, y: selectedFrame.midY)
                 }
@@ -496,8 +547,13 @@ struct WatchlistRedesignTabs: View {
     }
 
     @ViewBuilder
-    private var selectionGlassBackground: some View {
-        if #available(iOS 26.0, *) {
+    private var selectionBackground: some View {
+        if isReducedLiquidGlassUsageEnabled {
+            Capsule()
+                .fill(Color("color-base-r"))
+                .allowsHitTesting(false)
+                .accessibilityHidden(true)
+        } else if #available(iOS 26.0, *) {
             Color.clear
                 .glassEffect(.regular, in: Capsule())
                 .allowsHitTesting(false)
@@ -581,6 +637,7 @@ struct WatchlistRedesignTableHeader: View {
                 .padding(.trailing, 10)
                 .position(x: proxy.size.width - 47, y: 18)
             }
+            .accessibilityElement(children: .contain)
         }
         .frame(height: 36)
         .background(Color("color-base-1"))
@@ -961,5 +1018,6 @@ struct WatchlistRedesignDemoViewPreviews: PreviewProvider {
             WatchlistRedesignDemoView()
         }
         .environmentObject(DemoLanguageStore(initialLanguage: .simplifiedChinese))
+        .environmentObject(DemoAppearanceStore())
     }
 }
