@@ -59,6 +59,33 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         }
     }
 
+    func testVirtualAssetsOmitTodayProfitLossFields() throws {
+        enterTrade()
+
+        waitFor("trade.categoryTab.virtualAssets").tap()
+
+        let card = waitFor("trade.subAssetCard")
+        XCTAssertFalse(
+            card.descendants(matching: .any)["trade.subAssetCard.profitLoss"].exists,
+            "Virtual-asset SubAssetCard must not show today's P/L"
+        )
+        XCTAssertTrue(
+            waitFor("trade.metric.positionProfitLoss").exists,
+            "Virtual-asset SubAssetCard must keep position P/L"
+        )
+        let cryptocurrencyTable = waitFor("trade.virtualTable.cryptocurrency")
+        XCTAssertFalse(
+            cryptocurrencyTable.descendants(matching: .any)["trade.header.dayProfitLossHeader"].exists,
+            "Cryptocurrency holdings must not show a today's P/L column"
+        )
+
+        let rwaTable = waitFor("trade.virtualTable.rwa")
+        XCTAssertTrue(
+            rwaTable.descendants(matching: .any)["trade.header.dayProfitLossHeader"].exists,
+            "RWA holdings must keep a today's P/L column"
+        )
+    }
+
     func testTradeExpansionHorizontalScrollAndStickyMenu() throws {
         enterTrade()
 

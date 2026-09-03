@@ -121,22 +121,25 @@ struct StockDetailShuffleView: View {
     /// A soft, screen-wide frost across the top edge. The gradient mask keeps
     /// it strongest at the very top and fades it out just past the card's top
     /// edge, so the card only catches a faint veil instead of a hard band.
+    @ViewBuilder
     private var topFrost: some View {
-        Rectangle()
-            .fill(.ultraThinMaterial)
-            .frame(height: ShuffleLayout.topFrostHeight)
-            .mask(
-                LinearGradient(
-                    stops: [
-                        .init(color: .white, location: 0),
-                        .init(color: .clear, location: 1)
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
+        if selectedIndex > 0 {
+            BlurView(style: .systemUltraThinMaterial)
+                .opacity(ShuffleLayout.topFrostBlurOpacity)
+                .frame(height: ShuffleLayout.topFrostHeight)
+                .mask(
+                    LinearGradient(
+                        stops: [
+                            .init(color: .white, location: 0),
+                            .init(color: .clear, location: 1)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
                 )
-            )
-            .allowsHitTesting(false)
-            .accessibilityHidden(true)
+                .allowsHitTesting(false)
+                .accessibilityHidden(true)
+        }
     }
 
     private func exitToCurrentInstrument() {
@@ -660,7 +663,7 @@ private struct StockDetailShuffleSymbolBar: View {
             ZStack {
                 glassBackground(shape: Circle())
 
-                Image("virtual_holding_close")
+                Image("stock_detail_shuffle_close")
                     .resizable()
                     .scaledToFit()
                     .frame(width: ShuffleLayout.closeIconSize, height: ShuffleLayout.closeIconSize)
@@ -766,6 +769,7 @@ private enum ShuffleLayout {
     // The frost fades to nothing just past the card's top edge
     // (verticalPeek + cardGap = 62), so the card only catches its faint tail.
     static let topFrostHeight: CGFloat = verticalPeek + cardGap + 22
+    static let topFrostBlurOpacity: CGFloat = 0.15
     static let cardGap: CGFloat = 8
     static let cardCornerRadius: CGFloat = 20
 
@@ -773,7 +777,7 @@ private enum ShuffleLayout {
     static let symbolBarBottomInset: CGFloat = 16
     static let symbolBarHeight: CGFloat = 38
     static let symbolBarGap: CGFloat = 8
-    static let closeIconSize: CGFloat = 16
+    static let closeIconSize: CGFloat = 24
     static let symbolSpacing: CGFloat = 14
     static let symbolCapsuleHorizontalPadding: CGFloat = 14
     static let minimumSymbolCapsuleWidth: CGFloat = 63

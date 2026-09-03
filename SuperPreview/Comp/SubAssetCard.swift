@@ -119,8 +119,8 @@ extension View {
 struct SubAssetCardHeader: View {
     let currency: String
     let netAsset: String
-    let profitLossTitle: String
-    let profitLoss: String
+    let profitLossTitle: String?
+    let profitLoss: String?
     let isNumberHidden: Bool
     let isExpanded: Bool
     let toggleExpansion: () -> Void
@@ -141,19 +141,22 @@ struct SubAssetCardHeader: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
 
-                HStack(spacing: 8) {
-                    Text(profitLossTitle)
-                        .font(.custom("PlusJakartaSans-Regular", size: 14, relativeTo: .subheadline))
-                        .foregroundColor(Color("color-text-60"))
+                if let profitLossTitle, let profitLoss {
+                    HStack(spacing: 8) {
+                        Text(profitLossTitle)
+                            .font(.custom("PlusJakartaSans-Regular", size: 14, relativeTo: .subheadline))
+                            .foregroundColor(Color("color-text-60"))
 
-                    Text(SubAssetCardValue.display(profitLoss, isNumberHidden: isNumberHidden))
-                        .font(.custom("PlusJakartaSans-Medium", size: 14, relativeTo: .subheadline))
-                        .foregroundColor(Color(isNumberHidden ? "color-text-30" : "color-utility2-red"))
+                        Text(SubAssetCardValue.display(profitLoss, isNumberHidden: isNumberHidden))
+                            .font(.custom("PlusJakartaSans-Medium", size: 14, relativeTo: .subheadline))
+                            .foregroundColor(Color(isNumberHidden ? "color-text-30" : "color-utility2-red"))
+                    }
+                    .frame(height: 20)
+                    .lineLimit(1)
+                    .accessibilityIdentifier("trade.subAssetCard.profitLoss")
                 }
-                .frame(height: 20)
-                .lineLimit(1)
             }
-            .frame(maxWidth: .infinity, minHeight: 84, maxHeight: 84, alignment: .topLeading)
+            .frame(maxWidth: .infinity, minHeight: headerHeight, maxHeight: headerHeight, alignment: .topLeading)
 
             Spacer(minLength: 0)
 
@@ -164,7 +167,11 @@ struct SubAssetCardHeader: View {
             .sensoryFeedback(.impact(weight: .medium), trigger: isExpanded)
             .accessibilityLabel(language.text(isExpanded ? .collapseAssetDetails : .expandAssetDetails))
         }
-        .frame(maxWidth: .infinity, minHeight: 84, maxHeight: 84, alignment: .top)
+        .frame(maxWidth: .infinity, minHeight: headerHeight, maxHeight: headerHeight, alignment: .top)
+    }
+
+    private var headerHeight: CGFloat {
+        profitLossTitle != nil && profitLoss != nil ? 84 : 60
     }
 }
 

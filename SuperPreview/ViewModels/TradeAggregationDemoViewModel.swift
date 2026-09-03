@@ -139,9 +139,6 @@ final class TradeAggregationDemoViewModel: ObservableObject {
         let virtualAssetMarketValueTotalUSD = virtualAssetPositions.reduce(0) {
             $0 + $1.currentPrice * $1.quantity
         }
-        let virtualAssetTodayProfitLossUSD = virtualAssetPositions.reduce(0) {
-            $0 + ($1.currentPrice - $1.previousClose) * $1.quantity
-        }
         let virtualAssetHoldingProfitLossUSD = virtualAssetPositions.reduce(0) {
             $0 + ($1.currentPrice - $1.costPrice) * $1.quantity
         }
@@ -183,10 +180,6 @@ final class TradeAggregationDemoViewModel: ObservableObject {
             virtualAssetCard: VirtualAssetsSubAssetCardModel(
                 currency: "USD",
                 netAsset: money(virtualAssetNetAssetUSD),
-                todayProfitLoss: signedMoneyWithRate(
-                    virtualAssetTodayProfitLossUSD,
-                    denominator: virtualAssetNetAssetUSD - virtualAssetTodayProfitLossUSD
-                ),
                 marketValue: money(virtualAssetMarketValueTotalUSD),
                 availableCash: money(virtualAssetCashUSD),
                 positionProfitLoss: signedMoney(virtualAssetHoldingProfitLossUSD),

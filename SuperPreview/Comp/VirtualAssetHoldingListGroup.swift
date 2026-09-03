@@ -472,6 +472,8 @@ private enum VirtualAssetHoldingLayout {
     static let separatorAreaHeight: CGFloat = 1
     static let nameWidth: CGFloat = 126
     static let metricsLeadingInset: CGFloat = 134
+    // Keep the original column width. Crypto removes one column and shifts
+    // the following columns left instead of stretching them.
     static let metricWidth: CGFloat = 88
     static let metricSpacing: CGFloat = 8
     static let trailingInset: CGFloat = 16
@@ -507,6 +509,7 @@ private struct VirtualAssetHoldingScrollableSection: View {
 
             if isExpanded {
                 VirtualAssetHoldingScrollableTable(
+                    category: section.category,
                     holdings: section.holdings,
                     isNumberHidden: isNumberHidden,
                     expandedHoldingID: expandedHoldingID,
@@ -696,6 +699,7 @@ private struct VirtualAssetHoldingFooterInfo: View {
 }
 
 private struct VirtualAssetHoldingScrollableTable: View {
+    let category: VirtualAssetHoldingCategory
     let holdings: [VirtualAssetHoldingItem]
     let isNumberHidden: Bool
     let expandedHoldingID: VirtualAssetHoldingItem.ID?
@@ -704,7 +708,7 @@ private struct VirtualAssetHoldingScrollableTable: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            VirtualAssetHoldingScrollableHeader()
+            VirtualAssetHoldingScrollableHeader(category: category)
 
             ForEach(holdings) { holding in
                 VStack(alignment: .leading, spacing: 0) {
@@ -712,6 +716,7 @@ private struct VirtualAssetHoldingScrollableTable: View {
                         onHoldingTap(holding)
                     } label: {
                         VirtualAssetHoldingMetricsRow(
+                            category: category,
                             holding: holding,
                             isNumberHidden: isNumberHidden
                         )
@@ -750,6 +755,8 @@ private struct VirtualAssetHoldingScrollableTable: View {
             alignment: .topLeading
         )
         .background(Color("color-base-1"))
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("trade.virtualTable.\(category.rawValue)")
     }
 }
 
@@ -805,14 +812,25 @@ private struct VirtualAssetHoldingFixedTable: View {
 }
 
 private struct VirtualAssetHoldingScrollableHeader: View {
+    let category: VirtualAssetHoldingCategory
     @Environment(\.demoLanguage) private var language
-    private let columns: [(key: DemoCopyKey, imageName: String)] = [
-        (.marketValueQuantityHeader, "holding_sort_descending"),
-        (.lastCostHeader, "holding_sort_default"),
-        (.dayProfitLossHeader, "holding_sort_default"),
-        (.positionProfitLossHeader, "holding_sort_default"),
-        (.portfolioWeightHeader, "holding_sort_default")
-    ]
+
+    private var columns: [(key: DemoCopyKey, imageName: String)] {
+        var columns: [(key: DemoCopyKey, imageName: String)] = [
+            (.marketValueQuantityHeader, "holding_sort_descending"),
+            (.lastCostHeader, "holding_sort_default")
+        ]
+
+        if category == .rwa {
+            columns.append((.dayProfitLossHeader, "holding_sort_default"))
+        }
+
+        columns.append(contentsOf: [
+            (.positionProfitLossHeader, "holding_sort_default"),
+            (.portfolioWeightHeader, "holding_sort_default")
+        ])
+        return columns
+    }
 
     var body: some View {
         HStack(spacing: VirtualAssetHoldingLayout.metricSpacing) {
@@ -905,6 +923,7 @@ private struct VirtualAssetHoldingNameCell: View {
 }
 
 private struct VirtualAssetHoldingMetricsRow: View {
+    let category: VirtualAssetHoldingCategory
     let holding: VirtualAssetHoldingItem
     let isNumberHidden: Bool
 
@@ -924,12 +943,14 @@ private struct VirtualAssetHoldingMetricsRow: View {
                 secondaryColor: Color("color-text-60")
             )
 
-            valuePair(
-                primary: holding.todayProfitLoss,
-                secondary: nil,
-                primaryColor: holding.todayTone.color,
-                secondaryColor: holding.todayTone.color
-            )
+            if category == .rwa {
+                valuePair(
+                    primary: holding.todayProfitLoss,
+                    secondary: nil,
+                    primaryColor: holding.todayTone.color,
+                    secondaryColor: holding.todayTone.color
+                )
+            }
 
             valuePair(
                 primary: holding.holdingProfitLoss,

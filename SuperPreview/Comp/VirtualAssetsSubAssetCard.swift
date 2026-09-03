@@ -8,7 +8,6 @@ import SwiftUI
 struct VirtualAssetsSubAssetCardModel {
     let currency: String
     let netAsset: String
-    let todayProfitLoss: String
     let marketValue: String
     let availableCash: String
     let positionProfitLoss: String
@@ -17,7 +16,6 @@ struct VirtualAssetsSubAssetCardModel {
     static let preview = VirtualAssetsSubAssetCardModel(
         currency: "USD",
         netAsset: "8,880,123.01",
-        todayProfitLoss: "+1,123.01(+3.12%)",
         marketValue: "10,123.01",
         availableCash: "9,900.91",
         positionProfitLoss: "+13,090.12",
@@ -69,8 +67,8 @@ struct VirtualAssetsSubAssetCard: View {
             SubAssetCardHeader(
                 currency: model.currency,
                 netAsset: model.netAsset,
-                profitLossTitle: language.text(.todayProfitLoss),
-                profitLoss: model.todayProfitLoss,
+                profitLossTitle: nil,
+                profitLoss: nil,
                 isNumberHidden: isNumberHidden,
                 isExpanded: isExpanded,
                 toggleExpansion: toggleExpansion
