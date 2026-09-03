@@ -26,8 +26,9 @@ enum StockDetailShuffleStorageKey {
 }
 
 /// A full-screen, vertically paged presentation of the current watchlist
-/// context. Each visible card is the existing detail page rendered into a
-/// smaller, clipped surface; the pager owns the only active gesture.
+/// context. The pager keeps a small resident card window around the current
+/// instrument, while exposing only the current card and its immediate
+/// neighbors for interaction.
 struct StockDetailShuffleView: View {
     let instruments: [StockDetailInstrument]
     @Binding private var selection: StockDetailInstrument
@@ -289,8 +290,8 @@ private struct StockDetailShufflePager: View {
         .equatable()
         .opacity(transitionOpacity)
         // Move the already-composed deck with one transform. Updating every
-        // card's offset independently made all three detail-page subtrees
-        // participate in every drag frame.
+        // resident card's offset independently would make every detail-page
+        // subtree participate in every drag frame.
         .offset(y: dragOffset)
         .frame(width: canvasSize.width, height: canvasSize.height, alignment: .topLeading)
         // The previous card intentionally lives above the viewport. Clip the
@@ -379,33 +380,45 @@ private struct StockDetailShufflePager: View {
             return
         }
 
+        prewarmConfigurationsForTransition(to: targetIndex)
         let token = beginTransition()
         let finalOffset = targetIndex > currentIndex ? -stride : stride
 
         if reduceMotion {
-            withAnimation(.easeOut(duration: ShuffleLayout.reduceMotionDuration)) {
+            withAnimation(
+                .easeOut(duration: ShuffleLayout.reduceMotionDuration),
+                completionCriteria: .logicallyComplete
+            ) {
                 transitionOpacity = 0
-            }
-
-            DispatchQueue.main.asyncAfter(deadline: .now() + ShuffleLayout.reduceMotionDuration) {
+            } completion: {
                 guard transitionToken == token else { return }
-                updateIndexWithoutAnimation(to: targetIndex)
-                withAnimation(.easeOut(duration: ShuffleLayout.reduceMotionDuration)) {
-                    transitionOpacity = 1
+
+                DispatchQueue.main.async {
+                    guard transitionToken == token else { return }
+                    updateIndexWithoutAnimation(to: targetIndex)
+
+                    withAnimation(
+                        .easeOut(duration: ShuffleLayout.reduceMotionDuration),
+                        completionCriteria: .logicallyComplete
+                    ) {
+                        transitionOpacity = 1
+                    } completion: {
+                        guard transitionToken == token else { return }
+                        isSettling = false
+                    }
                 }
-                isSettling = false
             }
             return
         }
 
-        withAnimation(pageTransitionAnimation) {
+        withAnimation(
+            pageTransitionAnimation,
+            completionCriteria: .logicallyComplete
+        ) {
             dragOffset = finalOffset
-        }
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + ShuffleLayout.transitionDuration) {
+        } completion: {
             guard transitionToken == token else { return }
-            updateIndexWithoutAnimation(to: targetIndex)
-            isSettling = false
+            enqueueIndexCommit(to: targetIndex, token: token)
         }
     }
 
@@ -417,14 +430,19 @@ private struct StockDetailShufflePager: View {
 
         let token = beginTransition()
 
-        withAnimation(pageTransitionAnimation) {
+        withAnimation(
+            pageTransitionAnimation,
+            completionCriteria: .logicallyComplete
+        ) {
             dragOffset = 0
-        }
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + ShuffleLayout.transitionDuration) {
+        } completion: {
             guard transitionToken == token else { return }
-            dragOffset = 0
-            isSettling = false
+
+            DispatchQueue.main.async {
+                guard transitionToken == token else { return }
+                dragOffset = 0
+                isSettling = false
+            }
         }
     }
 
@@ -435,31 +453,68 @@ private struct StockDetailShufflePager: View {
             return
         }
 
+        prewarmConfigurationsForTransition(to: targetIndex)
         let token = beginTransition()
         stagedTargetIndex = targetIndex
         let directionOffset = targetIndex > currentIndex ? -1 : 1
 
         if reduceMotion {
-            withAnimation(.easeOut(duration: ShuffleLayout.reduceMotionDuration)) {
+            withAnimation(
+                .easeOut(duration: ShuffleLayout.reduceMotionDuration),
+                completionCriteria: .logicallyComplete
+            ) {
                 transitionOpacity = 0
-            }
-
-            DispatchQueue.main.asyncAfter(deadline: .now() + ShuffleLayout.reduceMotionDuration) {
+            } completion: {
                 guard transitionToken == token else { return }
-                updateIndexWithoutAnimation(to: targetIndex)
-                withAnimation(.easeOut(duration: ShuffleLayout.reduceMotionDuration)) {
-                    transitionOpacity = 1
+
+                DispatchQueue.main.async {
+                    guard transitionToken == token else { return }
+                    updateIndexWithoutAnimation(to: targetIndex)
+
+                    withAnimation(
+                        .easeOut(duration: ShuffleLayout.reduceMotionDuration),
+                        completionCriteria: .logicallyComplete
+                    ) {
+                        transitionOpacity = 1
+                    } completion: {
+                        guard transitionToken == token else { return }
+                        isSettling = false
+                    }
                 }
-                isSettling = false
             }
             return
         }
 
-        withAnimation(pageTransitionAnimation) {
+        withAnimation(
+            pageTransitionAnimation,
+            completionCriteria: .logicallyComplete
+        ) {
             dragOffset = CGFloat(directionOffset) * stride
+        } completion: {
+            guard transitionToken == token else { return }
+            enqueueIndexCommit(to: targetIndex, token: token)
         }
+    }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + ShuffleLayout.transitionDuration) {
+    private func prewarmConfigurationsForTransition(to targetIndex: Int) {
+        // Warm the complete post-commit resident window. These are lightweight
+        // configurations only; the deck below owns the five actual card views.
+        let indices = Array(
+            (-ShuffleLayout.residentCardRadius)...ShuffleLayout.residentCardRadius
+        )
+            .map { targetIndex + $0 }
+            .filter { instruments.indices.contains($0) }
+
+        for index in indices {
+            configurationCache.prewarm(
+                for: instruments[index],
+                includesBelowChartComponents: false
+            )
+        }
+    }
+
+    private func enqueueIndexCommit(to targetIndex: Int, token: Int) {
+        DispatchQueue.main.async {
             guard transitionToken == token else { return }
             updateIndexWithoutAnimation(to: targetIndex)
             isSettling = false
@@ -496,6 +551,13 @@ private struct StockDetailShufflePager: View {
 /// The deck is equatable so a drag-state change at the pager level updates
 /// only the outer transform. Its body is rebuilt when the visible instrument
 /// window, language, or staged jump actually changes.
+private struct StockDetailShuffleCardItem: Identifiable, Equatable {
+    let instrument: StockDetailInstrument
+    let relativePosition: Int
+
+    var id: String { instrument.id }
+}
+
 private struct StockDetailShuffleCardDeck: View, Equatable {
     let instruments: [StockDetailInstrument]
     let currentIndex: Int
@@ -515,9 +577,7 @@ private struct StockDetailShuffleCardDeck: View, Equatable {
             && lhs.stagedTargetIndex == rhs.stagedTargetIndex
             && lhs.quoteDataIsExpanded == rhs.quoteDataIsExpanded
             && lhs.instruments.count == rhs.instruments.count
-            && lhs.visibleInstrument(for: -1) == rhs.visibleInstrument(for: -1)
-            && lhs.visibleInstrument(for: 0) == rhs.visibleInstrument(for: 0)
-            && lhs.visibleInstrument(for: 1) == rhs.visibleInstrument(for: 1)
+            && lhs.visibleCards == rhs.visibleCards
             && lhs.canvasSize == rhs.canvasSize
             && lhs.cardWidth == rhs.cardWidth
             && lhs.cardHeight == rhs.cardHeight
@@ -528,40 +588,44 @@ private struct StockDetailShuffleCardDeck: View, Equatable {
 
     var body: some View {
         ZStack(alignment: .topLeading) {
-            if let previousIndex = displayedIndex(for: -1) {
+            ForEach(visibleCards) { cardItem in
                 card(
-                    instrument: instruments[previousIndex],
-                    relativePosition: -1
-                )
-            }
-
-            if let nextIndex = displayedIndex(for: 1) {
-                card(
-                    instrument: instruments[nextIndex],
-                    relativePosition: 1
-                )
-            }
-
-            if instruments.indices.contains(currentIndex) {
-                card(
-                    instrument: instruments[currentIndex],
-                    relativePosition: 0
+                    instrument: cardItem.instrument,
+                    relativePosition: cardItem.relativePosition
                 )
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
+    private var visibleCards: [StockDetailShuffleCardItem] {
+        Array(
+            (-ShuffleLayout.residentCardRadius)...ShuffleLayout.residentCardRadius
+        )
+        .compactMap { relativePosition in
+            guard let index = displayedIndex(for: relativePosition) else { return nil }
+            return StockDetailShuffleCardItem(
+                instrument: instruments[index],
+                relativePosition: relativePosition
+            )
+        }
+    }
+
     private func card(
         instrument: StockDetailInstrument,
         relativePosition: Int
     ) -> some View {
+        let isInteractive = abs(relativePosition) <= ShuffleLayout.interactiveCardRadius
         let slotName: String
         switch relativePosition {
+        case -2:
+            slotName = "preload.previous"
         case -1:
             slotName = "previous"
         case 1:
             slotName = "next"
+        case 2:
+            slotName = "preload.next"
         default:
             slotName = "current"
         }
@@ -606,10 +670,12 @@ private struct StockDetailShuffleCardDeck: View, Equatable {
                 + CGFloat(relativePosition) * stride
         )
         .zIndex(relativePosition == 0 ? 2 : 1)
+        .allowsHitTesting(isInteractive)
         .accessibilityElement(children: .contain)
         .accessibilityLabel(cardAccessibilityLabel(for: instrument))
         .accessibilityHint(language == .english ? "Opens the full detail page" : "打开完整详情页")
         .accessibilityAddTraits(.isButton)
+        .accessibilityHidden(!isInteractive)
         .accessibilityIdentifier("stockDetail.shuffle.card.\(slotName)")
     }
 
@@ -621,15 +687,17 @@ private struct StockDetailShuffleCardDeck: View, Equatable {
             if relativePosition == stagedRelativePosition {
                 return stagedTargetIndex
             }
+
+            // A two-step code-bar jump can otherwise place the staged target
+            // both at its transition slot and at the outer preloaded slot.
+            // Keep its identity unique for ForEach diffing.
+            if currentIndex + relativePosition == stagedTargetIndex {
+                return nil
+            }
         }
 
         let candidate = currentIndex + relativePosition
         return instruments.indices.contains(candidate) ? candidate : nil
-    }
-
-    private func visibleInstrument(for relativePosition: Int) -> StockDetailInstrument? {
-        guard let index = displayedIndex(for: relativePosition) else { return nil }
-        return instruments[index]
     }
 
     private func cardAccessibilityLabel(for instrument: StockDetailInstrument) -> String {
@@ -761,6 +829,11 @@ private struct StockDetailShuffleSymbolBar: View {
 }
 
 private enum ShuffleLayout {
+    // Keep current ±2 resident so the next visible card has already been
+    // constructed and laid out before it reaches the one-card preview slot.
+    static let residentCardRadius = 2
+    static let interactiveCardRadius = 1
+
     static let horizontalInset: CGFloat = 8
     // Keep the current card below the iPhone 17 Pro Dynamic Island safe area.
     // With an 874-point canvas and an 8-point card gap this yields a

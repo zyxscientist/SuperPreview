@@ -36,6 +36,19 @@ final class StockDetailPageConfigurationCache: ObservableObject {
         storage[key] = configuration
         return configuration
     }
+
+    /// Builds and stores a configuration before the corresponding card is
+    /// inserted into the visible shuffle window. This warms data only; it
+    /// does not create another StockDetailPage view.
+    func prewarm(
+        for instrument: StockDetailInstrument,
+        includesBelowChartComponents: Bool = true
+    ) {
+        _ = configuration(
+            for: instrument,
+            includesBelowChartComponents: includesBelowChartComponents
+        )
+    }
 }
 
 /// The shared detail-page shell. The active instrument supplies the page
