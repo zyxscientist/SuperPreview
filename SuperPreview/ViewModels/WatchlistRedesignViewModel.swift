@@ -152,6 +152,57 @@ enum USMarketSchedule {
             )
         )
     }
+
+    /// Returns the most recent completed regular-session close at or before
+    /// `date`. After the exchange is closed, quote timestamps should remain
+    /// anchored to this close instead of behaving like a live clock.
+    static func lastRegularCloseTimestamp(at date: Date) -> (date: String, time: String) {
+        var candidate = date
+
+        for _ in 0..<366 {
+            let components = easternCalendar.dateComponents(
+                [.year, .month, .day, .weekday],
+                from: candidate
+            )
+            guard
+                let year = components.year,
+                let month = components.month,
+                let day = components.day,
+                let weekday = components.weekday
+            else {
+                break
+            }
+
+            let marketDate = MarketDate(year: year, month: month, day: day)
+            let isWeekend = weekday == 1 || weekday == 7
+            let isClosedDate = closedDates.contains(marketDate)
+
+            if !isWeekend && !isClosedDate {
+                let closeHour = earlyCloseDates.contains(marketDate) ? 13 : 16
+                let closeDate = easternCalendar.date(
+                    from: DateComponents(
+                        year: year,
+                        month: month,
+                        day: day,
+                        hour: closeHour,
+                        minute: 0,
+                        second: 0
+                    )
+                )!
+
+                if closeDate <= date {
+                    return easternTimestamp(at: closeDate)
+                }
+            }
+
+            guard let previousDay = easternCalendar.date(byAdding: .day, value: -1, to: candidate) else {
+                break
+            }
+            candidate = previousDay
+        }
+
+        return (date: "--/--", time: "16:00:00")
+    }
 }
 
 enum WatchlistRedesignPriceSimulationSpeed: String, CaseIterable, Identifiable {

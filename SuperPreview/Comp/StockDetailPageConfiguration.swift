@@ -629,7 +629,11 @@ enum StockDetailPageConfigurationFactory {
 
         let timestamp: (date: String, time: String)
         if instrument.market == .us {
-            timestamp = USMarketSchedule.easternTimestamp(at: date)
+            if case .closed = instrument.quote.session {
+                timestamp = USMarketSchedule.lastRegularCloseTimestamp(at: date)
+            } else {
+                timestamp = USMarketSchedule.easternTimestamp(at: date)
+            }
         } else {
             timestamp = (date: "08/31", time: "14:44:01")
         }
