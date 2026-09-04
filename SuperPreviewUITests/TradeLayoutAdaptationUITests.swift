@@ -254,6 +254,217 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         XCTAssertEqual(waitFor("stockDetail.page.headerTab.quote", label: "报价").label, "报价")
     }
 
+    func testStockDetailTradePrefillsSelectedInstrumentAndReturns() throws {
+        enterWatchlist()
+        tapWatchlistRow("watchlist.row.us:NVDA")
+
+        XCTAssertTrue(waitFor("stockDetail.page").exists)
+        waitFor("stockDetail.bottomActionBar.trade").tap()
+
+        assertStockOrderPrefill(
+            symbol: "NVDA",
+            name: "英伟达",
+            price: "142.61"
+        )
+
+        waitFor("stockOrder.navbar.back").tap()
+        XCTAssertTrue(waitFor("stockDetail.page").exists)
+
+        // The same detail page can open a new order route after returning.
+        waitFor("stockDetail.bottomActionBar.trade").tap()
+        assertStockOrderPrefill(
+            symbol: "NVDA",
+            name: "英伟达",
+            price: "142.61"
+        )
+    }
+
+    func testStockDetailTradePrefillsMarketAndQuoteSnapshot() throws {
+        enterWatchlist()
+
+        let cases = [
+            (tab: "watchlist.tab.港股", row: "watchlist.row.hk:09988", symbol: "09988", name: "阿里巴巴-W", price: "118.600"),
+            (tab: "watchlist.tab.ETFs", row: "watchlist.row.hk:03032", symbol: "03032", name: "恒生科技ETF", price: "4.812"),
+            (tab: "watchlist.tab.美股", row: "watchlist.row.us:NVDA", symbol: "NVDA", name: "英伟达", price: "142.61"),
+            (tab: "watchlist.tab.ETFs", row: "watchlist.row.us:VOO", symbol: "VOO", name: "先锋标普500ETF", price: "512.33"),
+            (tab: "watchlist.tab.沪深", row: "watchlist.row.cn:300750", symbol: "300750", name: "宁德时代", price: "189.610"),
+            (tab: "watchlist.tab.ETFs", row: "watchlist.row.cn:513100", symbol: "513100", name: "纳指100ETF", price: "1.482"),
+            (tab: "watchlist.tab.自定义", row: "watchlist.row.crypto:BTC/USD", symbol: "BTC/USD", name: "比特币/美元", price: "66666.61")
+        ]
+
+        for item in cases {
+            waitFor(item.tab).tap()
+            tapWatchlistRow(item.row)
+
+            XCTAssertTrue(waitFor("stockDetail.page").exists)
+            waitFor("stockDetail.bottomActionBar.trade").tap()
+            assertStockOrderPrefill(
+                symbol: item.symbol,
+                name: item.name,
+                price: item.price
+            )
+
+            waitFor("stockOrder.navbar.back").tap()
+            XCTAssertTrue(waitFor("stockDetail.page").exists)
+            waitFor("stockDetail.navbar.back").tap()
+            XCTAssertTrue(waitFor("watchlist.root").exists)
+        }
+    }
+
+    func testStockDetailTradeUsesCurrentShuffleInstrument() throws {
+        enterWatchlist()
+        tapWatchlistRow("watchlist.row.us:NVDA")
+
+        XCTAssertTrue(waitFor("stockDetail.page").exists)
+        waitFor("stockDetail.bottomActionBar.shuffle").tap()
+
+        let shuffleRoot = waitFor("stockDetail.shuffle.root")
+        let secondSymbol = waitFor("stockDetail.shuffle.symbol.us:AAPL")
+        secondSymbol.tap()
+        waitForCommittedInstrument("us:AAPL")
+        waitForParentCommittedInstrument("us:AAPL")
+
+        waitFor("stockDetail.shuffle.card.current").tap()
+        waitForDisappearance(shuffleRoot)
+        XCTAssertTrue(waitFor("stockDetail.page").exists)
+        XCTAssertTrue(waitFor("stockDetail.navbar.title").label.contains("AAPL"))
+
+        waitFor("stockDetail.bottomActionBar.trade").tap()
+        assertStockOrderPrefill(
+            symbol: "AAPL",
+            name: "苹果",
+            price: "212.45"
+        )
+    }
+
+    func testStockDetailEdgeSwipeBackReturnsToWatchlist() throws {
+        enterWatchlist()
+        tapWatchlistRow("watchlist.row.us:NVDA")
+
+        XCTAssertTrue(waitFor("stockDetail.page").exists)
+        performHorizontalDrag(fromX: 0.01, toX: 0.82)
+
+        XCTAssertTrue(
+            waitFor("watchlist.root").exists,
+            "A leading-edge drag should pop the detail page"
+        )
+    }
+
+    func testStockDetailEdgeSwipeCancellationKeepsRoute() throws {
+        enterWatchlist()
+        tapWatchlistRow("watchlist.row.us:NVDA")
+
+        let detail = waitFor("stockDetail.page")
+        performHorizontalDrag(fromX: 0.01, toX: 0.18)
+
+        XCTAssertTrue(
+            detail.waitForExistence(timeout: 3),
+            "A short, cancelled drag must keep the detail route active"
+        )
+        XCTAssertTrue(waitFor("stockDetail.bottomActionBar.trade").exists)
+    }
+
+    func testStockOrderSystemEdgeSwipeBackReturnsToDetail() throws {
+        enterWatchlist()
+        tapWatchlistRow("watchlist.row.us:NVDA")
+        waitFor("stockDetail.bottomActionBar.trade").tap()
+        assertStockOrderPrefill(symbol: "NVDA", name: "英伟达", price: "142.61")
+
+        performHorizontalDrag(fromX: 0.01, toX: 0.82)
+
+        XCTAssertTrue(
+            waitFor("stockDetail.page").exists,
+            "The order page should use the native edge pop and return to detail"
+        )
+        let orderPage = app.descendants(matching: .any)["stockOrder.demo"].firstMatch
+        let goneExpectation = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "exists == false"),
+            object: orderPage
+        )
+        XCTAssertEqual(XCTWaiter.wait(for: [goneExpectation], timeout: 3), .completed)
+    }
+
+    func testStockOrderEdgeSwipeWithKeyboardReturnsToDetail() throws {
+        enterWatchlist()
+        tapWatchlistRow("watchlist.row.us:NVDA")
+        waitFor("stockDetail.bottomActionBar.trade").tap()
+
+        let priceField = app.textFields["stockOrder.priceInput.field"].firstMatch
+        XCTAssertTrue(priceField.waitForExistence(timeout: 5), "Missing order price field")
+        priceField.tap()
+        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 3), "Keyboard did not appear")
+
+        performHorizontalDrag(fromX: 0.01, toX: 0.82)
+
+        XCTAssertTrue(
+            waitFor("stockDetail.page").exists,
+            "An edge back swipe must not get stuck while the keyboard is visible"
+        )
+    }
+
+    func testStockOrderConfirmationCardBlocksBackSwipeUntilDismissed() throws {
+        enterWatchlist()
+        tapWatchlistRow("watchlist.row.us:NVDA")
+        waitFor("stockDetail.bottomActionBar.trade").tap()
+
+        waitFor("stockOrder.tradeActionBar.buy").tap()
+        XCTAssertTrue(waitFor("stockOrder.confirmationSheet").exists)
+
+        performHorizontalDrag(fromX: 0.01, toX: 0.82)
+        XCTAssertTrue(
+            waitFor("stockOrder.confirmationSheet").exists,
+            "The confirmation card must own the interaction before navigation can pop"
+        )
+
+        waitFor("stockOrder.confirmationSheet.button.cancel").tap()
+        XCTAssertTrue(waitFor("stockOrder.demo").exists)
+
+        performHorizontalDrag(fromX: 0.01, toX: 0.82)
+        XCTAssertTrue(waitFor("stockDetail.page").exists)
+    }
+
+    func testWatchlistRootRejectsBackSwipe() throws {
+        enterWatchlist()
+
+        performHorizontalDrag(fromX: 0.01, toX: 0.82)
+
+        XCTAssertTrue(waitFor("watchlist.root").exists)
+    }
+
+    func testStockDetailCenterSwipeUsesPagerInsteadOfNavigationPop() throws {
+        enterWatchlist()
+        tapWatchlistRow("watchlist.row.us:NVDA")
+
+        let analysisTab = waitFor("stockDetail.page.headerTab.analysis")
+        analysisTab.tap()
+        XCTAssertTrue(analysisTab.isSelected)
+        sleep(1)
+
+        // Detail pages opt into edge-only navigation, so a center swipe is
+        // left to the TabView pager and must not pop the navigation route.
+        performHorizontalDrag(fromX: 0.52, toX: 0.97)
+
+        XCTAssertTrue(waitFor("stockDetail.page").exists)
+        XCTAssertTrue(
+            waitFor("stockDetail.page.headerTab.etf").isSelected,
+            "A center right swipe should page to the preceding detail tab, not pop detail"
+        )
+    }
+
+    func testShuffleIgnoresNavigationBackSwipe() throws {
+        enterWatchlist()
+        tapWatchlistRow("watchlist.row.us:NVDA")
+        waitFor("stockDetail.bottomActionBar.shuffle").tap()
+
+        let shuffle = waitFor("stockDetail.shuffle.root")
+        performHorizontalDrag(fromX: 0.01, toX: 0.82)
+
+        XCTAssertTrue(
+            shuffle.waitForExistence(timeout: 3),
+            "Shuffle is a full-screen cover and must not be closed by navigation back"
+        )
+    }
+
     func testStockDetailShuffleUsesWatchlistSnapshotAndExitsToSelectedInstrument() throws {
         enterWatchlist()
 
@@ -624,6 +835,63 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         waitFor(identifier).tap()
     }
 
+    private func tapWatchlistRow(_ identifier: String) {
+        let row = waitFor(identifier)
+        let watchlistScroll = app.scrollViews.firstMatch
+
+        for _ in 0..<6 where !row.isHittable {
+            watchlistScroll.swipeUp()
+        }
+
+        XCTAssertTrue(row.isHittable, "Watchlist row should be hittable: \(identifier)")
+        row.tap()
+    }
+
+    private func performHorizontalDrag(
+        fromX: CGFloat,
+        toX: CGFloat,
+        y: CGFloat = 0.5
+    ) {
+        let window = app.windows.firstMatch
+        XCTAssertTrue(window.waitForExistence(timeout: 3), "Missing application window")
+
+        let start = window.coordinate(
+            withNormalizedOffset: CGVector(dx: fromX, dy: y)
+        )
+        let end = window.coordinate(
+            withNormalizedOffset: CGVector(dx: toX, dy: y)
+        )
+        start.press(forDuration: 0.01, thenDragTo: end)
+    }
+
+    private func assertStockOrderPrefill(
+        symbol: String,
+        name: String,
+        price: String,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        XCTAssertTrue(waitFor("stockOrder.demo").exists, file: file, line: line)
+        XCTAssertEqual(
+            waitFor("stockOrder.debug.status.symbol").label,
+            symbol,
+            file: file,
+            line: line
+        )
+        XCTAssertEqual(
+            waitFor("stockOrder.debug.status.name").label,
+            name,
+            file: file,
+            line: line
+        )
+        XCTAssertEqual(
+            waitFor("stockOrder.debug.status.price").label,
+            price,
+            file: file,
+            line: line
+        )
+    }
+
     private func selectStockDetailLanguage(_ language: String) {
         let option = app.buttons[language].firstMatch
         XCTAssertTrue(option.waitForExistence(timeout: 5), "Missing language option: \(language)")
@@ -813,5 +1081,129 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
 
     private func element(_ identifier: String) -> XCUIElement {
         app.descendants(matching: .any)[identifier].firstMatch
+    }
+}
+
+final class NavigationBackSwipeHarnessUITests: XCTestCase {
+    private var app: XCUIApplication!
+
+    override func setUpWithError() throws {
+        continueAfterFailure = false
+        XCUIDevice.shared.orientation = .portrait
+
+        app = XCUIApplication()
+        app.launchArguments = ["-UITesting", "-BackSwipeHarness"]
+        app.launchEnvironment["UITEST_MODE"] = "1"
+        app.launch()
+    }
+
+    func testEdgePolicyCompletesNativeBackSwipe() throws {
+        openDestination(.edge)
+
+        performHorizontalDrag(fromX: 0.01, toX: 0.82)
+
+        XCTAssertTrue(waitFor("backSwipeHarness.root").exists)
+    }
+
+    func testUIKitBaselineCompletesNativeBackSwipe() throws {
+        let link = app.buttons["Native"].firstMatch
+        XCTAssertTrue(link.waitForExistence(timeout: 5), "Missing native harness link")
+        link.tap()
+        XCTAssertTrue(waitFor("backSwipeHarness.destination.native").exists)
+
+        performHorizontalDrag(fromX: 0.2, toX: 0.98)
+
+        XCTAssertTrue(waitFor("backSwipeHarness.root").exists)
+    }
+
+    func testEdgePolicyCancelsShortBackSwipe() throws {
+        openDestination(.edge)
+
+        performHorizontalDrag(fromX: 0.01, toX: 0.18)
+
+        XCTAssertTrue(
+            waitFor("backSwipeHarness.destination.edge").waitForExistence(timeout: 3),
+            "A short edge drag must leave the navigation route active"
+        )
+    }
+
+    func testSystemPolicyCompletesContentAreaBackSwipe() throws {
+        openDestination(.system)
+
+        performHorizontalDrag(fromX: 0.2, toX: 0.98)
+
+        XCTAssertTrue(waitFor("backSwipeHarness.root").exists)
+    }
+
+    func testSystemPolicyFallsBackToEdgeWithCustomNavigationBar() throws {
+        openDestination(.systemHidden)
+
+        performHorizontalDrag(fromX: 0.01, toX: 0.82)
+
+        XCTAssertTrue(waitFor("backSwipeHarness.root").exists)
+    }
+
+    func testDisabledPolicyRejectsBackSwipes() throws {
+        openDestination(.disabled)
+
+        performHorizontalDrag(fromX: 0.01, toX: 0.82)
+        XCTAssertTrue(waitFor("backSwipeHarness.destination.disabled").exists)
+
+        performHorizontalDrag(fromX: 0.5, toX: 0.96)
+        XCTAssertTrue(waitFor("backSwipeHarness.destination.disabled").exists)
+
+        let backButton = app.buttons["Back"].firstMatch
+        XCTAssertTrue(backButton.waitForExistence(timeout: 5), "Missing custom back button")
+        backButton.tap()
+        XCTAssertTrue(waitFor("backSwipeHarness.root").exists)
+    }
+
+    private enum Destination: String {
+        case edge
+        case system
+        case systemHidden
+        case disabled
+
+        var displayName: String {
+            switch self {
+            case .systemHidden:
+                "System custom"
+            default:
+                rawValue.capitalized
+            }
+        }
+    }
+
+    private func openDestination(_ destination: Destination) {
+        let link = app.buttons[destination.displayName].firstMatch
+        XCTAssertTrue(
+            link.waitForExistence(timeout: 5),
+            "Missing harness link: \(destination.rawValue)"
+        )
+        link.tap()
+        XCTAssertTrue(
+            waitFor("backSwipeHarness.destination.\(destination.rawValue)").exists,
+            "Expected harness destination: \(destination.rawValue)"
+        )
+    }
+
+    private func performHorizontalDrag(
+        fromX: CGFloat,
+        toX: CGFloat,
+        y: CGFloat = 0.5
+    ) {
+        let window = app.windows.firstMatch
+        XCTAssertTrue(window.waitForExistence(timeout: 3), "Missing application window")
+
+        let start = window.coordinate(withNormalizedOffset: CGVector(dx: fromX, dy: y))
+        let end = window.coordinate(withNormalizedOffset: CGVector(dx: toX, dy: y))
+        start.press(forDuration: 0.01, thenDragTo: end)
+    }
+
+    @discardableResult
+    private func waitFor(_ identifier: String, timeout: TimeInterval = 5) -> XCUIElement {
+        let element = app.descendants(matching: .any)[identifier].firstMatch
+        XCTAssertTrue(element.waitForExistence(timeout: timeout), "Missing element: \(identifier)")
+        return element
     }
 }

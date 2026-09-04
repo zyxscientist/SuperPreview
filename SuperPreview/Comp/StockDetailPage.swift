@@ -90,6 +90,8 @@ struct StockDetailPage: View {
     @State private var isShowingDebugSheet = false
     @State private var shuffleSession: StockDetailShuffleSession?
     @State private var pendingShuffleExitInstrumentID: String?
+    @State private var isShowingStockOrder = false
+    @State private var stockOrderInitialSelection: StockOrderSymbol?
     @State private var detailTimestampDate = Date()
     @StateObject private var configurationCache: StockDetailPageConfigurationCache
 
@@ -200,6 +202,16 @@ struct StockDetailPage: View {
             .ignoresSafeArea(.container, edges: .bottom)
         }
         .background(Color("color-base-1"))
+        .background(
+            NavigationLink(
+                destination: StockOrderDemoView(initialSelection: stockOrderInitialSelection),
+                isActive: $isShowingStockOrder
+            ) {
+                EmptyView()
+            }
+            .hidden()
+            .accessibilityIdentifier("stockDetail.stockOrder.navigation")
+        )
         .toolbar(.hidden, for: .navigationBar)
         .navigationBarBackButtonHidden(true)
         .overlay(alignment: .topLeading) {
@@ -258,6 +270,10 @@ struct StockDetailPage: View {
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockDetail.page")
+        .navigationBackSwipe(
+            .edge,
+            prioritizesEdgeOverHorizontalContent: true
+        )
         .environment(\.demoLanguage, activeLanguage)
     }
 
@@ -447,6 +463,21 @@ struct StockDetailPage: View {
         isShowingDebugSheet = true
     }
 
+    private func handleTrade() {
+        guard presentationMode == .standard,
+              activeInstrument.kind != .fund,
+              activeInstrument.market.stockOrderMarket != nil else {
+            return
+        }
+
+        // Capture the symbol at the moment of the tap. This keeps a later
+        // detail-page refresh or market-session update from changing the
+        // order page that is already being presented.
+        stockOrderInitialSelection = configuration.symbol
+        isShowingStockOrder = true
+        onTrade()
+    }
+
     private func presentShuffle() {
         guard presentationMode == .standard else { return }
 
@@ -608,7 +639,7 @@ struct StockDetailPage: View {
     private var fixedBottomActionBar: some View {
         VStack(spacing: 0) {
             StockDetailBottomActionBar(
-                onTrade: onTrade,
+                onTrade: handleTrade,
                 onWatchlist: onWatchlist,
                 onReminder: onReminder,
                 onShuffle: presentShuffle

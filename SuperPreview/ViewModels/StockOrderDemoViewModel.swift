@@ -283,7 +283,7 @@ final class StockOrderDemoViewModel: ObservableObject {
         selection = initialSelection
         recentSymbols = Self.searchableSymbols
         orderType = initialProfile.defaultOrderType
-        price = initialProfile.defaultPrice
+        price = Self.initialPrice(for: initialSelection, profile: initialProfile)
         priceTarget = initialProfile.defaultPriceTarget
         quantity = initialProfile.defaultQuantity
         productCategory = initialSelection?.market == .crypto ? .crypto : .stocks
@@ -299,6 +299,14 @@ final class StockOrderDemoViewModel: ObservableObject {
 
     var buyingPower: StockOrderBuyingPower? {
         profile.buyingPower
+    }
+
+    /// The selected symbol's quote is the source of truth for the current
+    /// price. Market profiles still provide the fallback for empty selections
+    /// and malformed demo quote values.
+    var currentPrice: Decimal? {
+        guard let selection else { return profile.currentPrice }
+        return Self.decimalPrice(from: selection.quote.price) ?? profile.currentPrice
     }
 
     var showsExtendedHours: Bool {
@@ -425,7 +433,7 @@ final class StockOrderDemoViewModel: ObservableObject {
     func synchronizeSelection() {
         let nextProfile = Self.profile(for: selection)
         orderType = nextProfile.defaultOrderType
-        price = nextProfile.defaultPrice
+        price = Self.initialPrice(for: selection, profile: nextProfile)
         priceTarget = nextProfile.defaultPriceTarget
         quantity = nextProfile.defaultQuantity
         effectPeriod = .day
@@ -601,7 +609,7 @@ final class StockOrderDemoViewModel: ObservableObject {
 
     private func updatePrice(by delta: Decimal) {
         let base = Decimal(string: price, locale: Locale(identifier: "en_US_POSIX"))
-            ?? profile.currentPrice
+            ?? currentPrice
 
         guard let base else { return }
         price = format(base + delta, fractionDigits: profile.priceFractionDigits)
@@ -620,7 +628,7 @@ final class StockOrderDemoViewModel: ObservableObject {
         case .specifiedPrice:
             return price
         case .marketPrice:
-            return profile.currentPrice.map { format($0, fractionDigits: profile.priceFractionDigits) } ?? price
+            return currentPrice.map { format($0, fractionDigits: profile.priceFractionDigits) } ?? price
         case .bidOne:
             return profile.bidLevels.first?.price ?? price
         case .askOne:
@@ -657,6 +665,29 @@ final class StockOrderDemoViewModel: ObservableObject {
     }
 
     private func format(_ decimal: Decimal, fractionDigits: Int) -> String {
+        Self.formatDecimal(decimal, fractionDigits: fractionDigits)
+    }
+
+    private static func initialPrice(
+        for symbol: StockOrderSymbol?,
+        profile: StockOrderDemoProfile
+    ) -> String {
+        guard let symbol,
+              let quotePrice = decimalPrice(from: symbol.quote.price) else {
+            return profile.defaultPrice
+        }
+
+        return formatDecimal(quotePrice, fractionDigits: profile.priceFractionDigits)
+    }
+
+    private static func decimalPrice(from value: String) -> Decimal? {
+        Decimal(
+            string: value.replacingOccurrences(of: ",", with: ""),
+            locale: Locale(identifier: "en_US_POSIX")
+        )
+    }
+
+    private static func formatDecimal(_ decimal: Decimal, fractionDigits: Int) -> String {
         let formatter = NumberFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.numberStyle = .decimal

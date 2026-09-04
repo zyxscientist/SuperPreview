@@ -55,10 +55,6 @@ struct StockOrderDemoView: View {
                     }
                     .scrollBounceBehavior(.basedOnSize)
                     .scrollDismissesKeyboard(.immediately)
-                    .simultaneousGesture(
-                        DragGesture(minimumDistance: 1)
-                            .onChanged { _ in dismissInput() }
-                    )
                 }
 
                 // Keep the trade bar in the page viewport. A safe-area inset is
@@ -70,6 +66,7 @@ struct StockOrderDemoView: View {
         .ignoresSafeArea(.keyboard, edges: .bottom)
         .background(Color("color-base-1"))
         .toolbar(.hidden, for: .navigationBar)
+        .navigationBackSwipe(confirmationSide == nil ? .system : .disabled)
         .interactiveBottomCard(item: $confirmationSide) { side in
             StockOrderConfirmationSheet(
                 data: viewModel.confirmationData(for: side, language: activeLanguage),
@@ -101,10 +98,19 @@ struct StockOrderDemoView: View {
         .accessibilityIdentifier("stockOrder.demo")
         .overlay(alignment: .topLeading) {
             if PreviewRuntime.isUITesting {
-                Text("\(confirmationConfirmCount)")
-                    .frame(width: 1, height: 1)
-                    .opacity(0.01)
-                    .accessibilityIdentifier("stockOrder.confirmation.confirmCount")
+                HStack(spacing: 0) {
+                    Text(viewModel.selection?.id ?? "--")
+                        .accessibilityIdentifier("stockOrder.debug.status.symbol")
+                    Text(viewModel.selection?.fallbackName ?? "--")
+                        .accessibilityIdentifier("stockOrder.debug.status.name")
+                    Text(viewModel.price)
+                        .accessibilityIdentifier("stockOrder.debug.status.price")
+                    Text("\(confirmationConfirmCount)")
+                        .accessibilityIdentifier("stockOrder.confirmation.confirmCount")
+                }
+                .frame(width: 1, height: 1)
+                .opacity(0.01)
+                .accessibilityElement(children: .contain)
             }
         }
         .environment(\.demoLanguage, activeLanguage)
@@ -182,7 +188,7 @@ struct StockOrderDemoView: View {
                     priceTarget: $viewModel.priceTarget,
                     focusedInput: $focusedInput,
                     isTargetMenuPresented: $isPriceTargetMenuPresented,
-                    currentPrice: viewModel.profile.currentPrice,
+                    currentPrice: viewModel.currentPrice,
                     supportedPriceTargets: viewModel.profile.supportedPriceTargets,
                     areNudgeButtonsEnabled: viewModel.selection != nil,
                     onDecrease: viewModel.decreasePrice,

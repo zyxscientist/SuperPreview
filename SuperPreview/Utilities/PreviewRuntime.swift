@@ -15,4 +15,10 @@ enum PreviewRuntime {
         return processInfo.arguments.contains("-UITesting")
             || processInfo.environment["UITEST_MODE"] == "1"
     }
+
+    #if DEBUG
+    static var isBackSwipeHarnessTesting: Bool {
+        ProcessInfo.processInfo.arguments.contains("-BackSwipeHarness")
+    }
+    #endif
 }

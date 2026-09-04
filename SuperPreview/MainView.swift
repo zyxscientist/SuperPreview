@@ -18,8 +18,20 @@ struct MainView: View {
     @State private var isShowingTradeDebugPanel = false
     private let isPreview = PreviewRuntime.isRunning || PreviewRuntime.isUITesting
     
+    @ViewBuilder
     var body: some View {
-        
+        #if DEBUG
+        if PreviewRuntime.isBackSwipeHarnessTesting {
+            NavigationBackSwipeHarnessView()
+        } else {
+            mainContent
+        }
+        #else
+        mainContent
+        #endif
+    }
+
+    private var mainContent: some View {
         NavigationView {
             if #available(iOS 14.0, *) {
                 ZStack {
@@ -51,6 +63,7 @@ struct MainView: View {
                     }
                 }
                 .mainTabBar(selectedTab: $selectedTab)
+                .background(NavigationBackSwipeInstaller(defaultPolicy: .edge))
                 // iOS 26 的系统 UITabBar 会自动使用 Liquid Glass。
                 // 旧系统继续保留原有的 TabBar 背景兼容设置。
                 .onAppear {

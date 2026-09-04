@@ -157,7 +157,7 @@ struct StockDetailTransactionTrade: View {
                     priceTarget: $viewModel.priceTarget,
                     focusedInput: $focusedInput,
                     isTargetMenuPresented: $isPriceTargetMenuPresented,
-                    currentPrice: viewModel.profile.currentPrice,
+                    currentPrice: viewModel.currentPrice,
                     supportedPriceTargets: viewModel.profile.supportedPriceTargets,
                     areNudgeButtonsEnabled: true,
                     onDecrease: viewModel.decreasePrice,
