@@ -767,7 +767,9 @@ struct WatchlistRedesignNameCell: View {
                     .foregroundColor(Color("color-text-60"))
                     .lineLimit(1)
 
-                ForEach(item.tagAssets, id: \.self) { asset in
+                // Delay markers are intentionally hidden in this demo, even
+                // if an older fixture still carries the legacy asset name.
+                ForEach(item.tagAssets.filter { $0 != WatchlistRedesignTagAsset.delayQuote }, id: \.self) { asset in
                     Image(asset)
                         .resizable()
                         .frame(width: 12, height: 12)

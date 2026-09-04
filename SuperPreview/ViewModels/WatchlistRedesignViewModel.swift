@@ -854,25 +854,25 @@ class WatchlistRedesignViewModel: ObservableObject {
     }
 
     /// Keeps the demo's tag distribution stable between refreshes while still
-    /// making the selected rows look naturally random. Holding and financial
-    /// report markers intentionally use lower frequencies than the other tags.
+    /// making the selected rows look naturally random. Each non-delay marker
+    /// has an independent roll so the list shows a wider mix of glyphs.
     private static func applyingRandomizedTags(to item: WatchlistRedesignItem) -> WatchlistRedesignItem {
         guard item.instrumentKind == .stock else { return item }
 
         var tags = item.tagAssets
         let randomizedTagNames = [
-            WatchlistRedesignTagAsset.delayQuote,
             WatchlistRedesignTagAsset.specialAttention,
             WatchlistRedesignTagAsset.holdings,
-            WatchlistRedesignTagAsset.financialReport
+            WatchlistRedesignTagAsset.financialReport,
+            WatchlistRedesignTagAsset.alert
         ]
         let randomizedTags: [(String, Bool)] = [
             // Each marker uses a different salt so the rows do not cluster
             // around the same symbols when the distribution changes.
-            (WatchlistRedesignTagAsset.delayQuote, stableTagHash(for: "\(item.symbol):delay") % 6 == 0),
             (WatchlistRedesignTagAsset.specialAttention, stableTagHash(for: "\(item.symbol):special") % 10 < 3),
-            (WatchlistRedesignTagAsset.holdings, stableTagHash(for: "\(item.symbol):holding") % 11 == 0),
-            (WatchlistRedesignTagAsset.financialReport, stableTagHash(for: "\(item.symbol):financial") % 7 == 0)
+            (WatchlistRedesignTagAsset.holdings, stableTagHash(for: "\(item.symbol):holding") % 7 == 0),
+            (WatchlistRedesignTagAsset.financialReport, stableTagHash(for: "\(item.symbol):financial") % 7 == 0),
+            (WatchlistRedesignTagAsset.alert, stableTagHash(for: "\(item.symbol):alert") % 10 == 0)
         ]
 
         for (tag, shouldAdd) in randomizedTags where shouldAdd && !tags.contains(tag) {
@@ -881,13 +881,13 @@ class WatchlistRedesignViewModel: ObservableObject {
 
         // A small additional chance makes stacked markers visible without
         // making the already-rare holdings marker more common. The unique-tag
-        // check also guarantees that a row never renders duplicate delay icons.
+        // check keeps the stacked marker list free of duplicates.
         if tags.contains(where: { randomizedTagNames.contains($0) }),
-           stableTagHash(for: "\(item.symbol):stack") % 17 == 0,
+           stableTagHash(for: "\(item.symbol):stack") % 14 == 0,
            let extraTag = [
                WatchlistRedesignTagAsset.specialAttention,
                WatchlistRedesignTagAsset.financialReport,
-               WatchlistRedesignTagAsset.delayQuote
+               WatchlistRedesignTagAsset.alert
            ].first(where: { !tags.contains($0) }) {
             tags.append(extraTag)
         }
