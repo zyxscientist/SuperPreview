@@ -76,10 +76,18 @@ struct MainTabBar: UIViewRepresentable {
             tabBar.items = AppTab.allCases.map(makeItem)
         } else {
             for (item, tab) in zip(tabBar.items ?? [], AppTab.allCases) {
-                item.title = tab.title(language: language)
+                let title = tab.title(language: language)
+                if item.title != title {
+                    item.title = title
+                }
             }
         }
-        tabBar.selectedItem = tabBar.items?.first(where: { $0.tag == selectedTab.rawValue })
+        let selectedItem = tabBar.items?.first(where: { $0.tag == selectedTab.rawValue })
+        // UIKit already selects the tapped item before the Binding update.
+        // Leave that selection untouched so its native animation can finish.
+        if tabBar.selectedItem !== selectedItem {
+            tabBar.selectedItem = selectedItem
+        }
     }
 
     private func makeItem(for tab: AppTab) -> UITabBarItem {
@@ -101,7 +109,7 @@ struct MainTabBar: UIViewRepresentable {
         }
 
         func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
-            guard let tab = AppTab(rawValue: item.tag) else { return }
+            guard let tab = AppTab(rawValue: item.tag), parent.selectedTab != tab else { return }
             parent.selectedTab = tab
         }
     }

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DA7000010000000000000001 /* DemoTouchSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA7000020000000000000001 /* DemoTouchSettings.swift */; };
+		DA7000010000000000000002 /* DemoTouchWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA7000020000000000000002 /* DemoTouchWindow.swift */; };
 		63214F5BCEEA418392E5883B /* InteractiveBottomCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C97C767D76C43C68A2243E7 /* InteractiveBottomCard.swift */; };
 		81B2E43879114C8C8709AF34 /* Transmission in Frameworks */ = {isa = PBXBuildFile; productRef = 2267041125BC4BE6B1EF94CB /* Transmission */; };
 		83571D872F6943F3004C4213 /* PriceRefreshAnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83571D862F6943F3004C4213 /* PriceRefreshAnimationView.swift */; };
@@ -200,6 +202,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		DA7000020000000000000001 /* DemoTouchSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoTouchSettings.swift; sourceTree = "<group>"; };
+		DA7000020000000000000002 /* DemoTouchWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoTouchWindow.swift; sourceTree = "<group>"; };
 		7C97C767D76C43C68A2243E7 /* InteractiveBottomCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractiveBottomCard.swift; sourceTree = "<group>"; };
 		83571D862F6943F3004C4213 /* PriceRefreshAnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceRefreshAnimationView.swift; sourceTree = "<group>"; };
 		84008BF12CAA709D0094E05E /* IntradayCardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntradayCardsView.swift; sourceTree = "<group>"; };
@@ -413,6 +417,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		DA7000030000000000000001 /* DemoTouches */ = {
+			isa = PBXGroup;
+			children = (
+				DA7000020000000000000001 /* DemoTouchSettings.swift */,
+				DA7000020000000000000002 /* DemoTouchWindow.swift */,
+			);
+			path = DemoTouches;
+			sourceTree = "<group>";
+		};
 		83571D852F6943D6004C4213 /* PriceRefreshAnimation */ = {
 			isa = PBXGroup;
 			children = (
@@ -722,6 +735,7 @@
 		C2A0247724FB5315004930F0 /* SuperPreview */ = {
 			isa = PBXGroup;
 			children = (
+				DA7000030000000000000001 /* DemoTouches */,
 				84F200022F78000000ABC001 /* Comp */,
 				84574C3029754FE10062D03D /* Utilities */,
 				84A729A1296FB4AF0056BA94 /* ViewModels */,
@@ -1056,6 +1070,8 @@
 				C2A69B3D253BF3AA00E5933F /* WatchlistView.swift in Sources */,
 				84574C342976A0590062D03D /* ImageDebug.swift in Sources */,
 				845A1EAB2F7581C900D7A110 /* PreviewRuntime.swift in Sources */,
+				DA7000010000000000000001 /* DemoTouchSettings.swift in Sources */,
+				DA7000010000000000000002 /* DemoTouchWindow.swift in Sources */,
 				C2A76F10252027DB00DDC561 /* IndicatorView.swift in Sources */,
 				C2310CB728F54CF100259834 /* NavigationBarModifier.swift in Sources */,
 				84E7BBBF267C6D1D0028407E /* USStockSnapshotView.swift in Sources */,

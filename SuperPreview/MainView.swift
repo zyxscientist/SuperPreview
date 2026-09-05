@@ -133,29 +133,25 @@ private struct MainViewToolbarModifier: ViewModifier {
     @Binding var watchlistDebugPresentation: Bool
     @Binding var tradeDebugPresentation: Bool
 
-    @ViewBuilder
     func body(content: Content) -> some View {
-        if selectedTab == .tab1 {
-            content.toolbar {
-                ToolbarItemGroup(placement: .navigationBarTrailing) {
+        // Keep the content (including UITabBar and all tab pages) at the same
+        // structural identity when only the trailing toolbar item changes.
+        content.toolbar {
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
+                if selectedTab == .tab1 || selectedTab == .tab2 {
                     debugButton(
-                        identifier: "watchlist.debug.open",
-                        action: { watchlistDebugPresentation = true }
+                        identifier: selectedTab == .tab1
+                            ? "watchlist.debug.open"
+                            : "trade.debug.open",
+                        action: {
+                            if selectedTab == .tab1 {
+                                watchlistDebugPresentation = true
+                            } else {
+                                tradeDebugPresentation = true
+                            }
+                        }
                     )
-                }
-            }
-        } else if selectedTab == .tab2 {
-            content.toolbar {
-                ToolbarItemGroup(placement: .navigationBarTrailing) {
-                    debugButton(
-                        identifier: "trade.debug.open",
-                        action: { tradeDebugPresentation = true }
-                    )
-                }
-            }
-        } else {
-            content.toolbar {
-                ToolbarItemGroup(placement: .navigationBarTrailing) {
+                } else {
                     Image("search-Right")
                 }
             }

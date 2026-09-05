@@ -358,6 +358,8 @@ struct WatchlistRedesignDebugPanel: View {
 
             DemoLanguagePicker(language: $language)
 
+            DemoTouchToggle()
+
             DemoLiquidGlassUsageToggle(
                 isReducedLiquidGlassUsageEnabled: $isReducedLiquidGlassUsageEnabled
             )

@@ -343,6 +343,8 @@ private struct StockOrderDebugPanel: View {
             DemoLanguagePicker(language: $language)
                 .accessibilityIdentifier("stockOrder.debug.language")
 
+            DemoTouchToggle()
+
             Spacer()
         }
         .padding(.horizontal, 20)

@@ -27,6 +27,37 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         super.tearDown()
     }
 
+    func testMainTabSwitchingPreservesPageStateAcrossToolbarBranches() throws {
+        enterWatchlist()
+        waitFor("watchlist.tab.港股").tap()
+        XCTAssertTrue(waitFor("watchlist.tab.港股").isSelected)
+
+        enterTrade()
+        waitFor("trade.categoryTab.virtualAssets").tap()
+        XCTAssertTrue(waitFor("trade.categoryTab.virtualAssets").isSelected)
+
+        // The remaining four tabs share the search toolbar branch. Crossing
+        // either Debug branch must preserve the already mounted page states.
+        for tab in [3, 4, 5, 6] {
+            selectMainTab("mainTab.tab\(tab)")
+            XCTAssertTrue(waitFor("mainTab.tab\(tab)").isSelected)
+
+            enterWatchlist()
+            XCTAssertTrue(waitFor("watchlist.tab.港股").isSelected)
+            XCTAssertTrue(waitFor("watchlist.debug.open").isHittable)
+
+            enterTrade()
+            XCTAssertTrue(waitFor("trade.categoryTab.virtualAssets").isSelected)
+            XCTAssertTrue(waitFor("trade.debug.open").isHittable)
+        }
+
+        // Reselecting the current tab must not reset its local selection.
+        enterTrade()
+        XCTAssertTrue(waitFor("trade.categoryTab.virtualAssets").isSelected)
+        enterWatchlist()
+        XCTAssertTrue(waitFor("watchlist.tab.港股").isSelected)
+    }
+
     func testCompareComponentLibraryUsesFullWidthAndNavigates() throws {
         enterComponentLibrary()
 

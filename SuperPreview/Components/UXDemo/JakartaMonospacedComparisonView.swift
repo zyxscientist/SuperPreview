@@ -214,6 +214,8 @@ private struct JakartaFontDebugView: View {
     var body: some View {
         NavigationStack {
             Form {
+                DemoTouchToggle()
+
                 Section {
                     ForEach(JakartaFontWeight.allCases) { weight in
                         Button {
