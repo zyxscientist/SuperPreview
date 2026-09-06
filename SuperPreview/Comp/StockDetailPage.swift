@@ -90,6 +90,7 @@ struct StockDetailPage: View {
     @State private var isShowingDebugSheet = false
     @State private var shuffleSession: StockDetailShuffleSession?
     @State private var pendingShuffleExitInstrumentID: String?
+    @State private var navigationBackSwipeRefreshID = 0
     @State private var isShowingStockOrder = false
     @State private var stockOrderInitialSelection: StockOrderSymbol?
     @State private var detailTimestampDate = Date()
@@ -187,6 +188,7 @@ struct StockDetailPage: View {
                         }
                         .id(activeInstrument.id)
                         .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                        .navigationBackSwipeContentLayoutProbe()
                     }
                 }
 
@@ -234,6 +236,7 @@ struct StockDetailPage: View {
             item: shuffleSessionBinding,
             onDismiss: {
                 pendingShuffleExitInstrumentID = nil
+                requestNavigationBackSwipeRefresh()
             }
         ) { session in
             StockDetailShuffleView(
@@ -247,6 +250,7 @@ struct StockDetailPage: View {
         .onChange(of: activeInstrument) { _, newInstrument in
             detailTimestampDate = Date()
             resetPageState()
+            requestNavigationBackSwipeRefresh()
             completePendingShuffleExitIfNeeded(for: newInstrument)
         }
         .task(id: activeInstrument.market) {
@@ -272,7 +276,9 @@ struct StockDetailPage: View {
         .accessibilityIdentifier("stockDetail.page")
         .navigationBackSwipe(
             .edge,
-            prioritizesEdgeOverHorizontalContent: true
+            prioritizesEdgeOverHorizontalContent: true,
+            refreshID: navigationBackSwipeRefreshID,
+            participatesInNavigationBackSwipe: presentationMode == .standard
         )
         .environment(\.demoLanguage, activeLanguage)
     }
@@ -461,6 +467,10 @@ struct StockDetailPage: View {
     private func handleDebugAction() {
         guard presentationMode == .standard else { return }
         isShowingDebugSheet = true
+    }
+
+    private func requestNavigationBackSwipeRefresh() {
+        navigationBackSwipeRefreshID &+= 1
     }
 
     private func handleTrade() {

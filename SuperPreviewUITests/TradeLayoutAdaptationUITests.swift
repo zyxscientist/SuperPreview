@@ -395,6 +395,115 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         XCTAssertTrue(waitFor("stockDetail.bottomActionBar.trade").exists)
     }
 
+    func testStockDetailShuffleDismissRestoresEdgeSwipeAcrossMarkets() throws {
+        enterWatchlist()
+
+        let cases = [
+            (tab: "watchlist.tab.美股", row: "watchlist.row.us:NVDA"),
+            (tab: "watchlist.tab.港股", row: "watchlist.row.hk:09988")
+        ]
+
+        for item in cases {
+            waitFor(item.tab).tap()
+            tapWatchlistRow(item.row)
+
+            XCTAssertTrue(waitFor("stockDetail.page").exists)
+            waitFor("stockDetail.bottomActionBar.shuffle").tap()
+
+            let shuffle = waitFor("stockDetail.shuffle.root")
+            waitFor("stockDetail.shuffle.close").tap()
+            waitForDisappearance(shuffle)
+            XCTAssertTrue(waitFor("stockDetail.page").exists)
+
+            performHorizontalDrag(fromX: 0.01, toX: 0.82)
+            XCTAssertTrue(
+                waitFor("watchlist.root").exists,
+                "Closing Shuffle must restore the edge pop for \(item.row)"
+            )
+        }
+    }
+
+    func testStockDetailShuffleSelectionAndCancelledSwipeKeepBackSwipeHealthy() throws {
+        enterWatchlist()
+        tapWatchlistRow("watchlist.row.us:NVDA")
+
+        XCTAssertTrue(waitFor("stockDetail.page").exists)
+        waitFor("stockDetail.bottomActionBar.shuffle").tap()
+
+        let shuffle = waitFor("stockDetail.shuffle.root")
+        waitFor("stockDetail.shuffle.symbol.us:AAPL").tap()
+        waitForCommittedInstrument("us:AAPL")
+        waitForParentCommittedInstrument("us:AAPL")
+
+        waitFor("stockDetail.shuffle.close").tap()
+        waitForDisappearance(shuffle)
+
+        // A cancelled native pop must not leave the recognizer disabled for
+        // the following completed pop.
+        performHorizontalDrag(fromX: 0.01, toX: 0.18)
+        XCTAssertTrue(waitFor("stockDetail.page").exists)
+
+        performHorizontalDrag(fromX: 0.01, toX: 0.82)
+        XCTAssertTrue(waitFor("watchlist.root").exists)
+    }
+
+    func testStockDetailShuffleExitPreservesCenterPagerAfterInstrumentChange() throws {
+        enterWatchlist()
+        tapWatchlistRow("watchlist.row.us:NVDA")
+
+        XCTAssertTrue(waitFor("stockDetail.page").exists)
+        waitFor("stockDetail.bottomActionBar.shuffle").tap()
+
+        let shuffle = waitFor("stockDetail.shuffle.root")
+        waitFor("stockDetail.shuffle.symbol.us:AAPL").tap()
+        waitForCommittedInstrument("us:AAPL")
+        waitForParentCommittedInstrument("us:AAPL")
+        waitFor("stockDetail.shuffle.close").tap()
+        waitForDisappearance(shuffle)
+
+        let analysisTab = waitFor("stockDetail.page.headerTab.analysis")
+        analysisTab.tap()
+        XCTAssertTrue(analysisTab.isSelected)
+        sleep(1)
+
+        performHorizontalDrag(fromX: 0.52, toX: 0.97)
+
+        XCTAssertTrue(waitFor("stockDetail.page").exists)
+        XCTAssertTrue(
+            waitFor("stockDetail.page.headerTab.etf").isSelected,
+            "The rebuilt detail pager must keep center-swipe behavior after Shuffle"
+        )
+    }
+
+    func testStockDetailShuffleRepeatedOpenChangeCloseKeepsBackSwipe() throws {
+        enterWatchlist()
+        tapWatchlistRow("watchlist.row.us:NVDA")
+
+        XCTAssertTrue(waitFor("stockDetail.page").exists)
+
+        waitFor("stockDetail.bottomActionBar.shuffle").tap()
+        var shuffle = waitFor("stockDetail.shuffle.root")
+        waitFor("stockDetail.shuffle.symbol.us:AAPL").tap()
+        waitForCommittedInstrument("us:AAPL")
+        waitForParentCommittedInstrument("us:AAPL")
+        waitFor("stockDetail.shuffle.close").tap()
+        waitForDisappearance(shuffle)
+
+        waitFor("stockDetail.bottomActionBar.shuffle").tap()
+        shuffle = waitFor("stockDetail.shuffle.root")
+        shuffle.swipeUp()
+        waitForCommittedInstrument("us:TSLA")
+        waitForParentCommittedInstrument("us:TSLA")
+        waitFor("stockDetail.shuffle.close").tap()
+        waitForDisappearance(shuffle)
+
+        performHorizontalDrag(fromX: 0.01, toX: 0.82)
+        XCTAssertTrue(
+            waitFor("watchlist.root").exists,
+            "Repeated Shuffle presentation must not leave edge pop disabled"
+        )
+    }
+
     func testStockOrderSystemEdgeSwipeBackReturnsToDetail() throws {
         enterWatchlist()
         tapWatchlistRow("watchlist.row.us:NVDA")
@@ -577,6 +686,9 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
             waitFor("stockDetail.navbar.title").label.contains("AAPL"),
             "Tapping the current Shuffle card should exit to the selected instrument"
         )
+
+        performHorizontalDrag(fromX: 0.01, toX: 0.82)
+        XCTAssertTrue(waitFor("watchlist.root").exists)
     }
 
     func testStockDetailShuffleAdjacentCardTapExitsToTappedInstrument() throws {
@@ -602,6 +714,9 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
             waitFor("stockDetail.navbar.title").label.contains("AAPL"),
             "Tapping the next Shuffle card should exit to that instrument"
         )
+
+        performHorizontalDrag(fromX: 0.01, toX: 0.82)
+        XCTAssertTrue(waitFor("watchlist.root").exists)
     }
 
     func testStockDetailShuffleQuoteExpansionIsSharedPersistedAndIndependent() throws {
