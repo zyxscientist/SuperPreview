@@ -93,8 +93,10 @@ struct MainTabBar: UIViewRepresentable {
     private func makeItem(for tab: AppTab) -> UITabBarItem {
         let item = UITabBarItem(
             title: tab.title(language: language),
-            image: UIImage(named: tab.inactiveImageName),
-            selectedImage: UIImage(named: tab.activeImageName)
+            // These Glyph assets carry their own Light/Dark and active colors.
+            // Keep UIKit's tab-bar tint from recoloring the source artwork.
+            image: UIImage(named: tab.inactiveImageName)?.withRenderingMode(.alwaysOriginal),
+            selectedImage: UIImage(named: tab.activeImageName)?.withRenderingMode(.alwaysOriginal)
         )
         item.tag = tab.rawValue
         item.accessibilityIdentifier = "mainTab.tab\(tab.rawValue + 1)"
