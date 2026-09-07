@@ -78,6 +78,8 @@ struct StockDetailPage: View {
     let onReminder: () -> Void
     let shuffleInstruments: [StockDetailInstrument]?
     let presentationMode: StockDetailPagePresentationMode
+    let showsBottomActionBar: Bool
+    let shuffleRequestID: Int
     let configurationOverride: StockDetailPageConfiguration?
     let quoteDetailsExpansion: Binding<Bool>?
     let onShuffleCardInteraction: (() -> Void)?
@@ -106,6 +108,8 @@ struct StockDetailPage: View {
         initialTab: StockDetailPageTab = .quote,
         shuffleInstruments: [StockDetailInstrument]? = nil,
         presentationMode: StockDetailPagePresentationMode = .standard,
+        showsBottomActionBar: Bool = true,
+        shuffleRequestID: Int = 0,
         configuration: StockDetailPageConfiguration? = nil,
         quoteDetailsExpansion: Binding<Bool>? = nil,
         onShuffleCardInteraction: (() -> Void)? = nil,
@@ -133,6 +137,8 @@ struct StockDetailPage: View {
         self.onReminder = onReminder
         self.shuffleInstruments = shuffleInstruments
         self.presentationMode = presentationMode
+        self.showsBottomActionBar = showsBottomActionBar
+        self.shuffleRequestID = shuffleRequestID
         self.configurationOverride = configuration
         self.quoteDetailsExpansion = quoteDetailsExpansion
         self.onShuffleCardInteraction = onShuffleCardInteraction
@@ -161,7 +167,7 @@ struct StockDetailPage: View {
                         shareAccessibilityLabel: activeLanguage.text(.debug)
                     )
 
-                    if presentationMode == .standard {
+                    if presentationMode != .shuffleCard {
                         StockDetailPageHeaderTabs(
                             tabs: pageConfiguration.tabs,
                             selection: $selectedTab,
@@ -192,7 +198,7 @@ struct StockDetailPage: View {
                     }
                 }
 
-                if presentationMode == .standard {
+                if presentationMode != .shuffleCard && showsBottomActionBar {
                     fixedBottomActionBar
                 }
             }
@@ -217,7 +223,7 @@ struct StockDetailPage: View {
         .toolbar(.hidden, for: .navigationBar)
         .navigationBarBackButtonHidden(true)
         .overlay(alignment: .topLeading) {
-            if PreviewRuntime.isUITesting, presentationMode == .standard {
+            if PreviewRuntime.isUITesting, presentationMode != .shuffleCard {
                 Text(activeInstrument.id)
                     .frame(width: 1, height: 1)
                     .accessibilityIdentifier("stockDetail.committedInstrument")
@@ -252,6 +258,9 @@ struct StockDetailPage: View {
             resetPageState()
             requestNavigationBackSwipeRefresh()
             completePendingShuffleExitIfNeeded(for: newInstrument)
+        }
+        .onChange(of: shuffleRequestID) { _, _ in
+            presentShuffle()
         }
         .task(id: activeInstrument.market) {
             guard activeInstrument.market == .us else { return }
@@ -376,7 +385,12 @@ struct StockDetailPage: View {
                 disclaimer
             }
             .frame(width: viewportWidth, alignment: .topLeading)
-            .padding(.bottom, StockDetailPageLayout.bottomClearance)
+            .padding(
+                .bottom,
+                presentationMode == .advancedTrading
+                    ? StockOrderAdvancedTradingLayout.contentBottomInset
+                    : StockDetailPageLayout.bottomClearance
+            )
         }
         .scrollBounceBehavior(.basedOnSize)
         .onScrollGeometryChange(for: CGFloat.self, of: { geometry in
@@ -474,22 +488,24 @@ struct StockDetailPage: View {
     }
 
     private func handleTrade() {
-        guard presentationMode == .standard,
+        guard presentationMode == .standard || presentationMode == .advancedTrading,
               activeInstrument.kind != .fund,
               activeInstrument.market.stockOrderMarket != nil else {
             return
         }
 
-        // Capture the symbol at the moment of the tap. This keeps a later
-        // detail-page refresh or market-session update from changing the
-        // order page that is already being presented.
-        stockOrderInitialSelection = configuration.symbol
-        isShowingStockOrder = true
+        if presentationMode == .standard {
+            // Capture the symbol at the moment of the tap. This keeps a later
+            // detail-page refresh or market-session update from changing the
+            // order page that is already being presented.
+            stockOrderInitialSelection = configuration.symbol
+            isShowingStockOrder = true
+        }
         onTrade()
     }
 
     private func presentShuffle() {
-        guard presentationMode == .standard else { return }
+        guard presentationMode != .shuffleCard else { return }
 
         let snapshot = normalizedShuffleInstruments
         guard !snapshot.isEmpty else { return }
@@ -500,7 +516,7 @@ struct StockDetailPage: View {
     }
 
     private func exitShuffle(to instrument: StockDetailInstrument) {
-        guard presentationMode == .standard, shuffleSession != nil else { return }
+        guard presentationMode != .shuffleCard, shuffleSession != nil else { return }
 
         pendingShuffleExitInstrumentID = instrument.id
 
@@ -516,7 +532,7 @@ struct StockDetailPage: View {
     }
 
     private func completePendingShuffleExitIfNeeded(for instrument: StockDetailInstrument) {
-        guard presentationMode == .standard,
+        guard presentationMode != .shuffleCard,
               pendingShuffleExitInstrumentID == instrument.id else {
             return
         }
@@ -629,7 +645,7 @@ struct StockDetailPage: View {
     }
 
     private var shuffleSessionBinding: Binding<StockDetailShuffleSession?> {
-        presentationMode == .standard ? $shuffleSession : .constant(nil)
+        presentationMode != .shuffleCard ? $shuffleSession : .constant(nil)
     }
 
     private var debugLanguageBinding: Binding<DemoLanguage> {
@@ -899,8 +915,8 @@ private struct StockDetailDebugSheet: View {
 }
 
 private enum StockDetailPageLayout {
-    static let bottomBarHeight: CGFloat = 60
-    static let homeIndicatorAreaHeight: CGFloat = 34
+    static let bottomBarHeight = StockTradingBottomLayout.actionBarHeight
+    static let homeIndicatorAreaHeight = StockTradingBottomLayout.homeIndicatorAreaHeight
     static let bottomBarContainerHeight: CGFloat = bottomBarHeight + homeIndicatorAreaHeight
     static let bottomClearance: CGFloat = bottomBarContainerHeight + 16
     static let moneyFlowCardPadding: CGFloat = 16

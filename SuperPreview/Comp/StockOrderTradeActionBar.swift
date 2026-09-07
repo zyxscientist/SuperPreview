@@ -5,6 +5,13 @@
 
 import SwiftUI
 
+/// Shared screen-bottom geometry for quote and order-entry actions.
+enum StockTradingBottomLayout {
+    static let actionBarHeight: CGFloat = 60
+    static let homeIndicatorAreaHeight: CGFloat = 34
+    static let containerHeight = actionBarHeight + homeIndicatorAreaHeight
+}
+
 enum StockOrderTradeActionBarStatus: Hashable {
     case locked
     case unlocked
@@ -118,7 +125,7 @@ struct StockOrderTradeActionBar: View {
 
 private enum StockOrderTradeActionBarLayout {
     static let horizontalPadding: CGFloat = 16
-    static let containerHeight: CGFloat = 60
+    static let containerHeight = StockTradingBottomLayout.actionBarHeight
     static let buttonHeight: CGFloat = 44
     static let glassInset: CGFloat = 8
     static let buttonSpacing: CGFloat = 12

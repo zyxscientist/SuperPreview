@@ -221,6 +221,15 @@ struct WatchlistRedesignListPage: View {
                         isMiniKVisible: isMiniKVisible,
                         shuffleInstruments: shuffleInstruments
                     )
+                    .overlay(alignment: .topLeading) {
+                        if PreviewRuntime.isUITesting {
+                            Text(item.miniKPoints.map { String(Double($0)) }.joined(separator: ","))
+                                .frame(width: 1, height: 1)
+                                .opacity(0.01)
+                                .allowsHitTesting(false)
+                                .accessibilityIdentifier("watchlist.debug.miniKPoints.\(item.id)")
+                        }
+                    }
                 }
 
                 WatchlistRedesignActions()

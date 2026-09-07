@@ -9,6 +9,7 @@ import UIKit
 
 enum StockDetailPagePresentationMode: Equatable {
     case standard
+    case advancedTrading
     case shuffleCard
 }
 

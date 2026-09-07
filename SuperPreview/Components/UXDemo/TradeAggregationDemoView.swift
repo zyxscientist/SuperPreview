@@ -9,6 +9,8 @@ struct TradeAggregationDemoView: View {
     private let showsMainTabBar: Bool
     private let showsNavigationBarTitle: Bool
     private let externalDebugPresentation: Binding<Bool>?
+    private let externalTradeAction: (() -> Void)?
+    private let externalTodayOrdersAction: (() -> Void)?
     @StateObject private var viewModel = TradeAggregationDemoViewModel()
     @State private var selectedCategory: AssetCategory = .stocks
     @State private var isNumberHidden = false
@@ -21,17 +23,22 @@ struct TradeAggregationDemoView: View {
     @State private var isMultipleInAppNotificationSimulationEnabled = false
     @State private var selectedMainTab: AppTab = .tab2
     @State private var isShowingStockOrder = false
+    @State private var isShowingTodayOrders = false
     @EnvironmentObject private var demoLanguageStore: DemoLanguageStore
     @EnvironmentObject private var demoAppearanceStore: DemoAppearanceStore
 
     init(
         showsMainTabBar: Bool = true,
         showsNavigationBarTitle: Bool = true,
-        debugPresentation: Binding<Bool>? = nil
+        debugPresentation: Binding<Bool>? = nil,
+        onTrade: (() -> Void)? = nil,
+        onTodayOrders: (() -> Void)? = nil
     ) {
         self.showsMainTabBar = showsMainTabBar
         self.showsNavigationBarTitle = showsNavigationBarTitle
         self.externalDebugPresentation = debugPresentation
+        self.externalTradeAction = onTrade
+        self.externalTodayOrdersAction = onTodayOrders
     }
 
     var body: some View {
@@ -82,7 +89,8 @@ struct TradeAggregationDemoView: View {
                     pinnedQuickMenu(
                         for: selectedCategory,
                         viewportWidth: geometry.size.width,
-                        onTrade: { isShowingStockOrder = true }
+                        onTrade: presentStockOrder,
+                        onTodayOrders: presentTodayOrders
                     )
                     .transition(.identity)
                     .zIndex(2)
@@ -132,6 +140,18 @@ struct TradeAggregationDemoView: View {
             }
             .hidden()
             .accessibilityIdentifier("trade.stockOrder.navigation")
+        )
+        .background(
+            NavigationLink(
+                destination: TodayOrdersPageView(
+                    orders: StockOrderDemoViewModel.makeDemoTodayOrders(language: demoLanguage)
+                ),
+                isActive: $isShowingTodayOrders
+            ) {
+                EmptyView()
+            }
+            .hidden()
+            .accessibilityIdentifier("trade.todayOrders.navigation")
         )
         .mainTabBar(if: showsMainTabBar, selectedTab: $selectedMainTab)
         .inAppNotificationSimulation(
@@ -215,7 +235,8 @@ struct TradeAggregationDemoView: View {
                     isNumberHidden: isNumberHidden,
                     snapshot: viewModel.snapshot,
                     viewportWidth: viewportWidth,
-                    onTrade: { isShowingStockOrder = true }
+                    onTrade: presentStockOrder,
+                    onTodayOrders: presentTodayOrders
                 )
             }
         }
@@ -224,6 +245,22 @@ struct TradeAggregationDemoView: View {
 
     private var demoLanguage: DemoLanguage {
         demoLanguageStore.language
+    }
+
+    private func presentStockOrder() {
+        if let externalTradeAction {
+            externalTradeAction()
+        } else {
+            isShowingStockOrder = true
+        }
+    }
+
+    private func presentTodayOrders() {
+        if let externalTodayOrdersAction {
+            externalTodayOrdersAction()
+        } else {
+            isShowingTodayOrders = true
+        }
     }
 
     private var demoLanguageBinding: Binding<DemoLanguage> {
@@ -255,25 +292,31 @@ struct TradeAggregationDemoView: View {
     @ViewBuilder
     private func quickMenu(
         for category: AssetCategory,
-        onTrade: @escaping () -> Void = {}
+        onTrade: @escaping () -> Void = {},
+        onTodayOrders: @escaping () -> Void = {}
     ) -> some View {
         switch category {
         case .stocks:
-            StockAssetQuickMenu(onTrade: onTrade)
+            StockAssetQuickMenu(onTrade: onTrade, onTodayOrders: onTodayOrders)
         case .funds:
             FundAssetQuickMenu()
         case .virtualAssets:
-            VirtualAssetsQuickMenu()
+            VirtualAssetsQuickMenu(onTodayOrders: onTodayOrders)
         }
     }
 
     private func pinnedQuickMenu(
         for category: AssetCategory,
         viewportWidth: CGFloat,
-        onTrade: @escaping () -> Void
+        onTrade: @escaping () -> Void,
+        onTodayOrders: @escaping () -> Void
     ) -> some View {
         VStack(spacing: 0) {
-            quickMenu(for: category, onTrade: onTrade)
+            quickMenu(
+                for: category,
+                onTrade: onTrade,
+                onTodayOrders: onTodayOrders
+            )
                 .frame(width: viewportWidth, height: TradeAggregationLayout.quickMenuHeight)
 
             Color.clear
@@ -381,6 +424,7 @@ private struct TradeAggregationCategoryPage: View {
     let snapshot: TradeAggregationDemoSnapshot
     let viewportWidth: CGFloat
     let onTrade: () -> Void
+    let onTodayOrders: () -> Void
     @Environment(\.demoLanguage) private var language
 
     var body: some View {
@@ -444,11 +488,11 @@ private struct TradeAggregationCategoryPage: View {
     private var quickMenu: some View {
         switch category {
         case .stocks:
-            StockAssetQuickMenu(onTrade: onTrade)
+            StockAssetQuickMenu(onTrade: onTrade, onTodayOrders: onTodayOrders)
         case .funds:
             FundAssetQuickMenu()
         case .virtualAssets:
-            VirtualAssetsQuickMenu()
+            VirtualAssetsQuickMenu(onTodayOrders: onTodayOrders)
         }
     }
 

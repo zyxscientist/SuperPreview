@@ -78,6 +78,21 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         XCTAssertTrue(waitFor("trade.root").exists)
     }
 
+    func testCompareComponentLibraryOpensSystemSegmentedControlDemo() throws {
+        enterComponentLibrary()
+
+        let entry = waitFor("compare.systemSegmentedControl")
+        XCTAssertTrue(entry.isHittable)
+        entry.tap()
+
+        XCTAssertTrue(waitFor("compare.systemSegmentedControl.demo").exists)
+        let segmentedControl = app.segmentedControls["compare.systemSegmentedControl.primary"].firstMatch
+        XCTAssertTrue(
+            segmentedControl.waitForExistence(timeout: 5),
+            "Missing native Segmented Control"
+        )
+    }
+
     func testLiquidGlassDebugToggleFollowsRuntimeAvailability() throws {
         enterWatchlist()
 

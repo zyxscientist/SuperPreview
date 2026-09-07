@@ -589,6 +589,10 @@ final class StockOrderDemoViewModel: ObservableObject {
     }
 
     func todayOrders(language: DemoLanguage) -> [StockOrderTodayOrderItem] {
+        Self.makeDemoTodayOrders(language: language)
+    }
+
+    static func makeDemoTodayOrders(language: DemoLanguage) -> [StockOrderTodayOrderItem] {
         let name = language.securityName(id: "wl-us-nvidia", fallback: "NVDA")
         return StockOrderTodayOrderStatus.allCases.enumerated().map { index, status in
             StockOrderTodayOrderItem(

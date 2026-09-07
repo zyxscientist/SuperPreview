@@ -175,6 +175,20 @@ struct CompareTab5View: View {
         List{
             // 组件列表单元
             NavigationLink(
+                destination: SystemSegmentedControlDemoView(),
+                label: {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("iOS 系统 Segmented Control")
+                            .font(.system(size: 16, weight: .semibold, design: .default))
+                        Text("Picker · SegmentedPickerStyle")
+                            .foregroundColor(.gray)
+                            .font(.system(size: 13, weight: .regular, design: .monospaced))
+                    }
+                }
+            )
+            .accessibilityIdentifier("compare.systemSegmentedControl")
+
+            NavigationLink(
                     destination: IntradayCardsView(),
                 label:{
                     VStack(alignment: .leading, spacing: 2) {

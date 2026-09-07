@@ -17,6 +17,7 @@ struct StockOrderBuyingPower: Equatable {
 struct StockOrderNavbar: View {
     let accountTitle: String
     let buyingPower: StockOrderBuyingPower?
+    let showsDebugButton: Bool
     let onBack: () -> Void
     let onDebug: () -> Void
 
@@ -25,11 +26,13 @@ struct StockOrderNavbar: View {
     init(
         accountTitle: String,
         buyingPower: StockOrderBuyingPower? = nil,
+        showsDebugButton: Bool = true,
         onBack: @escaping () -> Void = {},
         onDebug: @escaping () -> Void = {}
     ) {
         self.accountTitle = accountTitle
         self.buyingPower = buyingPower
+        self.showsDebugButton = showsDebugButton
         self.onBack = onBack
         self.onDebug = onDebug
     }
@@ -54,20 +57,22 @@ struct StockOrderNavbar: View {
 
             Spacer(minLength: 0)
 
-            Button(action: onDebug) {
-                Text(language.text(.debug))
-                    .modifier(CustomFontModifier(size: 13, font: .medium, lineHeight: 16))
-                    .foregroundColor(Color("color-text-30"))
+            if showsDebugButton {
+                Button(action: onDebug) {
+                    Text(language.text(.debug))
+                        .modifier(CustomFontModifier(size: 13, font: .medium, lineHeight: 16))
+                        .foregroundColor(Color("color-text-30"))
+                }
+                .buttonStyle(PlainButtonStyle())
+                .frame(
+                    minWidth: StockOrderNavbarLayout.iconSize,
+                    minHeight: StockOrderNavbarLayout.height,
+                    maxHeight: StockOrderNavbarLayout.height
+                )
+                .contentShape(Rectangle())
+                .accessibilityLabel(language.text(.debug))
+                .accessibilityIdentifier("stockOrder.navbar.debug")
             }
-            .buttonStyle(PlainButtonStyle())
-            .frame(
-                minWidth: StockOrderNavbarLayout.iconSize,
-                minHeight: StockOrderNavbarLayout.height,
-                maxHeight: StockOrderNavbarLayout.height
-            )
-            .contentShape(Rectangle())
-            .accessibilityLabel(language.text(.debug))
-            .accessibilityIdentifier("stockOrder.navbar.debug")
         }
         .padding(.horizontal, StockOrderNavbarLayout.horizontalPadding)
         .frame(

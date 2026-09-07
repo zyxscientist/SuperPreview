@@ -95,19 +95,35 @@ struct StockDetailInstrumentQuote: Hashable {
     let changePercent: String
     let trend: StockDetailQuoteTrend
     let session: StockDetailInstrumentSession
+    let miniKPoints: [CGFloat]
 
     init(
         price: String,
         secondaryPrice: String? = nil,
         changePercent: String,
         trend: StockDetailQuoteTrend,
-        session: StockDetailInstrumentSession = .regular
+        session: StockDetailInstrumentSession = .regular,
+        miniKPoints: [CGFloat] = []
     ) {
         self.price = price
         self.secondaryPrice = secondaryPrice
         self.changePercent = changePercent
         self.trend = trend
         self.session = session
+        self.miniKPoints = miniKPoints
+    }
+}
+
+extension StockDetailInstrumentQuote {
+    /// Preserve the source series, including legitimately flat quotes. Only
+    /// standalone demo instruments without a series need a mock fallback.
+    var orderMiniKPoints: [CGFloat] {
+        guard miniKPoints.isEmpty else { return miniKPoints }
+        switch trend {
+        case .up: return ChartMockData.miniChart_50_point.normalized
+        case .down: return ChartMockData.miniChart_30_point.normalized
+        case .flat: return Array(repeating: 0.5, count: 50)
+        }
     }
 }
 
@@ -469,7 +485,8 @@ enum StockDetailPageConfigurationFactory {
                 secondaryPrice: instrument.quote.secondaryPrice,
                 changePercent: instrument.quote.changePercent,
                 trend: instrument.quote.trend,
-                session: session
+                session: session,
+                miniKPoints: instrument.quote.miniKPoints
             )
         )
     }
@@ -519,7 +536,7 @@ enum StockDetailPageConfigurationFactory {
                 secondaryPrice: instrument.quote.secondaryPrice,
                 changePercent: signedPercent(instrument.quote.changePercent, trend: instrument.quote.trend),
                 trend: instrument.quote.stockOrderTrend,
-                miniKPoints: Array(repeating: 0.5, count: 50),
+                miniKPoints: instrument.quote.orderMiniKPoints,
                 session: session
             ),
             searchAliases: [instrument.symbol, instrument.fallbackName],
@@ -1167,7 +1184,8 @@ extension WatchlistRedesignItem {
                 secondaryPrice: secondaryPrice,
                 changePercent: changePercent,
                 trend: detailTrend,
-                session: detailSession
+                session: detailSession,
+                miniKPoints: miniKPoints
             )
         )
     }
