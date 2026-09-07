@@ -607,8 +607,8 @@ struct WatchlistRedesignTableHeader: View {
                     }
                     .buttonStyle(PlainButtonStyle())
                 }
-                .frame(width: nameWidth, alignment: .leading)
                 .padding(.leading, 16)
+                .frame(width: nameWidth, alignment: .leading)
                 .position(x: nameWidth / 2, y: 18)
 
                 HStack(spacing: 2) {

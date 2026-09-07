@@ -46,27 +46,28 @@ struct TotalAsset: View {
     }
 
     var body: some View {
-        HStack(alignment: .top, spacing: 0) {
-            VStack(alignment: .leading, spacing: 8) {
-                title
+        VStack(alignment: .leading, spacing: 8) {
+            title
 
+            HStack(alignment: .bottom, spacing: 0) {
                 Text(numberIsHidden ? "***" : displayedTotalAmount)
                     .font(.custom("PlusJakartaSans-Bold", size: 30, relativeTo: .largeTitle))
                     .foregroundColor(Color("color-text-30"))
-                    .frame(maxWidth: .infinity, minHeight: 40, maxHeight: 40, alignment: .leading)
+                    .frame(width: 230, height: 40, alignment: .leading)
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
 
-                totalProfitLossRow
-            }
-            .frame(width: 230, alignment: .leading)
+                Spacer(minLength: 0)
 
-            Spacer(minLength: 0)
-
-            if !numberIsHidden && isDataAvailable {
-                AssetChart()
+                if !numberIsHidden && isDataAvailable {
+                    AssetChart()
+                }
             }
+            .frame(maxWidth: .infinity, minHeight: 40, maxHeight: 40, alignment: .leading)
+
+            totalProfitLossRow
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 16)
         .frame(maxWidth: .infinity, minHeight: 100, maxHeight: 100, alignment: .topLeading)
         .background(Color("color-base-1"))

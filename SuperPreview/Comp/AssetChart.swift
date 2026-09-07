@@ -20,7 +20,7 @@ struct AssetChart: View {
                     )
                 )
         }
-        .frame(width: 96, height: 55)
+        .frame(width: 96, height: 40)
         .clipped()
         .accessibilityHidden(true)
     }
