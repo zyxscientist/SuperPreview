@@ -642,7 +642,7 @@ struct StockDetailPage: View {
     private var reducedLiquidGlassUsageBinding: Binding<Bool> {
         Binding(
             get: { demoAppearanceStore.isReducedLiquidGlassUsageEnabled },
-            set: { demoAppearanceStore.isReducedLiquidGlassUsageEnabled = $0 }
+            set: { demoAppearanceStore.setReducedLiquidGlassUsageEnabled($0) }
         )
     }
 

@@ -52,7 +52,25 @@ final class DemoLanguageStore: ObservableObject {
 /// above the individual pages so every debug panel controls the same visual
 /// treatment while the app is running.
 final class DemoAppearanceStore: ObservableObject {
-    @Published var isReducedLiquidGlassUsageEnabled = false
+    static var isLiquidGlassUsageToggleSupported: Bool {
+        if #available(iOS 27.0, *) {
+            return true
+        }
+
+        return false
+    }
+
+    @Published private(set) var isReducedLiquidGlassUsageEnabled: Bool
+
+    init() {
+        isReducedLiquidGlassUsageEnabled = !Self.isLiquidGlassUsageToggleSupported
+    }
+
+    func setReducedLiquidGlassUsageEnabled(_ isEnabled: Bool) {
+        isReducedLiquidGlassUsageEnabled = Self.isLiquidGlassUsageToggleSupported
+            ? isEnabled
+            : true
+    }
 }
 
 private struct DemoLanguageKey: EnvironmentKey {
@@ -69,6 +87,10 @@ extension EnvironmentValues {
 enum DemoCopyKey {
     case newWatchlist, newTrade, stockOrderPage, debug, done, interfaceLanguage
     case reduceLiquidGlassUsage, reduceLiquidGlassUsageDetails
+    case reduceLiquidGlassUsageUnavailableDetails
+    case liquidGlassUsageEnabled
+    case liquidGlassUsageUnavailableTitle, liquidGlassUsageUnavailableMessage
+    case liquidGlassUsageUnavailableDismiss
     case navigateOnTap, navigateOnTapOn, navigateOnTapOff, tabBarFontSize
     case simulateQuoteUpdates, quoteUpdatesOn, quoteUpdatesOff, updateSpeed
     case slow, medium, fast, mixed
@@ -233,6 +255,11 @@ private enum DemoCopy {
         .interfaceLanguage: ("界面语言", "介面語言", "Interface Language"),
         .reduceLiquidGlassUsage: ("减少液态玻璃使用", "減少液態玻璃使用", "Reduce Liquid Glass"),
         .reduceLiquidGlassUsageDetails: ("开启后，选中态恢复为实心 Capsule 样式", "開啟後，選中態恢復為實心 Capsule 樣式", "Selected states use the original solid Capsule style when enabled."),
+        .reduceLiquidGlassUsageUnavailableDetails: ("当前系统已自动启用减少液态玻璃使用", "目前系統已自動啟用減少液態玻璃使用", "Reduced Liquid Glass is automatically enabled on this system."),
+        .liquidGlassUsageEnabled: ("已开启", "已開啟", "On"),
+        .liquidGlassUsageUnavailableTitle: ("功能不可用", "功能不可用", "Feature Unavailable"),
+        .liquidGlassUsageUnavailableMessage: ("该功能仅支持在 iOS 27 及以上版本的设备上使用。", "此功能僅支援在 iOS 27 及以上版本的裝置上使用。", "This feature is only supported on devices running iOS 27 or later."),
+        .liquidGlassUsageUnavailableDismiss: ("知道了", "知道了", "OK"),
         .navigateOnTap: ("点按后跳转", "點按後跳轉", "Navigate on Tap"),
         .navigateOnTapOn: ("开启后，松开点按会进入空白详情页", "開啟後，放開點按會進入空白詳情頁", "When enabled, releasing a tap opens the blank detail screen."),
         .navigateOnTapOff: ("关闭后，仅展示列表的点按背景效果", "關閉後，僅顯示列表的點按背景效果", "When disabled, taps only show the row press effect."),
@@ -695,18 +722,96 @@ struct DemoLanguagePicker: View {
 struct DemoLiquidGlassUsageToggle: View {
     @Binding var isReducedLiquidGlassUsageEnabled: Bool
     @Environment(\.demoLanguage) private var interfaceLanguage
+    @State private var isShowingUnsupportedAlert = false
+
+    private var isToggleSupported: Bool {
+        DemoAppearanceStore.isLiquidGlassUsageToggleSupported
+    }
 
     var body: some View {
-        Toggle(isOn: $isReducedLiquidGlassUsageEnabled) {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(interfaceLanguage.text(.reduceLiquidGlassUsage))
-                    .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
-                    .foregroundColor(Color("color-text-30"))
-
-                Text(interfaceLanguage.text(.reduceLiquidGlassUsageDetails))
-                    .modifier(CustomFontModifier(size: 13, font: .regular, lineHeight: 16))
-                    .foregroundColor(Color("color-text-60"))
-            }
+        toggleContent
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
+        .alert(isPresented: $isShowingUnsupportedAlert) {
+            Alert(
+                title: Text(interfaceLanguage.text(.liquidGlassUsageUnavailableTitle)),
+                message: Text(interfaceLanguage.text(.liquidGlassUsageUnavailableMessage)),
+                dismissButton: .default(
+                    Text(interfaceLanguage.text(.liquidGlassUsageUnavailableDismiss))
+                )
+            )
         }
+        .onAppear {
+            guard !isToggleSupported else { return }
+            isReducedLiquidGlassUsageEnabled = true
+        }
+    }
+
+    private var detailsKey: DemoCopyKey {
+        isToggleSupported
+            ? .reduceLiquidGlassUsageDetails
+            : .reduceLiquidGlassUsageUnavailableDetails
+    }
+
+    @ViewBuilder
+    private var toggleContent: some View {
+        if isToggleSupported {
+            Toggle(isOn: guardedBinding) {
+                label
+            }
+        } else {
+            Button(action: presentUnsupportedAlert) {
+                HStack(alignment: .center, spacing: 12) {
+                    label
+
+                    Spacer(minLength: 0)
+
+                    Toggle(isOn: .constant(true)) {
+                        EmptyView()
+                    }
+                    .labelsHidden()
+                    .allowsHitTesting(false)
+                    .accessibilityHidden(true)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(PlainButtonStyle())
+            .accessibilityLabel(interfaceLanguage.text(.reduceLiquidGlassUsage))
+            .accessibilityValue(interfaceLanguage.text(.liquidGlassUsageEnabled))
+            .accessibilityHint(interfaceLanguage.text(.liquidGlassUsageUnavailableMessage))
+        }
+    }
+
+    private var label: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(interfaceLanguage.text(.reduceLiquidGlassUsage))
+                .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
+                .foregroundColor(Color("color-text-30"))
+
+            Text(interfaceLanguage.text(detailsKey))
+                .modifier(CustomFontModifier(size: 13, font: .regular, lineHeight: 16))
+                .foregroundColor(Color("color-text-60"))
+        }
+    }
+
+    private func presentUnsupportedAlert() {
+        isReducedLiquidGlassUsageEnabled = true
+        isShowingUnsupportedAlert = true
+    }
+
+    private var guardedBinding: Binding<Bool> {
+        Binding(
+            get: { isReducedLiquidGlassUsageEnabled },
+            set: { newValue in
+                guard isToggleSupported else {
+                    isReducedLiquidGlassUsageEnabled = true
+                    isShowingUnsupportedAlert = true
+                    return
+                }
+
+                isReducedLiquidGlassUsageEnabled = newValue
+            }
+        )
     }
 }

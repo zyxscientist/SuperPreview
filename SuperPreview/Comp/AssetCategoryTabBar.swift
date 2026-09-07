@@ -28,7 +28,7 @@ struct AssetCategoryTabBar: View {
 
     init(
         selection: Binding<AssetCategory>,
-        isReducedLiquidGlassUsageEnabled: Bool = false
+        isReducedLiquidGlassUsageEnabled: Bool = !DemoAppearanceStore.isLiquidGlassUsageToggleSupported
     ) {
         self._selection = selection
         self.isReducedLiquidGlassUsageEnabled = isReducedLiquidGlassUsageEnabled

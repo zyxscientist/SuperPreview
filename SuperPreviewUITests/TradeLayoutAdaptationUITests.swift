@@ -78,6 +78,39 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         XCTAssertTrue(waitFor("trade.root").exists)
     }
 
+    func testLiquidGlassDebugToggleFollowsRuntimeAvailability() throws {
+        enterWatchlist()
+
+        waitFor("watchlist.debug.open").tap()
+        let switchControl = app.switches["watchlist.debug.reduceLiquidGlass"].firstMatch
+
+        if switchControl.waitForExistence(timeout: 2) {
+            waitForSwitchValue(switchControl, expected: "0")
+
+            switchControl.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+            waitForSwitchValue(switchControl, expected: "1")
+
+            switchControl.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+            waitForSwitchValue(switchControl, expected: "0")
+        } else {
+            let row = app.buttons["watchlist.debug.reduceLiquidGlass"].firstMatch
+            XCTAssertTrue(row.waitForExistence(timeout: 8), "Missing restricted Liquid Glass debug row")
+
+            row.tap()
+            let alert = app.alerts["功能不可用"].firstMatch
+            XCTAssertTrue(alert.waitForExistence(timeout: 5), "Missing unsupported-version alert")
+            XCTAssertTrue(
+                alert.staticTexts["该功能仅支持在 iOS 27 及以上版本的设备上使用。"].exists,
+                "Unsupported-version alert should explain the iOS 27 requirement"
+            )
+            alert.buttons["知道了"].tap()
+            XCTAssertTrue(
+                app.staticTexts["当前系统已自动启用减少液态玻璃使用"].exists,
+                "Restricted Liquid Glass row should explain its automatic state"
+            )
+        }
+    }
+
     func testTradeCategoryCardsMenusAndHoldingViewports() throws {
         enterTrade()
 
@@ -1062,6 +1095,22 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         let toggle = app.switches[identifier].firstMatch
         XCTAssertTrue(toggle.waitForExistence(timeout: 8), "Missing debug switch: \(identifier)")
         toggle.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+    }
+
+    private func waitForSwitchValue(
+        _ toggle: XCUIElement,
+        expected: String,
+        timeout: TimeInterval = 5
+    ) {
+        let expectation = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "value == %@", expected),
+            object: toggle
+        )
+        XCTAssertEqual(
+            XCTWaiter.wait(for: [expectation], timeout: timeout),
+            .completed,
+            "Switch did not update to value \(expected)"
+        )
     }
 
     private func openDebugAndSelectLanguage(_ language: String) {
