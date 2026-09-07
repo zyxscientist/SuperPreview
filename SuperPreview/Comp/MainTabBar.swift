@@ -63,6 +63,9 @@ struct MainTabBar: UIViewRepresentable {
     func makeUIView(context: Context) -> UITabBar {
         let tabBar = UITabBar()
         tabBar.isTranslucent = true
+        // The selected title uses UITabBar's tint color independently from
+        // the always-original active icon artwork.
+        tabBar.tintColor = UIColor(named: "color-brand-blue")
         tabBar.delegate = context.coordinator
         tabBar.itemPositioning = .fill
         tabBar.items = AppTab.allCases.map(makeItem)
@@ -72,6 +75,7 @@ struct MainTabBar: UIViewRepresentable {
 
     func updateUIView(_ tabBar: UITabBar, context: Context) {
         context.coordinator.parent = self
+        tabBar.tintColor = UIColor(named: "color-brand-blue")
         if tabBar.items?.count != AppTab.allCases.count {
             tabBar.items = AppTab.allCases.map(makeItem)
         } else {

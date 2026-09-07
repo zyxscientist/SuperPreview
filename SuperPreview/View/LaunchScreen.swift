@@ -24,22 +24,20 @@ struct LaunchScreen: View {
                 // Fallback on earlier versions
             }
             
-            ZStack{
+            ZStack {
+                Image("logo")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 160, height: 160)
+                    .opacity(logoAnimation ? 1 : 0)
+                    .offset(y: logoAnimation ? 0 : 30)
+
                 VStack {
-                    Image("logo")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 140, height: 140)
-                        .opacity( logoAnimation ? 1:0 )
-                        .padding(.top, logoAnimation ? 240:270)
-                    
                     Spacer()
-                    
-                    Image("name")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 134, height: 59)
-                        .padding(.bottom, 25)
+
+                    Text("Version 5.6.0")
+                        .foregroundColor(Color("color-text-90"))
+                        .modifier(CustomFontModifier(size: 12, font: .regular))
                 }
             }
         }
