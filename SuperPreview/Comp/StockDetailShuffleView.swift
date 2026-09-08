@@ -117,20 +117,6 @@ struct StockDetailShuffleView: View {
                 reduceMotion: reduceMotion
             )
             .ignoresSafeArea()
-            .allowsHitTesting(orderTransitionController.isInteractiveLayerActive)
-        }
-        .overlay(alignment: .topLeading) {
-            if PreviewRuntime.isUITesting, orderTransitionController.isActive {
-                VStack(spacing: 0) {
-                    Text(String(format: "%.3f", orderTransitionController.debugProgress))
-                        .accessibilityIdentifier("stockDetail.shuffle.orderTransition.progress")
-                    Text(String(format: "%.3f", orderTransitionController.debugDuration ?? -1))
-                        .accessibilityIdentifier("stockDetail.shuffle.orderTransition.duration")
-                }
-                .frame(width: 1, height: 1)
-                .opacity(0.01)
-                .allowsHitTesting(false)
-            }
         }
         .onAppear {
             prepareOrderTransition()
@@ -162,10 +148,14 @@ struct StockDetailShuffleView: View {
     }
 
     private func prepareOrderTransition() {
-        guard instruments.indices.contains(selectedIndex) else { return }
+        guard instruments.indices.contains(selectedIndex) else {
+            orderTransitionController.prepare(symbol: nil)
+            return
+        }
         let instrument = instruments[selectedIndex]
         guard instrument.kind != .fund,
               instrument.market.stockOrderMarket != nil else {
+            orderTransitionController.prepare(symbol: nil)
             return
         }
 
@@ -198,6 +188,7 @@ struct StockDetailShuffleView: View {
             quoteDataIsExpanded: $isQuoteDataExpanded,
             canvasSize: canvasSize,
             onExit: onExit,
+            canBeginDrag: { orderTransitionController.canBeginPagerDrag },
             onOrderSwipe: { instrument, translation, velocity, ended in
                 updateOrderSwipe(
                     for: instrument,
@@ -329,6 +320,7 @@ private struct StockDetailShufflePager: View {
     @Binding var quoteDataIsExpanded: Bool
     let canvasSize: CGSize
     let onExit: (StockDetailInstrument) -> Void
+    let canBeginDrag: () -> Bool
     let onOrderSwipe: (StockDetailInstrument, CGFloat, CGFloat, Bool) -> Void
 
     @State private var dragOffset: CGFloat = 0
@@ -349,6 +341,7 @@ private struct StockDetailShufflePager: View {
         quoteDataIsExpanded: Binding<Bool>,
         canvasSize: CGSize,
         onExit: @escaping (StockDetailInstrument) -> Void,
+        canBeginDrag: @escaping () -> Bool,
         onOrderSwipe: @escaping (StockDetailInstrument, CGFloat, CGFloat, Bool) -> Void
     ) {
         self.instruments = instruments
@@ -357,6 +350,7 @@ private struct StockDetailShufflePager: View {
         self._quoteDataIsExpanded = quoteDataIsExpanded
         self.canvasSize = canvasSize
         self.onExit = onExit
+        self.canBeginDrag = canBeginDrag
         self.onOrderSwipe = onOrderSwipe
         _configurationCache = StateObject(wrappedValue: StockDetailPageConfigurationCache())
     }
@@ -393,11 +387,10 @@ private struct StockDetailShufflePager: View {
         // that off-screen card into view.
         .clipped()
         .contentShape(Rectangle())
-        // Capture the pager drag before the card's tap gesture. This keeps a
-        // horizontal order transition from being mistaken for the card tap
-        // that exits Shuffle, while taps still fall through when the drag
-        // gesture does not begin.
-        .highPriorityGesture(
+        // Observe touches at the window level, scoped to this page's bounds.
+        // Nested chart/scroll recognizers and overlaid controls must not leave
+        // only the card's uncovered edge available for order entry.
+        .background(
             pagerGesture(cardHeight: cardHeight, stride: stride)
         )
         .onChange(of: symbolSelectionRequest) { _, targetIndex in
@@ -407,82 +400,69 @@ private struct StockDetailShufflePager: View {
         }
     }
 
-    private func pagerGesture(cardHeight: CGFloat, stride: CGFloat) -> some Gesture {
-        DragGesture(minimumDistance: ShuffleLayout.gestureMinimumDistance)
-            .onChanged { value in
+    private func pagerGesture(cardHeight: CGFloat, stride: CGFloat) -> StockDetailShufflePagerPanGesture {
+        StockDetailShufflePagerPanGesture(canBegin: canBeginDrag) { state, translation, velocity in
+            switch state {
+            case .began, .changed:
                 guard !isSettling else { return }
-
                 if gestureAxis == nil {
-                    let horizontalDistance = abs(value.translation.width)
-                    let verticalDistance = abs(value.translation.height)
-
-                    guard max(horizontalDistance, verticalDistance) >= ShuffleLayout.gestureLockDistance else {
-                        return
-                    }
-
-                    gestureAxis = verticalDistance >= horizontalDistance ? .vertical : .horizontal
+                    let direction = translation == .zero ? velocity : translation
+                    guard direction != .zero else { return }
+                    gestureAxis = abs(direction.height) >= abs(direction.width) ? .vertical : .horizontal
                 }
-
-                guard let gestureAxis else { return }
-
                 switch gestureAxis {
                 case .vertical:
-                    dragOffset = adjustedDragOffset(value.translation.height)
+                    dragOffset = adjustedDragOffset(translation.height)
                 case .horizontal:
                     if instruments.indices.contains(currentIndex) {
-                        onOrderSwipe(
-                            instruments[currentIndex],
-                            value.translation.width,
-                            value.velocity.width,
-                            false
-                        )
+                        onOrderSwipe(instruments[currentIndex], translation.width, velocity.width, false)
                     }
+                case nil:
+                    break
                 }
-            }
-            .onEnded { value in
-                guard !isSettling else {
-                    gestureAxis = nil
-                    return
-                }
-
+            case .ended, .cancelled, .failed:
                 let axis = gestureAxis
                 gestureAxis = nil
-
-                guard let axis else {
-                    dragOffset = 0
-                    return
-                }
-
+                guard !isSettling else { return }
+                let cancelled = state != .ended
                 switch axis {
                 case .vertical:
+                    guard !cancelled else {
+                        settleBack()
+                        return
+                    }
                     let threshold = min(
                         cardHeight * ShuffleLayout.commitThresholdRatio,
                         ShuffleLayout.maximumCommitDistance
                     )
-                    let translation = value.translation.height
-                    let predictedTranslation = value.predictedEndTranslation.height
-                    let projectedTranslation = abs(predictedTranslation) > abs(translation)
-                        ? predictedTranslation
-                        : translation
-
-                    if projectedTranslation < -threshold, currentIndex < instruments.count - 1 {
+                    let projected = translation.height + velocity.height * 0.2
+                    let travel = abs(projected) > abs(translation.height) ? projected : translation.height
+                    if travel < -threshold, currentIndex < instruments.count - 1 {
                         settle(to: currentIndex + 1, stride: stride)
-                    } else if projectedTranslation > threshold, currentIndex > 0 {
+                    } else if travel > threshold, currentIndex > 0 {
                         settle(to: currentIndex - 1, stride: stride)
                     } else {
                         settleBack()
                     }
                 case .horizontal:
                     if instruments.indices.contains(currentIndex) {
+                        // Cancellation (including system interruptions) must
+                        // resolve the UIKit transition instead of leaving a
+                        // partially presented page attached.
                         onOrderSwipe(
                             instruments[currentIndex],
-                            value.translation.width,
-                            value.velocity.width,
+                            cancelled ? 0 : translation.width,
+                            cancelled ? 0 : velocity.width,
                             true
                         )
                     }
+                case nil:
+                    break
                 }
+            default:
+                break
             }
+        }
     }
 
     private func adjustedDragOffset(_ translation: CGFloat) -> CGFloat {
@@ -980,8 +960,6 @@ private enum ShuffleLayout {
     static let symbolLineHeight: CGFloat = 20
     static let estimatedCharacterWidth: CGFloat = 8.2
 
-    static let gestureMinimumDistance: CGFloat = 4
-    static let gestureLockDistance: CGFloat = 6
     static let commitThresholdRatio: CGFloat = 0.18
     static let maximumCommitDistance: CGFloat = 140
     static let edgeRubberBandFactor: CGFloat = 0.25
@@ -1084,115 +1062,224 @@ private struct StockDetailShufflePreviewHost: View {
 
 // MARK: - Shuffle order transition
 
-/// The order page is hosted in UIKit so its outer transform can be updated
-/// without invalidating the Shuffle SwiftUI tree on every drag sample.
+/// The recognizer sees touches before nested SwiftUI/UIScrollView gesture
+/// arbitration. Its hit region and lifecycle remain owned by Shuffle.
+private struct StockDetailShufflePagerPanGesture: UIViewRepresentable {
+    let canBegin: () -> Bool
+    let onPan: (UIGestureRecognizer.State, CGSize, CGSize) -> Void
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(canBegin: canBegin, onPan: onPan)
+    }
+
+    func makeUIView(context: Context) -> StockDetailShufflePanRegion {
+        let region = StockDetailShufflePanRegion()
+        let coordinator = context.coordinator
+        coordinator.region = region
+        region.onWindowChanged = { [weak coordinator] window in
+            coordinator?.attach(to: window)
+        }
+        return region
+    }
+
+    func updateUIView(_ uiView: StockDetailShufflePanRegion, context: Context) {
+        context.coordinator.canBegin = canBegin
+        context.coordinator.onPan = onPan
+        context.coordinator.attach(to: uiView.window)
+    }
+
+    static func dismantleUIView(_ uiView: StockDetailShufflePanRegion, coordinator: Coordinator) {
+        uiView.onWindowChanged = nil
+        coordinator.attach(to: nil)
+    }
+
+    final class Coordinator: NSObject, UIGestureRecognizerDelegate {
+        weak var region: StockDetailShufflePanRegion?
+        var canBegin: () -> Bool
+        var onPan: (UIGestureRecognizer.State, CGSize, CGSize) -> Void
+        private lazy var pan: StockDetailShufflePagePanRecognizer = {
+            let recognizer = StockDetailShufflePagePanRecognizer(target: self, action: #selector(drag(_:)))
+            recognizer.maximumNumberOfTouches = 1
+            recognizer.delegate = self
+            return recognizer
+        }()
+
+        init(
+            canBegin: @escaping () -> Bool,
+            onPan: @escaping (UIGestureRecognizer.State, CGSize, CGSize) -> Void
+        ) {
+            self.canBegin = canBegin
+            self.onPan = onPan
+        }
+
+        func attach(to window: UIWindow?) {
+            guard pan.view !== window else { return }
+            pan.view?.removeGestureRecognizer(pan)
+            window?.addGestureRecognizer(pan)
+        }
+
+        func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+            guard canBegin(), let region, region.window != nil else { return false }
+            return region.bounds.contains(touch.location(in: region))
+        }
+
+        func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+            return canBegin()
+        }
+
+        func gestureRecognizer(
+            _ gestureRecognizer: UIGestureRecognizer,
+            shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
+        ) -> Bool {
+            // A chart's or scroll view's pan must not prevent the page pan.
+            // Taps remain exclusive, so a drag cannot also exit Shuffle.
+            otherGestureRecognizer is UIPanGestureRecognizer
+        }
+
+        func gestureRecognizer(
+            _ gestureRecognizer: UIGestureRecognizer,
+            shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer
+        ) -> Bool {
+            otherGestureRecognizer is UITapGestureRecognizer
+        }
+
+        @objc private func drag(_ recognizer: StockDetailShufflePagePanRecognizer) {
+            let translation = recognizer.translationFromTouchDown
+            let velocity = recognizer.velocity(in: recognizer.view)
+            onPan(
+                recognizer.state,
+                CGSize(width: translation.x, height: translation.y),
+                CGSize(width: velocity.x, height: velocity.y)
+            )
+        }
+    }
+}
+
+/// UIPan can begin with zero translation after consuming its recognition
+/// distance. Preserve touch-down displacement so a short horizontal drag
+/// neither loses that distance nor gets locked to the vertical pager.
+private final class StockDetailShufflePagePanRecognizer: UIPanGestureRecognizer {
+    private var touchOrigin: CGPoint?
+    private var touchPosition: CGPoint?
+
+    var translationFromTouchDown: CGPoint {
+        guard let touchOrigin, let touchPosition else { return translation(in: view) }
+        return CGPoint(x: touchPosition.x - touchOrigin.x, y: touchPosition.y - touchOrigin.y)
+    }
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
+        if touchOrigin == nil, let touch = touches.first {
+            touchOrigin = touch.location(in: view)
+            touchPosition = touchOrigin
+        }
+        super.touchesBegan(touches, with: event)
+    }
+
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
+        touchPosition = touches.first?.location(in: view)
+        super.touchesMoved(touches, with: event)
+    }
+
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
+        touchPosition = touches.first?.location(in: view)
+        super.touchesEnded(touches, with: event)
+    }
+
+    override func reset() {
+        super.reset()
+        touchOrigin = nil
+        touchPosition = nil
+    }
+}
+
+private final class StockDetailShufflePanRegion: UIView {
+    var onWindowChanged: ((UIWindow?) -> Void)?
+
+    override func didMoveToWindow() {
+        super.didMoveToWindow()
+        onWindowChanged?(window)
+    }
+
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool { false }
+}
+
+/// A real UIKit presentation owns the complete route, including interactive
+/// cancellation and appearance callbacks. Shuffle is never translated or
+/// removed from the presenting hierarchy.
 @MainActor
-private final class StockDetailShuffleOrderTransitionController: ObservableObject {
-    @Published private(set) var phase: StockDetailShuffleOrderTransitionPhase = .idle
+private final class StockDetailShuffleOrderTransitionController: NSObject, ObservableObject,
+    UIViewControllerTransitioningDelegate {
     @Published private(set) var debugProgress: CGFloat = 0
     @Published private(set) var debugDuration: TimeInterval?
+    private(set) var debugRenderedDragSamples = 0
+    private(set) var debugRenderedDragSpan: CGFloat = 0
+    private var firstRenderedDragProgress: CGFloat?
 
+    private var phase: StockDetailShuffleOrderTransitionPhase = .idle
     private weak var container: StockDetailShuffleOrderTransitionViewController?
-    private var preparedSymbol: StockOrderSymbol?
-    private var activeSymbol: StockOrderSymbol?
     private var pendingSymbol: StockOrderSymbol?
-    private var currentOffset: CGFloat = 0
-    private var currentWidth: CGFloat = 0
-    private var transitionStartUptime: TimeInterval?
-    private var transitionToken = 0
-    private var isReduceMotionEnabled = false
+    private var activeHost: StockDetailShuffleOrderPageController?
+    private var interaction: StockDetailShuffleRouteInteraction?
+    private var preparationTask: Task<Void, Never>?
+    private var releaseUptime: TimeInterval?
     private var language: DemoLanguage = .simplifiedChinese
     private var languageStore: DemoLanguageStore?
-    private let diagnostics = StockDetailShuffleOrderTransitionDiagnostics()
-
-    var isActive: Bool {
-        phase != .idle
-    }
-
-    /// The overlay must not steal the original Shuffle drag while the order
-    /// page is still entering. It becomes interactive only after the page is
-    /// fully presented, or while its own return gesture is in progress.
-    var isInteractiveLayerActive: Bool {
-        phase == .presented || phase == .returnDragging
-    }
+    private var reduceMotion = false
 
     func updateEnvironment(
         language: DemoLanguage,
         languageStore: DemoLanguageStore,
         reduceMotion: Bool
     ) {
-        let languageChanged = self.language != language
+        let changed = self.language != language || self.languageStore !== languageStore
         self.language = language
         self.languageStore = languageStore
-        isReduceMotionEnabled = reduceMotion
-
-        if languageChanged {
-            container?.updateHostEnvironment(language: language, languageStore: languageStore)
+        self.reduceMotion = reduceMotion
+        if changed {
+            container?.preparedHost?.updateLanguage(language)
+            activeHost?.updateLanguage(language)
         }
     }
 
     func attach(to container: StockDetailShuffleOrderTransitionViewController) {
         self.container = container
-        container.onRequestDismiss = { [weak self] in
-            self?.dismissFromOrder()
-        }
+        container.onReady = { [weak self] in self?.schedulePreparation() }
+        schedulePreparation()
+    }
 
-        if let pendingSymbol {
-            container.prepare(
-                symbol: pendingSymbol,
-                language: language,
-                languageStore: languageStore,
-                onExternalReturnDrag: { [weak self] translation, velocity, projected, ended in
-                    self?.handleReturnDrag(
-                        translation: translation,
-                        velocity: velocity,
-                        projectedTranslation: projected,
-                        ended: ended
-                    )
-                }
-            )
-            preparedSymbol = pendingSymbol
-        }
+    func prepare(symbol: StockOrderSymbol?) {
+        pendingSymbol = symbol
+        schedulePreparation()
+    }
 
-        if phase != .idle, let activeSymbol {
-            container.prepare(
-                symbol: activeSymbol,
-                language: language,
-                languageStore: languageStore,
-                onExternalReturnDrag: { [weak self] translation, velocity, projected, ended in
-                    self?.handleReturnDrag(
-                        translation: translation,
-                        velocity: velocity,
-                        projectedTranslation: projected,
-                        ended: ended
-                    )
-                }
-            )
-            container.setOffset(currentOffset)
-            container.setInteractive(isInteractiveLayerActive)
+    private func schedulePreparation() {
+        preparationTask?.cancel()
+        guard phase == .idle else { return }
+        preparationTask = Task { @MainActor [weak self] in
+            // Let the Shuffle card's layout finish before warming the order
+            // form. No page construction is scheduled for individual pan samples.
+            await Task.yield()
+            guard !Task.isCancelled, let self, self.phase == .idle,
+                  let container = self.container, container.viewIfLoaded?.window != nil,
+                  container.view.bounds.width > 0 else { return }
+            guard let symbol = self.pendingSymbol else {
+                container.clearPreparedHost()
+                return
+            }
+            if container.preparedHost?.symbol == symbol { return }
+            guard let host = self.makeHost(symbol: symbol) else { return }
+            container.stage(host)
         }
     }
 
-    func prepare(symbol: StockOrderSymbol) {
-        pendingSymbol = symbol
-
-        guard phase == .idle else { return }
-        guard preparedSymbol != symbol || container?.hasOrderHost != true else { return }
-
-        preparedSymbol = symbol
-        container?.prepare(
-            symbol: symbol,
-            language: language,
-            languageStore: languageStore,
-            onExternalReturnDrag: { [weak self] translation, velocity, projected, ended in
-                self?.handleReturnDrag(
-                    translation: translation,
-                    velocity: velocity,
-                    projectedTranslation: projected,
-                    ended: ended
-                )
-            }
+    private func makeHost(symbol: StockOrderSymbol) -> StockDetailShuffleOrderPageController? {
+        guard let languageStore else { return nil }
+        let host = StockDetailShuffleOrderPageController(
+            symbol: symbol, language: language, languageStore: languageStore, route: self
         )
+        host.modalPresentationStyle = .custom
+        host.transitioningDelegate = self
+        return host
     }
 
     func handleEntryDrag(
@@ -1202,240 +1289,313 @@ private final class StockDetailShuffleOrderTransitionController: ObservableObjec
         ended: Bool,
         containerWidth: CGFloat
     ) {
-        guard instrument.kind != .fund,
-              instrument.market.stockOrderMarket != nil else {
-            return
-        }
-
-        guard translation < 0 || phase == .dragging else { return }
+        guard instrument.kind != .fund, instrument.market.stockOrderMarket != nil,
+              let container, container.viewIfLoaded?.window != nil else { return }
 
         if phase == .idle {
+            guard translation < 0, container.presentedViewController == nil else { return }
+            preparationTask?.cancel()
             let symbol: StockOrderSymbol
-            if let preparedSymbol,
-               preparedSymbol.id == instrument.symbol {
-                symbol = preparedSymbol
+            if let pendingSymbol, pendingSymbol.id == instrument.symbol {
+                symbol = pendingSymbol
             } else {
                 symbol = StockDetailPageConfigurationFactory.orderSymbolSnapshot(for: instrument)
             }
-            beginEntry(with: symbol, containerWidth: containerWidth)
+            let host: StockDetailShuffleOrderPageController
+            if let prepared = container.takePreparedHost(matching: symbol) {
+                host = prepared
+            } else if let fresh = makeHost(symbol: symbol) {
+                host = fresh
+            } else {
+                return
+            }
+            activeHost = host
+            interaction = StockDetailShuffleRouteInteraction()
+            phase = .dragging
+            if PreviewRuntime.isUITesting {
+                debugProgress = 0
+                debugDuration = nil
+                debugRenderedDragSamples = 0
+                debugRenderedDragSpan = 0
+                firstRenderedDragProgress = nil
+            }
+            host.view.isUserInteractionEnabled = false
+            container.present(host, animated: true)
         }
 
         guard phase == .dragging else { return }
-
-        currentWidth = max(containerWidth, 0)
-        currentOffset = offset(for: translation, width: currentWidth)
-        container?.setOffset(currentOffset)
-
-        guard ended else { return }
-
-        if translation < 0 {
-            finishEntry(velocity: velocity)
-        } else {
-            cancelEntry()
+        let width = max(container.view.bounds.width, containerWidth, 1)
+        interaction?.setProgress(min(1, max(0, -translation / width)))
+        if PreviewRuntime.isUITesting,
+           let renderedX = activeHost?.view.layer.presentation()?.affineTransform().tx {
+            let renderedProgress = 1 - renderedX / width
+            if renderedProgress > 0.01 && renderedProgress < 0.99 {
+                debugRenderedDragSamples += 1
+                if let firstRenderedDragProgress {
+                    debugRenderedDragSpan = max(debugRenderedDragSpan, abs(renderedProgress - firstRenderedDragProgress))
+                } else {
+                    firstRenderedDragProgress = renderedProgress
+                }
+            }
         }
+        guard ended else { return }
+        settleInteraction(commit: translation < 0, velocity: -velocity, width: width)
     }
 
-    func handleReturnDrag(
-        translation: CGFloat,
-        velocity: CGFloat,
-        projectedTranslation: CGFloat,
-        ended: Bool
-    ) {
-        guard phase == .presented || phase == .returnDragging else { return }
-
-        if phase == .presented {
-            stopAnimationPreservingPresentation()
+    func handleReturnPan(_ recognizer: UIScreenEdgePanGestureRecognizer) {
+        guard let host = activeHost else { return }
+        let width = max(host.view.bounds.width, 1)
+        // Window coordinates stay fixed while the page itself moves.
+        let translation = recognizer.translation(in: host.view.window).x
+        let velocity = recognizer.velocity(in: host.view.window).x
+        switch recognizer.state {
+        case .began:
+            guard phase == .presented, host.allowsReturn,
+                  host.presentedViewController == nil else { return }
+            host.view.endEditing(true)
             phase = .returnDragging
-            container?.setInteractive(true)
-        }
-
-        guard phase == .returnDragging else { return }
-
-        currentWidth = max(container?.view.bounds.width ?? currentWidth, 0)
-        currentOffset = min(currentWidth, max(0, translation))
-        container?.setOffset(currentOffset)
-
-        guard ended else { return }
-
-        let shouldDismiss = max(translation, projectedTranslation) >= 120
-        if shouldDismiss {
-            finishReturn(velocity: max(velocity, 0))
-        } else {
-            animateBackToPresented()
+            interaction = StockDetailShuffleRouteInteraction()
+            host.dismiss(animated: true)
+            interaction?.setProgress(min(1, max(0, translation / width)))
+        case .changed:
+            guard phase == .returnDragging else { return }
+            interaction?.setProgress(min(1, max(0, translation / width)))
+        case .ended:
+            guard phase == .returnDragging else { return }
+            interaction?.setProgress(min(1, max(0, translation / width)))
+            let projected = translation + velocity * 0.2
+            settleInteraction(
+                commit: max(translation, projected) >= 120,
+                velocity: velocity,
+                width: width
+            )
+        case .cancelled, .failed:
+            guard phase == .returnDragging else { return }
+            settleInteraction(commit: false, velocity: 0, width: width)
+        default:
+            break
         }
     }
+
+    var canBeginPagerDrag: Bool {
+        phase == .idle && container?.viewIfLoaded?.window != nil
+            && container?.presentedViewController == nil
+    }
+
+    var canBeginReturn: Bool { phase == .presented }
 
     func dismissFromOrder() {
-        guard phase == .presented || phase == .returnDragging else { return }
-        stopAnimationPreservingPresentation()
+        guard phase == .presented, let activeHost, activeHost.allowsReturn,
+              activeHost.presentedViewController == nil else { return }
+        activeHost.view.endEditing(true)
         phase = .finishing
-        container?.setInteractive(false)
-
-        guard !isReduceMotionEnabled else {
-            removeOrderHost()
-            return
-        }
-
-        animateToEnd(
-            width: max(container?.view.bounds.width ?? currentWidth, 0),
-            velocity: 0
-        ) { [weak self] in
-            self?.removeOrderHost()
-        }
+        interaction = nil
+        activeHost.dismiss(animated: true)
     }
 
-    private func beginEntry(with symbol: StockOrderSymbol, containerWidth: CGFloat) {
-        stopAnimationPreservingPresentation()
-        transitionToken &+= 1
-        activeSymbol = symbol
-        pendingSymbol = symbol
-        preparedSymbol = symbol
-        currentWidth = max(containerWidth, 0)
-        currentOffset = currentWidth
-        debugProgress = 0
-        debugDuration = nil
-        transitionStartUptime = ProcessInfo.processInfo.systemUptime
-        phase = .dragging
+    private func settleInteraction(commit: Bool, velocity: CGFloat, width: CGFloat) {
+        phase = .finishing
+        releaseUptime = ProcessInfo.processInfo.systemUptime
+        interaction?.settle(commit: commit, velocity: velocity, width: width, reduceMotion: reduceMotion)
+    }
 
-        container?.prepare(
-            symbol: symbol,
-            language: language,
-            languageStore: languageStore,
-            onExternalReturnDrag: { [weak self] translation, velocity, projected, ended in
-                self?.handleReturnDrag(
-                    translation: translation,
-                    velocity: velocity,
-                    projectedTranslation: projected,
-                    ended: ended
-                )
+    private func transitionEnded(presenting: Bool, completed: Bool) {
+        interaction = nil
+        let remainsPresented = presenting == completed
+        phase = remainsPresented ? .presented : .idle
+        if remainsPresented {
+            activeHost?.view.isUserInteractionEnabled = true
+            if PreviewRuntime.isUITesting {
+                debugProgress = 1
+                if presenting {
+                    debugDuration = releaseUptime.map { ProcessInfo.processInfo.systemUptime - $0 }
+                }
             }
-        )
-        container?.setInteractive(false)
-        container?.setOffset(currentOffset)
-        diagnostics.start(with: container)
-    }
-
-    private func finishEntry(velocity: CGFloat) {
-        guard phase == .dragging else { return }
-        phase = .finishing
-        container?.setInteractive(false)
-
-        guard !isReduceMotionEnabled else {
-            container?.setOffset(0)
-            completeEntry()
-            return
-        }
-
-        animateToEnd(width: 0, velocity: velocity) { [weak self] in
-            self?.completeEntry()
+        } else {
+            activeHost = nil
+            releaseUptime = nil
+            // A fresh order page is prepared from Shuffle's symbol, never
+            // from edits made inside the previous order session.
+            schedulePreparation()
         }
     }
 
-    private func cancelEntry() {
-        guard phase == .dragging else { return }
-        phase = .finishing
-        container?.setInteractive(false)
-
-        guard !isReduceMotionEnabled else {
-            removeOrderHost()
-            return
-        }
-
-        animateToEnd(width: max(container?.view.bounds.width ?? currentWidth, 0), velocity: 0) { [weak self] in
-            self?.removeOrderHost()
-        }
-    }
-
-    private func finishReturn(velocity: CGFloat) {
-        guard phase == .returnDragging else { return }
-        phase = .finishing
-        container?.setInteractive(false)
-
-        guard !isReduceMotionEnabled else {
-            removeOrderHost()
-            return
-        }
-
-        animateToEnd(
-            width: max(container?.view.bounds.width ?? currentWidth, 0),
-            velocity: velocity
-        ) { [weak self] in
-            self?.removeOrderHost()
-        }
-    }
-
-    private func animateBackToPresented() {
-        phase = .finishing
-        container?.setInteractive(false)
-
-        guard !isReduceMotionEnabled else {
-            container?.setOffset(0)
-            phase = .presented
-            container?.setInteractive(true)
-            return
-        }
-
-        animateToEnd(width: 0, velocity: 0) { [weak self] in
-            guard let self else { return }
-            self.phase = .presented
-            self.container?.setInteractive(true)
-        }
-    }
-
-    private func animateToEnd(
-        width targetWidth: CGFloat,
-        velocity: CGFloat,
-        completion: @escaping () -> Void
-    ) {
-        let target = max(targetWidth, 0)
-        transitionToken &+= 1
-        let token = transitionToken
-
-        container?.animate(
-            to: target,
-            velocity: velocity,
-            reduceMotion: isReduceMotionEnabled
-        ) { [weak self] in
-            guard let self, self.transitionToken == token else { return }
-            self.currentOffset = target
-            completion()
-        }
-    }
-
-    private func completeEntry() {
-        currentOffset = 0
-        phase = .presented
-        container?.setOffset(0)
-        container?.setInteractive(true)
-        debugProgress = 1
-        debugDuration = transitionStartUptime.map {
-            ProcessInfo.processInfo.systemUptime - $0
-        }
-        diagnostics.stop()
-    }
-
-    private func removeOrderHost() {
-        transitionToken &+= 1
-        diagnostics.stop()
-        container?.stopAnimationPreservingPresentation()
-        container?.removeOrderHost()
-        activeSymbol = nil
-        currentOffset = 0
+    func detach() {
+        preparationTask?.cancel()
+        preparationTask = nil
+        interaction?.cancel()
+        interaction = nil
+        activeHost?.dismiss(animated: false)
+        activeHost = nil
+        container?.clearPreparedHost()
+        container?.onReady = nil
+        container = nil
         phase = .idle
-        debugProgress = 0
-        debugDuration = nil
-        transitionStartUptime = nil
     }
 
-    @discardableResult
-    private func stopAnimationPreservingPresentation() -> CGFloat {
-        let position = container?.stopAnimationPreservingPresentation() ?? currentOffset
-        currentOffset = position
-        return position
+    func animationController(
+        forPresented presented: UIViewController,
+        presenting: UIViewController,
+        source: UIViewController
+    ) -> UIViewControllerAnimatedTransitioning? {
+        makeAnimator(presenting: true)
     }
 
-    private func offset(for translation: CGFloat, width: CGFloat) -> CGFloat {
-        min(width, max(0, width + translation))
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        makeAnimator(presenting: false)
+    }
+
+    private func makeAnimator(presenting: Bool) -> StockDetailShuffleRouteAnimator {
+        StockDetailShuffleRouteAnimator(presenting: presenting, reduceMotion: reduceMotion) { [weak self] completed in
+            self?.transitionEnded(presenting: presenting, completed: completed)
+        }
+    }
+
+    func interactionControllerForPresentation(
+        using animator: UIViewControllerAnimatedTransitioning
+    ) -> UIViewControllerInteractiveTransitioning? {
+        interaction
+    }
+
+    func interactionControllerForDismissal(
+        using animator: UIViewControllerAnimatedTransitioning
+    ) -> UIViewControllerInteractiveTransitioning? {
+        interaction
+    }
+
+    func presentationController(
+        forPresented presented: UIViewController,
+        presenting: UIViewController?,
+        source: UIViewController
+    ) -> UIPresentationController? {
+        StockDetailShuffleOrderPresentationController(
+            presentedViewController: presented, presenting: presenting
+        )
+    }
+}
+
+/// Buffers the first pan sample (and even a very short completed gesture)
+/// until UIKit has installed its transition context.
+@MainActor
+private final class StockDetailShuffleRouteInteraction: UIPercentDrivenInteractiveTransition {
+    private var isReady = false
+    private var pendingProgress: CGFloat = 0
+    private var pendingCommit: Bool?
+
+    func setProgress(_ progress: CGFloat) {
+        pendingProgress = progress
+        if isReady { update(progress) }
+    }
+
+    override func startInteractiveTransition(_ transitionContext: UIViewControllerContextTransitioning) {
+        super.startInteractiveTransition(transitionContext)
+        isReady = true
+        update(pendingProgress)
+        if let pendingCommit { completeInteraction(commit: pendingCommit) }
+    }
+
+    func settle(commit: Bool, velocity: CGFloat, width: CGFloat, reduceMotion: Bool) {
+        // UIKit continues the same animation from its current fraction.
+        // Speed follows the release velocity; there is no second offset jump
+        // or fixed-duration animation for a tiny remaining distance.
+        completionCurve = .easeOut
+        completionSpeed = reduceMotion ? 1 : min(1.8, max(0.8, abs(velocity) / width * 0.38))
+        pendingCommit = commit
+        if isReady { completeInteraction(commit: commit) }
+    }
+
+    private func completeInteraction(commit: Bool) {
+        if commit { finish() } else { cancel() }
+    }
+}
+
+@MainActor
+private final class StockDetailShuffleRouteAnimator: NSObject, UIViewControllerAnimatedTransitioning {
+    private let presenting: Bool
+    private let reduceMotion: Bool
+    private let completion: (Bool) -> Void
+    private var animator: UIViewPropertyAnimator?
+
+    init(presenting: Bool, reduceMotion: Bool, completion: @escaping (Bool) -> Void) {
+        self.presenting = presenting
+        self.reduceMotion = reduceMotion
+        self.completion = completion
+    }
+
+    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
+        reduceMotion ? 0.15 : 0.38
+    }
+
+    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
+        interruptibleAnimator(using: transitionContext).startAnimation()
+    }
+
+    func interruptibleAnimator(
+        using context: UIViewControllerContextTransitioning
+    ) -> UIViewImplicitlyAnimating {
+        if let animator { return animator }
+        let key: UITransitionContextViewControllerKey = presenting ? .to : .from
+        guard let page = context.viewController(forKey: key) else {
+            preconditionFailure("Order route requires its presented page")
+        }
+        let pageView = page.view!
+        let canvas = context.containerView
+        // Establish geometry once, before applying any transform. Never set
+        // frame while a translated view is being dragged or animated.
+        pageView.transform = .identity
+        if presenting {
+            pageView.frame = context.finalFrame(for: page)
+            canvas.addSubview(pageView)
+            pageView.layoutIfNeeded()
+        }
+        let offscreen = CGAffineTransform(translationX: canvas.bounds.width, y: 0)
+        if reduceMotion {
+            pageView.alpha = presenting ? 0 : 1
+        } else {
+            pageView.transform = presenting ? offscreen : .identity
+        }
+        let animation = UIViewPropertyAnimator(
+            duration: transitionDuration(using: context),
+            dampingRatio: 1
+        ) {
+            if self.reduceMotion {
+                pageView.alpha = self.presenting ? 1 : 0
+            } else {
+                pageView.transform = self.presenting ? .identity : offscreen
+            }
+        }
+        animation.scrubsLinearly = true
+        animation.addCompletion { [weak self] _ in
+            guard let self else { return }
+            let completed = !context.transitionWasCancelled
+            pageView.transform = .identity
+            pageView.alpha = 1
+            if self.presenting && !completed { pageView.removeFromSuperview() }
+            context.completeTransition(completed)
+            self.animator = nil
+            self.completion(completed)
+        }
+        animator = animation
+        return animation
+    }
+}
+
+private final class StockDetailShuffleOrderPresentationController: UIPresentationController {
+    override var shouldRemovePresentersView: Bool { false }
+    override var shouldPresentInFullscreen: Bool { true }
+    override var frameOfPresentedViewInContainerView: CGRect { containerView?.bounds ?? .zero }
+
+    override func containerViewWillLayoutSubviews() {
+        super.containerViewWillLayoutSubviews()
+        // The host root is the single moving surface. Updating bounds and
+        // center is safe with a transform; updating frame would change layout
+        // in response to the in-flight animation.
+        guard let presentedView, let containerView else { return }
+        let bounds = containerView.bounds
+        if presentedView.bounds.size != bounds.size {
+            presentedView.bounds = CGRect(origin: .zero, size: bounds.size)
+            presentedView.center = CGPoint(x: bounds.midX, y: bounds.midY)
+        }
     }
 }
 
@@ -1445,325 +1605,205 @@ private struct StockDetailShuffleOrderTransitionLayer: UIViewControllerRepresent
     let languageStore: DemoLanguageStore
     let reduceMotion: Bool
 
+    func makeCoordinator() -> StockDetailShuffleOrderTransitionController { controller }
+
     func makeUIViewController(context: Context) -> StockDetailShuffleOrderTransitionViewController {
         let viewController = StockDetailShuffleOrderTransitionViewController()
-        controller.updateEnvironment(
-            language: language,
-            languageStore: languageStore,
-            reduceMotion: reduceMotion
-        )
+        controller.updateEnvironment(language: language, languageStore: languageStore, reduceMotion: reduceMotion)
         controller.attach(to: viewController)
         return viewController
     }
 
     func updateUIViewController(
-        _ viewController: StockDetailShuffleOrderTransitionViewController,
-        context: Context
+        _ viewController: StockDetailShuffleOrderTransitionViewController, context: Context
     ) {
-        controller.updateEnvironment(
-            language: language,
-            languageStore: languageStore,
-            reduceMotion: reduceMotion
-        )
+        controller.updateEnvironment(language: language, languageStore: languageStore, reduceMotion: reduceMotion)
     }
 
     static func dismantleUIViewController(
         _ viewController: StockDetailShuffleOrderTransitionViewController,
-        coordinator: ()
+        coordinator: StockDetailShuffleOrderTransitionController
     ) {
-        viewController.removeOrderHost()
+        coordinator.detach()
     }
 }
 
 @MainActor
 private final class StockDetailShuffleOrderTransitionViewController: UIViewController {
-    var onRequestDismiss: (() -> Void)?
-
-    private(set) var hasOrderHost = false
-    private var hostingController: UIHostingController<StockDetailShuffleOrderHostView>?
-    private var hostedSymbol: StockOrderSymbol?
-    private var hostedLanguage: DemoLanguage = .simplifiedChinese
-    private weak var hostedLanguageStore: DemoLanguageStore?
-    private var hostedExternalReturnDrag: ((CGFloat, CGFloat, CGFloat, Bool) -> Void)?
-    private var storedOffset: CGFloat = 0
-    private var isPreparedOnly = false
-    private var activeAnimator: UIViewPropertyAnimator?
-    private var isLayerInteractive = false
-
-    var isInteractiveForHitTesting: Bool {
-        isLayerInteractive
-    }
+    var onReady: (() -> Void)?
+    private(set) var preparedHost: StockDetailShuffleOrderPageController?
+    private let stagingView = UIView()
 
     override func loadView() {
-        let containerView = StockDetailShuffleOrderContainerView()
-        containerView.owner = self
-        view = containerView
+        view = StockDetailShuffleOrderContainerView()
         view.backgroundColor = .clear
-        view.isOpaque = false
+        view.clipsToBounds = true
+        stagingView.isHidden = true
+        stagingView.isUserInteractionEnabled = false
+        stagingView.accessibilityElementsHidden = true
+        view.addSubview(stagingView)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        onReady?()
     }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        guard let hostedView = hostingController?.view else { return }
-        hostedView.frame = view.bounds
-
-        guard activeAnimator == nil else { return }
-        applyStoredOffset()
-    }
-
-    override func accessibilityPerformEscape() -> Bool {
-        guard isLayerInteractive else { return false }
-        onRequestDismiss?()
-        return true
-    }
-
-    func prepare(
-        symbol: StockOrderSymbol,
-        language: DemoLanguage,
-        languageStore: DemoLanguageStore?,
-        onExternalReturnDrag: @escaping (CGFloat, CGFloat, CGFloat, Bool) -> Void
-    ) {
-        loadViewIfNeeded()
-        hostedExternalReturnDrag = onExternalReturnDrag
-
-        if hostedSymbol == symbol,
-           let languageStore,
-           hostedLanguageStore === languageStore {
-            updateHostEnvironment(language: language, languageStore: languageStore)
-            return
+        let size = view.bounds.size
+        // A hidden, full-size staging surface preserves the real safe area.
+        // Offscreen staging would give SwiftUI a different safe-area geometry
+        // and force it to lay out again at the first visible pan sample.
+        stagingView.frame = view.bounds
+        if let preparedHost, preparedHost.view.bounds.size != size {
+            preparedHost.view.frame = stagingView.bounds
         }
+    }
 
-        stopAnimationPreservingPresentation()
-        removeHostedController()
-        hostedSymbol = symbol
-        hostedLanguage = language
-        hostedLanguageStore = languageStore
-        isPreparedOnly = true
-        storedOffset = view.bounds.width
-
-        guard let languageStore else { return }
-
-        let host = UIHostingController(
-            rootView: StockDetailShuffleOrderHostView(
-                symbol: symbol,
-                language: language,
-                languageStore: languageStore,
-                onExit: { [weak self] in
-                    self?.onRequestDismiss?()
-                },
-                onExternalReturnDrag: onExternalReturnDrag
-            )
-        )
-        host.view.backgroundColor = .clear
-        host.view.isOpaque = false
-        host.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        host.view.accessibilityElementsHidden = true
-        host.view.isUserInteractionEnabled = false
-
+    func stage(_ host: StockDetailShuffleOrderPageController) {
+        clearPreparedHost()
+        preparedHost = host
         addChild(host)
-        view.addSubview(host.view)
+        stagingView.addSubview(host.view)
+        host.view.frame = CGRect(origin: .zero, size: view.bounds.size)
         host.didMove(toParent: self)
-        hostingController = host
-        hasOrderHost = true
         view.setNeedsLayout()
+        view.layoutIfNeeded()
+        host.view.setNeedsLayout()
+        host.view.layoutIfNeeded()
     }
 
-    func updateHostEnvironment(language: DemoLanguage, languageStore: DemoLanguageStore) {
-        guard let hostedSymbol,
-              let hostedExternalReturnDrag,
-              let host = hostingController else {
-            return
+    func takePreparedHost(matching symbol: StockOrderSymbol) -> StockDetailShuffleOrderPageController? {
+        guard let host = preparedHost, host.symbol == symbol else {
+            clearPreparedHost()
+            return nil
         }
-
-        hostedLanguage = language
-        hostedLanguageStore = languageStore
-        host.rootView = StockDetailShuffleOrderHostView(
-            symbol: hostedSymbol,
-            language: language,
-            languageStore: languageStore,
-            onExit: { [weak self] in
-                self?.onRequestDismiss?()
-            },
-            onExternalReturnDrag: hostedExternalReturnDrag
-        )
+        clearPreparedHost()
+        return host
     }
 
-    func setOffset(_ offset: CGFloat) {
-        storedOffset = max(0, offset)
-        isPreparedOnly = false
-        applyStoredOffset()
-    }
-
-    func setInteractive(_ interactive: Bool) {
-        isLayerInteractive = interactive
-        hostingController?.view.isUserInteractionEnabled = interactive
-        hostingController?.view.accessibilityElementsHidden = !interactive
-    }
-
-    func animate(
-        to targetOffset: CGFloat,
-        velocity: CGFloat,
-        reduceMotion: Bool,
-        completion: @escaping () -> Void
-    ) {
-        loadViewIfNeeded()
-        let current = stopAnimationPreservingPresentation()
-        let target = max(0, targetOffset)
-
-        guard !reduceMotion, abs(target - current) > 0.5 else {
-            setOffset(target)
-            completion()
-            return
-        }
-
-        let distance = target - current
-        let normalizedVelocity = max(-4, min(4, velocity / distance))
-        let timingParameters = UISpringTimingParameters(
-            duration: 0.35,
-            bounce: 0,
-            initialVelocity: CGVector(dx: normalizedVelocity, dy: 0)
-        )
-        let animator = UIViewPropertyAnimator(
-            duration: 0.35,
-            timingParameters: timingParameters
-        )
-        animator.isInterruptible = true
-        animator.addAnimations { [weak self] in
-            self?.storedOffset = target
-            self?.isPreparedOnly = false
-            self?.applyStoredOffset()
-        }
-        animator.addCompletion { [weak self] _ in
-            guard let self else { return }
-            self.activeAnimator = nil
-            self.setOffset(target)
-            completion()
-        }
-        activeAnimator = animator
-        animator.startAnimation()
-    }
-
-    @discardableResult
-    func stopAnimationPreservingPresentation() -> CGFloat {
-        let presentationOffset = renderedOffset
-        activeAnimator?.stopAnimation(true)
-        activeAnimator = nil
-        storedOffset = presentationOffset
-        isPreparedOnly = false
-        applyStoredOffset()
-        return presentationOffset
-    }
-
-    func removeOrderHost() {
-        activeAnimator?.stopAnimation(true)
-        activeAnimator = nil
-        removeHostedController()
-        hostedSymbol = nil
-        hostedLanguageStore = nil
-        hostedExternalReturnDrag = nil
-        storedOffset = 0
-        isPreparedOnly = false
-        isLayerInteractive = false
-    }
-
-    private var renderedOffset: CGFloat {
-        guard let hostedView = hostingController?.view else { return storedOffset }
-        return hostedView.layer.presentation()?.affineTransform().tx ?? hostedView.transform.tx
-    }
-
-    private func applyStoredOffset() {
-        guard let hostedView = hostingController?.view else { return }
-        let offset = isPreparedOnly ? view.bounds.width : storedOffset
-        hostedView.frame = view.bounds
-        hostedView.transform = CGAffineTransform(translationX: offset, y: 0)
-    }
-
-    private func removeHostedController() {
-        guard let hostingController else {
-            hasOrderHost = false
-            return
-        }
-
-        hostingController.willMove(toParent: nil)
-        hostingController.view.removeFromSuperview()
-        hostingController.removeFromParent()
-        self.hostingController = nil
-        hasOrderHost = false
+    func clearPreparedHost() {
+        guard let host = preparedHost else { return }
+        host.willMove(toParent: nil)
+        host.view.removeFromSuperview()
+        host.removeFromParent()
+        preparedHost = nil
     }
 }
 
 private final class StockDetailShuffleOrderContainerView: UIView {
-    weak var owner: StockDetailShuffleOrderTransitionViewController?
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool { false }
+}
 
-    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
-        owner?.isInteractiveForHitTesting == true && super.point(inside: point, with: event)
+@MainActor
+private final class StockDetailShuffleOrderPageController:
+    UIHostingController<StockDetailShuffleOrderHostView>, UIGestureRecognizerDelegate {
+    let symbol: StockOrderSymbol
+    var allowsReturn = true
+    private weak var route: StockDetailShuffleOrderTransitionController?
+    private let languageStore: DemoLanguageStore
+
+    init(
+        symbol: StockOrderSymbol,
+        language: DemoLanguage,
+        languageStore: DemoLanguageStore,
+        route: StockDetailShuffleOrderTransitionController
+    ) {
+        self.symbol = symbol
+        self.languageStore = languageStore
+        self.route = route
+        super.init(rootView: StockDetailShuffleOrderHostView(
+            symbol: symbol, language: language, languageStore: languageStore,
+            route: route, onReturnAvailabilityChanged: { _ in }
+        ))
+        rootView.onReturnAvailabilityChanged = { [weak self] allowed in
+            self?.allowsReturn = allowed
+        }
+    }
+
+    @MainActor required dynamic init?(coder aDecoder: NSCoder) { fatalError("init(coder:) is unsupported") }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = UIColor(named: "color-base-1")
+        let edgePan = UIScreenEdgePanGestureRecognizer(target: self, action: #selector(returnPan(_:)))
+        edgePan.edges = .left
+        edgePan.delegate = self
+        view.addGestureRecognizer(edgePan)
+    }
+
+    func updateLanguage(_ language: DemoLanguage) {
+        guard rootView.language != language else { return }
+        rootView.language = language
+    }
+
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        guard allowsReturn, presentedViewController == nil, route?.canBeginReturn == true,
+              let pan = gestureRecognizer as? UIPanGestureRecognizer else { return false }
+        let velocity = pan.velocity(in: view.window)
+        return velocity.x > abs(velocity.y)
+    }
+
+    func gestureRecognizer(
+        _ gestureRecognizer: UIGestureRecognizer,
+        shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer
+    ) -> Bool {
+        // Give the screen edge the same priority over nested horizontal
+        // content as a navigation controller's interactive pop gesture.
+        otherGestureRecognizer is UIPanGestureRecognizer
+    }
+
+    @objc private func returnPan(_ recognizer: UIScreenEdgePanGestureRecognizer) {
+        route?.handleReturnPan(recognizer)
+    }
+
+    override func accessibilityPerformEscape() -> Bool {
+        guard allowsReturn, presentedViewController == nil, route?.canBeginReturn == true else { return false }
+        route?.dismissFromOrder()
+        return true
     }
 }
 
 private struct StockDetailShuffleOrderHostView: View {
     let symbol: StockOrderSymbol
-    let language: DemoLanguage
+    var language: DemoLanguage
     let languageStore: DemoLanguageStore
-    let onExit: () -> Void
-    let onExternalReturnDrag: (CGFloat, CGFloat, CGFloat, Bool) -> Void
+    let route: StockDetailShuffleOrderTransitionController
+    var onReturnAvailabilityChanged: (Bool) -> Void
 
     var body: some View {
         StockOrderDemoView(
             initialSelection: symbol,
-            onExit: onExit,
-            onExternalReturnDrag: onExternalReturnDrag
+            onExit: { [weak route] in route?.dismissFromOrder() },
+            onExternalReturnAvailabilityChanged: onReturnAvailabilityChanged
         )
         .environmentObject(languageStore)
         .environment(\.demoLanguage, language)
+        .overlay(alignment: .topLeading) {
+            if PreviewRuntime.isUITesting {
+                StockDetailShuffleOrderRouteDiagnostics(route: route)
+            }
+        }
     }
 }
 
-private final class StockDetailShuffleOrderTransitionDiagnostics {
-    private var displayLink: CADisplayLink?
-    private weak var container: StockDetailShuffleOrderTransitionViewController?
-    private var lastTimestamp: CFTimeInterval?
-    private(set) var sampleCount = 0
-    private(set) var maximumFrameInterval: CFTimeInterval = 0
+private struct StockDetailShuffleOrderRouteDiagnostics: View {
+    @ObservedObject var route: StockDetailShuffleOrderTransitionController
 
-    func start(with container: StockDetailShuffleOrderTransitionViewController?) {
-        stop()
-        self.container = container
-        lastTimestamp = nil
-        sampleCount = 0
-        maximumFrameInterval = 0
-
-        #if DEBUG
-        let displayLink = CADisplayLink(
-            target: self,
-            selector: #selector(sample(_:))
-        )
-        displayLink.add(to: .main, forMode: .common)
-        self.displayLink = displayLink
-        #endif
-    }
-
-    func stop() {
-        displayLink?.invalidate()
-        displayLink = nil
-        container = nil
-    }
-
-    #if DEBUG
-    @objc private func sample(_ displayLink: CADisplayLink) {
-        guard container != nil else {
-            stop()
-            return
+    var body: some View {
+        VStack(spacing: 0) {
+            Text(String(format: "%.3f", route.debugProgress))
+                .accessibilityIdentifier("stockDetail.shuffle.orderTransition.progress")
+            Text(String(format: "%.3f", route.debugDuration ?? -1))
+                .accessibilityIdentifier("stockDetail.shuffle.orderTransition.duration")
+            Text("\(route.debugRenderedDragSamples)")
+                .accessibilityIdentifier("stockDetail.shuffle.orderTransition.renderedDragSamples")
+            Text(String(format: "%.3f", route.debugRenderedDragSpan))
+                .accessibilityIdentifier("stockDetail.shuffle.orderTransition.renderedDragSpan")
         }
-
-        if let lastTimestamp {
-            maximumFrameInterval = max(
-                maximumFrameInterval,
-                displayLink.timestamp - lastTimestamp
-            )
-        }
-        lastTimestamp = displayLink.timestamp
-        sampleCount += 1
-        _ = container?.view.layer.presentation()
+        .frame(width: 1, height: 1)
+        .opacity(0.01)
+        .allowsHitTesting(false)
     }
-    #endif
 }

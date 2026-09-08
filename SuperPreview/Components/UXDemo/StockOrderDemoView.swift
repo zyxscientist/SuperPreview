@@ -17,7 +17,7 @@ struct StockOrderDemoView: View {
     private var highFrequencyTradingVersionRawValue = StockOrderAdvancedTradingVersion.v0.rawValue
     @StateObject private var viewModel: StockOrderDemoViewModel
     private let onExit: (() -> Void)?
-    private let onExternalReturnDrag: ((CGFloat, CGFloat, CGFloat, Bool) -> Void)?
+    private let onExternalReturnAvailabilityChanged: ((Bool) -> Void)?
     @State private var returnDragOffset: CGFloat = 0
     @State private var confirmationSide: StockOrderConfirmationSide?
     @State private var confirmationConfirmCount = 0
@@ -35,10 +35,10 @@ struct StockOrderDemoView: View {
     init(
         initialSelection: StockOrderSymbol? = nil,
         onExit: (() -> Void)? = nil,
-        onExternalReturnDrag: ((CGFloat, CGFloat, CGFloat, Bool) -> Void)? = nil
+        onExternalReturnAvailabilityChanged: ((Bool) -> Void)? = nil
     ) {
         self.onExit = onExit
-        self.onExternalReturnDrag = onExternalReturnDrag
+        self.onExternalReturnAvailabilityChanged = onExternalReturnAvailabilityChanged
         _ = StockOrderAdvancedTradingPreferences.prepareForUITesting
         _viewModel = StateObject(
             wrappedValue: StockOrderDemoViewModel(initialSelection: initialSelection)
@@ -47,9 +47,8 @@ struct StockOrderDemoView: View {
 
     var body: some View {
         Group {
-            if let onExternalReturnDrag {
+            if onExternalReturnAvailabilityChanged != nil {
                 orderPageContent
-                    .simultaneousGesture(externalReturnGesture(onExternalReturnDrag))
             } else if onExit != nil {
                 orderPageContent
                     .offset(x: returnDragOffset)
@@ -63,8 +62,11 @@ struct StockOrderDemoView: View {
             navigationBackSwipePolicy,
             prioritizesEdgeOverHorizontalContent: true,
             refreshID: selectedAdvancedTradingSection.navigationBackSwipeRefreshID,
-            participatesInNavigationBackSwipe: onExit == nil && onExternalReturnDrag == nil
+            participatesInNavigationBackSwipe: onExit == nil
         )
+        .onChange(of: allowsExternalReturn, initial: true) { _, allowed in
+            onExternalReturnAvailabilityChanged?(allowed)
+        }
         .interactiveBottomCard(item: $confirmationSide) { side in
             StockOrderConfirmationSheet(
                 data: viewModel.confirmationData(for: side, language: activeLanguage),
@@ -182,46 +184,10 @@ struct StockOrderDemoView: View {
             }
     }
 
-    /// The Shuffle host owns the actual page transform. This gesture only
-    /// reports the edge drag and never applies a second SwiftUI offset to the
-    /// order page, which keeps the navbar and page content on one layer.
-    private func externalReturnGesture(
-        _ onDrag: @escaping (CGFloat, CGFloat, CGFloat, Bool) -> Void
-    ) -> some Gesture {
-        DragGesture(minimumDistance: 12)
-            .onChanged { value in
-                guard confirmationSide == nil,
-                      !isShowingDebugPanel,
-                      value.startLocation.x < 32,
-                      value.translation.width > abs(value.translation.height) else {
-                    return
-                }
-
-                if focusedInput != nil {
-                    dismissInput()
-                }
-                onDrag(
-                    value.translation.width,
-                    value.velocity.width,
-                    value.predictedEndTranslation.width,
-                    false
-                )
-            }
-            .onEnded { value in
-                guard confirmationSide == nil,
-                      !isShowingDebugPanel,
-                      value.startLocation.x < 32,
-                      value.translation.width > abs(value.translation.height) else {
-                    return
-                }
-
-                onDrag(
-                    value.translation.width,
-                    value.velocity.width,
-                    value.predictedEndTranslation.width,
-                    true
-                )
-            }
+    /// The UIKit presentation owns the edge recognizer. Only changes in
+    /// modal availability cross this boundary; drag samples never do.
+    private var allowsExternalReturn: Bool {
+        confirmationSide == nil && !isShowingDebugPanel && !isPriceTargetMenuPresented
     }
 
     private func advancedTradingRoot(

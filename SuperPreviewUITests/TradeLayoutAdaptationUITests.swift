@@ -792,6 +792,37 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         waitForCommittedInstrument("us:NVDA")
     }
 
+    func testStockDetailShuffleLeftSwipeFromAnywhereTracksFinger() throws {
+        enterWatchlist()
+        tapWatchlistRow("watchlist.row.us:NVDA")
+        waitFor("stockDetail.bottomActionBar.shuffle").tap()
+        waitForCommittedInstrument("us:NVDA")
+
+        // Include card content, its left half, header and the overlaid symbol
+        // bar. None of these drags starts at the right screen edge.
+        let origins: [(String, CGFloat, CGFloat, CGFloat)] = [
+            ("center", 0.60, 0.20, 0.50),
+            ("left content", 0.28, 0.04, 0.42),
+            ("header", 0.62, 0.20, 0.18),
+            ("bottom symbol bar", 0.62, 0.20, 0.90)
+        ]
+        for (region, startX, endX, y) in origins {
+            let window = app.windows.firstMatch
+            let start = window.coordinate(withNormalizedOffset: CGVector(dx: startX, dy: y))
+            let end = window.coordinate(withNormalizedOffset: CGVector(dx: endX, dy: y))
+            start.press(forDuration: 0.01, thenDragTo: end, withVelocity: 160, thenHoldForDuration: 0.1)
+            XCTAssertTrue(waitFor("stockOrder.demo").exists, "Entry failed from \(region)")
+            XCTAssertEqual(waitFor("stockOrder.debug.status.symbol").label, "NVDA")
+            let samples = app.staticTexts["stockDetail.shuffle.orderTransition.renderedDragSamples"].firstMatch
+            let span = app.staticTexts["stockDetail.shuffle.orderTransition.renderedDragSpan"].firstMatch
+            XCTAssertTrue(samples.waitForExistence(timeout: 3))
+            XCTAssertGreaterThan(Int(samples.label) ?? 0, 1, "No intermediate rendered frames from \(region)")
+            XCTAssertGreaterThan(Double(span.label) ?? 0, 0.05, "Page did not move with the finger from \(region)")
+            waitFor("stockOrder.navbar.back").tap()
+            waitForCommittedInstrument("us:NVDA")
+        }
+    }
+
     func testStockDetailShuffleShortLeftSwipeCommitsWithoutDistanceThreshold() throws {
         enterWatchlist()
         tapWatchlistRow("watchlist.row.us:NVDA")
@@ -809,11 +840,9 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
             name: "英伟达",
             price: "142.61"
         )
-        XCTAssertTrue(
-            waitFor("stockDetail.shuffle.root").exists,
-            "The order layer should be presented over the still-mounted Shuffle view"
-        )
-
+        // UIKit correctly hides the presenting page from accessibility while
+        // the order route is on top. Verify the preserved Shuffle after
+        // dismissal instead of requiring both routes in the accessible tree.
         waitFor("stockOrder.navbar.back").tap()
         XCTAssertTrue(waitFor("stockDetail.shuffle.root").exists)
         waitForCommittedInstrument("us:NVDA")
