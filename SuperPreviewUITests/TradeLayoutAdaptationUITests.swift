@@ -739,6 +739,116 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         XCTAssertTrue(waitFor("watchlist.root").exists)
     }
 
+    func testStockDetailShuffleLeftSwipeOpensOrderForCurrentInstrument() throws {
+        enterWatchlist()
+        tapWatchlistRow("watchlist.row.us:NVDA")
+
+        XCTAssertTrue(waitFor("stockDetail.page").exists)
+        waitFor("stockDetail.bottomActionBar.shuffle").tap()
+
+        _ = waitFor("stockDetail.shuffle.root")
+        waitForCommittedInstrument("us:NVDA")
+
+        // A partial left drag should finish from its current position; there
+        // is no distance-to-commit threshold.
+        performHorizontalDrag(fromX: 0.86, toX: 0.50)
+
+        let transitionProgress = app.staticTexts["stockDetail.shuffle.orderTransition.progress"].firstMatch
+        XCTAssertTrue(
+            transitionProgress.waitForExistence(timeout: 3),
+            "Shuffle should expose transition progress only in UI-test builds"
+        )
+        XCTAssertEqual(Double(transitionProgress.label) ?? -1, 1, accuracy: 0.01)
+        let transitionDuration = app.staticTexts["stockDetail.shuffle.orderTransition.duration"].firstMatch
+        XCTAssertTrue(transitionDuration.waitForExistence(timeout: 3))
+        XCTAssertGreaterThan(Double(transitionDuration.label) ?? -1, 0)
+
+        assertStockOrderPrefill(
+            symbol: "NVDA",
+            name: "英伟达",
+            price: "142.61"
+        )
+
+        // The order page owns its symbol selection. Changing it must not
+        // mutate the Shuffle card that is still underneath this page.
+        waitFor("stockOrder.symbolInput.selectedSymbol").tap()
+        // The composed search box exposes its text-field role under the
+        // container identifier.
+        let query = app.textFields["stockOrder.symbolSearchSheet.searchBox"].firstMatch
+        XCTAssertTrue(query.waitForExistence(timeout: 5), "Missing order symbol search field")
+        query.tap()
+        query.typeText("09988")
+        waitFor("stockOrder.symbolSearchSheet.result.09988").tap()
+        XCTAssertEqual(waitFor("stockOrder.debug.status.symbol").label, "09988")
+
+        performHorizontalDrag(fromX: 0.01, toX: 0.82)
+        XCTAssertFalse(app.otherElements["stockOrder.demo"].firstMatch.exists)
+        XCTAssertTrue(waitFor("stockDetail.shuffle.root").exists)
+        waitForCommittedInstrument("us:NVDA")
+        // Re-entering also verifies the underlying deck remains on-screen.
+        performHorizontalDrag(fromX: 0.86, toX: 0.14)
+        assertStockOrderPrefill(symbol: "NVDA", name: "英伟达", price: "142.61")
+        waitFor("stockOrder.navbar.back").tap()
+        waitForCommittedInstrument("us:NVDA")
+    }
+
+    func testStockDetailShuffleShortLeftSwipeCommitsWithoutDistanceThreshold() throws {
+        enterWatchlist()
+        tapWatchlistRow("watchlist.row.us:NVDA")
+
+        waitFor("stockDetail.bottomActionBar.shuffle").tap()
+        _ = waitFor("stockDetail.shuffle.root")
+
+        // The drag is intentionally only a few percent of the viewport. The
+        // gesture still needs enough movement to lock to the horizontal axis,
+        // but entry itself must not require a commit-distance threshold.
+        performHorizontalDrag(fromX: 0.86, toX: 0.82)
+
+        assertStockOrderPrefill(
+            symbol: "NVDA",
+            name: "英伟达",
+            price: "142.61"
+        )
+        XCTAssertTrue(
+            waitFor("stockDetail.shuffle.root").exists,
+            "The order layer should be presented over the still-mounted Shuffle view"
+        )
+
+        waitFor("stockOrder.navbar.back").tap()
+        XCTAssertTrue(waitFor("stockDetail.shuffle.root").exists)
+        waitForCommittedInstrument("us:NVDA")
+    }
+
+    func testStockDetailShuffleOrderConfirmationBlocksExternalReturnSwipe() throws {
+        enterWatchlist()
+        tapWatchlistRow("watchlist.row.us:NVDA")
+
+        waitFor("stockDetail.bottomActionBar.shuffle").tap()
+        _ = waitFor("stockDetail.shuffle.root")
+        performHorizontalDrag(fromX: 0.86, toX: 0.50)
+        assertStockOrderPrefill(
+            symbol: "NVDA",
+            name: "英伟达",
+            price: "142.61"
+        )
+
+        waitFor("stockOrder.tradeActionBar.buy").tap()
+        XCTAssertTrue(waitFor("stockOrder.confirmationSheet").exists)
+
+        performHorizontalDrag(fromX: 0.01, toX: 0.82)
+        XCTAssertTrue(
+            waitFor("stockOrder.confirmationSheet").exists,
+            "The confirmation card must block the Shuffle-hosted order return swipe"
+        )
+
+        waitFor("stockOrder.confirmationSheet.button.cancel").tap()
+        XCTAssertTrue(waitFor("stockOrder.demo").exists)
+
+        performHorizontalDrag(fromX: 0.01, toX: 0.82)
+        XCTAssertTrue(waitFor("stockDetail.shuffle.root").exists)
+        waitForCommittedInstrument("us:NVDA")
+    }
+
     func testStockDetailShuffleAdjacentCardTapExitsToTappedInstrument() throws {
         enterWatchlist()
 

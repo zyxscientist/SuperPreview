@@ -16,6 +16,9 @@ struct StockOrderDemoView: View {
     @AppStorage(StockOrderAdvancedTradingPreferences.versionKey)
     private var highFrequencyTradingVersionRawValue = StockOrderAdvancedTradingVersion.v0.rawValue
     @StateObject private var viewModel: StockOrderDemoViewModel
+    private let onExit: (() -> Void)?
+    private let onExternalReturnDrag: ((CGFloat, CGFloat, CGFloat, Bool) -> Void)?
+    @State private var returnDragOffset: CGFloat = 0
     @State private var confirmationSide: StockOrderConfirmationSide?
     @State private var confirmationConfirmCount = 0
     @State private var isPriceTargetMenuPresented = false
@@ -29,7 +32,13 @@ struct StockOrderDemoView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-    init(initialSelection: StockOrderSymbol? = nil) {
+    init(
+        initialSelection: StockOrderSymbol? = nil,
+        onExit: (() -> Void)? = nil,
+        onExternalReturnDrag: ((CGFloat, CGFloat, CGFloat, Bool) -> Void)? = nil
+    ) {
+        self.onExit = onExit
+        self.onExternalReturnDrag = onExternalReturnDrag
         _ = StockOrderAdvancedTradingPreferences.prepareForUITesting
         _viewModel = StateObject(
             wrappedValue: StockOrderDemoViewModel(initialSelection: initialSelection)
@@ -37,23 +46,24 @@ struct StockOrderDemoView: View {
     }
 
     var body: some View {
-        GeometryReader { proxy in
-            advancedTradingRoot(
-                viewportWidth: proxy.size.width,
-                bottomSafeArea: proxy.safeAreaInsets.bottom
-            )
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .contentShape(Rectangle())
-                // Match the quote page's screen-bottom coordinate space.
-                .ignoresSafeArea(.container, edges: .bottom)
+        Group {
+            if let onExternalReturnDrag {
+                orderPageContent
+                    .simultaneousGesture(externalReturnGesture(onExternalReturnDrag))
+            } else if onExit != nil {
+                orderPageContent
+                    .offset(x: returnDragOffset)
+                    .simultaneousGesture(shuffleReturnGesture)
+            } else {
+                orderPageContent
+            }
         }
-        .ignoresSafeArea(.keyboard, edges: .bottom)
-        .background(Color("color-base-1"))
         .toolbar(.hidden, for: .navigationBar)
         .navigationBackSwipe(
             navigationBackSwipePolicy,
             prioritizesEdgeOverHorizontalContent: true,
-            refreshID: selectedAdvancedTradingSection.navigationBackSwipeRefreshID
+            refreshID: selectedAdvancedTradingSection.navigationBackSwipeRefreshID,
+            participatesInNavigationBackSwipe: onExit == nil && onExternalReturnDrag == nil
         )
         .interactiveBottomCard(item: $confirmationSide) { side in
             StockOrderConfirmationSheet(
@@ -128,6 +138,90 @@ struct StockOrderDemoView: View {
             }
         }
         .environment(\.demoLanguage, activeLanguage)
+    }
+
+    private var orderPageContent: some View {
+        GeometryReader { proxy in
+            advancedTradingRoot(
+                viewportWidth: proxy.size.width,
+                bottomSafeArea: proxy.safeAreaInsets.bottom
+            )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .contentShape(Rectangle())
+                // Match the quote page's screen-bottom coordinate space.
+                .ignoresSafeArea(.container, edges: .bottom)
+        }
+        .ignoresSafeArea(.keyboard, edges: .bottom)
+        .background(Color("color-base-1"))
+    }
+
+    private var shuffleReturnGesture: some Gesture {
+        DragGesture(minimumDistance: 12)
+            .onChanged { value in
+                guard confirmationSide == nil,
+                      !isShowingDebugPanel,
+                      focusedInput == nil,
+                      value.startLocation.x < 32,
+                      value.translation.width > abs(value.translation.height) else {
+                    return
+                }
+
+                returnDragOffset = max(0, value.translation.width)
+            }
+            .onEnded { value in
+                guard returnDragOffset > 0 else { return }
+
+                if max(value.translation.width, value.predictedEndTranslation.width) >= 120 {
+                    returnDragOffset = 0
+                    exitAdvancedTrading()
+                } else {
+                    withAnimation(reduceMotion ? nil : .smooth(duration: 0.25)) {
+                        returnDragOffset = 0
+                    }
+                }
+            }
+    }
+
+    /// The Shuffle host owns the actual page transform. This gesture only
+    /// reports the edge drag and never applies a second SwiftUI offset to the
+    /// order page, which keeps the navbar and page content on one layer.
+    private func externalReturnGesture(
+        _ onDrag: @escaping (CGFloat, CGFloat, CGFloat, Bool) -> Void
+    ) -> some Gesture {
+        DragGesture(minimumDistance: 12)
+            .onChanged { value in
+                guard confirmationSide == nil,
+                      !isShowingDebugPanel,
+                      value.startLocation.x < 32,
+                      value.translation.width > abs(value.translation.height) else {
+                    return
+                }
+
+                if focusedInput != nil {
+                    dismissInput()
+                }
+                onDrag(
+                    value.translation.width,
+                    value.velocity.width,
+                    value.predictedEndTranslation.width,
+                    false
+                )
+            }
+            .onEnded { value in
+                guard confirmationSide == nil,
+                      !isShowingDebugPanel,
+                      value.startLocation.x < 32,
+                      value.translation.width > abs(value.translation.height) else {
+                    return
+                }
+
+                onDrag(
+                    value.translation.width,
+                    value.velocity.width,
+                    value.predictedEndTranslation.width,
+                    true
+                )
+            }
     }
 
     private func advancedTradingRoot(
@@ -326,7 +420,7 @@ struct StockOrderDemoView: View {
     }
 
     private var navigationBackSwipePolicy: NavigationBackSwipePolicy {
-        confirmationSide == nil ? .system : .disabled
+        confirmationSide == nil && onExit == nil ? .system : .disabled
     }
 
     private var showsAdvancedTradingToolBar: Bool {
@@ -367,7 +461,7 @@ struct StockOrderDemoView: View {
 
     private func exitAdvancedTrading() {
         dismissInput()
-        dismiss()
+        if let onExit { onExit() } else { dismiss() }
     }
 
     private func returnToTrade() {
