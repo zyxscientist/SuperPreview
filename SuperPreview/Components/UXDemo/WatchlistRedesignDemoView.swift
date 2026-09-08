@@ -674,10 +674,17 @@ struct WatchlistRedesignRow: View {
             let nameWidth = max(CGFloat(110), proxy.size.width - 252)
 
             ZStack(alignment: .leading) {
-                WatchlistRedesignNameCell(item: item)
-                    .frame(width: nameWidth, height: 66, alignment: .leading)
-                    .clipped()
-                    .position(x: nameWidth / 2, y: 33)
+                if item.isShowingExtendedHoursVisual {
+                    WatchlistRedesignExtendedHoursGrid(
+                        item: item,
+                        nameWidth: nameWidth
+                    )
+                } else {
+                    WatchlistRedesignNameCell(item: item)
+                        .frame(width: nameWidth, height: 66, alignment: .leading)
+                        .clipped()
+                        .position(x: nameWidth / 2, y: 33)
+                }
 
                 if isMiniKVisible && item.supportsMiniK {
                     WatchlistRedesignMiniKLine(
@@ -689,13 +696,15 @@ struct WatchlistRedesignRow: View {
                     .transition(.opacity)
                 }
 
-                WatchlistRedesignPriceCell(item: item)
-                    .frame(width: 90, height: 66)
-                    .position(x: proxy.size.width - 110 - 45, y: 33)
+                if !item.isShowingExtendedHoursVisual {
+                    WatchlistRedesignPriceCell(item: item)
+                        .frame(width: 90, height: 66)
+                        .position(x: proxy.size.width - 110 - 45, y: 33)
 
-                WatchlistRedesignChangeCell(item: item)
-                    .frame(width: 90, height: 66)
-                    .position(x: proxy.size.width - 45, y: 33)
+                    WatchlistRedesignChangeCell(item: item)
+                        .frame(width: 90, height: 66)
+                        .position(x: proxy.size.width - 45, y: 33)
+                }
             }
             .frame(width: proxy.size.width, height: 66, alignment: .leading)
         }
@@ -740,6 +749,198 @@ struct WatchlistRedesignRow: View {
     }
 }
 
+private struct WatchlistRedesignExtendedHoursGrid: View {
+    let item: WatchlistRedesignItem
+    let nameWidth: CGFloat
+
+    @Environment(\.demoLanguage) private var language
+
+    private let miniKColumnWidth: CGFloat = 52
+    private let priceColumnWidth: CGFloat = 90
+    private let priceChangeGap: CGFloat = 20
+    private let changeColumnWidth: CGFloat = 90
+    private let mainRowHeight: CGFloat = 24
+    private let secondaryRowHeight: CGFloat = 16
+    private let rowSpacing: CGFloat = 2
+    private let topInset: CGFloat = 12
+
+    private var gridWidth: CGFloat {
+        nameWidth + miniKColumnWidth + priceColumnWidth + priceChangeGap + changeColumnWidth
+    }
+
+    var body: some View {
+        Grid(horizontalSpacing: 0, verticalSpacing: rowSpacing) {
+            GridRow {
+                mainName
+                clearColumn(height: mainRowHeight)
+                mainPrice
+                clearColumn(width: priceChangeGap, height: mainRowHeight)
+                mainChange
+            }
+
+            GridRow {
+                secondaryName
+                clearColumn(height: secondaryRowHeight)
+                secondaryPrice
+                clearColumn(width: priceChangeGap, height: secondaryRowHeight)
+                secondaryChange
+            }
+        }
+        .frame(width: gridWidth, height: mainRowHeight + rowSpacing + secondaryRowHeight, alignment: .topLeading)
+        .padding(.top, topInset)
+        .frame(width: gridWidth, height: 66, alignment: .topLeading)
+    }
+
+    private var mainName: some View {
+        HStack(alignment: .center, spacing: 4) {
+            WatchlistRedesignMarketBadge(market: item.market)
+                .frame(width: 12, height: 10)
+
+            Text(language.watchlistName(symbol: item.symbol, fallback: item.name))
+                .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
+                .foregroundColor(Color("color-text-30"))
+                .lineLimit(1)
+        }
+        .frame(width: nameWidth, height: mainRowHeight, alignment: .leading)
+        .clipped()
+    }
+
+    private var secondaryName: some View {
+        HStack(spacing: 2) {
+            Text(item.symbol)
+                .modifier(CustomFontModifier(size: 13, font: .regular, lineHeight: 16))
+                .foregroundColor(Color("color-text-60"))
+                .lineLimit(1)
+
+            ForEach(item.tagAssets.filter { $0 != WatchlistRedesignTagAsset.delayQuote }, id: \.self) { asset in
+                Image(asset)
+                    .resizable()
+                    .frame(width: 12, height: 12)
+                    .accessibilityHidden(true)
+            }
+        }
+        .padding(.leading, 16)
+        .frame(width: nameWidth, height: secondaryRowHeight, alignment: .leading)
+        .clipped()
+    }
+
+    private var mainPrice: some View {
+        Text(item.price)
+            .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
+            .monospacedDigit()
+            .foregroundColor(Color("color-text-30"))
+            .lineLimit(1)
+            .minimumScaleFactor(0.8)
+            .frame(width: priceColumnWidth, height: mainRowHeight, alignment: .trailing)
+    }
+
+    private var secondaryPrice: some View {
+        Text(item.displayedSecondaryPrice ?? "")
+            .modifier(CustomFontModifier(size: 13, font: .medium, lineHeight: 16))
+            .monospacedDigit()
+            .foregroundColor(Color("color-text-60"))
+            .lineLimit(1)
+            .minimumScaleFactor(0.8)
+            .frame(width: priceColumnWidth, height: secondaryRowHeight, alignment: .trailing)
+    }
+
+    private var mainChange: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 8)
+                .fill(tileColor.opacity(0.15))
+                .frame(width: 82, height: 26)
+                .offset(y: -1)
+
+            HStack(spacing: 2) {
+                WatchlistRedesignChangeIcon(trend: item.trend, contrast: .tinted)
+                    .frame(width: 12, height: 12)
+
+                Text(item.changePercent)
+                    .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
+                    .monospacedDigit()
+                    .foregroundColor(tileColor)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+            }
+            .frame(width: 82, height: mainRowHeight, alignment: .center)
+        }
+        .frame(width: changeColumnWidth, height: mainRowHeight, alignment: .leading)
+    }
+
+    private var secondaryChange: some View {
+        HStack(spacing: 4) {
+            Text(sessionChange)
+                .modifier(CustomFontModifier(size: 13, font: .medium, lineHeight: 16))
+                .monospacedDigit()
+                .foregroundColor(Color("color-text-60"))
+                .lineLimit(1)
+                .minimumScaleFactor(0.01)
+                .allowsTightening(true)
+
+            Spacer(minLength: 4)
+
+            sessionTag(label: sessionLabel)
+        }
+        .frame(width: changeColumnWidth - 8, height: secondaryRowHeight, alignment: .leading)
+        .frame(width: changeColumnWidth, height: secondaryRowHeight, alignment: .leading)
+    }
+
+    private func sessionTag(label: String) -> some View {
+        Text(language.sessionTitle(label))
+            .accessibilityLabel(
+                language == .english
+                    ? (label == "盘前" ? "Pre-market" : "After-hours")
+                    : language.sessionTitle(label)
+            )
+            .modifier(CustomFontModifier(size: 8, font: .regular, lineHeight: 8))
+            .foregroundColor(Color("color-text-30"))
+            .lineLimit(1)
+            .minimumScaleFactor(0.01)
+            .allowsTightening(true)
+            .padding(.horizontal, 4)
+            .frame(height: 12)
+            .overlay(
+                RoundedRectangle(cornerRadius: 2)
+                    .stroke(Color("color-separator-20"), lineWidth: 0.5)
+            )
+    }
+
+    private func clearColumn(width: CGFloat? = nil, height: CGFloat) -> some View {
+        Rectangle()
+            .fill(.clear)
+            .frame(width: width ?? miniKColumnWidth, height: height)
+    }
+
+    private var tileColor: Color {
+        switch item.trend {
+        case .up:
+            return Color("color-utility3-red")
+        case .down:
+            return Color("color-utility3-green")
+        case .flat:
+            return Color("color-text-90")
+        }
+    }
+
+    private var sessionLabel: String {
+        switch item.session {
+        case .preMarket(let label, _), .afterHours(let label, _):
+            return label
+        case .regular:
+            return ""
+        }
+    }
+
+    private var sessionChange: String {
+        switch item.session {
+        case .preMarket(_, let change), .afterHours(_, let change):
+            return change
+        case .regular:
+            return item.extendedHoursChange
+        }
+    }
+}
+
 private extension WatchlistRedesignItem {
     var backgroundColor: Color {
         isPinned ? Color("color-scale-1") : Color("color-base-1")
@@ -753,6 +954,51 @@ private extension WatchlistRedesignItem {
 private extension String {
     var numericWatchlistPrice: Double {
         Double(replacingOccurrences(of: ",", with: "")) ?? 0
+    }
+}
+
+private struct WatchlistRedesignMarketBadge: View {
+    let market: WatchlistRedesignMarket
+
+    var body: some View {
+        switch market {
+        case .hk:
+            Image("Glyph_HK").resizable()
+        case .cn:
+            Image("Glyph_SZ").resizable()
+        case .us:
+            Image("Glyph_US").resizable()
+        case .crypto:
+            Image("market_crypto").resizable()
+        case .fund:
+            Image("market_MF").resizable()
+        }
+    }
+}
+
+private struct WatchlistRedesignChangeIcon: View {
+    let trend: WatchlistRedesignTrend
+    let contrast: WatchlistRedesignIconContrast
+
+    var body: some View {
+        switch (trend, contrast) {
+        case (.up, .white):
+            Image("watchlistItem_up_white").resizable()
+        case (.down, .white):
+            Image("watchlistItem_down_white").resizable()
+        case (.flat, .white):
+            Circle()
+                .fill(.white)
+                .frame(width: 5, height: 5)
+        case (.up, .tinted):
+            Image("watchlistItem_up_red").resizable()
+        case (.down, .tinted):
+            Image("watchlistItem_down_green").resizable()
+        case (.flat, .tinted):
+            Circle()
+                .fill(Color("color-text-90"))
+                .frame(width: 5, height: 5)
+        }
     }
 }
 
@@ -794,18 +1040,7 @@ struct WatchlistRedesignNameCell: View {
 
     @ViewBuilder
     private var marketBadge: some View {
-        switch item.market {
-        case .hk:
-            Image("Glyph_HK").resizable()
-        case .cn:
-            Image("Glyph_SZ").resizable()
-        case .us:
-            Image("Glyph_US").resizable()
-        case .crypto:
-            Image("market_crypto").resizable()
-        case .fund:
-            Image("market_MF").resizable()
-        }
+        WatchlistRedesignMarketBadge(market: item.market)
     }
 }
 
@@ -917,24 +1152,7 @@ struct WatchlistRedesignChangeCell: View {
 
     @ViewBuilder
     private func changeIcon(contrast: WatchlistRedesignIconContrast) -> some View {
-        switch (item.trend, contrast) {
-        case (.up, .white):
-            Image("watchlistItem_up_white").resizable()
-        case (.down, .white):
-            Image("watchlistItem_down_white").resizable()
-        case (.flat, .white):
-            Circle()
-                .fill(.white)
-                .frame(width: 5, height: 5)
-        case (.up, .tinted):
-            Image("watchlistItem_up_red").resizable()
-        case (.down, .tinted):
-            Image("watchlistItem_down_green").resizable()
-        case (.flat, .tinted):
-            Circle()
-                .fill(Color("color-text-90"))
-                .frame(width: 5, height: 5)
-        }
+        WatchlistRedesignChangeIcon(trend: item.trend, contrast: contrast)
     }
 
     private var regularForegroundColor: Color {
@@ -1033,5 +1251,50 @@ struct WatchlistRedesignDemoViewPreviews: PreviewProvider {
         }
         .environmentObject(DemoLanguageStore(initialLanguage: .simplifiedChinese))
         .environmentObject(DemoAppearanceStore())
+    }
+}
+
+struct WatchlistRedesignRowPreviews: PreviewProvider {
+    private static func item(
+        from items: [WatchlistRedesignItem],
+        session: WatchlistRedesignSession
+    ) -> WatchlistRedesignItem {
+        var previewItem = items[0]
+        previewItem.session = session
+        return previewItem
+    }
+
+    static var previews: some View {
+        let usItems = WatchlistRedesignViewModel().items(for: "美股")
+
+        Group {
+            WatchlistRedesignRow(
+                item: item(
+                    from: usItems,
+                    session: .afterHours(label: "盘后", change: "+0.23%")
+                ),
+                isMiniKVisible: true
+            )
+            .previewDisplayName("美股 · 盘后")
+
+            WatchlistRedesignRow(
+                item: item(
+                    from: usItems,
+                    session: .preMarket(label: "盘前", change: "-0.23%")
+                ),
+                isMiniKVisible: false
+            )
+            .previewDisplayName("美股 · 盘前")
+
+            WatchlistRedesignRow(
+                item: item(from: usItems, session: .regular),
+                isMiniKVisible: true
+            )
+            .previewDisplayName("美股 · 正常交易")
+        }
+        .environmentObject(DemoLanguageStore(initialLanguage: .simplifiedChinese))
+        .environmentObject(DemoAppearanceStore())
+        .previewLayout(.sizeThatFits)
+        .frame(width: 393)
     }
 }
