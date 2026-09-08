@@ -273,33 +273,258 @@ private struct StockOrderQuoteSummary: View {
     var body: some View {
         GeometryReader { proxy in
             let nameWidth = max(CGFloat(110), proxy.size.width - 252)
+            let usesExtendedHoursLayout = symbol.market == .us && symbol.quote.session != .regular
 
             ZStack(alignment: .topLeading) {
-                StockOrderSelectedSymbolCell(
-                    symbol: symbol
-                )
-                .frame(width: nameWidth, height: 66, alignment: .leading)
-                .clipped()
-                .position(x: nameWidth / 2, y: 33)
+                if usesExtendedHoursLayout {
+                    StockOrderExtendedHoursGrid(
+                        symbol: symbol,
+                        nameWidth: nameWidth
+                    )
+                } else {
+                    StockOrderSelectedSymbolCell(symbol: symbol)
+                        .frame(
+                            width: nameWidth,
+                            height: StockOrderQuoteAlignment.rowHeight,
+                            alignment: .leading
+                        )
+                        .clipped()
+                        .position(x: nameWidth / 2, y: StockOrderQuoteAlignment.rowHeight / 2)
+                }
 
                 StockOrderMiniKLine(
                     points: symbol.quote.miniKPoints,
                     trend: symbol.quote.trend
                 )
                 .frame(width: 52, height: 28)
-                .position(x: nameWidth + 26, y: 33)
+                .position(x: nameWidth + 26, y: StockOrderQuoteAlignment.rowHeight / 2)
                 .accessibilityHidden(true)
 
-                StockOrderPriceView(quote: symbol.quote)
-                    .frame(width: 90, height: 66)
-                    .position(x: proxy.size.width - 110 - 45, y: 33)
+                if !usesExtendedHoursLayout {
+                    StockOrderPriceView(quote: symbol.quote)
+                        .frame(width: 90, height: StockOrderQuoteAlignment.rowHeight)
+                        .position(
+                            x: proxy.size.width - 110 - 45,
+                            y: StockOrderQuoteAlignment.rowHeight / 2
+                        )
 
-                StockOrderChangeTile(quote: symbol.quote)
-                    .frame(width: 90, height: 66)
-                    .position(x: proxy.size.width - 45, y: 33)
+                    StockOrderChangeTile(quote: symbol.quote)
+                        .frame(width: 90, height: StockOrderQuoteAlignment.rowHeight)
+                        .position(
+                            x: proxy.size.width - 45,
+                            y: StockOrderQuoteAlignment.rowHeight / 2
+                        )
+                }
             }
-            .frame(width: proxy.size.width, height: 66, alignment: .topLeading)
+            .frame(
+                width: proxy.size.width,
+                height: StockOrderQuoteAlignment.rowHeight,
+                alignment: .topLeading
+            )
         }
+    }
+}
+
+private enum StockOrderQuoteAlignment {
+    static let rowHeight: CGFloat = 66
+    static let mainRowHeight: CGFloat = 24
+    static let secondaryRowHeight: CGFloat = 16
+    static let rowSpacing: CGFloat = 2
+    static let topInset: CGFloat = 12
+}
+
+private struct StockOrderExtendedHoursGrid: View {
+    let symbol: StockOrderSymbol
+    let nameWidth: CGFloat
+
+    @Environment(\.demoLanguage) private var language
+
+    private let miniKColumnWidth: CGFloat = 52
+    private let priceColumnWidth: CGFloat = 90
+    private let priceChangeGap: CGFloat = 20
+    private let changeColumnWidth: CGFloat = 90
+
+    private var gridWidth: CGFloat {
+        nameWidth + miniKColumnWidth + priceColumnWidth + priceChangeGap + changeColumnWidth
+    }
+
+    var body: some View {
+        Grid(horizontalSpacing: 0, verticalSpacing: StockOrderQuoteAlignment.rowSpacing) {
+            GridRow {
+                mainSymbol
+                clearColumn(height: StockOrderQuoteAlignment.mainRowHeight)
+                mainPrice
+                clearColumn(
+                    width: priceChangeGap,
+                    height: StockOrderQuoteAlignment.mainRowHeight
+                )
+                mainChange
+            }
+
+            GridRow {
+                secondaryName
+                clearColumn(height: StockOrderQuoteAlignment.secondaryRowHeight)
+                secondaryPrice
+                clearColumn(
+                    width: priceChangeGap,
+                    height: StockOrderQuoteAlignment.secondaryRowHeight
+                )
+                secondaryChange
+            }
+        }
+        .frame(
+            width: gridWidth,
+            height: StockOrderQuoteAlignment.mainRowHeight
+                + StockOrderQuoteAlignment.rowSpacing
+                + StockOrderQuoteAlignment.secondaryRowHeight,
+            alignment: .topLeading
+        )
+        .padding(.top, StockOrderQuoteAlignment.topInset)
+        .frame(
+            width: gridWidth,
+            height: StockOrderQuoteAlignment.rowHeight,
+            alignment: .topLeading
+        )
+    }
+
+    private var mainSymbol: some View {
+        HStack(alignment: .center, spacing: 4) {
+            Image(symbol.badgeAssetName)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 12, height: 10)
+
+            Text(symbol.id)
+                .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
+                .foregroundColor(Color("color-text-30"))
+                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
+
+            Image("stock_order_search")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 18, height: 18)
+        }
+        .frame(
+            width: nameWidth,
+            height: StockOrderQuoteAlignment.mainRowHeight,
+            alignment: .leading
+        )
+        .clipped()
+    }
+
+    private var secondaryName: some View {
+        Text(symbol.localizedName(for: language))
+            .modifier(CustomFontModifier(size: 13, font: .regular, lineHeight: 16))
+            .foregroundColor(Color("color-text-60"))
+            .lineLimit(1)
+            .padding(.leading, 16)
+            .frame(
+                width: nameWidth,
+                height: StockOrderQuoteAlignment.secondaryRowHeight,
+                alignment: .leading
+            )
+            .clipped()
+    }
+
+    private var mainPrice: some View {
+        Text(symbol.quote.price)
+            .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
+            .monospacedDigit()
+            .foregroundColor(Color("color-text-30"))
+            .lineLimit(1)
+            .minimumScaleFactor(0.8)
+            .frame(
+                width: priceColumnWidth,
+                height: StockOrderQuoteAlignment.mainRowHeight,
+                alignment: .trailing
+            )
+    }
+
+    private var secondaryPrice: some View {
+        Text(symbol.quote.secondaryPrice ?? symbol.quote.price)
+            .modifier(CustomFontModifier(size: 13, font: .medium, lineHeight: 16))
+            .monospacedDigit()
+            .foregroundColor(Color("color-text-60"))
+            .lineLimit(1)
+            .minimumScaleFactor(0.8)
+            .frame(
+                width: priceColumnWidth,
+                height: StockOrderQuoteAlignment.secondaryRowHeight,
+                alignment: .trailing
+            )
+    }
+
+    private var mainChange: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 8)
+                .fill(symbol.quote.trend.tileColor.opacity(0.15))
+                .frame(width: 82, height: 26)
+                .offset(y: -1)
+
+            HStack(spacing: 2) {
+                StockOrderChangeDirectionIcon(trend: symbol.quote.trend, contrast: .tinted)
+                    .frame(width: 12, height: 12)
+
+                Text(symbol.quote.changePercent.stockOrderUnsignedChange)
+                    .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
+                    .monospacedDigit()
+                    .foregroundColor(symbol.quote.trend.tileColor)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+            }
+            .frame(width: 82, height: StockOrderQuoteAlignment.mainRowHeight, alignment: .center)
+        }
+        .frame(
+            width: changeColumnWidth,
+            height: StockOrderQuoteAlignment.mainRowHeight,
+            alignment: .leading
+        )
+    }
+
+    private var secondaryChange: some View {
+        HStack(spacing: 4) {
+            Text(symbol.quote.session.secondaryChange?.stockOrderUnsignedChange ?? "")
+                .modifier(CustomFontModifier(size: 13, font: .medium, lineHeight: 16))
+                .monospacedDigit()
+                .foregroundColor(Color("color-text-60"))
+                .lineLimit(1)
+                .minimumScaleFactor(0.01)
+                .allowsTightening(true)
+
+            Spacer(minLength: 4)
+
+            if let localizationKey = symbol.quote.session.localizationKey {
+                Text(language.text(localizationKey))
+                    .modifier(CustomFontModifier(size: 8, font: .regular, lineHeight: 8))
+                    .foregroundColor(Color("color-text-30"))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.01)
+                    .allowsTightening(true)
+                    .padding(.horizontal, 4)
+                    .frame(height: 12)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 2)
+                            .stroke(Color("color-separator-20"), lineWidth: 0.5)
+                    )
+            }
+        }
+        .frame(
+            width: changeColumnWidth - 8,
+            height: StockOrderQuoteAlignment.secondaryRowHeight,
+            alignment: .leading
+        )
+        .frame(
+            width: changeColumnWidth,
+            height: StockOrderQuoteAlignment.secondaryRowHeight,
+            alignment: .leading
+        )
+    }
+
+    private func clearColumn(width: CGFloat? = nil, height: CGFloat) -> some View {
+        Rectangle()
+            .fill(.clear)
+            .frame(width: width ?? miniKColumnWidth, height: height)
     }
 }
 
@@ -310,33 +535,40 @@ private struct StockOrderSelectedSymbolCell: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 7) {
-            HStack(alignment: .center, spacing: 4) {
-                Image(symbol.badgeAssetName)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 12, height: 10)
-
-                Text(symbol.id)
-                    .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
-                    .foregroundColor(Color("color-text-30"))
-                    .lineLimit(1)
-                    .fixedSize(horizontal: true, vertical: false)
-
-                Image("stock_order_search")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 18, height: 18)
-            }
-
-            Text(symbol.localizedName(for: language))
-                .modifier(CustomFontModifier(size: 13, font: .medium, lineHeight: 16))
-                .foregroundColor(Color("color-text-60"))
-                .lineLimit(1)
-                .minimumScaleFactor(0.7)
-                .padding(.leading, 16)
+            identifierRow
+            nameRow
         }
         .frame(maxHeight: .infinity, alignment: .center)
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private var identifierRow: some View {
+        HStack(alignment: .center, spacing: 4) {
+            Image(symbol.badgeAssetName)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 12, height: 10)
+
+            Text(symbol.id)
+                .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
+                .foregroundColor(Color("color-text-30"))
+                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
+
+            Image("stock_order_search")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 18, height: 18)
+        }
+    }
+
+    private var nameRow: some View {
+        Text(symbol.localizedName(for: language))
+            .modifier(CustomFontModifier(size: 13, font: .medium, lineHeight: 16))
+            .foregroundColor(Color("color-text-60"))
+            .lineLimit(1)
+            .minimumScaleFactor(0.7)
+            .padding(.leading, 16)
     }
 }
 
