@@ -67,7 +67,7 @@ struct AssociatedInfoView: View {
                         .modifier(CustomFontModifier(size: 13, font: .regular))
                 }
                 
-                Text("每股派息3.4000港元")
+                Text("每股派息港元3.4000")
                     .lineLimit(1)
                     .minimumScaleFactor(0.5)
                     .multilineTextAlignment(.leading)

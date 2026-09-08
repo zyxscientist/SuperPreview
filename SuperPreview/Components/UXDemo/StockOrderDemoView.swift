@@ -13,6 +13,8 @@ import SwiftUI
 struct StockOrderDemoView: View {
     @AppStorage(StockOrderAdvancedTradingPreferences.enabledKey)
     private var isHighFrequencyTradingEnabled = false
+    @AppStorage(StockOrderAdvancedTradingPreferences.versionKey)
+    private var highFrequencyTradingVersionRawValue = StockOrderAdvancedTradingVersion.v0.rawValue
     @StateObject private var viewModel: StockOrderDemoViewModel
     @State private var confirmationSide: StockOrderConfirmationSide?
     @State private var confirmationConfirmCount = 0
@@ -36,7 +38,10 @@ struct StockOrderDemoView: View {
 
     var body: some View {
         GeometryReader { proxy in
-            advancedTradingRoot(viewportWidth: proxy.size.width)
+            advancedTradingRoot(
+                viewportWidth: proxy.size.width,
+                bottomSafeArea: proxy.safeAreaInsets.bottom
+            )
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .contentShape(Rectangle())
                 // Match the quote page's screen-bottom coordinate space.
@@ -66,7 +71,8 @@ struct StockOrderDemoView: View {
         .sheet(isPresented: $isShowingDebugPanel) {
             StockOrderDebugPanel(
                 language: debugLanguageBinding,
-                isHighFrequencyTradingEnabled: $isHighFrequencyTradingEnabled
+                isHighFrequencyTradingEnabled: $isHighFrequencyTradingEnabled,
+                highFrequencyTradingVersion: highFrequencyTradingVersionBinding
             )
                 .environment(\.demoLanguage, activeLanguage)
         }
@@ -111,6 +117,8 @@ struct StockOrderDemoView: View {
                         .accessibilityIdentifier("stockOrder.debug.status.price")
                     Text(viewModel.selection?.quote.miniKPoints.map { String(Double($0)) }.joined(separator: ",") ?? "")
                         .accessibilityIdentifier("stockOrder.debug.status.miniKPoints")
+                    Text(highFrequencyTradingVersion.rawValue)
+                        .accessibilityIdentifier("stockOrder.debug.status.highFrequencyTradingVersion")
                     Text("\(confirmationConfirmCount)")
                         .accessibilityIdentifier("stockOrder.confirmation.confirmCount")
                 }
@@ -122,13 +130,20 @@ struct StockOrderDemoView: View {
         .environment(\.demoLanguage, activeLanguage)
     }
 
-    private func advancedTradingRoot(viewportWidth: CGFloat) -> some View {
+    private func advancedTradingRoot(
+        viewportWidth: CGFloat,
+        bottomSafeArea: CGFloat
+    ) -> some View {
         ZStack(alignment: .bottom) {
             // Each visited peer keeps its identity, scroll position and local
             // state. Only the selected layer receives touch and accessibility.
             ForEach(StockOrderAdvancedTradingSection.allCases) { section in
                 if visitedAdvancedTradingSections.contains(section) {
-                    advancedTradingPage(section, viewportWidth: viewportWidth)
+                    advancedTradingPage(
+                        section,
+                        viewportWidth: viewportWidth,
+                        bottomSafeArea: bottomSafeArea
+                    )
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .background(Color("color-base-1"))
                         .animation(
@@ -156,9 +171,17 @@ struct StockOrderDemoView: View {
                     selection: Binding(
                         get: { selectedAdvancedTradingSection },
                         set: { selectAdvancedTradingSection($0) }
-                    )
+                    ),
+                    version: appliedTradingVersion,
+                    bottomSafeArea: bottomSafeArea
                 )
-                .padding(.bottom, StockOrderAdvancedTradingLayout.toolBarBottomInset)
+                .padding(
+                    .bottom,
+                    StockOrderAdvancedTradingLayout.metrics(
+                        for: appliedTradingVersion,
+                        bottomSafeArea: bottomSafeArea
+                    ).toolBarBottomInset
+                )
                 .transition(
                     .move(edge: .bottom)
                         .combined(with: .opacity)
@@ -180,17 +203,25 @@ struct StockOrderDemoView: View {
     @ViewBuilder
     private func advancedTradingPage(
         _ section: StockOrderAdvancedTradingSection,
-        viewportWidth: CGFloat
+        viewportWidth: CGFloat,
+        bottomSafeArea: CGFloat
     ) -> some View {
         switch section {
         case .trade:
-            transactionPage(viewportWidth: viewportWidth)
+            transactionPage(
+                viewportWidth: viewportWidth,
+                bottomSafeArea: bottomSafeArea
+            )
         case .market:
             if let selection = viewModel.selection {
                 StockDetailPage(
                     instrument: selection.advancedTradingInstrument,
                     presentationMode: .advancedTrading,
                     showsBottomActionBar: false,
+                    advancedTradingBottomContentInset: StockOrderAdvancedTradingLayout.metrics(
+                        for: appliedTradingVersion,
+                        bottomSafeArea: bottomSafeArea
+                    ).contentBottomInset,
                     shuffleRequestID: advancedTradingShuffleRequestID,
                     onBack: exitAdvancedTrading,
                     onTrade: returnToTrade
@@ -203,14 +234,20 @@ struct StockOrderDemoView: View {
                 showsNavbar: true,
                 onBack: exitAdvancedTrading,
                 navigationBackSwipePolicy: nil,
-                bottomContentInset: StockOrderAdvancedTradingLayout.contentBottomInset
+                bottomContentInset: StockOrderAdvancedTradingLayout.metrics(
+                    for: appliedTradingVersion,
+                    bottomSafeArea: bottomSafeArea
+                ).contentBottomInset
             )
         case .positions:
-            positionsPage
+            positionsPage(bottomSafeArea: bottomSafeArea)
         }
     }
 
-    private func transactionPage(viewportWidth: CGFloat) -> some View {
+    private func transactionPage(
+        viewportWidth: CGFloat,
+        bottomSafeArea: CGFloat
+    ) -> some View {
         VStack(spacing: 0) {
             StockOrderNavbar(
                 accountTitle: accountTitle,
@@ -227,9 +264,11 @@ struct StockOrderDemoView: View {
                     .frame(maxWidth: .infinity, alignment: .topLeading)
                     .padding(
                         .bottom,
-                        showsAdvancedTradingToolBar
-                            ? StockOrderAdvancedTradingLayout.contentBottomInset
-                            : StockTradingBottomLayout.containerHeight + 16
+                        StockOrderAdvancedTradingLayout.contentBottomInset(
+                            for: appliedTradingVersion,
+                            includesToolBar: showsAdvancedTradingToolBar,
+                            bottomSafeArea: bottomSafeArea
+                        )
                     )
             }
             .scrollBounceBehavior(.basedOnSize)
@@ -239,23 +278,27 @@ struct StockOrderDemoView: View {
 
     @ViewBuilder
     private var advancedTradingBottomActions: some View {
-        switch selectedAdvancedTradingSection {
-        case .trade:
-            bottomTradeBar
-        case .market:
-            StockDetailBottomActionBar(
-                onTrade: returnToTrade,
-                onShuffle: { advancedTradingShuffleRequestID &+= 1 }
-            )
-            .frame(height: StockTradingBottomLayout.actionBarHeight)
-            .padding(.bottom, StockTradingBottomLayout.homeIndicatorAreaHeight)
-            .accessibilityIdentifier("stockDetail.page.fixedBottomActionBar")
-        case .orders, .positions:
+        if usesV1Layout {
             EmptyView()
+        } else {
+            switch selectedAdvancedTradingSection {
+            case .trade:
+                bottomTradeBar
+            case .market:
+                StockDetailBottomActionBar(
+                    onTrade: returnToTrade,
+                    onShuffle: { advancedTradingShuffleRequestID &+= 1 }
+                )
+                .frame(height: StockTradingBottomLayout.actionBarHeight)
+                .padding(.bottom, StockTradingBottomLayout.homeIndicatorAreaHeight)
+                .accessibilityIdentifier("stockDetail.page.fixedBottomActionBar")
+            case .orders, .positions:
+                EmptyView()
+            }
         }
     }
 
-    private var positionsPage: some View {
+    private func positionsPage(bottomSafeArea: CGFloat) -> some View {
         VStack(spacing: 0) {
             StockOrderNavbar(
                 accountTitle: activeLanguage.text(.positions),
@@ -271,7 +314,12 @@ struct StockOrderDemoView: View {
             )
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 Color.clear
-                    .frame(height: StockOrderAdvancedTradingLayout.contentBottomInset)
+                    .frame(
+                        height: StockOrderAdvancedTradingLayout.metrics(
+                            for: appliedTradingVersion,
+                            bottomSafeArea: bottomSafeArea
+                        ).contentBottomInset
+                    )
             }
         }
         .accessibilityIdentifier("stockOrder.advancedTrading.positions")
@@ -283,6 +331,25 @@ struct StockOrderDemoView: View {
 
     private var showsAdvancedTradingToolBar: Bool {
         isHighFrequencyTradingEnabled && viewModel.selection != nil
+    }
+
+    private var highFrequencyTradingVersion: StockOrderAdvancedTradingVersion {
+        StockOrderAdvancedTradingVersion(rawValue: highFrequencyTradingVersionRawValue) ?? .v0
+    }
+
+    private var usesV1Layout: Bool {
+        isHighFrequencyTradingEnabled && highFrequencyTradingVersion == .v1
+    }
+
+    private var appliedTradingVersion: StockOrderAdvancedTradingVersion {
+        isHighFrequencyTradingEnabled ? highFrequencyTradingVersion : .v0
+    }
+
+    private var highFrequencyTradingVersionBinding: Binding<StockOrderAdvancedTradingVersion> {
+        Binding(
+            get: { highFrequencyTradingVersion },
+            set: { highFrequencyTradingVersionRawValue = $0.rawValue }
+        )
     }
 
     private func selectAdvancedTradingSection(
@@ -339,6 +406,15 @@ struct StockOrderDemoView: View {
                 positionSellable: viewModel.profile.positionSellable
             )
             .simultaneousGesture(TapGesture().onEnded { dismissInput() })
+
+            if usesV1Layout {
+                StockOrderTradeActionBar(
+                    status: .unlocked,
+                    placement: .inline,
+                    onBuy: { presentConfirmation(for: .buy) },
+                    onSell: { presentConfirmation(for: .sell) }
+                )
+            }
 
             StockOrderOrdersAndPositions(
                 selectedTab: $viewModel.selectedOrdersTab,
@@ -515,6 +591,7 @@ struct StockOrderDemoView: View {
 private struct StockOrderDebugPanel: View {
     @Binding var language: DemoLanguage
     @Binding var isHighFrequencyTradingEnabled: Bool
+    @Binding var highFrequencyTradingVersion: StockOrderAdvancedTradingVersion
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.demoLanguage) private var interfaceLanguage
@@ -545,6 +622,21 @@ private struct StockOrderDebugPanel: View {
                 isOn: $isHighFrequencyTradingEnabled
             )
             .accessibilityIdentifier("stockOrder.debug.highFrequencyTrading")
+
+            Picker(
+                interfaceLanguage.text(.highFrequencyTradingMode),
+                selection: $highFrequencyTradingVersion
+            ) {
+                ForEach(StockOrderAdvancedTradingVersion.allCases) { version in
+                    Text(version.rawValue)
+                        .tag(version)
+                        .accessibilityIdentifier(
+                            "stockOrder.debug.highFrequencyTrading.version.\(version.rawValue)"
+                        )
+                }
+            }
+            .pickerStyle(.segmented)
+            .accessibilityIdentifier("stockOrder.debug.highFrequencyTrading.version")
 
             Spacer()
         }

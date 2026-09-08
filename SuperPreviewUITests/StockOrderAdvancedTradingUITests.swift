@@ -117,6 +117,65 @@ final class StockOrderAdvancedTradingUITests: XCTestCase {
         XCTAssertEqual(waitFor("stockOrder.debug.highFrequencyTrading").value as? String, "0")
     }
 
+    func testV1UsesInlineTradeActionsAndHidesPeerBottomBars() throws {
+        enterStockOrder(selectSymbol: false, version: "v1")
+
+        XCTAssertEqual(
+            waitFor("stockOrder.debug.status.highFrequencyTradingVersion").label,
+            "v1"
+        )
+        let inlineActions = waitFor("stockOrder.tradeActionBar")
+        XCTAssertEqual(inlineActions.frame.height, 68, accuracy: 2)
+        assertGone("stockOrder.advancedTrading.toolbar")
+
+        selectAlibaba()
+        XCTAssertTrue(waitFor("stockOrder.advancedTrading.toolbar").exists)
+        let toolbarGeometry = waitFor("stockOrder.advancedTrading.toolbar.geometry")
+        XCTAssertEqual(toolbarGeometry.frame.height, 48, accuracy: 2)
+        XCTAssertEqual(
+            toolbarGeometry.frame.maxY,
+            app.windows.firstMatch.frame.maxY - 39,
+            accuracy: 2
+        )
+
+        let buy = waitFor("stockOrder.tradeActionBar.buy")
+        if !buy.isHittable {
+            app.scrollViews.firstMatch.swipeUp()
+        }
+        buy.tap()
+        XCTAssertTrue(waitFor("stockOrder.confirmationSheet").exists)
+        waitFor("stockOrder.confirmationSheet.button.cancel").tap()
+
+        waitFor("stockOrder.advancedTrading.section.market").tap()
+        XCTAssertTrue(waitFor("stockDetail.page").exists)
+        assertGone("stockDetail.page.fixedBottomActionBar")
+        assertGone("stockDetail.bottomActionBar.shuffle")
+
+        waitFor("stockOrder.advancedTrading.section.trade").tap()
+        XCTAssertTrue(waitFor("stockOrder.tradeActionBar").exists)
+    }
+
+    func testV1ModePersistsAcrossEntryAndAppRelaunch() throws {
+        enterStockOrder(version: "v1")
+        XCTAssertTrue(waitFor("stockOrder.advancedTrading.toolbar").exists)
+
+        waitFor("stockOrder.navbar.back").tap()
+        enterStockOrder(enableTools: false, version: nil)
+        XCTAssertTrue(waitFor("stockOrder.advancedTrading.toolbar").exists)
+        XCTAssertEqual(waitFor("stockOrder.tradeActionBar").frame.height, 68, accuracy: 2)
+        setToolsEnabled(false)
+        setToolsEnabled(true)
+        XCTAssertEqual(waitFor("stockOrder.tradeActionBar").frame.height, 68, accuracy: 2)
+
+        app.terminate()
+        app.launchEnvironment.removeValue(forKey: "UITEST_RESET_HIGH_FREQUENCY_TRADING")
+        app.launch()
+        enterStockOrder(enableTools: false, version: nil)
+        XCTAssertTrue(waitFor("stockOrder.advancedTrading.toolbar").exists)
+        XCTAssertEqual(waitFor("stockOrder.tradeActionBar").frame.height, 68, accuracy: 2)
+        setToolsEnabled(false)
+    }
+
     func testTradeEdgeSwipeExitsTheWholePage() throws {
         assertEdgeSwipeExits(section: "trade")
     }
@@ -254,12 +313,19 @@ final class StockOrderAdvancedTradingUITests: XCTestCase {
         }
     }
 
-    private func enterStockOrder(enableTools: Bool = true, selectSymbol: Bool = true) {
+    private func enterStockOrder(
+        enableTools: Bool = true,
+        selectSymbol: Bool = true,
+        version: String? = "v0"
+    ) {
         waitFor("mainTab.tab6").tap()
         XCTAssertTrue(waitFor("compare.componentLibrary").exists)
         waitFor("compare.stockOrder").tap()
         XCTAssertTrue(waitFor("stockOrder.demo").exists)
 
+        if let version {
+            setToolsVersion(version)
+        }
         if enableTools {
             setToolsEnabled(true)
         }
@@ -301,6 +367,18 @@ final class StockOrderAdvancedTradingUITests: XCTestCase {
             toggle.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
         }
         waitForSwitchValue(toggle, expected: expected)
+        waitFor("stockOrder.debug.close").tap()
+        assertGone("stockOrder.debug.panel")
+    }
+
+    private func setToolsVersion(_ version: String) {
+        waitFor("stockOrder.navbar.debug").tap()
+        let option = app.buttons[version].firstMatch
+        XCTAssertTrue(option.waitForExistence(timeout: 5), "Missing high-frequency mode (version)")
+        if !option.isSelected {
+            option.tap()
+        }
+        XCTAssertTrue(option.isSelected, "High-frequency mode (version) was not selected")
         waitFor("stockOrder.debug.close").tap()
         assertGone("stockOrder.debug.panel")
     }

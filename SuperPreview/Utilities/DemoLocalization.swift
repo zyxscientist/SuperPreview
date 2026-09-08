@@ -152,7 +152,7 @@ enum DemoCopyKey {
     case todayOrders, historyOrders, noTodayOrders, noPositions, ipoCenter, deposit, more
     case transactionHistory, recurringInvestment, statements
     case internalTransfer, cashHistory
-    case quote, order, advancedTradingOrders, highFrequencyTradingTools, details, subscribe, redeem, recurringInvestmentTag
+    case quote, order, advancedTradingOrders, highFrequencyTradingTools, highFrequencyTradingMode, details, subscribe, redeem, recurringInvestmentTag
     case expanded, collapsed, expandPositions, collapsePositions
     case expandFundPositions, collapseFundPositions
     case valuesHidden, positionDataShown, expandQuickActions, collapseQuickActions
@@ -495,6 +495,7 @@ private enum DemoCopy {
         .order: ("下单", "下單", "Trade"),
         .advancedTradingOrders: ("订单", "訂單", "Orders"),
         .highFrequencyTradingTools: ("高频交易工具", "高頻交易工具", "High-frequency trading tools"),
+        .highFrequencyTradingMode: ("模式", "模式", "Mode"),
         .details: ("详情", "詳情", "Details"),
         .subscribe: ("申购", "申購", "Subscribe"),
         .redeem: ("赎回", "贖回", "Redeem"),

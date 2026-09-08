@@ -1004,7 +1004,7 @@ enum StockDetailRelatedInfoPreviewData {
         id: "cash-dividend",
         content: .cashDividend(
             StockDetailRelatedInfoCashDividend(
-                summary: "除权除息日:2026/06/13  每股派息3.40001HKD 超过截断",
+                summary: "除权除息日:2026/06/13  每股派息HKD3.40001 超过截断",
                 details: [
                     .init(
                         label: "除权除息日",
@@ -1035,9 +1035,9 @@ enum StockDetailRelatedInfoPreviewData {
                     )
                 ],
                 localizedSummary: .related(
-                    "除权除息日:2026/06/13  每股派息3.40001HKD 超过截断",
-                    traditionalChinese: "除權除息日:2026/06/13  每股派息3.40001HKD 超過截斷",
-                    english: "Ex-Date: 2026/06/13  Dividend per share 3.40001 HKD exceeds truncation"
+                    "除权除息日:2026/06/13  每股派息HKD3.40001 超过截断",
+                    traditionalChinese: "除權除息日:2026/06/13  每股派息HKD3.40001 超過截斷",
+                    english: "Ex-Date: 2026/06/13  Dividend per share HKD 3.40001 exceeds truncation"
                 )
             )
         )

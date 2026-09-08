@@ -567,7 +567,7 @@ private enum StockDetailUSCommonStockPageMockData {
             id: "us-cash-dividend",
             content: .cashDividend(
                 StockDetailRelatedInfoCashDividend(
-                    summary: "除权除息日:2026/06/13  每股派息3.40001 USD 超过截断",
+                    summary: "除权除息日:2026/06/13  每股派息USD3.40001 超过截断",
                     details: [
                         .init(
                             label: "除权除息日",
@@ -598,9 +598,9 @@ private enum StockDetailUSCommonStockPageMockData {
                         )
                     ],
                     localizedSummary: .init(
-                        simplifiedChinese: "除权除息日:2026/06/13  每股派息3.40001 USD 超过截断",
-                        traditionalChinese: "除權除息日:2026/06/13  每股派息3.40001 USD 超過截斷",
-                        english: "Ex-Date 2026/06/13  Dividend per share 3.40001 USD exceeds truncation"
+                        simplifiedChinese: "除权除息日:2026/06/13  每股派息USD3.40001 超过截断",
+                        traditionalChinese: "除權除息日:2026/06/13  每股派息USD3.40001 超過截斷",
+                        english: "Ex-Date 2026/06/13  Dividend per share USD 3.40001 exceeds truncation"
                     )
                 )
             )

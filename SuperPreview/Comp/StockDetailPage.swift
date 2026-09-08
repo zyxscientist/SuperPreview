@@ -79,6 +79,7 @@ struct StockDetailPage: View {
     let shuffleInstruments: [StockDetailInstrument]?
     let presentationMode: StockDetailPagePresentationMode
     let showsBottomActionBar: Bool
+    let advancedTradingBottomContentInset: CGFloat?
     let shuffleRequestID: Int
     let configurationOverride: StockDetailPageConfiguration?
     let quoteDetailsExpansion: Binding<Bool>?
@@ -109,6 +110,7 @@ struct StockDetailPage: View {
         shuffleInstruments: [StockDetailInstrument]? = nil,
         presentationMode: StockDetailPagePresentationMode = .standard,
         showsBottomActionBar: Bool = true,
+        advancedTradingBottomContentInset: CGFloat? = nil,
         shuffleRequestID: Int = 0,
         configuration: StockDetailPageConfiguration? = nil,
         quoteDetailsExpansion: Binding<Bool>? = nil,
@@ -138,6 +140,7 @@ struct StockDetailPage: View {
         self.shuffleInstruments = shuffleInstruments
         self.presentationMode = presentationMode
         self.showsBottomActionBar = showsBottomActionBar
+        self.advancedTradingBottomContentInset = advancedTradingBottomContentInset
         self.shuffleRequestID = shuffleRequestID
         self.configurationOverride = configuration
         self.quoteDetailsExpansion = quoteDetailsExpansion
@@ -388,7 +391,8 @@ struct StockDetailPage: View {
             .padding(
                 .bottom,
                 presentationMode == .advancedTrading
-                    ? StockOrderAdvancedTradingLayout.contentBottomInset
+                    ? advancedTradingBottomContentInset
+                        ?? StockOrderAdvancedTradingLayout.metrics(for: .v0).contentBottomInset
                     : StockDetailPageLayout.bottomClearance
             )
         }

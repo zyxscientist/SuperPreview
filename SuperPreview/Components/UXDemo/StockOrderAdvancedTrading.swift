@@ -7,6 +7,7 @@ import SwiftUI
 
 enum StockOrderAdvancedTradingPreferences {
     static let enabledKey = "stockOrder.highFrequencyTrading.enabled"
+    static let versionKey = "stockOrder.highFrequencyTrading.version"
 
     // Reset once per process only when explicitly requested by UI tests.
     // Relaunching without this flag exercises the real persisted preference.
@@ -14,7 +15,15 @@ enum StockOrderAdvancedTradingPreferences {
         guard PreviewRuntime.isUITesting,
               ProcessInfo.processInfo.environment["UITEST_RESET_HIGH_FREQUENCY_TRADING"] == "1" else { return }
         UserDefaults.standard.removeObject(forKey: enabledKey)
+        UserDefaults.standard.removeObject(forKey: versionKey)
     }()
+}
+
+enum StockOrderAdvancedTradingVersion: String, CaseIterable, Hashable, Identifiable {
+    case v0
+    case v1
+
+    var id: Self { self }
 }
 
 /// The four peer views available after a stock has been selected.
@@ -54,11 +63,65 @@ enum StockOrderAdvancedTradingSection: String, CaseIterable, Hashable, Identifia
 }
 
 enum StockOrderAdvancedTradingLayout {
-    static let toolBarHeight: CGFloat = 40
     static let toolBarGap: CGFloat = 8
-    // Reserve the action-bar slot even on pages that have no bottom actions.
-    static let toolBarBottomInset = StockTradingBottomLayout.containerHeight + toolBarGap
-    static let contentBottomInset = toolBarBottomInset + toolBarHeight + 8
+
+    struct Metrics {
+        let toolBarHeight: CGFloat
+        let toolBarBottomInset: CGFloat
+        let contentBottomInset: CGFloat
+        let fontSize: CGFloat
+        let lineHeight: CGFloat
+        let segmentHeight: CGFloat
+        let segmentContainerInset: CGFloat
+    }
+
+    static func metrics(
+        for version: StockOrderAdvancedTradingVersion,
+        bottomSafeArea: CGFloat = StockTradingBottomLayout.homeIndicatorAreaHeight
+    ) -> Metrics {
+        switch version {
+        case .v0:
+            let toolBarBottomInset = StockTradingBottomLayout.containerHeight + toolBarGap
+            return Metrics(
+                toolBarHeight: 40,
+                toolBarBottomInset: toolBarBottomInset,
+                contentBottomInset: toolBarBottomInset + 40 + 8,
+                fontSize: 14,
+                lineHeight: 14,
+                segmentHeight: 34,
+                segmentContainerInset: 3
+            )
+        case .v1:
+            // The v1 switcher sits 5pt above the device's actual bottom safe area.
+            let toolBarBottomInset = max(bottomSafeArea, 0) + 5
+            return Metrics(
+                toolBarHeight: 48,
+                toolBarBottomInset: toolBarBottomInset,
+                contentBottomInset: toolBarBottomInset + 48 + 8,
+                fontSize: 16,
+                lineHeight: 24,
+                segmentHeight: 40,
+                segmentContainerInset: 4
+            )
+        }
+    }
+
+    static func contentBottomInset(
+        for version: StockOrderAdvancedTradingVersion,
+        includesToolBar: Bool,
+        bottomSafeArea: CGFloat = StockTradingBottomLayout.homeIndicatorAreaHeight
+    ) -> CGFloat {
+        if includesToolBar {
+            return metrics(for: version, bottomSafeArea: bottomSafeArea).contentBottomInset
+        }
+
+        switch version {
+        case .v0:
+            return StockTradingBottomLayout.containerHeight + 16
+        case .v1:
+            return max(bottomSafeArea, 0) + 16
+        }
+    }
 
     static func pageSwitchAnimation(reduceMotion: Bool) -> Animation? {
         reduceMotion ? nil : .easeOut(duration: 0.16)
@@ -73,17 +136,51 @@ enum StockOrderAdvancedTradingLayout {
 /// and keeps all four targets equal in width for rapid switching.
 struct StockOrderAdvancedTradingToolBar: View {
     @Binding var selection: StockOrderAdvancedTradingSection
+    let version: StockOrderAdvancedTradingVersion
+    let bottomSafeArea: CGFloat
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.demoLanguage) private var language
 
+    init(
+        selection: Binding<StockOrderAdvancedTradingSection>,
+        version: StockOrderAdvancedTradingVersion = .v0,
+        bottomSafeArea: CGFloat = StockTradingBottomLayout.homeIndicatorAreaHeight
+    ) {
+        _selection = selection
+        self.version = version
+        self.bottomSafeArea = bottomSafeArea
+    }
+
     var body: some View {
-        surface
-            .frame(height: StockOrderAdvancedTradingLayout.toolBarHeight)
+        if PreviewRuntime.isUITesting && version == .v1 {
+            toolbarSurface
+                .background {
+                    Color.clear
+                        .accessibilityElement()
+                        .accessibilityLabel("Advanced trading toolbar")
+                        .accessibilityIdentifier("stockOrder.advancedTrading.toolbar.geometry")
+                        .allowsHitTesting(false)
+                }
+                .accessibilityElement(children: .contain)
+                .accessibilityIdentifier("stockOrder.advancedTrading.toolbar")
+        } else {
+            toolbarSurface
+                .accessibilityElement(children: .contain)
+                .accessibilityIdentifier("stockOrder.advancedTrading.toolbar")
+        }
+    }
+
+    private var toolbarSurface: some View {
+        let metrics = StockOrderAdvancedTradingLayout.metrics(
+            for: version,
+            bottomSafeArea: bottomSafeArea
+        )
+
+        return surface
+            .frame(height: metrics.toolBarHeight)
             .padding(.horizontal, 16)
             .frame(maxWidth: .infinity)
-            .accessibilityElement(children: .contain)
-            .accessibilityIdentifier("stockOrder.advancedTrading.toolbar")
     }
 
     @ViewBuilder
@@ -105,7 +202,12 @@ struct StockOrderAdvancedTradingToolBar: View {
     }
 
     private var segments: some View {
-        HStack(spacing: 0) {
+        let metrics = StockOrderAdvancedTradingLayout.metrics(
+            for: version,
+            bottomSafeArea: bottomSafeArea
+        )
+
+        return HStack(spacing: 0) {
             ForEach(StockOrderAdvancedTradingSection.allCases) { section in
                 Button {
                     guard selection != section else { return }
@@ -117,7 +219,7 @@ struct StockOrderAdvancedTradingToolBar: View {
                                 selection == section
                                     ? "PlusJakartaSans-Bold"
                                     : "PlusJakartaSans-Medium",
-                                size: 14,
+                                size: metrics.fontSize,
                                 relativeTo: .subheadline
                             )
                         )
@@ -127,8 +229,9 @@ struct StockOrderAdvancedTradingToolBar: View {
                                 : Color("color-text-30")
                         )
                         .lineLimit(1)
+                        .lineSpacing(max(metrics.lineHeight - metrics.fontSize, 0))
                         .frame(maxWidth: .infinity)
-                        .frame(height: 34)
+                        .frame(height: metrics.segmentHeight)
                         .contentShape(Capsule())
                         // Match the watchlist tabs: labels update immediately;
                         // only the single persistent selection surface moves.
@@ -158,7 +261,7 @@ struct StockOrderAdvancedTradingToolBar: View {
                     .accessibilityHidden(true)
             }
         }
-        .padding(3)
+        .padding(metrics.segmentContainerInset)
     }
 
     private var selectionAnimation: Animation? {

@@ -17,6 +17,11 @@ enum StockOrderTradeActionBarStatus: Hashable {
     case unlocked
 }
 
+enum StockOrderTradeActionBarPlacement: Hashable {
+    case bottom
+    case inline
+}
+
 /// The bottom trade actions for the stock-order page.
 ///
 /// The component defaults to the unlocked state shown in the current design.
@@ -24,6 +29,7 @@ enum StockOrderTradeActionBarStatus: Hashable {
 /// back to a system material on earlier versions.
 struct StockOrderTradeActionBar: View {
     let status: StockOrderTradeActionBarStatus
+    let placement: StockOrderTradeActionBarPlacement
     let onUnlock: () -> Void
     let onBuy: () -> Void
     let onSell: () -> Void
@@ -32,28 +38,43 @@ struct StockOrderTradeActionBar: View {
 
     init(
         status: StockOrderTradeActionBarStatus = .unlocked,
+        placement: StockOrderTradeActionBarPlacement = .bottom,
         onUnlock: @escaping () -> Void = {},
         onBuy: @escaping () -> Void = {},
         onSell: @escaping () -> Void = {}
     ) {
         self.status = status
+        self.placement = placement
         self.onUnlock = onUnlock
         self.onBuy = onBuy
         self.onSell = onSell
     }
 
     var body: some View {
-        glassWrappedActions
-            .padding(.horizontal, StockOrderTradeActionBarLayout.horizontalPadding)
+        actionBarContent
             .frame(maxWidth: .infinity)
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("stockOrder.tradeActionBar")
     }
 
     @ViewBuilder
+    private var actionBarContent: some View {
+        switch placement {
+        case .bottom:
+            glassWrappedActions
+                .padding(.horizontal, StockOrderTradeActionBarLayout.horizontalPadding)
+        case .inline:
+            actionButtons
+                .padding(.horizontal, StockOrderTradeActionBarLayout.horizontalPadding)
+                .frame(height: StockOrderTradeActionBarLayout.inlineContainerHeight)
+                .background(Color("color-base-1"))
+        }
+    }
+
+    @ViewBuilder
     private var glassWrappedActions: some View {
         if #available(iOS 26.0, *) {
-            GlassEffectContainer(spacing: StockOrderTradeActionBarLayout.buttonSpacing) {
+            GlassEffectContainer(spacing: buttonSpacing) {
                 actionButtons
                     .padding(StockOrderTradeActionBarLayout.glassInset)
                     .frame(height: StockOrderTradeActionBarLayout.containerHeight)
@@ -83,7 +104,7 @@ struct StockOrderTradeActionBar: View {
                 identifier: "unlock"
             )
         case .unlocked:
-            HStack(spacing: StockOrderTradeActionBarLayout.buttonSpacing) {
+            HStack(spacing: buttonSpacing) {
                 tradeButton(
                     title: language.text(.buy),
                     color: Color("color-utility3-red"),
@@ -99,6 +120,12 @@ struct StockOrderTradeActionBar: View {
                 )
             }
         }
+    }
+
+    private var buttonSpacing: CGFloat {
+        placement == .inline
+            ? StockOrderTradeActionBarLayout.inlineButtonSpacing
+            : StockOrderTradeActionBarLayout.buttonSpacing
     }
 
     private func tradeButton(
@@ -126,9 +153,11 @@ struct StockOrderTradeActionBar: View {
 private enum StockOrderTradeActionBarLayout {
     static let horizontalPadding: CGFloat = 16
     static let containerHeight = StockTradingBottomLayout.actionBarHeight
+    static let inlineContainerHeight: CGFloat = 68
     static let buttonHeight: CGFloat = 44
     static let glassInset: CGFloat = 8
     static let buttonSpacing: CGFloat = 12
+    static let inlineButtonSpacing: CGFloat = 10
     static let fallbackShadowRadius: CGFloat = 20
     static let fallbackShadowYOffset: CGFloat = 4
 }
