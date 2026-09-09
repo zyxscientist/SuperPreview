@@ -20,9 +20,9 @@ enum AppTab: Int, CaseIterable {
         switch self {
         case .tab1: return language.text(.watchlist)
         case .tab2: return language.text(.trade)
-        case .tab3: return language.text(.wealth)
-        case .tab4: return language.text(.news)
-        case .tab5: return language.text(.markets)
+        case .tab3: return language.text(.markets)
+        case .tab4: return language.text(.wealth)
+        case .tab5: return language.text(.news)
         case .tab6: return language.text(.me)
         }
     }
@@ -31,9 +31,9 @@ enum AppTab: Int, CaseIterable {
         switch self {
         case .tab1: return "warchlist_active"
         case .tab2: return "trade_active"
-        case .tab3: return "wealth_active"
-        case .tab4: return "bookmark_active"
-        case .tab5: return "market_active"
+        case .tab3: return "market_active"
+        case .tab4: return "wealth_active"
+        case .tab5: return "bookmark_active"
         case .tab6: return "me_active"
         }
     }
@@ -42,9 +42,9 @@ enum AppTab: Int, CaseIterable {
         switch self {
         case .tab1: return "warchlist_inactive"
         case .tab2: return "trade_inactive"
-        case .tab3: return "wealth_inactive"
-        case .tab4: return "bookmark_inactive"
-        case .tab5: return "market_inactive"
+        case .tab3: return "market_inactive"
+        case .tab4: return "wealth_inactive"
+        case .tab5: return "bookmark_inactive"
         case .tab6: return "me_inactive"
         }
     }

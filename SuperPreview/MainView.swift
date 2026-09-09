@@ -50,13 +50,13 @@ struct MainView: View {
                         )
                     }
                     tabLayer(.tab3) {
-                        WealthView()
+                        LineChartView()
                     }
                     tabLayer(.tab4) {
-                        NewsView()
+                        WealthView()
                     }
                     tabLayer(.tab5) {
-                        LineChartView()
+                        NewsView()
                     }
                     tabLayer(.tab6) {
                         CompareView()
@@ -119,9 +119,9 @@ struct MainView: View {
         switch selectedTab {
         case .tab1: return "自选"
         case .tab2: return "交易"
-        case .tab3: return "理财"
-        case .tab4: return "资讯"
-        case .tab5: return "市场"
+        case .tab3: return "市场"
+        case .tab4: return "理财"
+        case .tab5: return "资讯"
         case .tab6: return "我的"
         }
     }
