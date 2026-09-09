@@ -298,29 +298,12 @@ struct WatchlistRedesignActionPressStyle: ButtonStyle {
 private struct WatchlistRedesignActionPressButton: View {
     let configuration: ButtonStyle.Configuration
 
-    @State private var isHoldingFeedback = false
-    @State private var releaseWorkItem: DispatchWorkItem?
-
-    private var isScaled: Bool {
-        configuration.isPressed || isHoldingFeedback
-    }
+    private var isScaled: Bool { configuration.isPressed }
 
     var body: some View {
         configuration.label
             .scaleEffect(isScaled ? 0.96 : 1)
-            .animation(.easeInOut(duration: isScaled ? 0.06 : 0.12), value: isScaled)
-            .onChange(of: configuration.isPressed) { _, isPressed in
-                if isPressed {
-                    releaseWorkItem?.cancel()
-                    isHoldingFeedback = true
-                } else {
-                    let workItem = DispatchWorkItem {
-                        isHoldingFeedback = false
-                    }
-                    releaseWorkItem = workItem
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.12, execute: workItem)
-                }
-            }
+            .animation(.linear(duration: 0.01), value: isScaled)
     }
 }
 
