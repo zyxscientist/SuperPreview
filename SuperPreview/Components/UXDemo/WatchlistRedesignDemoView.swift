@@ -481,7 +481,7 @@ struct WatchlistRedesignTabs: View {
     }
 
     var body: some View {
-        HStack(spacing: 0) {
+        ZStack(alignment: .topTrailing) {
             ScrollView(.horizontal, showsIndicators: false) {
                 tabButtons
                     .padding(.leading, 10)
@@ -490,19 +490,34 @@ struct WatchlistRedesignTabs: View {
                     .animation(selectionAnimation, value: selectedTab)
             }
 
-            ZStack(alignment: .trailing) {
-                LinearGradient(
-                    gradient: Gradient(colors: [Color("color-transparent"), Color("color-base-1")]),
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-                Image("headertab_sort")
-                    .padding(.trailing, 12)
-            }
-            .frame(width: 50, height: 48)
+            sortMenu
         }
-        .frame(height: 48)
+        .frame(maxWidth: .infinity)
+        .frame(height: 48, alignment: .top)
         .background(Color("color-base-1"))
+    }
+
+    private var sortMenu: some View {
+        ZStack(alignment: .topTrailing) {
+            LinearGradient(
+                gradient: Gradient(stops: [
+                    .init(color: Color("color-transparent"), location: 0),
+                    .init(color: Color("color-base-1"), location: 0.37413)
+                ]),
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+
+            Image("headertab_sort")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 20, height: 20)
+                .padding(.top, 14)
+                .padding(.trailing, 6)
+        }
+        .frame(width: 50, height: 48)
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
     }
 
     private var tabButtons: some View {
