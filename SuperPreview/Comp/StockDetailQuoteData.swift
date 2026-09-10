@@ -358,7 +358,9 @@ struct StockDetailQuoteData: View {
 
             if data.timestamp.session.showsTimestamp {
                 Text(data.timestamp.date)
+                    .monospacedDigit()
                 Text(data.timestamp.time)
+                    .monospacedDigit()
 
                 if let timeZone = data.timestamp.displayTimeZone(for: language) {
                     Text(timeZone)

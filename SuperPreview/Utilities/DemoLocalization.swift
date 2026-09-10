@@ -518,7 +518,7 @@ private enum DemoCopy {
         .supportsTPlusZero: ("支持 T+0", "支援 T+0", "Supports T plus zero settlement"),
         .closePricingInformation: ("关闭计价说明", "關閉計價說明", "Close pricing information"),
         .hkStockGroup: ("港股 · HKD", "港股 · HKD", "Hong Kong Stocks · HKD"),
-        .chinaStockGroup: ("A股 · CNY", "A股 · CNY", "China A-Shares · CNY"),
+        .chinaStockGroup: ("A股 · CNH", "A股 · CNH", "China A-Shares · CNH"),
         .usStockGroup: ("美股 · USD", "美股 · USD", "U.S. Stocks · USD"),
         .hkdFundGroup: ("港币基金", "港幣基金", "Hong Kong Dollar Funds"),
         .usdFundGroup: ("美元基金", "美元基金", "U.S. Dollar Funds"),
