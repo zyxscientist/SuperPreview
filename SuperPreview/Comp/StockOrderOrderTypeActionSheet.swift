@@ -2,6 +2,10 @@
 //  StockOrderOrderTypeActionSheet.swift
 //  SuperPreview
 //
+//  组件名称：订单类型选择弹窗
+//  简介：提供限价单、市价单及各市场支持的订单类型选项。
+//  用于：股票下单 Demo 的订单类型输入项。
+//
 
 import SwiftUI
 

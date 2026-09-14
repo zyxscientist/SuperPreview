@@ -2,6 +2,10 @@
 //  StockDetailBadgeInfoSheet.swift
 //  SuperPreview
 //
+//  组件名称：行情标识说明弹窗
+//  简介：解释股票报价旁的市场、融资和行情等级标识。
+//  用于：股票详情页点击标识信息后的底部弹窗。
+//
 
 import SwiftUI
 

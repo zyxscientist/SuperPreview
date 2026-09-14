@@ -2,6 +2,10 @@
 //  StockDetailQuoteData.swift
 //  SuperPreview
 //
+//  组件名称：详情页行情摘要模型
+//  简介：定义价格、涨跌、交易时段、市场标识及时间戳等报价展示数据。
+//  用于：详情页顶部报价和紧凑行情栏。
+//
 
 import SwiftUI
 

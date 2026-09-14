@@ -2,6 +2,10 @@
 //  VirtualAssetHoldingListGroup.swift
 //  SuperPreview
 //
+//  组件名称：虚拟资产持仓分组列表
+//  简介：按资产类型分组展示虚拟资产持仓和相关收益数据。
+//  用于：交易聚合 Demo 的虚拟资产明细区域。
+//
 
 import SwiftUI
 

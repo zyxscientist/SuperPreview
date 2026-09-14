@@ -5,6 +5,10 @@
 //  Created by Codex on 2026/07/01.
 //  Copyright © 2026 PeterZ. All rights reserved.
 //
+//  组件名称：自选列表重设计 Demo
+//  简介：展示自选列表、行情刷新、标签、迷你 K 线和交互调试能力。
+//  用于：验证自选页面的新布局、动效和多语言表现。
+//
 
 import SwiftUI
 

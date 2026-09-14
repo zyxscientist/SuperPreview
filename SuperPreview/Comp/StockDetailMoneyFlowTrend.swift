@@ -2,6 +2,10 @@
 //  StockDetailMoneyFlowTrend.swift
 //  SuperPreview
 //
+//  组件名称：资金流向趋势
+//  简介：以趋势图展示一段交易时段内的资金流向变化。
+//  用于：股票详情页图表下方的资金流向模块。
+//
 
 import SwiftUI
 

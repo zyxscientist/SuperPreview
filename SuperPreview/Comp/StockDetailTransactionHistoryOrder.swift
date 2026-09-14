@@ -2,6 +2,10 @@
 //  StockDetailTransactionHistoryOrder.swift
 //  SuperPreview
 //
+//  组件名称：历史订单行
+//  简介：定义历史订单的数据模型和单行展示内容。
+//  用于：详情页历史订单列表及其他历史订单入口。
+//
 
 import SwiftUI
 

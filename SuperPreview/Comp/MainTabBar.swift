@@ -4,6 +4,10 @@
 //
 //  Created by Codex on 2026/7/21.
 //
+//  组件名称：主导航栏
+//  简介：承载自选、交易、市场、理财等一级页面之间的切换。
+//  用于：应用根界面以及各个 Demo 的统一底部导航。
+//
 
 import SwiftUI
 import UIKit

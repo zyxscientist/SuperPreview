@@ -2,6 +2,10 @@
 //  FundAssetQuickMenu.swift
 //  SuperPreview
 //
+//  组件名称：基金资产快捷菜单
+//  简介：集中展示基金充值、交易记录、定投和对账单等操作。
+//  用于：交易聚合 Demo 的基金资产页面。
+//
 
 import SwiftUI
 

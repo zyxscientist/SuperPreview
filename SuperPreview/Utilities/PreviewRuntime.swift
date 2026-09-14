@@ -2,6 +2,10 @@
 //  PreviewRuntime.swift
 //  SuperPreview
 //
+//  组件名称：预览运行环境检测
+//  简介：识别 SwiftUI Preview、UI 测试和普通应用运行环境。
+//  用于：让 Demo 的调试交互在不同运行环境下采用正确行为。
+//
 
 import Foundation
 

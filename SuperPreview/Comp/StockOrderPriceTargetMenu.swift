@@ -2,6 +2,10 @@
 //  StockOrderPriceTargetMenu.swift
 //  SuperPreview
 //
+//  组件名称：价格目标菜单
+//  简介：提供现价、买一、卖一等市场价格目标的快捷选择。
+//  用于：股票下单 Demo 的价格输入辅助菜单。
+//
 
 import SwiftUI
 

@@ -2,6 +2,10 @@
 //  TodayOrdersPageView.swift
 //  SuperPreview
 //
+//  组件名称：今日订单页面 Demo
+//  简介：集中展示当日订单，支持展开订单详情和执行订单操作。
+//  用于：交易聚合 Demo 的今日订单入口。
+//
 
 import SwiftUI
 

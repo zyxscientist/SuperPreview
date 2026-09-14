@@ -2,6 +2,10 @@
 //  VirtualAssetsQuickMenu.swift
 //  SuperPreview
 //
+//  组件名称：虚拟资产快捷菜单
+//  简介：提供虚拟资产转账、记录和其他管理操作的快捷入口。
+//  用于：交易聚合 Demo 的虚拟资产页面。
+//
 
 import SwiftUI
 

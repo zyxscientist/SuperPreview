@@ -2,6 +2,10 @@
 //  TradeAggregationDemoViewModel.swift
 //  SuperPreview
 //
+//  组件名称：交易聚合 Demo 数据模型
+//  简介：维护资产快照、持仓分组和模拟刷新所需的演示状态。
+//  用于：为交易聚合 Demo 页面提供展示数据和交互更新。
+//
 
 import Foundation
 import SwiftUI

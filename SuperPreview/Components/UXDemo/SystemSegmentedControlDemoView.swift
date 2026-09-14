@@ -4,6 +4,10 @@
 //
 //  Created by Codex on 2026/09/07.
 //
+//  组件名称：系统分段控件 Demo
+//  简介：展示 SwiftUI Picker 封装的原生分段控件及其选中、禁用状态。
+//  用于：验证 iOS 系统 UISegmentedControl 的默认行为。
+//
 
 import SwiftUI
 

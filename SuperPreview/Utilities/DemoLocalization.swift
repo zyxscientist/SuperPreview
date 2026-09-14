@@ -2,6 +2,10 @@
 //  DemoLocalization.swift
 //  SuperPreview
 //
+//  组件名称：Demo 多语言文案中心
+//  简介：集中维护简体中文、繁体中文和英文的 Demo 界面文案。
+//  用于：所有近期 Demo 的语言切换和本地化展示。
+//
 
 import SwiftUI
 
@@ -354,8 +358,8 @@ private enum DemoCopy {
         .stockDetailHaltedSession: ("停牌", "停牌", "Halted"),
         .stockDetailPreMarketTrading: ("盘前交易中", "盤前交易中", "Pre-market trading"),
         .stockDetailAfterHoursTrading: ("盘后交易中", "盤後交易中", "After-hours trading"),
-        .stockDetailPreMarketNavbar: ("盘前交易中", "盤前交易中", "Pre-market"),
-        .stockDetailAfterHoursNavbar: ("盘后交易中", "盤後交易中", "After-hours"),
+        .stockDetailPreMarketNavbar: ("盘前", "盤前", "Pre-market"),
+        .stockDetailAfterHoursNavbar: ("盘后", "盤後", "After-hours"),
         .stockDetailHigh: ("最高", "最高", "High"),
         .stockDetailLow: ("最低", "最低", "Low"),
         .stockDetailTurnover: ("成交额", "成交額", "Turnover"),

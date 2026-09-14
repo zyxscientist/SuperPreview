@@ -2,6 +2,10 @@
 //  TradeAggregationDemoView.swift
 //  SuperPreview
 //
+//  组件名称：交易聚合 Demo 页面
+//  简介：组合总资产、资产分类、子资产卡片和快捷操作，模拟交易页体验。
+//  用于：展示股票、基金及虚拟资产的聚合交易场景。
+//
 
 import SwiftUI
 

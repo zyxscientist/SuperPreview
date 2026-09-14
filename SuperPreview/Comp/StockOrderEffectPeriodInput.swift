@@ -2,6 +2,10 @@
 //  StockOrderEffectPeriodInput.swift
 //  SuperPreview
 //
+//  组件名称：订单有效期输入项
+//  简介：以表单行形式展示当前订单有效期并打开选择弹窗。
+//  用于：股票下单 Demo 的订单设置区域。
+//
 
 import SwiftUI
 

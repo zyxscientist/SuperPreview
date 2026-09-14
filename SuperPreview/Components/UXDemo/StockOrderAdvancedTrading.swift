@@ -2,6 +2,10 @@
 //  StockOrderAdvancedTrading.swift
 //  SuperPreview
 //
+//  组件名称：高频交易模式 Demo
+//  简介：演示高频交易模式的开关、版本状态和增强交易入口。
+//  用于：股票下单 Demo 的高级交易配置和调试场景。
+//
 
 import SwiftUI
 

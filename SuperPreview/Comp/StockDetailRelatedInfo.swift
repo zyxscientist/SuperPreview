@@ -2,6 +2,10 @@
 //  StockDetailRelatedInfo.swift
 //  SuperPreview
 //
+//  组件名称：详情页关联信息
+//  简介：展示与当前标的相关的市场、证券或业务信息入口。
+//  用于：股票详情页底部的关联信息区域。
+//
 
 import SwiftUI
 

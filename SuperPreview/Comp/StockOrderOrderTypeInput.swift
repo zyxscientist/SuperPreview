@@ -2,6 +2,10 @@
 //  StockOrderOrderTypeInput.swift
 //  SuperPreview
 //
+//  组件名称：订单类型输入项
+//  简介：以表单行展示当前订单类型，并打开订单类型选择弹窗。
+//  用于：股票下单 Demo 的订单设置区域。
+//
 
 import SwiftUI
 

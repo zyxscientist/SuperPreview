@@ -2,6 +2,10 @@
 //  FundHoldingListGroup.swift
 //  SuperPreview
 //
+//  组件名称：基金持仓分组列表
+//  简介：按币种分组展示基金持仓，并支持分组展开和收起。
+//  用于：交易聚合 Demo 的基金资产明细区域。
+//
 
 import SwiftUI
 

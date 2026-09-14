@@ -2,6 +2,10 @@
 //  StockOrderDemoView.swift
 //  SuperPreview
 //
+//  组件名称：股票下单 Demo 页面
+//  简介：组合标的选择、订单设置、盘口、持仓和交易操作，模拟完整下单流程。
+//  用于：展示股票、ETF、基金及虚拟资产的下单场景。
+//
 
 import SwiftUI
 

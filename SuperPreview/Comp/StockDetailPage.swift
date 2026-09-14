@@ -2,6 +2,10 @@
 //  StockDetailPage.swift
 //  SuperPreview
 //
+//  组件名称：股票详情页
+//  简介：组合导航栏、报价、图表、盘口、交易模块和底部操作等详情内容。
+//  用于：从自选、市场或交易入口进入的股票详情 Demo。
+//
 
 import SwiftUI
 

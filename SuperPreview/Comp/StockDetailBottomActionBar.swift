@@ -2,6 +2,10 @@
 //  StockDetailBottomActionBar.swift
 //  SuperPreview
 //
+//  组件名称：详情页底部操作栏
+//  简介：提供交易、自选、提醒和切换股票等固定操作。
+//  用于：股票详情页底部的常驻操作区域。
+//
 
 import SwiftUI
 

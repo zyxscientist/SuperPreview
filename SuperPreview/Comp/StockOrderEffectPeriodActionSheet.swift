@@ -2,6 +2,10 @@
 //  StockOrderEffectPeriodActionSheet.swift
 //  SuperPreview
 //
+//  组件名称：订单有效期选择弹窗
+//  简介：提供当日有效、撤单前有效等订单有效期选项。
+//  用于：股票下单 Demo 的有效期输入项。
+//
 
 import SwiftUI
 

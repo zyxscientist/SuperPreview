@@ -4,6 +4,10 @@
 //
 //  Created by Codex on 2026/07/23.
 //
+//  组件名称：Liquid Glass 效果研究 Demo
+//  简介：观察交易涨跌色在 iOS Liquid Glass 控件中的 tint 和层次表现。
+//  用于：iOS 26 Liquid Glass 视觉实验和样式验证。
+//
 
 import SwiftUI
 

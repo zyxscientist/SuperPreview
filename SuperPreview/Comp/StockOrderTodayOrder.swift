@@ -2,6 +2,10 @@
 //  StockOrderTodayOrder.swift
 //  SuperPreview
 //
+//  组件名称：今日订单行
+//  简介：展示订单方向、价格、数量、成交状态及可执行的订单操作。
+//  用于：股票下单 Demo、详情页订单 Tab 和今日订单页面。
+//
 
 import SwiftUI
 

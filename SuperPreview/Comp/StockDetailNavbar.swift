@@ -2,6 +2,10 @@
 //  StockDetailNavbar.swift
 //  SuperPreview
 //
+//  组件名称：详情页紧凑行情栏
+//  简介：在详情页滚动时显示股票名称及最新价格、涨跌幅和交易时段。
+//  用于：股票详情页向上滚动后的顶部导航栏。
+//
 
 import SwiftUI
 
@@ -424,6 +428,16 @@ private struct StockDetailNavbarPreviewHarness: View {
 }
 
 private extension StockDetailNavbarQuote {
+    static func preview(session: StockDetailTradingSession) -> StockDetailNavbarQuote {
+        StockDetailNavbarQuote(
+            session: session,
+            price: "1,776.740",
+            change: "+1.079",
+            changePercent: "+0.25%",
+            trend: .up
+        )
+    }
+
     static let preview = StockDetailNavbarQuote(
         session: .trading,
         price: "1,776.740",
@@ -446,10 +460,42 @@ struct StockDetailNavbar_Previews: PreviewProvider {
             StockDetailNavbar(
                 symbol: "TSLA",
                 name: "特斯拉",
-                quote: .preview,
+                quote: .preview(session: .trading),
                 quoteRevealProgress: 1
             )
-            .previewDisplayName("Scrolled")
+            .previewDisplayName("Trading · Fully Revealed")
+
+            StockDetailNavbar(
+                symbol: "TSLA",
+                name: "特斯拉",
+                quote: .preview(session: .closed),
+                quoteRevealProgress: 1
+            )
+            .previewDisplayName("Closed · Fully Revealed")
+
+            StockDetailNavbar(
+                symbol: "TSLA",
+                name: "特斯拉",
+                quote: .preview(session: .halted),
+                quoteRevealProgress: 1
+            )
+            .previewDisplayName("Halted · Fully Revealed")
+
+            StockDetailNavbar(
+                symbol: "TSLA",
+                name: "特斯拉",
+                quote: .preview(session: .preMarketTrading),
+                quoteRevealProgress: 1
+            )
+            .previewDisplayName("Pre-market · Fully Revealed")
+
+            StockDetailNavbar(
+                symbol: "TSLA",
+                name: "特斯拉",
+                quote: .preview(session: .afterHoursTrading),
+                quoteRevealProgress: 1
+            )
+            .previewDisplayName("After-hours · Fully Revealed")
 
             StockDetailNavbarPreviewHarness()
                 .previewDisplayName("Interactive Reveal")

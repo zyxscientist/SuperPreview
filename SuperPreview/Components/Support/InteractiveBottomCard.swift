@@ -2,6 +2,10 @@
 //  InteractiveBottomCard.swift
 //  SuperPreview
 //
+//  组件名称：交互式底部卡片
+//  简介：提供带遮罩、拖拽和手势关闭能力的内容型底部卡片容器。
+//  用于：订单确认、行情标识说明等底部弹窗。
+//
 
 import SwiftUI
 import UIKit

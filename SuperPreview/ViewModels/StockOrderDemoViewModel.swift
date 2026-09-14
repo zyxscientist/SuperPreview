@@ -2,6 +2,10 @@
 //  StockOrderDemoViewModel.swift
 //  SuperPreview
 //
+//  组件名称：股票下单 Demo 数据模型
+//  简介：维护不同市场的下单规则、表单状态、报价和订单模拟数据。
+//  用于：为股票下单 Demo 及详情页交易面板提供状态和数据。
+//
 
 import Foundation
 import SwiftUI

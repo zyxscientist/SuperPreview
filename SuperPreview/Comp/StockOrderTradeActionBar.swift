@@ -2,6 +2,10 @@
 //  StockOrderTradeActionBar.swift
 //  SuperPreview
 //
+//  组件名称：下单交易操作栏
+//  简介：提供买入、卖出及高频交易模式下的主要提交操作。
+//  用于：股票下单 Demo 和详情页快捷交易面板底部。
+//
 
 import SwiftUI
 

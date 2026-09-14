@@ -2,6 +2,10 @@
 //  FundSubAssetCard.swift
 //  SuperPreview
 //
+//  组件名称：基金子资产卡片
+//  简介：展示基金净资产、收益、市值及资金状态等摘要数据。
+//  用于：交易聚合 Demo 的基金资产概览区域。
+//
 
 import SwiftUI
 

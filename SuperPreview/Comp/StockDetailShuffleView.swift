@@ -2,6 +2,10 @@
 //  StockDetailShuffleView.swift
 //  SuperPreview
 //
+//  组件名称：详情页滑动浏览容器
+//  简介：支持在多个标的详情卡片之间滑动切换，并协调页面转场状态。
+//  用于：自选列表进入详情后的连续浏览 Demo。
+//
 
 import Foundation
 import SwiftUI

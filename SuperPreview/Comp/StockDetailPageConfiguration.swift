@@ -2,6 +2,10 @@
 //  StockDetailPageConfiguration.swift
 //  SuperPreview
 //
+//  组件名称：详情页配置器
+//  简介：根据股票、ETF、基金和虚拟资产类型生成详情页展示数据与交互规则。
+//  用于：为股票详情页及滑动浏览 Demo 提供页面配置。
+//
 
 import Foundation
 import SwiftUI

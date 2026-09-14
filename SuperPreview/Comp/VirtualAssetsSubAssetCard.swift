@@ -2,6 +2,10 @@
 //  VirtualAssetsSubAssetCard.swift
 //  SuperPreview
 //
+//  组件名称：虚拟资产子资产卡片
+//  简介：展示虚拟资产余额、持仓市值和盈亏等摘要信息。
+//  用于：交易聚合 Demo 的虚拟资产概览区域。
+//
 
 import SwiftUI
 

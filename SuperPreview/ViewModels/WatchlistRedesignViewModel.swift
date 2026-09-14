@@ -5,6 +5,10 @@
 //  Created by Codex on 2026/07/01.
 //  Copyright © 2026 PeterZ. All rights reserved.
 //
+//  组件名称：自选列表重设计数据模型
+//  简介：维护自选标的分组、行情模拟、标签和刷新状态。
+//  用于：为自选列表重设计 Demo 提供数据及交互逻辑。
+//
 
 import Foundation
 import SwiftUI
