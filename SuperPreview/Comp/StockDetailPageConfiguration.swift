@@ -376,7 +376,7 @@ fileprivate extension StockDetailQuoteDataModel {
 
 enum StockDetailPageConfigurationFactory {
     /// Builds only the value snapshot required by the order page. Keeping
-    /// market-phase normalization here makes the Shuffle and detail-page
+    /// market-phase normalization here makes the Scroll and detail-page
     /// order entry paths agree without constructing the complete quote page.
     static func orderSymbolSnapshot(
         for instrument: StockDetailInstrument,

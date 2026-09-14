@@ -145,7 +145,7 @@ enum DemoCopyKey {
     case capitalDistribution, netFlow, inflow, outflow, largeOrder, mediumOrder, smallOrder
     case unitTenThousands, moneyFlowTrend
     case watchlist, trade, reminder, wealth, news, markets, me
-    case shuffle
+    case scroll
     case stocks, funds, virtualAssets, cryptocurrency, positions, positionDetails
     case totalAssets, totalProfitLoss, netAssets, todayProfitLoss, yesterdayProfitLoss
     case securitiesMarketValue, totalCash, positionProfitLoss
@@ -451,7 +451,7 @@ private enum DemoCopy {
         .watchlist: ("自选", "自選", "Watchlist"),
         .trade: ("交易", "交易", "Trade"),
         .reminder: ("提醒", "提醒", "Reminder"),
-        .shuffle: ("Shuffle", "Shuffle", "Shuffle"),
+        .scroll: ("浏览", "瀏覽", "Scroll"),
         .wealth: ("理财", "理財", "Wealth"),
         .news: ("资讯", "資訊", "News"),
         .markets: ("市场", "市場", "Markets"),

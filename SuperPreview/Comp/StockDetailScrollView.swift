@@ -1,5 +1,5 @@
 //
-//  StockDetailShuffleView.swift
+//  StockDetailScrollView.swift
 //  SuperPreview
 //
 //  组件名称：详情页滑动浏览容器
@@ -14,10 +14,10 @@ import UIKit
 enum StockDetailPagePresentationMode: Equatable {
     case standard
     case advancedTrading
-    case shuffleCard
+    case scrollCard
 }
 
-private enum StockDetailShuffleOrderTransitionPhase: Equatable {
+private enum StockDetailScrollOrderTransitionPhase: Equatable {
     case idle
     case dragging
     case finishing
@@ -25,7 +25,7 @@ private enum StockDetailShuffleOrderTransitionPhase: Equatable {
     case returnDragging
 }
 
-struct StockDetailShuffleSession: Identifiable {
+struct StockDetailScrollSession: Identifiable {
     let id = UUID()
     let instruments: [StockDetailInstrument]
 
@@ -34,23 +34,23 @@ struct StockDetailShuffleSession: Identifiable {
     }
 }
 
-enum StockDetailShuffleStorageKey {
-    static let quoteDataIsExpanded = "stockDetail.shuffle.quoteData.isExpanded"
+enum StockDetailScrollStorageKey {
+    static let quoteDataIsExpanded = "stockDetail.scroll.quoteData.isExpanded"
 }
 
 /// A full-screen, vertically paged presentation of the current watchlist
 /// context. The pager keeps a small resident card window around the current
 /// instrument, while exposing only the current card and its immediate
 /// neighbors for interaction.
-struct StockDetailShuffleView: View {
+struct StockDetailScrollView: View {
     let instruments: [StockDetailInstrument]
     @Binding private var selection: StockDetailInstrument
     let onExit: (StockDetailInstrument) -> Void
 
-    @AppStorage(StockDetailShuffleStorageKey.quoteDataIsExpanded)
+    @AppStorage(StockDetailScrollStorageKey.quoteDataIsExpanded)
     private var isQuoteDataExpanded = true
     @State private var symbolSelectionRequest: Int?
-    @StateObject private var orderTransitionController: StockDetailShuffleOrderTransitionController
+    @StateObject private var orderTransitionController: StockDetailScrollOrderTransitionController
 
     @EnvironmentObject private var demoLanguageStore: DemoLanguageStore
     @Environment(\.demoLanguage) private var language
@@ -67,7 +67,7 @@ struct StockDetailShuffleView: View {
         self._selection = selection
         self.onExit = onExit
         _orderTransitionController = StateObject(
-            wrappedValue: StockDetailShuffleOrderTransitionController()
+            wrappedValue: StockDetailScrollOrderTransitionController()
         )
     }
 
@@ -82,39 +82,39 @@ struct StockDetailShuffleView: View {
                 topFrost
             }
             .overlay(alignment: .bottomLeading) {
-                StockDetailShuffleSymbolBar(
+                StockDetailScrollSymbolBar(
                     instruments: instruments,
                     currentIndex: selectedIndex,
-                    totalWidth: max(canvasSize.width - ShuffleLayout.symbolBarHorizontalInset * 2, 0),
+                    totalWidth: max(canvasSize.width - ScrollLayout.symbolBarHorizontalInset * 2, 0),
                     onClose: exitToCurrentInstrument,
                     onSelect: { targetIndex in
                         symbolSelectionRequest = targetIndex
                     }
                 )
-                .padding(.leading, ShuffleLayout.symbolBarHorizontalInset)
+                .padding(.leading, ScrollLayout.symbolBarHorizontalInset)
                 .padding(
                     .bottom,
-                    ShuffleLayout.verticalPeek
-                        + ShuffleLayout.cardGap
-                        + ShuffleLayout.symbolBarBottomInset
+                    ScrollLayout.verticalPeek
+                        + ScrollLayout.cardGap
+                        + ScrollLayout.symbolBarBottomInset
                 )
             }
             .overlay(alignment: .topLeading) {
                 if PreviewRuntime.isUITesting {
                     Text(selection.id)
                         .frame(width: 1, height: 1)
-                        .accessibilityIdentifier("stockDetail.shuffle.committedInstrument")
+                        .accessibilityIdentifier("stockDetail.scroll.committedInstrument")
                         .allowsHitTesting(false)
                 }
             }
             .frame(width: canvasSize.width, height: canvasSize.height)
             .accessibilityElement(children: .contain)
-            .accessibilityIdentifier("stockDetail.shuffle.root")
+            .accessibilityIdentifier("stockDetail.scroll.root")
         }
         .background(Color.black.ignoresSafeArea())
         .ignoresSafeArea()
         .overlay {
-            StockDetailShuffleOrderTransitionLayer(
+            StockDetailScrollOrderTransitionLayer(
                 controller: orderTransitionController,
                 language: language,
                 languageStore: demoLanguageStore,
@@ -174,7 +174,7 @@ struct StockDetailShuffleView: View {
         ScrollView(.vertical, showsIndicators: false) {
             pager(canvasSize: canvasSize)
                 .background {
-                    StockDetailShuffleScrollPositionProbe()
+                    StockDetailScrollPositionProbe()
                 }
         }
         // The pager owns the vertical gesture. This gesture-disabled system
@@ -185,7 +185,7 @@ struct StockDetailShuffleView: View {
     }
 
     private func pager(canvasSize: CGSize) -> some View {
-        StockDetailShufflePager(
+        StockDetailScrollPager(
             instruments: instruments,
             currentIndex: selectedIndexBinding,
             symbolSelectionRequest: $symbolSelectionRequest,
@@ -212,8 +212,8 @@ struct StockDetailShuffleView: View {
     private var topFrost: some View {
         if selectedIndex > 0 {
             BlurView(style: .systemUltraThinMaterial)
-                .opacity(ShuffleLayout.topFrostBlurOpacity)
-                .frame(height: ShuffleLayout.topFrostHeight)
+                .opacity(ScrollLayout.topFrostBlurOpacity)
+                .frame(height: ScrollLayout.topFrostHeight)
                 .mask(
                     LinearGradient(
                         stops: [
@@ -261,20 +261,20 @@ struct StockDetailShuffleView: View {
 /// The scroll surface rests at `-adjustedContentInset.top` (its safe-area
 /// inset), which would push the fixed pager down. Pin the offset to zero so
 /// the card geometry stays unchanged while accessibility scrolling works.
-private struct StockDetailShuffleScrollPositionProbe: UIViewRepresentable {
-    func makeUIView(context: Context) -> StockDetailShuffleScrollPositionProbeView {
-        StockDetailShuffleScrollPositionProbeView()
+private struct StockDetailScrollPositionProbe: UIViewRepresentable {
+    func makeUIView(context: Context) -> StockDetailScrollPositionProbeView {
+        StockDetailScrollPositionProbeView()
     }
 
     func updateUIView(
-        _ uiView: StockDetailShuffleScrollPositionProbeView,
+        _ uiView: StockDetailScrollPositionProbeView,
         context: Context
     ) {
         uiView.scheduleUpdate()
     }
 }
 
-private final class StockDetailShuffleScrollPositionProbeView: UIView {
+private final class StockDetailScrollPositionProbeView: UIView {
     private var isUpdateScheduled = false
 
     override func didMoveToWindow() {
@@ -317,7 +317,7 @@ private final class StockDetailShuffleScrollPositionProbeView: UIView {
 /// Owns the high-frequency gesture state. The parent only receives an index
 /// update after a page settles, so the symbol bar and the surrounding cover do
 /// not invalidate on every drag sample.
-private struct StockDetailShufflePager: View {
+private struct StockDetailScrollPager: View {
     let instruments: [StockDetailInstrument]
     @Binding var currentIndex: Int
     @Binding var symbolSelectionRequest: Int?
@@ -360,12 +360,12 @@ private struct StockDetailShufflePager: View {
     }
 
     var body: some View {
-        let cardWidth = max(canvasSize.width - ShuffleLayout.horizontalInset * 2, 0)
-        let cardHeight = max(canvasSize.height - ShuffleLayout.verticalPeek * 2 - ShuffleLayout.cardGap * 2, 0)
+        let cardWidth = max(canvasSize.width - ScrollLayout.horizontalInset * 2, 0)
+        let cardHeight = max(canvasSize.height - ScrollLayout.verticalPeek * 2 - ScrollLayout.cardGap * 2, 0)
         let scale = canvasSize.width > 0 ? cardWidth / canvasSize.width : 1
-        let stride = cardHeight + ShuffleLayout.cardGap
+        let stride = cardHeight + ScrollLayout.cardGap
 
-        StockDetailShuffleCardDeck(
+        StockDetailScrollCardDeck(
             instruments: instruments,
             currentIndex: currentIndex,
             stagedTargetIndex: stagedTargetIndex,
@@ -404,8 +404,8 @@ private struct StockDetailShufflePager: View {
         }
     }
 
-    private func pagerGesture(cardHeight: CGFloat, stride: CGFloat) -> StockDetailShufflePagerPanGesture {
-        StockDetailShufflePagerPanGesture(canBegin: canBeginDrag) { state, translation, velocity in
+    private func pagerGesture(cardHeight: CGFloat, stride: CGFloat) -> StockDetailScrollPagerPanGesture {
+        StockDetailScrollPagerPanGesture(canBegin: canBeginDrag) { state, translation, velocity in
             switch state {
             case .began, .changed:
                 guard !isSettling else { return }
@@ -436,8 +436,8 @@ private struct StockDetailShufflePager: View {
                         return
                     }
                     let threshold = min(
-                        cardHeight * ShuffleLayout.commitThresholdRatio,
-                        ShuffleLayout.maximumCommitDistance
+                        cardHeight * ScrollLayout.commitThresholdRatio,
+                        ScrollLayout.maximumCommitDistance
                     )
                     let projected = translation.height + velocity.height * 0.2
                     let travel = abs(projected) > abs(translation.height) ? projected : translation.height
@@ -474,7 +474,7 @@ private struct StockDetailShufflePager: View {
         let isDraggingPastLast = translation < 0 && currentIndex == instruments.count - 1
 
         if isDraggingPastFirst || isDraggingPastLast {
-            return translation * ShuffleLayout.edgeRubberBandFactor
+            return translation * ScrollLayout.edgeRubberBandFactor
         }
 
         return translation
@@ -492,7 +492,7 @@ private struct StockDetailShufflePager: View {
 
         if reduceMotion {
             withAnimation(
-                .easeOut(duration: ShuffleLayout.reduceMotionDuration),
+                .easeOut(duration: ScrollLayout.reduceMotionDuration),
                 completionCriteria: .logicallyComplete
             ) {
                 transitionOpacity = 0
@@ -504,7 +504,7 @@ private struct StockDetailShufflePager: View {
                     updateIndexWithoutAnimation(to: targetIndex)
 
                     withAnimation(
-                        .easeOut(duration: ShuffleLayout.reduceMotionDuration),
+                        .easeOut(duration: ScrollLayout.reduceMotionDuration),
                         completionCriteria: .logicallyComplete
                     ) {
                         transitionOpacity = 1
@@ -529,7 +529,7 @@ private struct StockDetailShufflePager: View {
     }
 
     private func settleBack() {
-        guard abs(dragOffset) > ShuffleLayout.offsetEpsilon else {
+        guard abs(dragOffset) > ScrollLayout.offsetEpsilon else {
             dragOffset = 0
             return
         }
@@ -566,7 +566,7 @@ private struct StockDetailShufflePager: View {
 
         if reduceMotion {
             withAnimation(
-                .easeOut(duration: ShuffleLayout.reduceMotionDuration),
+                .easeOut(duration: ScrollLayout.reduceMotionDuration),
                 completionCriteria: .logicallyComplete
             ) {
                 transitionOpacity = 0
@@ -578,7 +578,7 @@ private struct StockDetailShufflePager: View {
                     updateIndexWithoutAnimation(to: targetIndex)
 
                     withAnimation(
-                        .easeOut(duration: ShuffleLayout.reduceMotionDuration),
+                        .easeOut(duration: ScrollLayout.reduceMotionDuration),
                         completionCriteria: .logicallyComplete
                     ) {
                         transitionOpacity = 1
@@ -606,7 +606,7 @@ private struct StockDetailShufflePager: View {
         // Warm the complete post-commit resident window. These are lightweight
         // configurations only; the deck below owns the five actual card views.
         let indices = Array(
-            (-ShuffleLayout.residentCardRadius)...ShuffleLayout.residentCardRadius
+            (-ScrollLayout.residentCardRadius)...ScrollLayout.residentCardRadius
         )
             .map { targetIndex + $0 }
             .filter { instruments.indices.contains($0) }
@@ -645,7 +645,7 @@ private struct StockDetailShufflePager: View {
     }
 
     private var pageTransitionAnimation: Animation {
-        .easeOut(duration: ShuffleLayout.transitionDuration)
+        .easeOut(duration: ScrollLayout.transitionDuration)
     }
 
     private enum GestureAxis {
@@ -657,14 +657,14 @@ private struct StockDetailShufflePager: View {
 /// The deck is equatable so a drag-state change at the pager level updates
 /// only the outer transform. Its body is rebuilt when the visible instrument
 /// window, language, or staged jump actually changes.
-private struct StockDetailShuffleCardItem: Identifiable, Equatable {
+private struct StockDetailScrollCardItem: Identifiable, Equatable {
     let instrument: StockDetailInstrument
     let relativePosition: Int
 
     var id: String { instrument.id }
 }
 
-private struct StockDetailShuffleCardDeck: View, Equatable {
+private struct StockDetailScrollCardDeck: View, Equatable {
     let instruments: [StockDetailInstrument]
     let currentIndex: Int
     let stagedTargetIndex: Int?
@@ -678,7 +678,7 @@ private struct StockDetailShuffleCardDeck: View, Equatable {
     let configurationCache: StockDetailPageConfigurationCache
     let onExit: (StockDetailInstrument) -> Void
 
-    static func == (lhs: StockDetailShuffleCardDeck, rhs: StockDetailShuffleCardDeck) -> Bool {
+    static func == (lhs: StockDetailScrollCardDeck, rhs: StockDetailScrollCardDeck) -> Bool {
         lhs.currentIndex == rhs.currentIndex
             && lhs.stagedTargetIndex == rhs.stagedTargetIndex
             && lhs.quoteDataIsExpanded == rhs.quoteDataIsExpanded
@@ -704,13 +704,13 @@ private struct StockDetailShuffleCardDeck: View, Equatable {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
-    private var visibleCards: [StockDetailShuffleCardItem] {
+    private var visibleCards: [StockDetailScrollCardItem] {
         Array(
-            (-ShuffleLayout.residentCardRadius)...ShuffleLayout.residentCardRadius
+            (-ScrollLayout.residentCardRadius)...ScrollLayout.residentCardRadius
         )
         .compactMap { relativePosition in
             guard let index = displayedIndex(for: relativePosition) else { return nil }
-            return StockDetailShuffleCardItem(
+            return StockDetailScrollCardItem(
                 instrument: instruments[index],
                 relativePosition: relativePosition
             )
@@ -721,7 +721,7 @@ private struct StockDetailShuffleCardDeck: View, Equatable {
         instrument: StockDetailInstrument,
         relativePosition: Int
     ) -> some View {
-        let isInteractive = abs(relativePosition) <= ShuffleLayout.interactiveCardRadius
+        let isInteractive = abs(relativePosition) <= ScrollLayout.interactiveCardRadius
         let slotName: String
         switch relativePosition {
         case -2:
@@ -744,10 +744,10 @@ private struct StockDetailShuffleCardDeck: View, Equatable {
         return ZStack(alignment: .topLeading) {
             StockDetailPage(
                 instrument: instrument,
-                presentationMode: .shuffleCard,
+                presentationMode: .scrollCard,
                 configuration: pageConfiguration,
                 quoteDetailsExpansion: $quoteDataIsExpanded,
-                onShuffleCardInteraction: { onExit(instrument) }
+                onScrollCardInteraction: { onExit(instrument) }
             )
             .id(instrument.id)
             .frame(width: canvasSize.width, height: canvasSize.height)
@@ -757,13 +757,13 @@ private struct StockDetailShuffleCardDeck: View, Equatable {
         .background(Color("color-base-1"))
         .clipShape(
             RoundedRectangle(
-                cornerRadius: ShuffleLayout.cardCornerRadius,
+                cornerRadius: ScrollLayout.cardCornerRadius,
                 style: .continuous
             )
         )
         .contentShape(
             RoundedRectangle(
-                cornerRadius: ShuffleLayout.cardCornerRadius,
+                cornerRadius: ScrollLayout.cardCornerRadius,
                 style: .continuous
             )
         )
@@ -771,8 +771,8 @@ private struct StockDetailShuffleCardDeck: View, Equatable {
             onExit(instrument)
         }
         .offset(
-            x: ShuffleLayout.horizontalInset,
-            y: ShuffleLayout.verticalPeek + ShuffleLayout.cardGap
+            x: ScrollLayout.horizontalInset,
+            y: ScrollLayout.verticalPeek + ScrollLayout.cardGap
                 + CGFloat(relativePosition) * stride
         )
         .zIndex(relativePosition == 0 ? 2 : 1)
@@ -782,7 +782,7 @@ private struct StockDetailShuffleCardDeck: View, Equatable {
         .accessibilityHint(language == .english ? "Opens the full detail page" : "打开完整详情页")
         .accessibilityAddTraits(.isButton)
         .accessibilityHidden(!isInteractive)
-        .accessibilityIdentifier("stockDetail.shuffle.card.\(slotName)")
+        .accessibilityIdentifier("stockDetail.scroll.card.\(slotName)")
     }
 
     private func displayedIndex(for relativePosition: Int) -> Int? {
@@ -813,7 +813,7 @@ private struct StockDetailShuffleCardDeck: View, Equatable {
     }
 }
 
-private struct StockDetailShuffleSymbolBar: View {
+private struct StockDetailScrollSymbolBar: View {
     let instruments: [StockDetailInstrument]
     let currentIndex: Int
     let totalWidth: CGFloat
@@ -824,12 +824,12 @@ private struct StockDetailShuffleSymbolBar: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        HStack(spacing: ShuffleLayout.symbolBarGap) {
+        HStack(spacing: ScrollLayout.symbolBarGap) {
             closeButton
 
             symbolCapsule
         }
-        .frame(width: totalWidth, height: ShuffleLayout.symbolBarHeight, alignment: .leading)
+        .frame(width: totalWidth, height: ScrollLayout.symbolBarHeight, alignment: .leading)
     }
 
     private var closeButton: some View {
@@ -837,24 +837,24 @@ private struct StockDetailShuffleSymbolBar: View {
             ZStack {
                 glassBackground(shape: Circle())
 
-                Image("stock_detail_shuffle_close")
+                Image("stock_detail_scroll_close")
                     .resizable()
                     .scaledToFit()
-                    .frame(width: ShuffleLayout.closeIconSize, height: ShuffleLayout.closeIconSize)
+                    .frame(width: ScrollLayout.closeIconSize, height: ScrollLayout.closeIconSize)
             }
-            .frame(width: ShuffleLayout.symbolBarHeight, height: ShuffleLayout.symbolBarHeight)
+            .frame(width: ScrollLayout.symbolBarHeight, height: ScrollLayout.symbolBarHeight)
         }
         .buttonStyle(.plain)
         .accessibilityLabel(language == .english ? "Close" : "关闭")
-        .accessibilityIdentifier("stockDetail.shuffle.close")
+        .accessibilityIdentifier("stockDetail.scroll.close")
     }
 
     private var symbolCapsule: some View {
-        let availableWidth = max(totalWidth - ShuffleLayout.symbolBarHeight - ShuffleLayout.symbolBarGap, 0)
+        let availableWidth = max(totalWidth - ScrollLayout.symbolBarHeight - ScrollLayout.symbolBarGap, 0)
 
         return ScrollViewReader { proxy in
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: ShuffleLayout.symbolSpacing) {
+                HStack(spacing: ScrollLayout.symbolSpacing) {
                     ForEach(Array(instruments.enumerated()), id: \.element.id) { index, instrument in
                         Button {
                             onSelect(index)
@@ -862,9 +862,9 @@ private struct StockDetailShuffleSymbolBar: View {
                             Text(instrument.symbol)
                                 .modifier(
                                     CustomFontModifier(
-                                        size: ShuffleLayout.symbolFontSize,
+                                        size: ScrollLayout.symbolFontSize,
                                         font: index == currentIndex ? .bold : .medium,
-                                        lineHeight: ShuffleLayout.symbolLineHeight
+                                        lineHeight: ScrollLayout.symbolLineHeight
                                     )
                                 )
                                 .foregroundColor(
@@ -877,13 +877,13 @@ private struct StockDetailShuffleSymbolBar: View {
                         .buttonStyle(.plain)
                         .accessibilityAddTraits(index == currentIndex ? .isSelected : [])
                         .accessibilityLabel(instrument.symbol)
-                        .accessibilityIdentifier("stockDetail.shuffle.symbol.\(instrument.id)")
+                        .accessibilityIdentifier("stockDetail.scroll.symbol.\(instrument.id)")
                         .id(instrument.id)
                     }
                 }
-                .padding(.horizontal, ShuffleLayout.symbolCapsuleHorizontalPadding)
+                .padding(.horizontal, ScrollLayout.symbolCapsuleHorizontalPadding)
             }
-            .frame(width: capsuleWidth(availableWidth: availableWidth), height: ShuffleLayout.symbolBarHeight)
+            .frame(width: capsuleWidth(availableWidth: availableWidth), height: ScrollLayout.symbolBarHeight)
             .background(glassBackground(shape: Capsule()))
             .clipShape(Capsule())
             .onAppear {
@@ -893,7 +893,7 @@ private struct StockDetailShuffleSymbolBar: View {
                 if reduceMotion {
                     scrollToCurrent(using: proxy)
                 } else {
-                    withAnimation(.easeOut(duration: ShuffleLayout.transitionDuration)) {
+                    withAnimation(.easeOut(duration: ScrollLayout.transitionDuration)) {
                         scrollToCurrent(using: proxy)
                     }
                 }
@@ -902,14 +902,14 @@ private struct StockDetailShuffleSymbolBar: View {
     }
 
     private func capsuleWidth(availableWidth: CGFloat) -> CGFloat {
-        min(availableWidth, max(ShuffleLayout.minimumSymbolCapsuleWidth, estimatedContentWidth + ShuffleLayout.symbolCapsuleHorizontalPadding * 2))
+        min(availableWidth, max(ScrollLayout.minimumSymbolCapsuleWidth, estimatedContentWidth + ScrollLayout.symbolCapsuleHorizontalPadding * 2))
     }
 
     private var estimatedContentWidth: CGFloat {
         let textWidth = instruments.reduce(CGFloat.zero) { partialResult, instrument in
-            partialResult + max(24, CGFloat(instrument.symbol.count) * ShuffleLayout.estimatedCharacterWidth)
+            partialResult + max(24, CGFloat(instrument.symbol.count) * ScrollLayout.estimatedCharacterWidth)
         }
-        let spacingWidth = CGFloat(max(instruments.count - 1, 0)) * ShuffleLayout.symbolSpacing
+        let spacingWidth = CGFloat(max(instruments.count - 1, 0)) * ScrollLayout.symbolSpacing
         return textWidth + spacingWidth
     }
 
@@ -934,7 +934,7 @@ private struct StockDetailShuffleSymbolBar: View {
     }
 }
 
-private enum ShuffleLayout {
+private enum ScrollLayout {
     // Keep current ±2 resident so the next visible card has already been
     // constructed and laid out before it reaches the one-card preview slot.
     static let residentCardRadius = 2
@@ -974,12 +974,12 @@ private enum ShuffleLayout {
 
 }
 
-struct StockDetailShuffleView_Previews: PreviewProvider {
+struct StockDetailScrollView_Previews: PreviewProvider {
     static var previews: some View {
         let sixInstrumentPreview = Array(StockDetailDebugSamples.all.prefix(6))
 
         Group {
-            StockDetailShufflePreviewHost(
+            StockDetailScrollPreviewHost(
                 instruments: StockDetailDebugSamples.all,
                 initialInstrumentID: StockDetailDebugSamples.all[2].id
             )
@@ -987,7 +987,7 @@ struct StockDetailShuffleView_Previews: PreviewProvider {
             .environmentObject(DemoLanguageStore(initialLanguage: .simplifiedChinese))
             .previewDisplayName("Both neighbors")
 
-            StockDetailShufflePreviewHost(
+            StockDetailScrollPreviewHost(
                 instruments: StockDetailDebugSamples.all,
                 initialInstrumentID: StockDetailDebugSamples.all[0].id
             )
@@ -995,7 +995,7 @@ struct StockDetailShuffleView_Previews: PreviewProvider {
             .environmentObject(DemoLanguageStore(initialLanguage: .simplifiedChinese))
             .previewDisplayName("No previous")
 
-            StockDetailShufflePreviewHost(
+            StockDetailScrollPreviewHost(
                 instruments: StockDetailDebugSamples.all,
                 initialInstrumentID: StockDetailDebugSamples.all[6].id
             )
@@ -1003,7 +1003,7 @@ struct StockDetailShuffleView_Previews: PreviewProvider {
             .environmentObject(DemoLanguageStore(initialLanguage: .simplifiedChinese))
             .previewDisplayName("No next")
 
-            StockDetailShufflePreviewHost(
+            StockDetailScrollPreviewHost(
                 instruments: [StockDetailDebugSamples.all[2]],
                 initialInstrumentID: StockDetailDebugSamples.all[2].id
             )
@@ -1011,7 +1011,7 @@ struct StockDetailShuffleView_Previews: PreviewProvider {
             .environmentObject(DemoLanguageStore(initialLanguage: .simplifiedChinese))
             .previewDisplayName("Single instrument")
 
-            StockDetailShufflePreviewHost(
+            StockDetailScrollPreviewHost(
                 instruments: sixInstrumentPreview,
                 initialInstrumentID: sixInstrumentPreview[3].id
             )
@@ -1019,7 +1019,7 @@ struct StockDetailShuffleView_Previews: PreviewProvider {
             .environmentObject(DemoLanguageStore(initialLanguage: .simplifiedChinese))
             .previewDisplayName("Six instruments · middle")
 
-            StockDetailShufflePreviewHost(
+            StockDetailScrollPreviewHost(
                 instruments: StockDetailDebugSamples.all,
                 initialInstrumentID: StockDetailDebugSamples.all[3].id
             )
@@ -1031,7 +1031,7 @@ struct StockDetailShuffleView_Previews: PreviewProvider {
         .environmentObject(DemoAppearanceStore())
         .previewLayout(.fixed(width: 402, height: 874))
 
-        StockDetailShufflePreviewHost(
+        StockDetailScrollPreviewHost(
             instruments: StockDetailDebugSamples.all,
             initialInstrumentID: StockDetailDebugSamples.all[2].id
         )
@@ -1044,7 +1044,7 @@ struct StockDetailShuffleView_Previews: PreviewProvider {
     }
 }
 
-private struct StockDetailShufflePreviewHost: View {
+private struct StockDetailScrollPreviewHost: View {
     let instruments: [StockDetailInstrument]
 
     @State private var selection: StockDetailInstrument
@@ -1057,18 +1057,18 @@ private struct StockDetailShufflePreviewHost: View {
     }
 
     var body: some View {
-        StockDetailShuffleView(
+        StockDetailScrollView(
             instruments: instruments,
             selection: $selection
         )
     }
 }
 
-// MARK: - Shuffle order transition
+// MARK: - Scroll order transition
 
 /// The recognizer sees touches before nested SwiftUI/UIScrollView gesture
-/// arbitration. Its hit region and lifecycle remain owned by Shuffle.
-private struct StockDetailShufflePagerPanGesture: UIViewRepresentable {
+/// arbitration. Its hit region and lifecycle remain owned by Scroll.
+private struct StockDetailScrollPagerPanGesture: UIViewRepresentable {
     let canBegin: () -> Bool
     let onPan: (UIGestureRecognizer.State, CGSize, CGSize) -> Void
 
@@ -1076,8 +1076,8 @@ private struct StockDetailShufflePagerPanGesture: UIViewRepresentable {
         Coordinator(canBegin: canBegin, onPan: onPan)
     }
 
-    func makeUIView(context: Context) -> StockDetailShufflePanRegion {
-        let region = StockDetailShufflePanRegion()
+    func makeUIView(context: Context) -> StockDetailScrollPanRegion {
+        let region = StockDetailScrollPanRegion()
         let coordinator = context.coordinator
         coordinator.region = region
         region.onWindowChanged = { [weak coordinator] window in
@@ -1086,23 +1086,23 @@ private struct StockDetailShufflePagerPanGesture: UIViewRepresentable {
         return region
     }
 
-    func updateUIView(_ uiView: StockDetailShufflePanRegion, context: Context) {
+    func updateUIView(_ uiView: StockDetailScrollPanRegion, context: Context) {
         context.coordinator.canBegin = canBegin
         context.coordinator.onPan = onPan
         context.coordinator.attach(to: uiView.window)
     }
 
-    static func dismantleUIView(_ uiView: StockDetailShufflePanRegion, coordinator: Coordinator) {
+    static func dismantleUIView(_ uiView: StockDetailScrollPanRegion, coordinator: Coordinator) {
         uiView.onWindowChanged = nil
         coordinator.attach(to: nil)
     }
 
     final class Coordinator: NSObject, UIGestureRecognizerDelegate {
-        weak var region: StockDetailShufflePanRegion?
+        weak var region: StockDetailScrollPanRegion?
         var canBegin: () -> Bool
         var onPan: (UIGestureRecognizer.State, CGSize, CGSize) -> Void
-        private lazy var pan: StockDetailShufflePagePanRecognizer = {
-            let recognizer = StockDetailShufflePagePanRecognizer(target: self, action: #selector(drag(_:)))
+        private lazy var pan: StockDetailScrollPagePanRecognizer = {
+            let recognizer = StockDetailScrollPagePanRecognizer(target: self, action: #selector(drag(_:)))
             recognizer.maximumNumberOfTouches = 1
             recognizer.delegate = self
             return recognizer
@@ -1136,7 +1136,7 @@ private struct StockDetailShufflePagerPanGesture: UIViewRepresentable {
             shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
         ) -> Bool {
             // A chart's or scroll view's pan must not prevent the page pan.
-            // Taps remain exclusive, so a drag cannot also exit Shuffle.
+            // Taps remain exclusive, so a drag cannot also exit Scroll.
             otherGestureRecognizer is UIPanGestureRecognizer
         }
 
@@ -1147,7 +1147,7 @@ private struct StockDetailShufflePagerPanGesture: UIViewRepresentable {
             otherGestureRecognizer is UITapGestureRecognizer
         }
 
-        @objc private func drag(_ recognizer: StockDetailShufflePagePanRecognizer) {
+        @objc private func drag(_ recognizer: StockDetailScrollPagePanRecognizer) {
             let translation = recognizer.translationFromTouchDown
             let velocity = recognizer.velocity(in: recognizer.view)
             onPan(
@@ -1162,7 +1162,7 @@ private struct StockDetailShufflePagerPanGesture: UIViewRepresentable {
 /// UIPan can begin with zero translation after consuming its recognition
 /// distance. Preserve touch-down displacement so a short horizontal drag
 /// neither loses that distance nor gets locked to the vertical pager.
-private final class StockDetailShufflePagePanRecognizer: UIPanGestureRecognizer {
+private final class StockDetailScrollPagePanRecognizer: UIPanGestureRecognizer {
     private var touchOrigin: CGPoint?
     private var touchPosition: CGPoint?
 
@@ -1196,7 +1196,7 @@ private final class StockDetailShufflePagePanRecognizer: UIPanGestureRecognizer 
     }
 }
 
-private final class StockDetailShufflePanRegion: UIView {
+private final class StockDetailScrollPanRegion: UIView {
     var onWindowChanged: ((UIWindow?) -> Void)?
 
     override func didMoveToWindow() {
@@ -1208,10 +1208,10 @@ private final class StockDetailShufflePanRegion: UIView {
 }
 
 /// A real UIKit presentation owns the complete route, including interactive
-/// cancellation and appearance callbacks. Shuffle is never translated or
+/// cancellation and appearance callbacks. Scroll is never translated or
 /// removed from the presenting hierarchy.
 @MainActor
-private final class StockDetailShuffleOrderTransitionController: NSObject, ObservableObject,
+private final class StockDetailScrollOrderTransitionController: NSObject, ObservableObject,
     UIViewControllerTransitioningDelegate {
     @Published private(set) var debugProgress: CGFloat = 0
     @Published private(set) var debugDuration: TimeInterval?
@@ -1219,11 +1219,11 @@ private final class StockDetailShuffleOrderTransitionController: NSObject, Obser
     private(set) var debugRenderedDragSpan: CGFloat = 0
     private var firstRenderedDragProgress: CGFloat?
 
-    private var phase: StockDetailShuffleOrderTransitionPhase = .idle
-    private weak var container: StockDetailShuffleOrderTransitionViewController?
+    private var phase: StockDetailScrollOrderTransitionPhase = .idle
+    private weak var container: StockDetailScrollOrderTransitionViewController?
     private var pendingSymbol: StockOrderSymbol?
-    private var activeHost: StockDetailShuffleOrderPageController?
-    private var interaction: StockDetailShuffleRouteInteraction?
+    private var activeHost: StockDetailScrollOrderPageController?
+    private var interaction: StockDetailScrollRouteInteraction?
     private var preparationTask: Task<Void, Never>?
     private var releaseUptime: TimeInterval?
     private var language: DemoLanguage = .simplifiedChinese
@@ -1245,7 +1245,7 @@ private final class StockDetailShuffleOrderTransitionController: NSObject, Obser
         }
     }
 
-    func attach(to container: StockDetailShuffleOrderTransitionViewController) {
+    func attach(to container: StockDetailScrollOrderTransitionViewController) {
         self.container = container
         container.onReady = { [weak self] in self?.schedulePreparation() }
         schedulePreparation()
@@ -1260,7 +1260,7 @@ private final class StockDetailShuffleOrderTransitionController: NSObject, Obser
         preparationTask?.cancel()
         guard phase == .idle else { return }
         preparationTask = Task { @MainActor [weak self] in
-            // Let the Shuffle card's layout finish before warming the order
+            // Let the Scroll card's layout finish before warming the order
             // form. No page construction is scheduled for individual pan samples.
             await Task.yield()
             guard !Task.isCancelled, let self, self.phase == .idle,
@@ -1276,9 +1276,9 @@ private final class StockDetailShuffleOrderTransitionController: NSObject, Obser
         }
     }
 
-    private func makeHost(symbol: StockOrderSymbol) -> StockDetailShuffleOrderPageController? {
+    private func makeHost(symbol: StockOrderSymbol) -> StockDetailScrollOrderPageController? {
         guard let languageStore else { return nil }
-        let host = StockDetailShuffleOrderPageController(
+        let host = StockDetailScrollOrderPageController(
             symbol: symbol, language: language, languageStore: languageStore, route: self
         )
         host.modalPresentationStyle = .custom
@@ -1305,7 +1305,7 @@ private final class StockDetailShuffleOrderTransitionController: NSObject, Obser
             } else {
                 symbol = StockDetailPageConfigurationFactory.orderSymbolSnapshot(for: instrument)
             }
-            let host: StockDetailShuffleOrderPageController
+            let host: StockDetailScrollOrderPageController
             if let prepared = container.takePreparedHost(matching: symbol) {
                 host = prepared
             } else if let fresh = makeHost(symbol: symbol) {
@@ -1314,7 +1314,7 @@ private final class StockDetailShuffleOrderTransitionController: NSObject, Obser
                 return
             }
             activeHost = host
-            interaction = StockDetailShuffleRouteInteraction()
+            interaction = StockDetailScrollRouteInteraction()
             phase = .dragging
             if PreviewRuntime.isUITesting {
                 debugProgress = 0
@@ -1358,7 +1358,7 @@ private final class StockDetailShuffleOrderTransitionController: NSObject, Obser
                   host.presentedViewController == nil else { return }
             host.view.endEditing(true)
             phase = .returnDragging
-            interaction = StockDetailShuffleRouteInteraction()
+            interaction = StockDetailScrollRouteInteraction()
             host.dismiss(animated: true)
             interaction?.setProgress(min(1, max(0, translation / width)))
         case .changed:
@@ -1418,7 +1418,7 @@ private final class StockDetailShuffleOrderTransitionController: NSObject, Obser
         } else {
             activeHost = nil
             releaseUptime = nil
-            // A fresh order page is prepared from Shuffle's symbol, never
+            // A fresh order page is prepared from Scroll's symbol, never
             // from edits made inside the previous order session.
             schedulePreparation()
         }
@@ -1449,8 +1449,8 @@ private final class StockDetailShuffleOrderTransitionController: NSObject, Obser
         makeAnimator(presenting: false)
     }
 
-    private func makeAnimator(presenting: Bool) -> StockDetailShuffleRouteAnimator {
-        StockDetailShuffleRouteAnimator(presenting: presenting, reduceMotion: reduceMotion) { [weak self] completed in
+    private func makeAnimator(presenting: Bool) -> StockDetailScrollRouteAnimator {
+        StockDetailScrollRouteAnimator(presenting: presenting, reduceMotion: reduceMotion) { [weak self] completed in
             self?.transitionEnded(presenting: presenting, completed: completed)
         }
     }
@@ -1472,7 +1472,7 @@ private final class StockDetailShuffleOrderTransitionController: NSObject, Obser
         presenting: UIViewController?,
         source: UIViewController
     ) -> UIPresentationController? {
-        StockDetailShuffleOrderPresentationController(
+        StockDetailScrollOrderPresentationController(
             presentedViewController: presented, presenting: presenting
         )
     }
@@ -1481,7 +1481,7 @@ private final class StockDetailShuffleOrderTransitionController: NSObject, Obser
 /// Buffers the first pan sample (and even a very short completed gesture)
 /// until UIKit has installed its transition context.
 @MainActor
-private final class StockDetailShuffleRouteInteraction: UIPercentDrivenInteractiveTransition {
+private final class StockDetailScrollRouteInteraction: UIPercentDrivenInteractiveTransition {
     private var isReady = false
     private var pendingProgress: CGFloat = 0
     private var pendingCommit: Bool?
@@ -1514,7 +1514,7 @@ private final class StockDetailShuffleRouteInteraction: UIPercentDrivenInteracti
 }
 
 @MainActor
-private final class StockDetailShuffleRouteAnimator: NSObject, UIViewControllerAnimatedTransitioning {
+private final class StockDetailScrollRouteAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     private let presenting: Bool
     private let reduceMotion: Bool
     private let completion: (Bool) -> Void
@@ -1584,7 +1584,7 @@ private final class StockDetailShuffleRouteAnimator: NSObject, UIViewControllerA
     }
 }
 
-private final class StockDetailShuffleOrderPresentationController: UIPresentationController {
+private final class StockDetailScrollOrderPresentationController: UIPresentationController {
     override var shouldRemovePresentersView: Bool { false }
     override var shouldPresentInFullscreen: Bool { true }
     override var frameOfPresentedViewInContainerView: CGRect { containerView?.bounds ?? .zero }
@@ -1603,43 +1603,43 @@ private final class StockDetailShuffleOrderPresentationController: UIPresentatio
     }
 }
 
-private struct StockDetailShuffleOrderTransitionLayer: UIViewControllerRepresentable {
-    let controller: StockDetailShuffleOrderTransitionController
+private struct StockDetailScrollOrderTransitionLayer: UIViewControllerRepresentable {
+    let controller: StockDetailScrollOrderTransitionController
     let language: DemoLanguage
     let languageStore: DemoLanguageStore
     let reduceMotion: Bool
 
-    func makeCoordinator() -> StockDetailShuffleOrderTransitionController { controller }
+    func makeCoordinator() -> StockDetailScrollOrderTransitionController { controller }
 
-    func makeUIViewController(context: Context) -> StockDetailShuffleOrderTransitionViewController {
-        let viewController = StockDetailShuffleOrderTransitionViewController()
+    func makeUIViewController(context: Context) -> StockDetailScrollOrderTransitionViewController {
+        let viewController = StockDetailScrollOrderTransitionViewController()
         controller.updateEnvironment(language: language, languageStore: languageStore, reduceMotion: reduceMotion)
         controller.attach(to: viewController)
         return viewController
     }
 
     func updateUIViewController(
-        _ viewController: StockDetailShuffleOrderTransitionViewController, context: Context
+        _ viewController: StockDetailScrollOrderTransitionViewController, context: Context
     ) {
         controller.updateEnvironment(language: language, languageStore: languageStore, reduceMotion: reduceMotion)
     }
 
     static func dismantleUIViewController(
-        _ viewController: StockDetailShuffleOrderTransitionViewController,
-        coordinator: StockDetailShuffleOrderTransitionController
+        _ viewController: StockDetailScrollOrderTransitionViewController,
+        coordinator: StockDetailScrollOrderTransitionController
     ) {
         coordinator.detach()
     }
 }
 
 @MainActor
-private final class StockDetailShuffleOrderTransitionViewController: UIViewController {
+private final class StockDetailScrollOrderTransitionViewController: UIViewController {
     var onReady: (() -> Void)?
-    private(set) var preparedHost: StockDetailShuffleOrderPageController?
+    private(set) var preparedHost: StockDetailScrollOrderPageController?
     private let stagingView = UIView()
 
     override func loadView() {
-        view = StockDetailShuffleOrderContainerView()
+        view = StockDetailScrollOrderContainerView()
         view.backgroundColor = .clear
         view.clipsToBounds = true
         stagingView.isHidden = true
@@ -1665,7 +1665,7 @@ private final class StockDetailShuffleOrderTransitionViewController: UIViewContr
         }
     }
 
-    func stage(_ host: StockDetailShuffleOrderPageController) {
+    func stage(_ host: StockDetailScrollOrderPageController) {
         clearPreparedHost()
         preparedHost = host
         addChild(host)
@@ -1678,7 +1678,7 @@ private final class StockDetailShuffleOrderTransitionViewController: UIViewContr
         host.view.layoutIfNeeded()
     }
 
-    func takePreparedHost(matching symbol: StockOrderSymbol) -> StockDetailShuffleOrderPageController? {
+    func takePreparedHost(matching symbol: StockOrderSymbol) -> StockDetailScrollOrderPageController? {
         guard let host = preparedHost, host.symbol == symbol else {
             clearPreparedHost()
             return nil
@@ -1696,28 +1696,28 @@ private final class StockDetailShuffleOrderTransitionViewController: UIViewContr
     }
 }
 
-private final class StockDetailShuffleOrderContainerView: UIView {
+private final class StockDetailScrollOrderContainerView: UIView {
     override func point(inside point: CGPoint, with event: UIEvent?) -> Bool { false }
 }
 
 @MainActor
-private final class StockDetailShuffleOrderPageController:
-    UIHostingController<StockDetailShuffleOrderHostView>, UIGestureRecognizerDelegate {
+private final class StockDetailScrollOrderPageController:
+    UIHostingController<StockDetailScrollOrderHostView>, UIGestureRecognizerDelegate {
     let symbol: StockOrderSymbol
     var allowsReturn = true
-    private weak var route: StockDetailShuffleOrderTransitionController?
+    private weak var route: StockDetailScrollOrderTransitionController?
     private let languageStore: DemoLanguageStore
 
     init(
         symbol: StockOrderSymbol,
         language: DemoLanguage,
         languageStore: DemoLanguageStore,
-        route: StockDetailShuffleOrderTransitionController
+        route: StockDetailScrollOrderTransitionController
     ) {
         self.symbol = symbol
         self.languageStore = languageStore
         self.route = route
-        super.init(rootView: StockDetailShuffleOrderHostView(
+        super.init(rootView: StockDetailScrollOrderHostView(
             symbol: symbol, language: language, languageStore: languageStore,
             route: route, onReturnAvailabilityChanged: { _ in }
         ))
@@ -1769,11 +1769,11 @@ private final class StockDetailShuffleOrderPageController:
     }
 }
 
-private struct StockDetailShuffleOrderHostView: View {
+private struct StockDetailScrollOrderHostView: View {
     let symbol: StockOrderSymbol
     var language: DemoLanguage
     let languageStore: DemoLanguageStore
-    let route: StockDetailShuffleOrderTransitionController
+    let route: StockDetailScrollOrderTransitionController
     var onReturnAvailabilityChanged: (Bool) -> Void
 
     var body: some View {
@@ -1786,25 +1786,25 @@ private struct StockDetailShuffleOrderHostView: View {
         .environment(\.demoLanguage, language)
         .overlay(alignment: .topLeading) {
             if PreviewRuntime.isUITesting {
-                StockDetailShuffleOrderRouteDiagnostics(route: route)
+                StockDetailScrollOrderRouteDiagnostics(route: route)
             }
         }
     }
 }
 
-private struct StockDetailShuffleOrderRouteDiagnostics: View {
-    @ObservedObject var route: StockDetailShuffleOrderTransitionController
+private struct StockDetailScrollOrderRouteDiagnostics: View {
+    @ObservedObject var route: StockDetailScrollOrderTransitionController
 
     var body: some View {
         VStack(spacing: 0) {
             Text(String(format: "%.3f", route.debugProgress))
-                .accessibilityIdentifier("stockDetail.shuffle.orderTransition.progress")
+                .accessibilityIdentifier("stockDetail.scroll.orderTransition.progress")
             Text(String(format: "%.3f", route.debugDuration ?? -1))
-                .accessibilityIdentifier("stockDetail.shuffle.orderTransition.duration")
+                .accessibilityIdentifier("stockDetail.scroll.orderTransition.duration")
             Text("\(route.debugRenderedDragSamples)")
-                .accessibilityIdentifier("stockDetail.shuffle.orderTransition.renderedDragSamples")
+                .accessibilityIdentifier("stockDetail.scroll.orderTransition.renderedDragSamples")
             Text(String(format: "%.3f", route.debugRenderedDragSpan))
-                .accessibilityIdentifier("stockDetail.shuffle.orderTransition.renderedDragSpan")
+                .accessibilityIdentifier("stockDetail.scroll.orderTransition.renderedDragSpan")
         }
         .frame(width: 1, height: 1)
         .opacity(0.01)

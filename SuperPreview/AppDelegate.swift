@@ -33,7 +33,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             TradeAggregationExpansionStorageKey.stockHoldingGroups,
             TradeAggregationExpansionStorageKey.fundHoldingGroups,
             TradeAggregationExpansionStorageKey.virtualAssetHoldingGroups,
-            StockDetailShuffleStorageKey.quoteDataIsExpanded
+            StockDetailScrollStorageKey.quoteDataIsExpanded
         ]
 
         for key in keys {

@@ -203,7 +203,7 @@ struct WatchlistRedesignListPage: View {
     let isMiniKVisible: Bool
     let bottomContentClearance: CGFloat
 
-    private var shuffleInstruments: [StockDetailInstrument] {
+    private var scrollInstruments: [StockDetailInstrument] {
         var seen = Set<String>()
 
         return items.compactMap { item in
@@ -223,7 +223,7 @@ struct WatchlistRedesignListPage: View {
                         item: item,
                         shouldNavigateOnTap: shouldNavigateOnRowTap,
                         isMiniKVisible: isMiniKVisible,
-                        shuffleInstruments: shuffleInstruments
+                        scrollInstruments: scrollInstruments
                     )
                     .overlay(alignment: .topLeading) {
                         if PreviewRuntime.isUITesting {
@@ -252,7 +252,7 @@ struct WatchlistRedesignNavigableRow: View {
     let item: WatchlistRedesignItem
     let shouldNavigateOnTap: Bool
     let isMiniKVisible: Bool
-    let shuffleInstruments: [StockDetailInstrument]
+    let scrollInstruments: [StockDetailInstrument]
 
     var body: some View {
         if shouldNavigateOnTap {
@@ -277,7 +277,7 @@ struct WatchlistRedesignNavigableRow: View {
         } else {
             StockDetailPage(
                 instrument: item.stockDetailInstrument,
-                shuffleInstruments: shuffleInstruments
+                scrollInstruments: scrollInstruments
             )
         }
     }

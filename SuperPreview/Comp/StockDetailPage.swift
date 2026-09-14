@@ -55,7 +55,7 @@ final class StockDetailPageConfigurationCache: ObservableObject {
     }
 
     /// Builds and stores a configuration before the corresponding card is
-    /// inserted into the visible shuffle window. This warms data only; it
+    /// inserted into the visible scroll window. This warms data only; it
     /// does not create another StockDetailPage view.
     func prewarm(
         for instrument: StockDetailInstrument,
@@ -80,14 +80,14 @@ struct StockDetailPage: View {
     let onTrade: () -> Void
     let onWatchlist: () -> Void
     let onReminder: () -> Void
-    let shuffleInstruments: [StockDetailInstrument]?
+    let scrollInstruments: [StockDetailInstrument]?
     let presentationMode: StockDetailPagePresentationMode
     let showsBottomActionBar: Bool
     let advancedTradingBottomContentInset: CGFloat?
-    let shuffleRequestID: Int
+    let scrollRequestID: Int
     let configurationOverride: StockDetailPageConfiguration?
     let quoteDetailsExpansion: Binding<Bool>?
-    let onShuffleCardInteraction: (() -> Void)?
+    let onScrollCardInteraction: (() -> Void)?
 
     @State private var activeInstrument: StockDetailInstrument
     @State private var selectedTab: StockDetailPageTab
@@ -95,8 +95,8 @@ struct StockDetailPage: View {
     @State private var relatedInfoInteraction = StockDetailRelatedInfoInteractionState()
     @State private var quoteScrollOffset: CGFloat = 0
     @State private var isShowingDebugSheet = false
-    @State private var shuffleSession: StockDetailShuffleSession?
-    @State private var pendingShuffleExitInstrumentID: String?
+    @State private var scrollSession: StockDetailScrollSession?
+    @State private var pendingScrollExitInstrumentID: String?
     @State private var navigationBackSwipeRefreshID = 0
     @State private var isShowingStockOrder = false
     @State private var stockOrderInitialSelection: StockOrderSymbol?
@@ -111,14 +111,14 @@ struct StockDetailPage: View {
     init(
         instrument: StockDetailInstrument,
         initialTab: StockDetailPageTab = .quote,
-        shuffleInstruments: [StockDetailInstrument]? = nil,
+        scrollInstruments: [StockDetailInstrument]? = nil,
         presentationMode: StockDetailPagePresentationMode = .standard,
         showsBottomActionBar: Bool = true,
         advancedTradingBottomContentInset: CGFloat? = nil,
-        shuffleRequestID: Int = 0,
+        scrollRequestID: Int = 0,
         configuration: StockDetailPageConfiguration? = nil,
         quoteDetailsExpansion: Binding<Bool>? = nil,
-        onShuffleCardInteraction: (() -> Void)? = nil,
+        onScrollCardInteraction: (() -> Void)? = nil,
         onBack: (() -> Void)? = nil,
         onRefresh: @escaping () -> Void = {},
         onOrderConfirmed: @escaping (StockOrderConfirmationSide) -> Void = { _ in },
@@ -141,14 +141,14 @@ struct StockDetailPage: View {
         self.onTrade = onTrade
         self.onWatchlist = onWatchlist
         self.onReminder = onReminder
-        self.shuffleInstruments = shuffleInstruments
+        self.scrollInstruments = scrollInstruments
         self.presentationMode = presentationMode
         self.showsBottomActionBar = showsBottomActionBar
         self.advancedTradingBottomContentInset = advancedTradingBottomContentInset
-        self.shuffleRequestID = shuffleRequestID
+        self.scrollRequestID = scrollRequestID
         self.configurationOverride = configuration
         self.quoteDetailsExpansion = quoteDetailsExpansion
-        self.onShuffleCardInteraction = onShuffleCardInteraction
+        self.onScrollCardInteraction = onScrollCardInteraction
         _activeInstrument = State(initialValue: instrument)
         _selectedTab = State(
             initialValue: initialTabs.contains(initialTab) ? initialTab : .quote
@@ -170,21 +170,21 @@ struct StockDetailPage: View {
                         onBack: handleBack,
                         onShare: handleDebugAction,
                         trailingAction: presentationMode == .standard ? .debug : .none,
-                        presentation: presentationMode == .shuffleCard ? .shuffle : .standard,
+                        presentation: presentationMode == .scrollCard ? .scroll : .standard,
                         shareAccessibilityLabel: activeLanguage.text(.debug)
                     )
 
-                    if presentationMode != .shuffleCard {
+                    if presentationMode != .scrollCard {
                         StockDetailPageHeaderTabs(
                             tabs: pageConfiguration.tabs,
                             selection: $selectedTab,
-                            onInteraction: onShuffleCardInteraction,
+                            onInteraction: onScrollCardInteraction,
                             isReducedLiquidGlassUsageEnabled: demoAppearanceStore.isReducedLiquidGlassUsageEnabled
                         )
                     }
 
-                    if presentationMode == .shuffleCard {
-                        shuffleQuotePage(
+                    if presentationMode == .scrollCard {
+                        scrollQuotePage(
                             configuration: pageConfiguration,
                             viewportWidth: geometry.size.width
                         )
@@ -205,7 +205,7 @@ struct StockDetailPage: View {
                     }
                 }
 
-                if presentationMode != .shuffleCard && showsBottomActionBar {
+                if presentationMode != .scrollCard && showsBottomActionBar {
                     fixedBottomActionBar
                 }
             }
@@ -230,7 +230,7 @@ struct StockDetailPage: View {
         .toolbar(.hidden, for: .navigationBar)
         .navigationBarBackButtonHidden(true)
         .overlay(alignment: .topLeading) {
-            if PreviewRuntime.isUITesting, presentationMode != .shuffleCard {
+            if PreviewRuntime.isUITesting, presentationMode != .scrollCard {
                 Text(activeInstrument.id)
                     .frame(width: 1, height: 1)
                     .accessibilityIdentifier("stockDetail.committedInstrument")
@@ -246,16 +246,16 @@ struct StockDetailPage: View {
             .environment(\.demoLanguage, activeLanguage)
         }
         .fullScreenCover(
-            item: shuffleSessionBinding,
+            item: scrollSessionBinding,
             onDismiss: {
-                pendingShuffleExitInstrumentID = nil
+                pendingScrollExitInstrumentID = nil
                 requestNavigationBackSwipeRefresh()
             }
         ) { session in
-            StockDetailShuffleView(
+            StockDetailScrollView(
                 instruments: session.instruments,
                 selection: $activeInstrument,
-                onExit: exitShuffle(to:)
+                onExit: exitScroll(to:)
             )
             .environmentObject(demoLanguageStore)
             .environment(\.demoLanguage, activeLanguage)
@@ -264,10 +264,10 @@ struct StockDetailPage: View {
             detailTimestampDate = Date()
             resetPageState()
             requestNavigationBackSwipeRefresh()
-            completePendingShuffleExitIfNeeded(for: newInstrument)
+            completePendingScrollExitIfNeeded(for: newInstrument)
         }
-        .onChange(of: shuffleRequestID) { _, _ in
-            presentShuffle()
+        .onChange(of: scrollRequestID) { _, _ in
+            presentScroll()
         }
         .task(id: activeInstrument.market) {
             guard activeInstrument.market == .us else { return }
@@ -300,10 +300,10 @@ struct StockDetailPage: View {
     }
 
     private var configuration: StockDetailPageConfiguration {
-        let includesBelowChartComponents = presentationMode != .shuffleCard
+        let includesBelowChartComponents = presentationMode != .scrollCard
 
         if activeInstrument.market == .us {
-            // Shuffle cards receive a prewarmed snapshot. U.S. details instead
+            // Scroll cards receive a prewarmed snapshot. U.S. details instead
             // use their local phase-aware cache so the status can move from
             // after-hours to closed while the card remains on screen.
             return configurationCache.configuration(
@@ -410,7 +410,7 @@ struct StockDetailPage: View {
         .accessibilityIdentifier("stockDetail.page.quotePage")
     }
 
-    private func shuffleQuotePage(
+    private func scrollQuotePage(
         configuration: StockDetailPageConfiguration,
         viewportWidth: CGFloat
     ) -> some View {
@@ -420,20 +420,20 @@ struct StockDetailPage: View {
             StockDetailQuoteData(
                 data: configuration.quoteData,
                 isExpanded: quoteDetailsExpansionBinding,
-                onBadgesTap: onShuffleCardInteraction
+                onBadgesTap: onScrollCardInteraction
             )
 
             if !configuration.relatedItems.isEmpty {
                 StockDetailRelatedInfo(
                     items: configuration.relatedItems,
                     interactionState: $relatedInfoInteraction,
-                    onInteraction: onShuffleCardInteraction
+                    onInteraction: onScrollCardInteraction
                 )
             }
 
             StockDetailChart()
                 // Keep the chart at its source aspect ratio. When the
-                // expanded quote content is taller than the Shuffle card,
+                // expanded quote content is taller than the Scroll card,
                 // the page clips the overflow instead of offering the chart
                 // a smaller vertical proposal.
                 .frame(
@@ -443,7 +443,7 @@ struct StockDetailPage: View {
                 )
         }
         .frame(width: viewportWidth, alignment: .topLeading)
-        // Shuffle omits everything below the chart. Keep the remaining page
+        // Scroll omits everything below the chart. Keep the remaining page
         // height flexible and pin the content to the same top edge instead of
         // letting the outer bottom-aligned stack turn the difference into a
         // blank area above the navbar.
@@ -512,21 +512,21 @@ struct StockDetailPage: View {
         onTrade()
     }
 
-    private func presentShuffle() {
-        guard presentationMode != .shuffleCard else { return }
+    private func presentScroll() {
+        guard presentationMode != .scrollCard else { return }
 
-        let snapshot = normalizedShuffleInstruments
+        let snapshot = normalizedScrollInstruments
         guard !snapshot.isEmpty else { return }
 
-        shuffleSession = StockDetailShuffleSession(
+        scrollSession = StockDetailScrollSession(
             instruments: snapshot
         )
     }
 
-    private func exitShuffle(to instrument: StockDetailInstrument) {
-        guard presentationMode != .shuffleCard, shuffleSession != nil else { return }
+    private func exitScroll(to instrument: StockDetailInstrument) {
+        guard presentationMode != .scrollCard, scrollSession != nil else { return }
 
-        pendingShuffleExitInstrumentID = instrument.id
+        pendingScrollExitInstrumentID = instrument.id
 
         if activeInstrument.id != instrument.id {
             commitActiveInstrumentWithoutAnimation(instrument)
@@ -535,13 +535,13 @@ struct StockDetailPage: View {
             // presenting page may still be waiting for SwiftUI to render the
             // corresponding content tree. Use the same next-run-loop exit
             // path as a newly selected card instead of dismissing inline.
-            completePendingShuffleExitIfNeeded(for: instrument)
+            completePendingScrollExitIfNeeded(for: instrument)
         }
     }
 
-    private func completePendingShuffleExitIfNeeded(for instrument: StockDetailInstrument) {
-        guard presentationMode != .shuffleCard,
-              pendingShuffleExitInstrumentID == instrument.id else {
+    private func completePendingScrollExitIfNeeded(for instrument: StockDetailInstrument) {
+        guard presentationMode != .scrollCard,
+              pendingScrollExitInstrumentID == instrument.id else {
             return
         }
 
@@ -549,14 +549,14 @@ struct StockDetailPage: View {
         // new layout. Queue dismissal on the next main-run-loop turn so the
         // fullScreenCover's exit animation can only reveal the new instrument.
         DispatchQueue.main.async {
-            guard pendingShuffleExitInstrumentID == instrument.id,
-                  shuffleSession != nil,
+            guard pendingScrollExitInstrumentID == instrument.id,
+                  scrollSession != nil,
                   activeInstrument.id == instrument.id else {
                 return
             }
 
-            pendingShuffleExitInstrumentID = nil
-            shuffleSession = nil
+            pendingScrollExitInstrumentID = nil
+            scrollSession = nil
         }
     }
 
@@ -570,17 +570,17 @@ struct StockDetailPage: View {
         }
     }
 
-    private var normalizedShuffleInstruments: [StockDetailInstrument] {
+    private var normalizedScrollInstruments: [StockDetailInstrument] {
         guard activeInstrument.kind != .fund, activeInstrument.market != .fund else {
             return []
         }
 
-        guard let shuffleInstruments, !shuffleInstruments.isEmpty else {
+        guard let scrollInstruments, !scrollInstruments.isEmpty else {
             return [activeInstrument]
         }
 
         var seen = Set<String>()
-        let filtered = shuffleInstruments.filter { instrument in
+        let filtered = scrollInstruments.filter { instrument in
             guard instrument.kind != .fund, instrument.market != .fund else { return false }
             return seen.insert(instrument.id).inserted
         }
@@ -652,8 +652,8 @@ struct StockDetailPage: View {
         presentationMode == .standard ? $isShowingDebugSheet : .constant(false)
     }
 
-    private var shuffleSessionBinding: Binding<StockDetailShuffleSession?> {
-        presentationMode != .shuffleCard ? $shuffleSession : .constant(nil)
+    private var scrollSessionBinding: Binding<StockDetailScrollSession?> {
+        presentationMode != .scrollCard ? $scrollSession : .constant(nil)
     }
 
     private var debugLanguageBinding: Binding<DemoLanguage> {
@@ -676,7 +676,7 @@ struct StockDetailPage: View {
                 onTrade: handleTrade,
                 onWatchlist: onWatchlist,
                 onReminder: onReminder,
-                onShuffle: presentShuffle
+                onScroll: presentScroll
             )
             .frame(height: StockDetailPageLayout.bottomBarHeight)
 

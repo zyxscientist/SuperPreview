@@ -1,5 +1,5 @@
 //
-//  StockShuffleDemoView.swift
+//  StockScrollDemoView.swift
 //  SuperPreview
 //
 //  Created by admin on 2024/10/11.
@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct StockShuffleDemoView: View {
+struct StockScrollDemoView: View {
     
     @State private var offset: CGFloat = 0 // 按钮边缘到屏幕边缘(左/右) 之间的距离，初始值为0
     @State private var isDragging = false
@@ -31,7 +31,7 @@ struct StockShuffleDemoView: View {
                 .modifier(CustomFontModifier(size: 32, font: .medium))
                 .foregroundColor(Color(.colorText30))
             
-            Text("Feature: WatchlistStock Shuffle")
+            Text("Feature: WatchlistStock Scroll")
                 .modifier(CustomFontModifier(size: 22, font: .medium))
                 .foregroundColor(Color(.colorText60))
             
@@ -42,7 +42,7 @@ struct StockShuffleDemoView: View {
                 HStack(spacing: 0) {
                     
                     // 左箭头
-                    Image(.shuffleArrowPrevious)
+                    Image(.scrollArrowPrevious)
                         .renderingMode(.template)
                         .resizable()
                         .frame(width: 15, height: 24)
@@ -96,7 +96,7 @@ struct StockShuffleDemoView: View {
                         .padding(.leading, 5)
                     
                     // 右箭头
-                    Image(.shuffleArrowNext)
+                    Image(.scrollArrowNext)
                         .renderingMode(.template)
                         .resizable()
                         .frame(width: 15, height: 24)
@@ -200,5 +200,5 @@ struct StockShuffleDemoView: View {
 
 
 #Preview {
-    StockShuffleDemoView()
+    StockScrollDemoView()
 }

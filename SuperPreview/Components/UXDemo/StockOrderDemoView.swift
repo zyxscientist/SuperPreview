@@ -30,7 +30,7 @@ struct StockOrderDemoView: View {
     @State private var focusedInput: StockOrderFormInputFocus?
     @State private var selectedAdvancedTradingSection: StockOrderAdvancedTradingSection = .trade
     @State private var visitedAdvancedTradingSections: Set<StockOrderAdvancedTradingSection> = [.trade]
-    @State private var advancedTradingShuffleRequestID = 0
+    @State private var advancedTradingScrollRequestID = 0
 
     @EnvironmentObject private var demoLanguageStore: DemoLanguageStore
     @Environment(\.dismiss) private var dismiss
@@ -56,7 +56,7 @@ struct StockOrderDemoView: View {
             } else if onExit != nil {
                 orderPageContent
                     .offset(x: returnDragOffset)
-                    .simultaneousGesture(shuffleReturnGesture)
+                    .simultaneousGesture(scrollReturnGesture)
             } else {
                 orderPageContent
             }
@@ -161,7 +161,7 @@ struct StockOrderDemoView: View {
         .background(Color("color-base-1"))
     }
 
-    private var shuffleReturnGesture: some Gesture {
+    private var scrollReturnGesture: some Gesture {
         DragGesture(minimumDistance: 12)
             .onChanged { value in
                 guard confirmationSide == nil,
@@ -286,7 +286,7 @@ struct StockOrderDemoView: View {
                         for: appliedTradingVersion,
                         bottomSafeArea: bottomSafeArea
                     ).contentBottomInset,
-                    shuffleRequestID: advancedTradingShuffleRequestID,
+                    scrollRequestID: advancedTradingScrollRequestID,
                     onBack: exitAdvancedTrading,
                     onTrade: returnToTrade
                 )
@@ -351,7 +351,7 @@ struct StockOrderDemoView: View {
             case .market:
                 StockDetailBottomActionBar(
                     onTrade: returnToTrade,
-                    onShuffle: { advancedTradingShuffleRequestID &+= 1 }
+                    onScroll: { advancedTradingScrollRequestID &+= 1 }
                 )
                 .frame(height: StockTradingBottomLayout.actionBarHeight)
                 .padding(.bottom, StockTradingBottomLayout.homeIndicatorAreaHeight)

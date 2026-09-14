@@ -105,7 +105,7 @@ enum StockDetailNavbarTrailingAction: Hashable {
 
 enum StockDetailNavbarPresentation: Hashable {
     case standard
-    case shuffle
+    case scroll
 }
 
 /// A stock-detail navigation bar with a scroll-driven quote reveal.
@@ -153,8 +153,8 @@ struct StockDetailNavbar: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            if presentation == .shuffle {
-                shuffleTitleContent
+            if presentation == .scroll {
+                scrollTitleContent
             } else {
                 HStack(spacing: StockDetailNavbarLayout.leadingTitleSpacing) {
                     Button(action: onBack) {
@@ -190,11 +190,11 @@ struct StockDetailNavbar: View {
         .padding(.horizontal, StockDetailNavbarLayout.horizontalPadding)
         .frame(
             maxWidth: .infinity,
-            minHeight: presentation == .shuffle
-                ? StockDetailNavbarLayout.shuffleHeight
+            minHeight: presentation == .scroll
+                ? StockDetailNavbarLayout.scrollHeight
                 : StockDetailNavbarLayout.height,
-            maxHeight: presentation == .shuffle
-                ? StockDetailNavbarLayout.shuffleHeight
+            maxHeight: presentation == .scroll
+                ? StockDetailNavbarLayout.scrollHeight
                 : StockDetailNavbarLayout.height
         )
         .background(Color("color-base-1"))
@@ -202,16 +202,16 @@ struct StockDetailNavbar: View {
         .accessibilityIdentifier("stockDetail.navbar")
     }
 
-    private var shuffleTitleContent: some View {
-        HStack(spacing: StockDetailNavbarLayout.shuffleTitleSpacing) {
+    private var scrollTitleContent: some View {
+        HStack(spacing: StockDetailNavbarLayout.scrollTitleSpacing) {
             Text(symbol)
             Text(displayName)
         }
         .modifier(
             CustomFontModifier(
-                size: StockDetailNavbarLayout.shuffleTitleFontSize,
+                size: StockDetailNavbarLayout.scrollTitleFontSize,
                 font: .bold,
-                lineHeight: StockDetailNavbarLayout.shuffleTitleLineHeight
+                lineHeight: StockDetailNavbarLayout.scrollTitleLineHeight
             )
         )
         .foregroundColor(Color("color-text-30"))
@@ -395,10 +395,10 @@ private enum StockDetailNavbarLayout {
     static let quoteRestingOffset: CGFloat = 42
     static let titleLift: CGFloat = 8
     static let quoteLift: CGFloat = 16
-    static let shuffleHeight: CGFloat = 52
-    static let shuffleTitleSpacing: CGFloat = 4
-    static let shuffleTitleFontSize: CGFloat = 20
-    static let shuffleTitleLineHeight: CGFloat = 32
+    static let scrollHeight: CGFloat = 52
+    static let scrollTitleSpacing: CGFloat = 4
+    static let scrollTitleFontSize: CGFloat = 20
+    static let scrollTitleLineHeight: CGFloat = 32
     static let quoteGroupSpacing: CGFloat = 8
     static let quoteValueSpacing: CGFloat = 4
     static let quoteTrendIconSize: CGFloat = 12
