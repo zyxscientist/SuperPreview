@@ -28,6 +28,7 @@ struct WatchlistRedesignDemoView: View {
     @State private var selectedMainTab: AppTab = .tab1
     @EnvironmentObject private var demoLanguageStore: DemoLanguageStore
     @EnvironmentObject private var demoAppearanceStore: DemoAppearanceStore
+    @Environment(\.demoLanguage) private var language
     @Environment(\.scenePhase) private var scenePhase
 
     init(
@@ -51,7 +52,8 @@ struct WatchlistRedesignDemoView: View {
                     tabs: viewModel.tabs,
                     selectedTab: $viewModel.selectedTab,
                     fontSize: tabBarFontSize,
-                    isReducedLiquidGlassUsageEnabled: demoAppearanceStore.isReducedLiquidGlassUsageEnabled
+                    isReducedLiquidGlassUsageEnabled: demoAppearanceStore.isReducedLiquidGlassUsageEnabled,
+                    titleProvider: language.watchlistTabTitle
                 )
                 WatchlistRedesignTableHeader(isMiniKVisible: $isMiniKVisible)
 
@@ -460,8 +462,31 @@ struct WatchlistRedesignTabs: View {
     @Binding var selectedTab: String
     let fontSize: CGFloat
     let isReducedLiquidGlassUsageEnabled: Bool
-    @Environment(\.demoLanguage) private var language
+    let titleProvider: (String) -> String
+    let accessibilityPrefix: String
+    let showsSortMenu: Bool
+    let leadingPadding: CGFloat
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    init(
+        tabs: [String],
+        selectedTab: Binding<String>,
+        fontSize: CGFloat,
+        isReducedLiquidGlassUsageEnabled: Bool,
+        titleProvider: @escaping (String) -> String = { $0 },
+        accessibilityPrefix: String = "watchlist",
+        showsSortMenu: Bool = true,
+        leadingPadding: CGFloat = 10
+    ) {
+        self.tabs = tabs
+        self._selectedTab = selectedTab
+        self.fontSize = fontSize
+        self.isReducedLiquidGlassUsageEnabled = isReducedLiquidGlassUsageEnabled
+        self.titleProvider = titleProvider
+        self.accessibilityPrefix = accessibilityPrefix
+        self.showsSortMenu = showsSortMenu
+        self.leadingPadding = leadingPadding
+    }
 
     private var selectionAnimation: Animation? {
         reduceMotion ? nil : .smooth(duration: 0.32, extraBounce: 0)
@@ -471,17 +496,20 @@ struct WatchlistRedesignTabs: View {
         ZStack(alignment: .topTrailing) {
             ScrollView(.horizontal, showsIndicators: false) {
                 tabButtons
-                    .padding(.leading, 10)
-                    .padding(.trailing, 48)
+                    .padding(.leading, leadingPadding)
+                    .padding(.trailing, showsSortMenu ? 48 : 16)
                     .padding(.vertical, 8)
                     .animation(selectionAnimation, value: selectedTab)
             }
 
-            sortMenu
+            if showsSortMenu {
+                sortMenu
+            }
         }
         .frame(maxWidth: .infinity)
         .frame(height: 48, alignment: .top)
         .background(Color("color-base-1"))
+        .accessibilityIdentifier("\(accessibilityPrefix).headerTabs")
     }
 
     private var sortMenu: some View {
@@ -523,7 +551,7 @@ struct WatchlistRedesignTabs: View {
                     guard selectedTab != tab else { return }
                     selectedTab = tab
                 } label: {
-                    Text(language.watchlistTabTitle(tab))
+                    Text(titleProvider(tab))
                         .modifier(CustomFontModifier(size: fontSize, font: isSelected ? .bold : .regular, lineHeight: 24))
                         .foregroundColor(
                             isSelected
@@ -543,7 +571,7 @@ struct WatchlistRedesignTabs: View {
                         }
                 }
                 .accessibilityAddTraits(isSelected ? .isSelected : [])
-                .accessibilityIdentifier("watchlist.tab.\(tab)")
+                .accessibilityIdentifier("\(accessibilityPrefix).tab.\(tab)")
             }
         }
         .backgroundPreferenceValue(WatchlistRedesignTabFramePreferenceKey.self) { anchors in

@@ -16,6 +16,7 @@ struct MainView: View {
     @StateObject private var demoAppearanceStore = DemoAppearanceStore()
     @State private var isShowingWatchlistDebugPanel = false
     @State private var isShowingTradeDebugPanel = false
+    @State private var isShowingMarketDebugPanel = false
     private let isPreview = PreviewRuntime.isRunning || PreviewRuntime.isUITesting
     
     @ViewBuilder
@@ -50,7 +51,7 @@ struct MainView: View {
                         )
                     }
                     tabLayer(.tab3) {
-                        LineChartView()
+                        MarketView(debugPresentation: $isShowingMarketDebugPanel)
                     }
                     tabLayer(.tab4) {
                         WealthView()
@@ -77,13 +78,20 @@ struct MainView: View {
                 }
                 
                 .navigationBarColor(backgroundColor: UIColor(SwiftUI.Color("color-base-1")), titleColor: UIColor(SwiftUI.Color("color-text-30")))
-                .navigationBarTitle(navigationBarTitle(selectedTab: self.selectedTab), displayMode: .inline)
+                .navigationBarTitle(
+                    navigationBarTitle(
+                        selectedTab: self.selectedTab,
+                        language: demoLanguageStore.language
+                    ),
+                    displayMode: .inline
+                )
                 .modifier(
                     MainViewToolbarModifier(
                         selectedTab: selectedTab,
                         language: demoLanguageStore.language,
                         watchlistDebugPresentation: $isShowingWatchlistDebugPanel,
-                        tradeDebugPresentation: $isShowingTradeDebugPanel
+                        tradeDebugPresentation: $isShowingTradeDebugPanel,
+                        marketDebugPresentation: $isShowingMarketDebugPanel
                     )
                 )
             } else {
@@ -115,14 +123,14 @@ struct MainView: View {
             .zIndex(selectedTab == tab ? 1 : 0)
     }
 
-    func navigationBarTitle(selectedTab :AppTab) -> String {
+    func navigationBarTitle(selectedTab: AppTab, language: DemoLanguage) -> String {
         switch selectedTab {
-        case .tab1: return "自选"
-        case .tab2: return "交易"
-        case .tab3: return "市场"
-        case .tab4: return "理财"
-        case .tab5: return "资讯"
-        case .tab6: return "我的"
+        case .tab1: return language.text(.watchlist)
+        case .tab2: return language.text(.trade)
+        case .tab3: return language.text(.markets)
+        case .tab4: return language.text(.wealth)
+        case .tab5: return language.text(.news)
+        case .tab6: return language.text(.me)
         }
     }
 }
@@ -132,22 +140,23 @@ private struct MainViewToolbarModifier: ViewModifier {
     let language: DemoLanguage
     @Binding var watchlistDebugPresentation: Bool
     @Binding var tradeDebugPresentation: Bool
+    @Binding var marketDebugPresentation: Bool
 
     func body(content: Content) -> some View {
         // Keep the content (including UITabBar and all tab pages) at the same
         // structural identity when only the trailing toolbar item changes.
         content.toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
-                if selectedTab == .tab1 || selectedTab == .tab2 {
+                if selectedTab == .tab1 || selectedTab == .tab2 || selectedTab == .tab3 {
                     debugButton(
-                        identifier: selectedTab == .tab1
-                            ? "watchlist.debug.open"
-                            : "trade.debug.open",
+                        identifier: debugIdentifier,
                         action: {
                             if selectedTab == .tab1 {
                                 watchlistDebugPresentation = true
-                            } else {
+                            } else if selectedTab == .tab2 {
                                 tradeDebugPresentation = true
+                            } else {
+                                marketDebugPresentation = true
                             }
                         }
                     )
@@ -155,6 +164,15 @@ private struct MainViewToolbarModifier: ViewModifier {
                     Image("search-Right")
                 }
             }
+        }
+    }
+
+    private var debugIdentifier: String {
+        switch selectedTab {
+        case .tab1: return "watchlist.debug.open"
+        case .tab2: return "trade.debug.open"
+        case .tab3: return "market.debug.open"
+        default: return "main.debug.open"
         }
     }
 

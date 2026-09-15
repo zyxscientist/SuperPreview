@@ -99,6 +99,7 @@ enum DemoCopyKey {
     case simulateQuoteUpdates, quoteUpdatesOn, quoteUpdatesOff, updateSpeed
     case slow, medium, fast, mixed
     case all, hkStocks, chinaAShares, usStocks, etfs, custom
+    case marketConnect, rwa
     case name, price, enterPrice, decreasePrice, increasePrice, priceAction
     case share
     case quantity, enterQuantity, minimumQuantity, decreaseQuantity, increaseQuantity
@@ -228,6 +229,17 @@ extension DemoLanguage {
         return text(key)
     }
 
+    func marketTabTitle(_ internalTitle: String) -> String {
+        switch internalTitle {
+        case "港股": return text(.hkStocks)
+        case "美股": return text(.usStocks)
+        case "沪深港通": return text(.marketConnect)
+        case "加密货币": return text(.cryptocurrency)
+        case "RWA": return text(.rwa)
+        default: return internalTitle
+        }
+    }
+
     func watchlistName(symbol: String, fallback: String) -> String {
         let localizationID = DemoCopy.watchlistNameIDs[symbol]
         return localizationID.map { securityName(id: $0, fallback: fallback) } ?? fallback
@@ -282,6 +294,8 @@ private enum DemoCopy {
         .usStocks: ("美股", "美股", "US"),
         .etfs: ("ETFs", "ETFs", "ETFs"),
         .custom: ("自定义", "自訂", "Custom"),
+        .marketConnect: ("沪深港通", "滬深港通", "Stock Connect"),
+        .rwa: ("RWA", "RWA", "RWA"),
         .name: ("名称", "名稱", "Name"),
         .price: ("价格", "價格", "Price"),
         .share: ("分享", "分享", "Share"),
@@ -459,7 +473,7 @@ private enum DemoCopy {
         .stocks: ("股票", "股票", "Stocks"),
         .funds: ("基金", "基金", "Funds"),
         .virtualAssets: ("虚拟资产", "虛擬資產", "Virtual Assets"),
-        .cryptocurrency: ("加密货币", "加密貨幣", "Cryptocurrency"),
+        .cryptocurrency: ("加密货币", "加密貨幣", "Crypto"),
         .positions: ("持仓", "持倉", "Positions"),
         .positionDetails: ("持仓明细", "持倉明細", "Position Details"),
         .totalAssets: ("总资产", "總資產", "Total Assets"),
