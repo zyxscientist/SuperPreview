@@ -151,6 +151,11 @@
 		C26F08D029BC5D4300945477 /* MarketSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C26F08CF29BC5D4300945477 /* MarketSheetView.swift */; };
 		C26F08D229BC5F3B00945477 /* MarketSheetViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = C26F08D129BC5F3B00945477 /* MarketSheetViewHeader.swift */; };
 		C28CF43926ED9E8D00F75B27 /* NewChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C28CF43826ED9E8D00F75B27 /* NewChartView.swift */; };
+		C0BE00112F86000000ABC001 /* CobeMetalRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0BE00012F86000000ABC001 /* CobeMetalRenderer.swift */; };
+		C0BE00122F86000000ABC001 /* CobeMetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0BE00022F86000000ABC001 /* CobeMetalView.swift */; };
+		C0BE00132F86000000ABC001 /* CobeMetalDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0BE00032F86000000ABC001 /* CobeMetalDemoView.swift */; };
+		C0BE00142F86000000ABC001 /* CobeMetalShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = C0BE00042F86000000ABC001 /* CobeMetalShaders.metal */; };
+		C0BE00152F86000000ABC001 /* cobe-map.png in Resources */ = {isa = PBXBuildFile; fileRef = C0BE00052F86000000ABC001 /* cobe-map.png */; };
 		C2A0247924FB5315004930F0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2A0247824FB5315004930F0 /* AppDelegate.swift */; };
 		C2A0247B24FB5315004930F0 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2A0247A24FB5315004930F0 /* SceneDelegate.swift */; };
 		C2A0247D24FB5315004930F0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2A0247C24FB5315004930F0 /* ContentView.swift */; };
@@ -341,6 +346,11 @@
 		C2330E572851DA7A00382AE1 /* PlusJakartaSans-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PlusJakartaSans-Medium.ttf"; sourceTree = "<group>"; };
 		C2330E582851DA7A00382AE1 /* PlusJakartaSans-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PlusJakartaSans-SemiBold.ttf"; sourceTree = "<group>"; };
 		C2330E592851DA7A00382AE1 /* PlusJakartaSans-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PlusJakartaSans-Bold.ttf"; sourceTree = "<group>"; };
+		C0BE00012F86000000ABC001 /* CobeMetalRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CobeMetalRenderer.swift; sourceTree = "<group>"; };
+		C0BE00022F86000000ABC001 /* CobeMetalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CobeMetalView.swift; sourceTree = "<group>"; };
+		C0BE00032F86000000ABC001 /* CobeMetalDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CobeMetalDemoView.swift; sourceTree = "<group>"; };
+		C0BE00042F86000000ABC001 /* CobeMetalShaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CobeMetalShaders.metal; sourceTree = "<group>"; };
+		C0BE00052F86000000ABC001 /* cobe-map.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cobe-map.png; sourceTree = "<group>"; };
 		C2405EBB2851F41100A30210 /* WatchlistStocksVariant4.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchlistStocksVariant4.swift; sourceTree = "<group>"; };
 		C2405EBD2851F4E500A30210 /* WatchlistStocksVariant5.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchlistStocksVariant5.swift; sourceTree = "<group>"; };
 		C2405EBF2851F89600A30210 /* MiSans-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "MiSans-Medium.ttf"; sourceTree = "<group>"; };
@@ -774,6 +784,11 @@
 				84CF754029779A06006728F4 /* StockSearchView.swift */,
 				8461BFFE2CC0E4400014ED60 /* MacroDataCenterView.swift */,
 				C2330E452851CB9100382AE1 /* CompareView.swift */,
+				C0BE00032F86000000ABC001 /* CobeMetalDemoView.swift */,
+				C0BE00022F86000000ABC001 /* CobeMetalView.swift */,
+				C0BE00012F86000000ABC001 /* CobeMetalRenderer.swift */,
+				C0BE00042F86000000ABC001 /* CobeMetalShaders.metal */,
+				C0BE00052F86000000ABC001 /* cobe-map.png */,
 				84008BF12CAA709D0094E05E /* IntradayCardsView.swift */,
 				C2FFC802252216F000B79A40 /* MainView.swift */,
 				C2A0247E24FB5319004930F0 /* Assets.xcassets */,
@@ -958,6 +973,7 @@
 				C2330E532851DA7A00382AE1 /* PlusJakartaSans-Medium.ttf in Resources */,
 				C2330E542851DA7A00382AE1 /* PlusJakartaSans-SemiBold.ttf in Resources */,
 				C2330E552851DA7A00382AE1 /* PlusJakartaSans-Bold.ttf in Resources */,
+				C0BE00152F86000000ABC001 /* cobe-map.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1129,6 +1145,10 @@
 				C2A0247B24FB5315004930F0 /* SceneDelegate.swift in Sources */,
 				84BDAEC22CB655CA001588E7 /* TransactionDetailsModels.swift in Sources */,
 				C2330E462851CB9100382AE1 /* CompareView.swift in Sources */,
+				C0BE00112F86000000ABC001 /* CobeMetalRenderer.swift in Sources */,
+				C0BE00122F86000000ABC001 /* CobeMetalView.swift in Sources */,
+				C0BE00132F86000000ABC001 /* CobeMetalDemoView.swift in Sources */,
+				C0BE00142F86000000ABC001 /* CobeMetalShaders.metal in Sources */,
 				C2B67D4A26BF75DC00D52963 /* WealthView.swift in Sources */,
 				841D0E1D2D2D1D2D00BAD22D /* InAppNotificationView.swift in Sources */,
 				84BDAEC42CB6566A001588E7 /* TransactionViewModel.swift in Sources */,

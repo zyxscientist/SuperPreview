@@ -400,6 +400,20 @@ struct CompareTab5View: View {
                     }
                 }
             )
+
+            NavigationLink(
+                destination: CobeMetalDemoView(),
+                label: {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("COBE Metal 点阵地球")
+                            .font(.system(size: 16, weight: .semibold, design: .default))
+                        Text("Native Metal · WebGL parity demo")
+                            .foregroundColor(.gray)
+                            .font(.system(size: 13, weight: .regular, design: .monospaced))
+                    }
+                }
+            )
+            .accessibilityIdentifier("compare.cobeMetalGlobe")
             
             // 结束
             
