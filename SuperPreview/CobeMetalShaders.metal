@@ -15,6 +15,7 @@ struct CobeGlobeUniforms {
     float dots;
     float scale;
     float4 baseColor;
+    float4 landColor;
     float4 glowColor;
     float4 renderParams;
     float4 mapSettings;
@@ -40,6 +41,7 @@ struct CobeArcUniforms {
 
 struct CobeMarkerInstance {
     float4 positionAndSize;
+    float2 screenOffset;
     float4 colorAndHasColor;
 };
 
@@ -233,12 +235,27 @@ fragment float4 cobeGlobeFragment(
             (globeTheta * 0.5) / cobePi,
             -(globePhi / cobePi + 0.5)
         );
-        float mapColor = max(
-            mapTexture.sample(mapSampler, mapUV).r,
-            uniforms.mapSettings.x
+        float mapTextureColor = mapTexture.sample(mapSampler, mapUV).r;
+        float mapColor = max(mapTextureColor, uniforms.mapSettings.x);
+        float3 nearestViewPoint = cobeRotate(
+            lattice.point,
+            uniforms.rotation.x,
+            uniforms.rotation.y
+        );
+        float aspect = uniforms.resolution.x / max(uniforms.resolution.y, 1.0);
+        float2 latticeDelta = (spherePoint.xy - nearestViewPoint.xy)
+            * float2(1.0 / aspect, 1.0);
+        float dotDistance = length(latticeDelta);
+        // Keep a filled circular core and reserve only the outer edge for
+        // anti-aliasing. The radius is unchanged from the previous square
+        // dot, so this only changes the shape of the land points.
+        float dotCoverage = 1.0 - smoothstep(
+            0.006,
+            0.008,
+            dotDistance
         );
         float dotSample = mapColor
-            * smoothstep(0.008, 0.0, lattice.distance)
+            * dotCoverage
             * pow(max(dotNL, 0.0), uniforms.renderParams.y)
             * uniforms.renderParams.x;
 
@@ -247,7 +264,15 @@ fragment float4 cobeGlobeFragment(
             dotSample,
             uniforms.renderParams.z
         ) + 0.1;
-        float3 globeColor = uniforms.baseColor.xyz * colorFactor
+        // The map texture is a land mask. Keep its ambient floor behavior for
+        // the original COBE shading, but use the dynamic text2 value
+        // for the actual land dots instead of tinting them with baseColor.
+        float landDotMask = step(0.5, mapTextureColor) * dotCoverage;
+        float3 globeColor = mix(
+                uniforms.baseColor.xyz * colorFactor,
+                uniforms.landColor.xyz,
+                landDotMask
+            )
             + pow(1.0 - dotNL, 4.0) * uniforms.glowColor.xyz;
         color = float4(globeColor, 1.0) * (1.0 + uniforms.renderParams.w) * 0.5;
 
@@ -306,6 +331,7 @@ vertex CobeMarkerVertexOut cobeMarkerVertex(
         + uniforms.offset * float2(1.0, -1.0)
         * uniforms.scale
         / uniforms.resolution;
+    screenPosition += marker.screenOffset * float2(2.0, -2.0);
     output.position = float4(screenPosition, 0.0, 1.0);
     return output;
 }

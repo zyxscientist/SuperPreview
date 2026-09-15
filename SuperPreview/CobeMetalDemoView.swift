@@ -6,7 +6,45 @@
 import Foundation
 import SwiftUI
 
+private struct CobeRotationTransition: Equatable {
+    let id: UUID
+    let startPhi: Double
+    let endPhi: Double
+    let startTheta: Double
+    let endTheta: Double
+    let startedAt: Date
+    let duration: TimeInterval
+
+    init(
+        startPhi: Double,
+        endPhi: Double,
+        startTheta: Double,
+        endTheta: Double,
+        startedAt: Date,
+        duration: TimeInterval = 0.65
+    ) {
+        self.id = UUID()
+        self.startPhi = startPhi
+        self.endPhi = endPhi
+        self.startTheta = startTheta
+        self.endTheta = endTheta
+        self.startedAt = startedAt
+        self.duration = duration
+    }
+
+    func rotation(at date: Date) -> SIMD2<Double> {
+        let progress = min(max(date.timeIntervalSince(startedAt) / duration, 0), 1)
+        let easedProgress = progress * progress * (3 - 2 * progress)
+
+        return SIMD2(
+            startPhi + (endPhi - startPhi) * easedProgress,
+            startTheta + (endTheta - startTheta) * easedProgress
+        )
+    }
+}
+
 struct CobeMetalDemoView: View {
+    @Environment(\.colorScheme) private var colorScheme
     @State private var phi = 0.0
     @State private var theta = 0.0
     @State private var dark = 0.0
@@ -14,7 +52,7 @@ struct CobeMetalDemoView: View {
     @State private var mapSamples = 16_000.0
     @State private var mapBrightness = 6.0
     @State private var mapBaseBrightness = 0.0
-    @State private var scale = 1.0
+    @State private var scale = 1.90
     @State private var offsetX = 0.0
     @State private var offsetY = 0.0
     @State private var opacity = 1.0
@@ -25,9 +63,11 @@ struct CobeMetalDemoView: View {
     @State private var showLabels = true
     @State private var autoRotate = true
     @State private var markerPreset: CobeMarkerPreset = .worldCities
-    @State private var theme: CobeMetalTheme = .blue
+    private let theme: CobeMetalTheme = .monochrome
     @State private var autoRotationBase = 0.0
     @State private var autoRotationStartedAt = Date()
+    @State private var focusedMarkerID: String?
+    @State private var focusTransition: CobeRotationTransition?
 
     var body: some View {
         let initialConfiguration = makeConfiguration(phi: phi)
@@ -37,23 +77,37 @@ struct CobeMetalDemoView: View {
                 CobeMetalGlobePanel(
                     initialConfiguration: initialConfiguration,
                     showLabels: showLabels,
-                    markerColor: theme.markerColor,
+                    markerColor: theme.markerColor(for: colorScheme),
                     phi: $phi,
                     theta: $theta,
                     autoRotate: $autoRotate,
                     autoRotationBase: $autoRotationBase,
                     autoRotationStartedAt: $autoRotationStartedAt,
+                    focusTransition: $focusTransition,
                     configurationProvider: { date, _ in
-                        makeConfiguration(phi: animatedPhi(at: date))
+                        let rotation = rotation(at: date)
+                        return makeConfiguration(phi: rotation.x, theta: rotation.y)
                     }
                 )
+                CobeRotationAnglePanel(
+                    isAnimating: autoRotate || focusTransition != nil,
+                    rotationProvider: { date in rotation(at: date) }
+                )
+                .padding(.horizontal, 16)
+                CobeLocationFocusPanel(
+                    markers: markerPreset.markers,
+                    focusedMarkerID: focusedMarkerID,
+                    onSelect: focus(on:)
+                )
+                .padding(.horizontal, 16)
                 configurationPanel
+                    .padding(.horizontal, 16)
                 implementationPanel
+                    .padding(.horizontal, 16)
             }
-            .padding(.horizontal, 16)
             .padding(.vertical, 12)
         }
-        .background(Color("color-base-0"))
+        .background(Color("color-base-1"))
         .navigationTitle("COBE Metal")
         .navigationBarTitleDisplayMode(.inline)
         .accessibilityIdentifier("cobe.metal.page")
@@ -61,6 +115,60 @@ struct CobeMetalDemoView: View {
             autoRotationStartedAt = Date()
             autoRotationBase = phi
         }
+        .onChange(of: markerPreset) { _, _ in
+            focusedMarkerID = nil
+            focusTransition = nil
+        }
+    }
+
+    private func focus(on marker: CobeMetalMarker) {
+        let now = Date()
+        let currentRotation = rotation(at: now)
+        let targetRotation = CobeProjection.rotationToFace(marker.location)
+        let targetPhi = currentRotation.x + shortestAngleDelta(
+            from: currentRotation.x,
+            to: Double(targetRotation.x)
+        )
+        let targetTheta = Double(targetRotation.y)
+        let transition = CobeRotationTransition(
+            startPhi: currentRotation.x,
+            endPhi: targetPhi,
+            startTheta: currentRotation.y,
+            endTheta: targetTheta,
+            startedAt: now
+        )
+
+        // Store the final values immediately, while the display-link provider
+        // renders the explicit start-to-end transition for every frame.
+        phi = targetPhi
+        theta = targetTheta
+        autoRotationBase = targetPhi
+        autoRotationStartedAt = now
+        focusTransition = transition
+        if autoRotate {
+            autoRotate = false
+        }
+        focusedMarkerID = marker.id
+
+        let transitionID = transition.id
+        DispatchQueue.main.asyncAfter(deadline: .now() + transition.duration) {
+            guard focusTransition?.id == transitionID else { return }
+            focusTransition = nil
+        }
+    }
+
+    private func rotation(at date: Date) -> SIMD2<Double> {
+        if let focusTransition {
+            return focusTransition.rotation(at: date)
+        }
+        return SIMD2(animatedPhi(at: date), theta)
+    }
+
+    private func shortestAngleDelta(from current: Double, to target: Double) -> Double {
+        let tau = Double.pi * 2
+        return (target - current + Double.pi)
+            .truncatingRemainder(dividingBy: tau)
+            - Double.pi
     }
 
 private struct CobeMetalGlobePanel: View {
@@ -73,6 +181,7 @@ private struct CobeMetalGlobePanel: View {
     @Binding var autoRotate: Bool
     @Binding var autoRotationBase: Double
     @Binding var autoRotationStartedAt: Date
+    @Binding var focusTransition: CobeRotationTransition?
 
     let configurationProvider: (Date, CGSize) -> CobeMetalConfiguration
 
@@ -131,21 +240,13 @@ private struct CobeMetalGlobePanel: View {
                                 CobeMarkerAnchorLabel(
                                     text: label,
                                     anchor: projected,
-                                    in: geometry.size
+                                    in: geometry.size,
+                                    labelAlignment: marker.labelAlignment,
+                                    labelOffset: marker.labelOffset
                                 )
                             }
                         }
 
-                        ForEach(configuration.arcs) { arc in
-                            if let projected = anchors.arcs[arc.id],
-                               let label = arc.label {
-                                CobeArcAnchorLabel(
-                                    text: label,
-                                    anchor: projected,
-                                    in: geometry.size
-                                )
-                            }
-                        }
                     }
 
                     VStack {
@@ -174,8 +275,9 @@ private struct CobeMetalGlobePanel: View {
                     DragGesture(minimumDistance: 0)
                         .onChanged { gesture in
                             if !isDragging {
+                                focusTransition = nil
                                 dragStartPhi = Double(configuration.phi)
-                                dragStartTheta = theta
+                                dragStartTheta = Double(configuration.theta)
                                 isDragging = true
                                 if autoRotate {
                                     autoRotationBase = Double(configuration.phi)
@@ -213,12 +315,157 @@ private struct CobeMetalGlobePanel: View {
             .padding(.horizontal, 16)
             .padding(.bottom, 14)
         }
+    }
+}
+
+private struct CobeRotationAnglePanel: View {
+    let isAnimating: Bool
+    let rotationProvider: (Date) -> SIMD2<Double>
+
+    var body: some View {
+        TimelineView(
+            .animation(
+                minimumInterval: 1.0 / 30.0,
+                paused: !isAnimating
+            )
+        ) { timeline in
+            let rotation = rotationProvider(timeline.date)
+
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(alignment: .firstTextBaseline, spacing: 8) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("当前转动角度")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundColor(Color("color-text-30"))
+                        Text("实时读取当前渲染中的 phi / theta")
+                            .font(.system(size: 12, weight: .medium, design: .monospaced))
+                            .foregroundColor(Color("color-text-60"))
+                    }
+
+                    Spacer(minLength: 0)
+
+                    Text(isAnimating ? "LIVE" : "PAUSED")
+                        .font(.system(size: 10, weight: .bold, design: .monospaced))
+                        .foregroundColor(isAnimating ? Color("color-brand-blue") : Color("color-text-60"))
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 5)
+                        .background(
+                            (isAnimating ? Color("color-brand-blue") : Color("color-text-60"))
+                                .opacity(0.12)
+                        )
+                        .clipShape(Capsule())
+                }
+
+                HStack(spacing: 10) {
+                    rotationValue(title: "phi / 水平旋转", radians: rotation.x)
+                    rotationValue(title: "theta / 垂直旋转", radians: rotation.y)
+                }
+            }
+            .padding(16)
+            .background(Color("color-base-1"))
+            .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .stroke(Color("color-text-90").opacity(0.45), lineWidth: 0.5)
+            )
+        }
+        .accessibilityIdentifier("cobe.rotationAnglePanel")
+    }
+
+    private func rotationValue(title: String, radians: Double) -> some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Text(title)
+                .font(.system(size: 10, weight: .medium, design: .monospaced))
+                .foregroundColor(Color("color-text-60"))
+            Text(String(format: "%+.3f rad", radians))
+                .font(.system(size: 16, weight: .semibold, design: .monospaced))
+                .foregroundColor(Color("color-text-30"))
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+            Text(String(format: "%+.1f°", radians * 180.0 / Double.pi))
+                .font(.system(size: 11, weight: .medium, design: .monospaced))
+                .foregroundColor(Color("color-text-60"))
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(10)
+        .background(Color("color-base-0").opacity(0.55))
+        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+    }
+}
+
+private struct CobeLocationFocusPanel: View {
+    let markers: [CobeMetalMarker]
+    let focusedMarkerID: String?
+    let onSelect: (CobeMetalMarker) -> Void
+
+    private let columns = [
+        GridItem(.adaptive(minimum: 100), spacing: 8)
+    ]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("快速定位")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundColor(Color("color-text-30"))
+                Text("点击城市，观看地球平滑转到正面")
+                    .font(.system(size: 12, weight: .medium, design: .monospaced))
+                    .foregroundColor(Color("color-text-60"))
+            }
+
+            LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
+                ForEach(markers) { marker in
+                    if let label = marker.label {
+                        let isFocused = focusedMarkerID == marker.id
+
+                        Button {
+                            onSelect(marker)
+                        } label: {
+                            HStack(spacing: 6) {
+                                Circle()
+                                    .fill(Color("color-brand-blue"))
+                                    .frame(width: 6, height: 6)
+                                Text(label)
+                                    .font(.system(size: 10, weight: isFocused ? .bold : .medium, design: .monospaced))
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.72)
+                                    .foregroundColor(isFocused ? Color("color-text-30") : Color("color-text-60"))
+                                Spacer(minLength: 0)
+                            }
+                            .padding(.horizontal, 9)
+                            .padding(.vertical, 8)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(
+                                isFocused
+                                    ? Color("color-brand-blue").opacity(0.14)
+                                    : Color("color-base-0").opacity(0.55)
+                            )
+                            .clipShape(RoundedRectangle(cornerRadius: 9, style: .continuous))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 9, style: .continuous)
+                                    .stroke(
+                                        isFocused
+                                            ? Color("color-brand-blue").opacity(0.35)
+                                            : Color("color-text-90").opacity(0.35),
+                                        lineWidth: 0.5
+                                    )
+                            )
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityIdentifier("cobe.focus.\(marker.id)")
+                        .accessibilityLabel("定位到 \(label)")
+                    }
+                }
+            }
+        }
+        .padding(16)
         .background(Color("color-base-1"))
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 20, style: .continuous)
                 .stroke(Color("color-text-90").opacity(0.45), lineWidth: 0.5)
         )
+        .accessibilityIdentifier("cobe.locationFocusPanel")
     }
 }
 
@@ -231,17 +478,27 @@ private struct CobeMarkerAnchorLabel: View {
     let text: String
     let anchor: CobeProjectedPoint
     let size: CGSize
+    let labelAlignment: CobeMetalMarkerLabelAlignment
+    let labelOffset: SIMD2<Float>
 
-    init(text: String, anchor: CobeProjectedPoint, in size: CGSize) {
+    init(
+        text: String,
+        anchor: CobeProjectedPoint,
+        in size: CGSize,
+        labelAlignment: CobeMetalMarkerLabelAlignment,
+        labelOffset: SIMD2<Float>
+    ) {
         self.text = text
         self.anchor = anchor
         self.size = size
+        self.labelAlignment = labelAlignment
+        self.labelOffset = labelOffset
     }
 
     var body: some View {
         Color.clear
             .frame(width: 1, height: 1)
-            .overlay(alignment: .bottom) {
+            .overlay(alignment: overlayAlignment) {
                 Text(text)
                     .fixedSize()
                     .font(.system(size: 10, weight: .semibold, design: .monospaced))
@@ -256,40 +513,21 @@ private struct CobeMarkerAnchorLabel: View {
                     )
             }
             .position(anchor.point(in: size))
+            .offset(x: CGFloat(labelOffset.x), y: CGFloat(labelOffset.y))
             .opacity(anchor.visible ? 1 : 0)
             .zIndex(2)
             .allowsHitTesting(false)
     }
-}
 
-private struct CobeArcAnchorLabel: View {
-    let text: String
-    let anchor: CobeProjectedPoint
-    let size: CGSize
-
-    init(text: String, anchor: CobeProjectedPoint, in size: CGSize) {
-        self.text = text
-        self.anchor = anchor
-        self.size = size
-    }
-
-    var body: some View {
-        Color.clear
-            .frame(width: 1, height: 1)
-            .overlay(alignment: .bottom) {
-                Text(text)
-                    .fixedSize()
-                    .font(.system(size: 9, weight: .medium, design: .monospaced))
-                    .foregroundColor(Color("color-brand-blue"))
-                    .padding(.horizontal, 5)
-                    .padding(.vertical, 3)
-                    .background(Color("color-base-1").opacity(0.84))
-                    .clipShape(Capsule())
-            }
-            .position(anchor.point(in: size))
-            .opacity(anchor.visible ? 1 : 0)
-            .zIndex(2)
-            .allowsHitTesting(false)
+    private var overlayAlignment: Alignment {
+        switch labelAlignment {
+        case .center:
+            return .bottom
+        case .leading:
+            return .bottomLeading
+        case .trailing:
+            return .bottomTrailing
+        }
     }
 }
 
@@ -317,25 +555,13 @@ private struct CobeArcAnchorLabel: View {
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(Color("color-text-30"))
                 Spacer()
-                ForEach(CobeMetalTheme.allCases) { item in
-                    Button {
-                        theme = item
-                    } label: {
-                        HStack(spacing: 5) {
-                            Circle()
-                                .fill(Color(red: Double(item.markerColor.x), green: Double(item.markerColor.y), blue: Double(item.markerColor.z)))
-                                .frame(width: 9, height: 9)
-                            Text(item.title)
-                                .font(.system(size: 11, weight: theme == item ? .bold : .medium, design: .monospaced))
-                        }
-                        .foregroundColor(theme == item ? Color("color-text-30") : Color("color-text-60"))
-                        .padding(.horizontal, 9)
-                        .padding(.vertical, 7)
-                        .background(theme == item ? Color("color-brand-blue").opacity(0.13) : Color.clear)
-                        .clipShape(Capsule())
-                    }
-                    .buttonStyle(.plain)
-                }
+                Text(theme.title)
+                    .font(.system(size: 11, weight: .bold, design: .monospaced))
+                    .foregroundColor(Color("color-text-30"))
+                    .padding(.horizontal, 9)
+                    .padding(.vertical, 7)
+                    .background(Color("color-text-60").opacity(0.12))
+                    .clipShape(Capsule())
             }
 
             Toggle("自动旋转", isOn: $autoRotate)
@@ -416,7 +642,7 @@ private struct CobeArcAnchorLabel: View {
             controlSlider(
                 title: "scale / 缩放",
                 value: $scale,
-                range: 0.75...1.3,
+                range: 0.75...4.0,
                 step: 0.01,
                 formatter: { String(format: "%.2f", $0) }
             )
@@ -464,7 +690,7 @@ private struct CobeArcAnchorLabel: View {
             controlSlider(
                 title: "offset.y / 垂直偏移",
                 value: $offsetY,
-                range: -100...100,
+                range: -200...200,
                 step: 1,
                 formatter: { String(format: "%.0f", $0) }
             )
@@ -568,19 +794,23 @@ private struct CobeArcAnchorLabel: View {
         return autoRotationBase + date.timeIntervalSince(autoRotationStartedAt) * 0.18
     }
 
-    private func makeConfiguration(phi: Double) -> CobeMetalConfiguration {
+    private func makeConfiguration(
+        phi: Double,
+        theta thetaValue: Double? = nil
+    ) -> CobeMetalConfiguration {
         var configuration = CobeMetalConfiguration()
         configuration.phi = Float(phi)
-        configuration.theta = Float(theta)
+        configuration.theta = Float(thetaValue ?? theta)
         configuration.dark = Float(dark)
         configuration.diffuse = Float(diffuse)
         configuration.mapSamples = Float(mapSamples)
         configuration.mapBrightness = Float(mapBrightness)
         configuration.mapBaseBrightness = Float(mapBaseBrightness)
-        configuration.baseColor = theme.baseColor
-        configuration.markerColor = theme.markerColor
-        configuration.glowColor = theme.glowColor
-        configuration.arcColor = theme.arcColor
+        configuration.baseColor = theme.baseColor(for: colorScheme)
+        configuration.landColor = theme.landColor(for: colorScheme)
+        configuration.markerColor = theme.markerColor(for: colorScheme)
+        configuration.glowColor = theme.glowColor(for: colorScheme)
+        configuration.arcColor = theme.arcColor(for: colorScheme)
         configuration.arcWidth = Float(arcWidth)
         configuration.arcHeight = Float(arcHeight)
         configuration.markerElevation = Float(markerElevation)
@@ -593,50 +823,57 @@ private struct CobeArcAnchorLabel: View {
     }
 }
 
-private enum CobeMetalTheme: String, CaseIterable, Identifiable, Hashable {
-    case blue
-    case neon
+private enum CobeMetalTheme {
     case monochrome
 
-    var id: String { rawValue }
+    var title: String { "Mono" }
 
-    var title: String {
-        switch self {
-        case .blue: return "Blue"
-        case .neon: return "Neon"
-        case .monochrome: return "Mono"
+    func baseColor(for colorScheme: ColorScheme) -> SIMD3<Float> {
+        switch colorScheme {
+        case .dark:
+            return SIMD3(repeating: 0.14)
+        default:
+            return SIMD3(repeating: 0.92)
         }
     }
 
-    var baseColor: SIMD3<Float> {
-        switch self {
-        case .blue: return SIMD3(0.72, 0.84, 1.0)
-        case .neon: return SIMD3(0.7, 1.0, 0.86)
-        case .monochrome: return SIMD3(0.92, 0.94, 0.98)
+    func markerColor(for _: ColorScheme) -> SIMD3<Float> {
+        // color-brand-blue: #196EFF in both appearances.
+        return SIMD3(
+            Float(0x19) / 255.0,
+            Float(0x6E) / 255.0,
+            1.0
+        )
+    }
+
+    func landColor(for colorScheme: ColorScheme) -> SIMD3<Float> {
+        switch colorScheme {
+        case .dark:
+            // color-text-60 (text2) dark appearance: #C2C2C2.
+            return SIMD3(repeating: Float(0xC2) / 255.0)
+        default:
+            // color-text-60 (text2) light appearance: #6D6D6D.
+            return SIMD3(repeating: Float(0x6D) / 255.0)
         }
     }
 
-    var markerColor: SIMD3<Float> {
-        switch self {
-        case .blue: return SIMD3(0.12, 0.48, 1.0)
-        case .neon: return SIMD3(0.12, 1.0, 0.62)
-        case .monochrome: return SIMD3(0.96, 0.96, 1.0)
+    func glowColor(for colorScheme: ColorScheme) -> SIMD3<Float> {
+        switch colorScheme {
+        case .dark:
+            return SIMD3(repeating: 0.42)
+        default:
+            return SIMD3(repeating: 0.72)
         }
     }
 
-    var glowColor: SIMD3<Float> {
-        switch self {
-        case .blue: return SIMD3(0.22, 0.55, 1.0)
-        case .neon: return SIMD3(0.12, 0.92, 0.58)
-        case .monochrome: return SIMD3(0.72, 0.8, 1.0)
-        }
-    }
-
-    var arcColor: SIMD3<Float> {
-        switch self {
-        case .blue: return SIMD3(0.24, 0.58, 1.0)
-        case .neon: return SIMD3(0.2, 1.0, 0.72)
-        case .monochrome: return SIMD3(0.78, 0.84, 1.0)
+    func arcColor(for colorScheme: ColorScheme) -> SIMD3<Float> {
+        switch colorScheme {
+        case .dark:
+            // color-text-30 dark appearance: #FFFFFF.
+            return SIMD3(repeating: 1.0)
+        default:
+            // color-text-30 light appearance: #333333.
+            return SIMD3(repeating: Float(0x33) / 255.0)
         }
     }
 }
@@ -662,24 +899,60 @@ private enum CobeMarkerPreset: String, CaseIterable, Identifiable, Hashable {
         switch self {
         case .worldCities:
             return [
-                marker("sf", "San Francisco", 37.78, -122.44, 0.035),
-                marker("nyc", "New York", 40.71, -74.01, 0.035),
-                marker("london", "London", 51.51, -0.13, 0.03),
-                marker("tokyo", "Tokyo", 35.68, 139.65, 0.04),
-                marker("singapore", "Singapore", 1.35, 103.82, 0.03),
-                marker("sydney", "Sydney", -33.87, 151.21, 0.03),
-                marker("dubai", "Dubai", 25.2, 55.27, 0.03),
-                marker("saopaulo", "São Paulo", -23.55, -46.63, 0.03),
-                marker("capetown", "Cape Town", -33.92, 18.42, 0.03)
+                marker("sf", "三藩市", 37.78, -122.44, 0.0175),
+                marker(
+                    "nyc",
+                    "纽约",
+                    40.71,
+                    -74.01,
+                    0.0175,
+                    labelAlignment: .leading,
+                    labelOffset: SIMD2(8, 0)
+                ),
+                marker("toronto", "多伦多", 43.6532, -79.3832, 0.0175),
+                marker("london", "伦敦", 51.51, -0.13, 0.015),
+                marker("tokyo", "东京", 35.68, 139.65, 0.02),
+                marker(
+                    "shanghai",
+                    "上海",
+                    31.2304,
+                    121.4737,
+                    0.0175,
+                    labelAlignment: .leading,
+                    labelOffset: SIMD2(8, 0)
+                ),
+                marker(
+                    "shenzhen",
+                    "深圳",
+                    22.5431,
+                    114.0579,
+                    0.0175,
+                    screenOffset: SIMD2(-0.012, -0.025),
+                    labelAlignment: .trailing,
+                    labelOffset: SIMD2(-8, 0)
+                ),
+                marker(
+                    "hongkong",
+                    "香港",
+                    22.3193,
+                    114.1694,
+                    0.0175,
+                    labelAlignment: .leading,
+                    labelOffset: SIMD2(8, 0)
+                ),
+                marker("singapore", "新加坡", 1.35, 103.82, 0.015),
+                marker("sydney", "悉尼", -33.87, 151.21, 0.015),
+                marker("saopaulo", "圣保罗", -23.55, -46.63, 0.015),
+                marker("capetown", "开普敦", -33.92, 18.42, 0.015)
             ]
         case .usOffices:
             return [
-                marker("seattle", "Seattle", 47.61, -122.33, 0.04),
-                marker("sf", "San Francisco", 37.78, -122.44, 0.04),
-                marker("austin", "Austin", 30.27, -97.74, 0.04),
-                marker("nyc", "New York", 40.71, -74.01, 0.04),
-                marker("boston", "Boston", 42.36, -71.06, 0.04),
-                marker("chicago", "Chicago", 41.88, -87.63, 0.04)
+                marker("seattle", "西雅图", 47.61, -122.33, 0.04),
+                marker("sf", "三藩市", 37.78, -122.44, 0.04),
+                marker("austin", "奥斯汀", 30.27, -97.74, 0.04),
+                marker("nyc", "纽约", 40.71, -74.01, 0.04),
+                marker("boston", "波士顿", 42.36, -71.06, 0.04),
+                marker("chicago", "芝加哥", 41.88, -87.63, 0.04)
             ]
         case .flightRoutes:
             return [
@@ -692,12 +965,12 @@ private enum CobeMarkerPreset: String, CaseIterable, Identifiable, Hashable {
             ]
         case .dataCenters:
             return [
-                marker("oregon", "Oregon", 45.52, -122.68, 0.04),
-                marker("virginia", "Virginia", 37.43, -78.66, 0.04),
-                marker("frankfurt", "Frankfurt", 50.11, 8.68, 0.04),
-                marker("mumbai", "Mumbai", 19.08, 72.88, 0.04),
-                marker("tokyo", "Tokyo", 35.68, 139.65, 0.04),
-                marker("sydney", "Sydney", -33.87, 151.21, 0.04)
+                marker("oregon", "俄勒冈", 45.52, -122.68, 0.04),
+                marker("virginia", "弗吉尼亚", 37.43, -78.66, 0.04),
+                marker("frankfurt", "法兰克福", 50.11, 8.68, 0.04),
+                marker("mumbai", "孟买", 19.08, 72.88, 0.04),
+                marker("tokyo", "东京", 35.68, 139.65, 0.04),
+                marker("sydney", "悉尼", -33.87, 151.21, 0.04)
             ]
         }
     }
@@ -708,7 +981,9 @@ private enum CobeMarkerPreset: String, CaseIterable, Identifiable, Hashable {
             return [
                 arc("sf-nyc", "SFO → JFK", 37.78, -122.44, 40.71, -74.01),
                 arc("nyc-london", "JFK → LHR", 40.71, -74.01, 51.51, -0.13),
-                arc("london-tokyo", "LHR → HND", 51.51, -0.13, 35.68, 139.65)
+                arc("london-tokyo", "LHR → HND", 51.51, -0.13, 35.68, 139.65),
+                arc("london-hongkong", "London → Hong Kong", 51.51, -0.13, 22.3193, 114.1694),
+                arc("hongkong-singapore", "Hong Kong → Singapore", 22.3193, 114.1694, 1.35, 103.82)
             ]
         case .usOffices:
             return [
@@ -737,13 +1012,19 @@ private enum CobeMarkerPreset: String, CaseIterable, Identifiable, Hashable {
         _ label: String,
         _ latitude: Float,
         _ longitude: Float,
-        _ size: Float
+        _ size: Float,
+        screenOffset: SIMD2<Float> = .zero,
+        labelAlignment: CobeMetalMarkerLabelAlignment = .center,
+        labelOffset: SIMD2<Float> = .zero
     ) -> CobeMetalMarker {
         CobeMetalMarker(
             id: id,
             location: SIMD2(latitude, longitude),
             size: size,
-            label: label
+            label: label,
+            screenOffset: screenOffset,
+            labelAlignment: labelAlignment,
+            labelOffset: labelOffset
         )
     }
 

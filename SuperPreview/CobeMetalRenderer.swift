@@ -10,25 +10,44 @@ import Combine
 import Metal
 import MetalKit
 
+enum CobeMetalMarkerLabelAlignment: Equatable {
+    case center
+    case leading
+    case trailing
+}
+
 struct CobeMetalMarker: Identifiable, Equatable {
     let id: String
     let location: SIMD2<Float>
     let size: Float
     let color: SIMD3<Float>?
     let label: String?
+    /// Display-only offset in normalized screen coordinates (positive right/down).
+    /// The geographic location remains unchanged for projection and focus.
+    let screenOffset: SIMD2<Float>
+    /// Controls which edge of the label is attached to the projected marker.
+    let labelAlignment: CobeMetalMarkerLabelAlignment
+    /// Display-only label offset in points (positive right/down).
+    let labelOffset: SIMD2<Float>
 
     init(
         id: String,
         location: SIMD2<Float>,
         size: Float,
         color: SIMD3<Float>? = nil,
-        label: String? = nil
+        label: String? = nil,
+        screenOffset: SIMD2<Float> = .zero,
+        labelAlignment: CobeMetalMarkerLabelAlignment = .center,
+        labelOffset: SIMD2<Float> = .zero
     ) {
         self.id = id
         self.location = location
         self.size = size
         self.color = color
         self.label = label
+        self.screenOffset = screenOffset
+        self.labelAlignment = labelAlignment
+        self.labelOffset = labelOffset
     }
 }
 
@@ -64,10 +83,18 @@ struct CobeMetalConfiguration: Equatable {
     var mapSamples: Float = 16_000
     var mapBrightness: Float = 6
     var mapBaseBrightness: Float = 0
-    var baseColor = SIMD3<Float>(1, 1, 1)
-    var markerColor = SIMD3<Float>(0.15, 0.45, 1)
-    var glowColor = SIMD3<Float>(0.35, 0.65, 1)
-    var arcColor = SIMD3<Float>(0.25, 0.55, 1)
+    var baseColor = SIMD3<Float>(repeating: 0.92)
+    // color-text-60 (text2) in the default light appearance.
+    var landColor = SIMD3<Float>(repeating: Float(0x6D) / 255.0)
+    // color-brand-blue: #196EFF in both appearances.
+    var markerColor = SIMD3<Float>(
+        Float(0x19) / 255.0,
+        Float(0x6E) / 255.0,
+        1.0
+    )
+    var glowColor = SIMD3<Float>(repeating: 0.72)
+    // color-text-30 (the primary text1 color) in the default light appearance.
+    var arcColor = SIMD3<Float>(repeating: Float(0x33) / 255.0)
     var arcWidth: Float = 0.5
     var arcHeight: Float = 0.3
     var markerElevation: Float = 0.02
@@ -108,6 +135,20 @@ enum CobeProjection {
         )
     }
 
+    /// Returns the horizontal and vertical rotations that place a geographic
+    /// point at the center of the front-facing hemisphere.
+    static func rotationToFace(_ location: SIMD2<Float>) -> SIMD2<Float> {
+        let point = latLonTo3D(location)
+        let horizontalRadius = hypot(point.x, point.z)
+
+        // First rotate around the vertical axis until the point has x == 0.
+        // Then pitch by its latitude until the point has y == 0. With the
+        // renderer's forward rotation this produces approximately (0, 0, 1).
+        let phi = atan2(-point.x, point.z)
+        let theta = atan2(point.y, horizontalRadius)
+        return SIMD2(phi, theta)
+    }
+
     static func rotate(_ point: SIMD3<Float>, phi: Float, theta: Float) -> SIMD3<Float> {
         let cx = cos(theta)
         let cy = cos(phi)
@@ -131,7 +172,8 @@ enum CobeProjection {
         return project(
             point: direction * radius,
             configuration: configuration,
-            in: size
+            in: size,
+            screenOffset: marker.screenOffset
         )
     }
 
@@ -158,7 +200,8 @@ enum CobeProjection {
     private static func project(
         point: SIMD3<Float>,
         configuration: CobeMetalConfiguration,
-        in size: CGSize
+        in size: CGSize,
+        screenOffset: SIMD2<Float> = .zero
     ) -> CobeProjectedPoint {
         let rotated = rotate(point, phi: configuration.phi, theta: configuration.theta)
         let width = max(Float(size.width), 1)
@@ -167,8 +210,10 @@ enum CobeProjection {
 
         let x = ((rotated.x / aspect) * configuration.scale
             + configuration.offset.x * configuration.scale / width + 1) * 0.5
+            + screenOffset.x
         let y = ((-rotated.y) * configuration.scale
             + configuration.offset.y * configuration.scale / height + 1) * 0.5
+            + screenOffset.y
         let visible = rotated.z >= 0
             || rotated.x * rotated.x + rotated.y * rotated.y >= globeRadius * globeRadius
 
@@ -250,6 +295,7 @@ private struct CobeGlobeUniforms {
     var dots: Float
     var scale: Float
     var baseColor: SIMD4<Float>
+    var landColor: SIMD4<Float>
     var glowColor: SIMD4<Float>
     var renderParams: SIMD4<Float>
     var mapSettings: SIMD4<Float>
@@ -275,6 +321,7 @@ private struct CobeArcUniforms {
 
 private struct CobeMarkerInstance {
     var positionAndSize: SIMD4<Float>
+    var screenOffset: SIMD2<Float>
     var colorAndHasColor: SIMD4<Float>
 }
 
@@ -409,6 +456,7 @@ final class CobeMetalRenderer: NSObject, MTKViewDelegate {
             dots: max(configuration.mapSamples, 2),
             scale: configuration.scale,
             baseColor: SIMD4(configuration.baseColor, 1),
+            landColor: SIMD4(configuration.landColor, 1),
             glowColor: SIMD4(configuration.glowColor, 1),
             renderParams: SIMD4(
                 configuration.mapBrightness,
@@ -508,6 +556,7 @@ final class CobeMetalRenderer: NSObject, MTKViewDelegate {
                     CobeProjection.latLonTo3D(marker.location),
                     marker.size
                 ),
+                screenOffset: marker.screenOffset,
                 colorAndHasColor: SIMD4(color, marker.color == nil ? 0 : 1)
             )
         }
