@@ -2,6 +2,10 @@
 //  TotalAsset.swift
 //  SuperPreview
 //
+//  组件名称：总资产卡片
+//  简介：展示总资产、总盈亏及资产趋势等汇总信息。
+//  用于：交易聚合 Demo 的页面顶部资产总览。
+//
 
 import SwiftUI
 

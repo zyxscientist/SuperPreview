@@ -2,6 +2,10 @@
 //  StockOrderQuantityAvailability.swift
 //  SuperPreview
 //
+//  组件名称：可用数量提示
+//  简介：根据账户资金和持仓状态展示可买或可卖的数量限制。
+//  用于：股票下单 Demo 的数量输入区域。
+//
 
 import SwiftUI
 

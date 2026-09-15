@@ -2,6 +2,10 @@
 //  StockOrderNavbar.swift
 //  SuperPreview
 //
+//  组件名称：下单页导航栏
+//  简介：展示当前交易标的、市场信息及返回等下单页导航操作。
+//  用于：股票下单 Demo 的页面顶部。
+//
 
 import SwiftUI
 

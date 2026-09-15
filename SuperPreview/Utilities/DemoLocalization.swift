@@ -2,6 +2,10 @@
 //  DemoLocalization.swift
 //  SuperPreview
 //
+//  组件名称：Demo 多语言文案中心
+//  简介：集中维护简体中文、繁体中文和英文的 Demo 界面文案。
+//  用于：所有近期 Demo 的语言切换和本地化展示。
+//
 
 import SwiftUI
 
@@ -141,7 +145,7 @@ enum DemoCopyKey {
     case capitalDistribution, netFlow, inflow, outflow, largeOrder, mediumOrder, smallOrder
     case unitTenThousands, moneyFlowTrend
     case watchlist, trade, reminder, wealth, news, markets, me
-    case shuffle
+    case scroll
     case stocks, funds, virtualAssets, cryptocurrency, positions, positionDetails
     case totalAssets, totalProfitLoss, netAssets, todayProfitLoss, yesterdayProfitLoss
     case securitiesMarketValue, totalCash, positionProfitLoss
@@ -354,8 +358,8 @@ private enum DemoCopy {
         .stockDetailHaltedSession: ("停牌", "停牌", "Halted"),
         .stockDetailPreMarketTrading: ("盘前交易中", "盤前交易中", "Pre-market trading"),
         .stockDetailAfterHoursTrading: ("盘后交易中", "盤後交易中", "After-hours trading"),
-        .stockDetailPreMarketNavbar: ("盘前交易中", "盤前交易中", "Pre-market"),
-        .stockDetailAfterHoursNavbar: ("盘后交易中", "盤後交易中", "After-hours"),
+        .stockDetailPreMarketNavbar: ("盘前", "盤前", "Pre-market"),
+        .stockDetailAfterHoursNavbar: ("盘后", "盤後", "After-hours"),
         .stockDetailHigh: ("最高", "最高", "High"),
         .stockDetailLow: ("最低", "最低", "Low"),
         .stockDetailTurnover: ("成交额", "成交額", "Turnover"),
@@ -447,7 +451,7 @@ private enum DemoCopy {
         .watchlist: ("自选", "自選", "Watchlist"),
         .trade: ("交易", "交易", "Trade"),
         .reminder: ("提醒", "提醒", "Reminder"),
-        .shuffle: ("Shuffle", "Shuffle", "Shuffle"),
+        .scroll: ("浏览", "瀏覽", "Scroll"),
         .wealth: ("理财", "理財", "Wealth"),
         .news: ("资讯", "資訊", "News"),
         .markets: ("市场", "市場", "Markets"),

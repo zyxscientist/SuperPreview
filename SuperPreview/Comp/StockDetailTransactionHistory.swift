@@ -2,6 +2,10 @@
 //  StockDetailTransactionHistory.swift
 //  SuperPreview
 //
+//  组件名称：详情页历史订单列表
+//  简介：按当前标的筛选并展示已完成订单的历史记录。
+//  用于：详情页快捷交易组件的历史 Tab。
+//
 
 import SwiftUI
 

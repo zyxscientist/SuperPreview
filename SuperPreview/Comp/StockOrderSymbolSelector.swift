@@ -2,6 +2,10 @@
 //  StockOrderSymbolSelector.swift
 //  SuperPreview
 //
+//  组件名称：订单标的选择器
+//  简介：展示当前标的并打开搜索或切换标的的选择入口。
+//  用于：股票下单 Demo 的页面顶部和表单区域。
+//
 
 import SwiftUI
 

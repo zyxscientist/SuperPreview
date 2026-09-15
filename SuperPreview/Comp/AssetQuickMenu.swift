@@ -2,6 +2,10 @@
 //  AssetQuickMenu.swift
 //  SuperPreview
 //
+//  组件名称：资产快捷菜单
+//  简介：提供资产页面常用操作的统一网格菜单和操作项模型。
+//  用于：交易聚合 Demo 中不同资产类别的快捷操作入口。
+//
 
 import SwiftUI
 

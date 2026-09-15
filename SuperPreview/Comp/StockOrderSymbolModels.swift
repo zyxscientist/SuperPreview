@@ -2,6 +2,10 @@
 //  StockOrderSymbolModels.swift
 //  SuperPreview
 //
+//  组件名称：订单标的数据模型
+//  简介：定义下单标的、市场、币种和交易规则等共享数据结构。
+//  用于：股票下单 Demo、详情页交易和标的选择流程。
+//
 
 import Foundation
 import SwiftUI

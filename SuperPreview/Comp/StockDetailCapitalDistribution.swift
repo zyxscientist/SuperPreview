@@ -2,6 +2,10 @@
 //  StockDetailCapitalDistribution.swift
 //  SuperPreview
 //
+//  组件名称：资金分布
+//  简介：通过环形图、比例和横向柱状条展示不同单量的资金流入流出。
+//  用于：股票详情页行情图表下方的资金分布模块。
+//
 
 import SwiftUI
 

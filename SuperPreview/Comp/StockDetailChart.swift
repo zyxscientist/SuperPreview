@@ -2,6 +2,10 @@
 //  StockDetailChart.swift
 //  SuperPreview
 //
+//  组件名称：详情页行情图表
+//  简介：展示股票详情页的静态行情图表预览。
+//  用于：股票详情页报价区域下方的图表占位内容。
+//
 
 import SwiftUI
 

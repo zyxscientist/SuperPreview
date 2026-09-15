@@ -2,6 +2,10 @@
 //  AssetChart.swift
 //  SuperPreview
 //
+//  组件名称：资产趋势图
+//  简介：用轻量折线图展示资产卡片的收益或金额走势。
+//  用于：交易聚合 Demo 的股票、基金和虚拟资产摘要卡片。
+//
 
 import SwiftUI
 

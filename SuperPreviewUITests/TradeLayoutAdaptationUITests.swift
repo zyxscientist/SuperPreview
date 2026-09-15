@@ -390,21 +390,21 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         }
     }
 
-    func testStockDetailTradeUsesCurrentShuffleInstrument() throws {
+    func testStockDetailTradeUsesCurrentScrollInstrument() throws {
         enterWatchlist()
         tapWatchlistRow("watchlist.row.us:NVDA")
 
         XCTAssertTrue(waitFor("stockDetail.page").exists)
-        waitFor("stockDetail.bottomActionBar.shuffle").tap()
+        waitFor("stockDetail.bottomActionBar.scroll").tap()
 
-        let shuffleRoot = waitFor("stockDetail.shuffle.root")
-        let secondSymbol = waitFor("stockDetail.shuffle.symbol.us:AAPL")
+        let scrollRoot = waitFor("stockDetail.scroll.root")
+        let secondSymbol = waitFor("stockDetail.scroll.symbol.us:AAPL")
         secondSymbol.tap()
         waitForCommittedInstrument("us:AAPL")
         waitForParentCommittedInstrument("us:AAPL")
 
-        waitFor("stockDetail.shuffle.card.current").tap()
-        waitForDisappearance(shuffleRoot)
+        waitFor("stockDetail.scroll.card.current").tap()
+        waitForDisappearance(scrollRoot)
         XCTAssertTrue(waitFor("stockDetail.page").exists)
         XCTAssertTrue(waitFor("stockDetail.navbar.title").label.contains("AAPL"))
 
@@ -443,7 +443,7 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         XCTAssertTrue(waitFor("stockDetail.bottomActionBar.trade").exists)
     }
 
-    func testStockDetailShuffleDismissRestoresEdgeSwipeAcrossMarkets() throws {
+    func testStockDetailScrollDismissRestoresEdgeSwipeAcrossMarkets() throws {
         enterWatchlist()
 
         let cases = [
@@ -456,35 +456,35 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
             tapWatchlistRow(item.row)
 
             XCTAssertTrue(waitFor("stockDetail.page").exists)
-            waitFor("stockDetail.bottomActionBar.shuffle").tap()
+            waitFor("stockDetail.bottomActionBar.scroll").tap()
 
-            let shuffle = waitFor("stockDetail.shuffle.root")
-            waitFor("stockDetail.shuffle.close").tap()
-            waitForDisappearance(shuffle)
+            let scroll = waitFor("stockDetail.scroll.root")
+            waitFor("stockDetail.scroll.close").tap()
+            waitForDisappearance(scroll)
             XCTAssertTrue(waitFor("stockDetail.page").exists)
 
             performHorizontalDrag(fromX: 0.01, toX: 0.82)
             XCTAssertTrue(
                 waitFor("watchlist.root").exists,
-                "Closing Shuffle must restore the edge pop for \(item.row)"
+                "Closing Scroll must restore the edge pop for \(item.row)"
             )
         }
     }
 
-    func testStockDetailShuffleSelectionAndCancelledSwipeKeepBackSwipeHealthy() throws {
+    func testStockDetailScrollSelectionAndCancelledSwipeKeepBackSwipeHealthy() throws {
         enterWatchlist()
         tapWatchlistRow("watchlist.row.us:NVDA")
 
         XCTAssertTrue(waitFor("stockDetail.page").exists)
-        waitFor("stockDetail.bottomActionBar.shuffle").tap()
+        waitFor("stockDetail.bottomActionBar.scroll").tap()
 
-        let shuffle = waitFor("stockDetail.shuffle.root")
-        waitFor("stockDetail.shuffle.symbol.us:AAPL").tap()
+        let scroll = waitFor("stockDetail.scroll.root")
+        waitFor("stockDetail.scroll.symbol.us:AAPL").tap()
         waitForCommittedInstrument("us:AAPL")
         waitForParentCommittedInstrument("us:AAPL")
 
-        waitFor("stockDetail.shuffle.close").tap()
-        waitForDisappearance(shuffle)
+        waitFor("stockDetail.scroll.close").tap()
+        waitForDisappearance(scroll)
 
         // A cancelled native pop must not leave the recognizer disabled for
         // the following completed pop.
@@ -495,19 +495,19 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         XCTAssertTrue(waitFor("watchlist.root").exists)
     }
 
-    func testStockDetailShuffleExitPreservesCenterPagerAfterInstrumentChange() throws {
+    func testStockDetailScrollExitPreservesCenterPagerAfterInstrumentChange() throws {
         enterWatchlist()
         tapWatchlistRow("watchlist.row.us:NVDA")
 
         XCTAssertTrue(waitFor("stockDetail.page").exists)
-        waitFor("stockDetail.bottomActionBar.shuffle").tap()
+        waitFor("stockDetail.bottomActionBar.scroll").tap()
 
-        let shuffle = waitFor("stockDetail.shuffle.root")
-        waitFor("stockDetail.shuffle.symbol.us:AAPL").tap()
+        let scroll = waitFor("stockDetail.scroll.root")
+        waitFor("stockDetail.scroll.symbol.us:AAPL").tap()
         waitForCommittedInstrument("us:AAPL")
         waitForParentCommittedInstrument("us:AAPL")
-        waitFor("stockDetail.shuffle.close").tap()
-        waitForDisappearance(shuffle)
+        waitFor("stockDetail.scroll.close").tap()
+        waitForDisappearance(scroll)
 
         let analysisTab = waitFor("stockDetail.page.headerTab.analysis")
         analysisTab.tap()
@@ -519,36 +519,36 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         XCTAssertTrue(waitFor("stockDetail.page").exists)
         XCTAssertTrue(
             waitFor("stockDetail.page.headerTab.etf").isSelected,
-            "The rebuilt detail pager must keep center-swipe behavior after Shuffle"
+            "The rebuilt detail pager must keep center-swipe behavior after Scroll"
         )
     }
 
-    func testStockDetailShuffleRepeatedOpenChangeCloseKeepsBackSwipe() throws {
+    func testStockDetailScrollRepeatedOpenChangeCloseKeepsBackSwipe() throws {
         enterWatchlist()
         tapWatchlistRow("watchlist.row.us:NVDA")
 
         XCTAssertTrue(waitFor("stockDetail.page").exists)
 
-        waitFor("stockDetail.bottomActionBar.shuffle").tap()
-        var shuffle = waitFor("stockDetail.shuffle.root")
-        waitFor("stockDetail.shuffle.symbol.us:AAPL").tap()
+        waitFor("stockDetail.bottomActionBar.scroll").tap()
+        var scroll = waitFor("stockDetail.scroll.root")
+        waitFor("stockDetail.scroll.symbol.us:AAPL").tap()
         waitForCommittedInstrument("us:AAPL")
         waitForParentCommittedInstrument("us:AAPL")
-        waitFor("stockDetail.shuffle.close").tap()
-        waitForDisappearance(shuffle)
+        waitFor("stockDetail.scroll.close").tap()
+        waitForDisappearance(scroll)
 
-        waitFor("stockDetail.bottomActionBar.shuffle").tap()
-        shuffle = waitFor("stockDetail.shuffle.root")
-        shuffle.swipeUp()
+        waitFor("stockDetail.bottomActionBar.scroll").tap()
+        scroll = waitFor("stockDetail.scroll.root")
+        scroll.swipeUp()
         waitForCommittedInstrument("us:TSLA")
         waitForParentCommittedInstrument("us:TSLA")
-        waitFor("stockDetail.shuffle.close").tap()
-        waitForDisappearance(shuffle)
+        waitFor("stockDetail.scroll.close").tap()
+        waitForDisappearance(scroll)
 
         performHorizontalDrag(fromX: 0.01, toX: 0.82)
         XCTAssertTrue(
             waitFor("watchlist.root").exists,
-            "Repeated Shuffle presentation must not leave edge pop disabled"
+            "Repeated Scroll presentation must not leave edge pop disabled"
         )
     }
 
@@ -639,21 +639,21 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         )
     }
 
-    func testShuffleIgnoresNavigationBackSwipe() throws {
+    func testScrollIgnoresNavigationBackSwipe() throws {
         enterWatchlist()
         tapWatchlistRow("watchlist.row.us:NVDA")
-        waitFor("stockDetail.bottomActionBar.shuffle").tap()
+        waitFor("stockDetail.bottomActionBar.scroll").tap()
 
-        let shuffle = waitFor("stockDetail.shuffle.root")
+        let scroll = waitFor("stockDetail.scroll.root")
         performHorizontalDrag(fromX: 0.01, toX: 0.82)
 
         XCTAssertTrue(
-            shuffle.waitForExistence(timeout: 3),
-            "Shuffle is a full-screen cover and must not be closed by navigation back"
+            scroll.waitForExistence(timeout: 3),
+            "Scroll is a full-screen cover and must not be closed by navigation back"
         )
     }
 
-    func testStockDetailShuffleUsesWatchlistSnapshotAndExitsToSelectedInstrument() throws {
+    func testStockDetailScrollUsesWatchlistSnapshotAndExitsToSelectedInstrument() throws {
         enterWatchlist()
 
         let firstRow = waitFor("watchlist.row.us:NVDA")
@@ -661,20 +661,20 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         firstRow.tap()
 
         XCTAssertTrue(waitFor("stockDetail.page").exists)
-        waitFor("stockDetail.bottomActionBar.shuffle").tap()
+        waitFor("stockDetail.bottomActionBar.scroll").tap()
 
-        let shuffleRoot = waitFor("stockDetail.shuffle.root")
-        XCTAssertTrue(waitFor("stockDetail.shuffle.close").exists)
-        let firstSymbol = waitFor("stockDetail.shuffle.symbol.us:NVDA")
+        let scrollRoot = waitFor("stockDetail.scroll.root")
+        XCTAssertTrue(waitFor("stockDetail.scroll.close").exists)
+        let firstSymbol = waitFor("stockDetail.scroll.symbol.us:NVDA")
         XCTAssertTrue(firstSymbol.isSelected)
         waitForCommittedInstrument("us:NVDA")
         waitForParentCommittedInstrument("us:NVDA")
         XCTAssertFalse(
-            app.descendants(matching: .any)["stockDetail.shuffle.symbol.fund:LU012376428"].exists,
-            "Funds must not enter the Shuffle snapshot"
+            app.descendants(matching: .any)["stockDetail.scroll.symbol.fund:LU012376428"].exists,
+            "Funds must not enter the Scroll snapshot"
         )
 
-        let secondSymbol = waitFor("stockDetail.shuffle.symbol.us:AAPL")
+        let secondSymbol = waitFor("stockDetail.scroll.symbol.us:AAPL")
         secondSymbol.tap()
         let selectedExpectation = XCTNSPredicateExpectation(
             predicate: NSPredicate(format: "selected == true"),
@@ -688,8 +688,8 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         waitForCommittedInstrument("us:AAPL")
         waitForParentCommittedInstrument("us:AAPL")
 
-        let thirdSymbol = waitFor("stockDetail.shuffle.symbol.us:TSLA")
-        shuffleRoot.swipeUp()
+        let thirdSymbol = waitFor("stockDetail.scroll.symbol.us:TSLA")
+        scrollRoot.swipeUp()
         let swipeExpectation = XCTNSPredicateExpectation(
             predicate: NSPredicate(format: "selected == true"),
             object: thirdSymbol
@@ -702,16 +702,16 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         waitForCommittedInstrument("us:TSLA")
         waitForParentCommittedInstrument("us:TSLA")
 
-        waitFor("stockDetail.shuffle.close").tap()
-        waitForDisappearance(shuffleRoot)
+        waitFor("stockDetail.scroll.close").tap()
+        waitForDisappearance(scrollRoot)
         XCTAssertTrue(waitFor("stockDetail.page").exists)
         XCTAssertTrue(
             waitFor("stockDetail.navbar.title").label.contains("TSLA"),
-            "Exiting Shuffle should keep the currently viewed instrument"
+            "Exiting Scroll should keep the currently viewed instrument"
         )
     }
 
-    func testStockDetailShuffleCurrentCardTapExitsToSelectedInstrument() throws {
+    func testStockDetailScrollCurrentCardTapExitsToSelectedInstrument() throws {
         enterWatchlist()
 
         let firstRow = waitFor("watchlist.row.us:NVDA")
@@ -719,47 +719,47 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         firstRow.tap()
 
         XCTAssertTrue(waitFor("stockDetail.page").exists)
-        waitFor("stockDetail.bottomActionBar.shuffle").tap()
+        waitFor("stockDetail.bottomActionBar.scroll").tap()
 
-        let shuffleRoot = waitFor("stockDetail.shuffle.root")
-        let secondSymbol = waitFor("stockDetail.shuffle.symbol.us:AAPL")
+        let scrollRoot = waitFor("stockDetail.scroll.root")
+        let secondSymbol = waitFor("stockDetail.scroll.symbol.us:AAPL")
         secondSymbol.tap()
         waitForCommittedInstrument("us:AAPL")
         waitForParentCommittedInstrument("us:AAPL")
 
-        waitFor("stockDetail.shuffle.card.current").tap()
-        waitForDisappearance(shuffleRoot)
+        waitFor("stockDetail.scroll.card.current").tap()
+        waitForDisappearance(scrollRoot)
         XCTAssertTrue(waitFor("stockDetail.page").exists)
         XCTAssertTrue(
             waitFor("stockDetail.navbar.title").label.contains("AAPL"),
-            "Tapping the current Shuffle card should exit to the selected instrument"
+            "Tapping the current Scroll card should exit to the selected instrument"
         )
 
         performHorizontalDrag(fromX: 0.01, toX: 0.82)
         XCTAssertTrue(waitFor("watchlist.root").exists)
     }
 
-    func testStockDetailShuffleLeftSwipeOpensOrderForCurrentInstrument() throws {
+    func testStockDetailScrollLeftSwipeOpensOrderForCurrentInstrument() throws {
         enterWatchlist()
         tapWatchlistRow("watchlist.row.us:NVDA")
 
         XCTAssertTrue(waitFor("stockDetail.page").exists)
-        waitFor("stockDetail.bottomActionBar.shuffle").tap()
+        waitFor("stockDetail.bottomActionBar.scroll").tap()
 
-        _ = waitFor("stockDetail.shuffle.root")
+        _ = waitFor("stockDetail.scroll.root")
         waitForCommittedInstrument("us:NVDA")
 
         // A partial left drag should finish from its current position; there
         // is no distance-to-commit threshold.
         performHorizontalDrag(fromX: 0.86, toX: 0.50)
 
-        let transitionProgress = app.staticTexts["stockDetail.shuffle.orderTransition.progress"].firstMatch
+        let transitionProgress = app.staticTexts["stockDetail.scroll.orderTransition.progress"].firstMatch
         XCTAssertTrue(
             transitionProgress.waitForExistence(timeout: 3),
-            "Shuffle should expose transition progress only in UI-test builds"
+            "Scroll should expose transition progress only in UI-test builds"
         )
         XCTAssertEqual(Double(transitionProgress.label) ?? -1, 1, accuracy: 0.01)
-        let transitionDuration = app.staticTexts["stockDetail.shuffle.orderTransition.duration"].firstMatch
+        let transitionDuration = app.staticTexts["stockDetail.scroll.orderTransition.duration"].firstMatch
         XCTAssertTrue(transitionDuration.waitForExistence(timeout: 3))
         XCTAssertGreaterThan(Double(transitionDuration.label) ?? -1, 0)
 
@@ -770,7 +770,7 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         )
 
         // The order page owns its symbol selection. Changing it must not
-        // mutate the Shuffle card that is still underneath this page.
+        // mutate the Scroll card that is still underneath this page.
         waitFor("stockOrder.symbolInput.selectedSymbol").tap()
         // The composed search box exposes its text-field role under the
         // container identifier.
@@ -783,7 +783,7 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
 
         performHorizontalDrag(fromX: 0.01, toX: 0.82)
         XCTAssertFalse(app.otherElements["stockOrder.demo"].firstMatch.exists)
-        XCTAssertTrue(waitFor("stockDetail.shuffle.root").exists)
+        XCTAssertTrue(waitFor("stockDetail.scroll.root").exists)
         waitForCommittedInstrument("us:NVDA")
         // Re-entering also verifies the underlying deck remains on-screen.
         performHorizontalDrag(fromX: 0.86, toX: 0.14)
@@ -792,10 +792,10 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         waitForCommittedInstrument("us:NVDA")
     }
 
-    func testStockDetailShuffleLeftSwipeFromAnywhereTracksFinger() throws {
+    func testStockDetailScrollLeftSwipeFromAnywhereTracksFinger() throws {
         enterWatchlist()
         tapWatchlistRow("watchlist.row.us:NVDA")
-        waitFor("stockDetail.bottomActionBar.shuffle").tap()
+        waitFor("stockDetail.bottomActionBar.scroll").tap()
         waitForCommittedInstrument("us:NVDA")
 
         // Include card content, its left half, header and the overlaid symbol
@@ -813,8 +813,8 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
             start.press(forDuration: 0.01, thenDragTo: end, withVelocity: 160, thenHoldForDuration: 0.1)
             XCTAssertTrue(waitFor("stockOrder.demo").exists, "Entry failed from \(region)")
             XCTAssertEqual(waitFor("stockOrder.debug.status.symbol").label, "NVDA")
-            let samples = app.staticTexts["stockDetail.shuffle.orderTransition.renderedDragSamples"].firstMatch
-            let span = app.staticTexts["stockDetail.shuffle.orderTransition.renderedDragSpan"].firstMatch
+            let samples = app.staticTexts["stockDetail.scroll.orderTransition.renderedDragSamples"].firstMatch
+            let span = app.staticTexts["stockDetail.scroll.orderTransition.renderedDragSpan"].firstMatch
             XCTAssertTrue(samples.waitForExistence(timeout: 3))
             XCTAssertGreaterThan(Int(samples.label) ?? 0, 1, "No intermediate rendered frames from \(region)")
             XCTAssertGreaterThan(Double(span.label) ?? 0, 0.05, "Page did not move with the finger from \(region)")
@@ -823,12 +823,12 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         }
     }
 
-    func testStockDetailShuffleShortLeftSwipeCommitsWithoutDistanceThreshold() throws {
+    func testStockDetailScrollShortLeftSwipeCommitsWithoutDistanceThreshold() throws {
         enterWatchlist()
         tapWatchlistRow("watchlist.row.us:NVDA")
 
-        waitFor("stockDetail.bottomActionBar.shuffle").tap()
-        _ = waitFor("stockDetail.shuffle.root")
+        waitFor("stockDetail.bottomActionBar.scroll").tap()
+        _ = waitFor("stockDetail.scroll.root")
 
         // The drag is intentionally only a few percent of the viewport. The
         // gesture still needs enough movement to lock to the horizontal axis,
@@ -841,19 +841,19 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
             price: "142.61"
         )
         // UIKit correctly hides the presenting page from accessibility while
-        // the order route is on top. Verify the preserved Shuffle after
+        // the order route is on top. Verify the preserved Scroll after
         // dismissal instead of requiring both routes in the accessible tree.
         waitFor("stockOrder.navbar.back").tap()
-        XCTAssertTrue(waitFor("stockDetail.shuffle.root").exists)
+        XCTAssertTrue(waitFor("stockDetail.scroll.root").exists)
         waitForCommittedInstrument("us:NVDA")
     }
 
-    func testStockDetailShuffleOrderConfirmationBlocksExternalReturnSwipe() throws {
+    func testStockDetailScrollOrderConfirmationBlocksExternalReturnSwipe() throws {
         enterWatchlist()
         tapWatchlistRow("watchlist.row.us:NVDA")
 
-        waitFor("stockDetail.bottomActionBar.shuffle").tap()
-        _ = waitFor("stockDetail.shuffle.root")
+        waitFor("stockDetail.bottomActionBar.scroll").tap()
+        _ = waitFor("stockDetail.scroll.root")
         performHorizontalDrag(fromX: 0.86, toX: 0.50)
         assertStockOrderPrefill(
             symbol: "NVDA",
@@ -867,18 +867,18 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         performHorizontalDrag(fromX: 0.01, toX: 0.82)
         XCTAssertTrue(
             waitFor("stockOrder.confirmationSheet").exists,
-            "The confirmation card must block the Shuffle-hosted order return swipe"
+            "The confirmation card must block the Scroll-hosted order return swipe"
         )
 
         waitFor("stockOrder.confirmationSheet.button.cancel").tap()
         XCTAssertTrue(waitFor("stockOrder.demo").exists)
 
         performHorizontalDrag(fromX: 0.01, toX: 0.82)
-        XCTAssertTrue(waitFor("stockDetail.shuffle.root").exists)
+        XCTAssertTrue(waitFor("stockDetail.scroll.root").exists)
         waitForCommittedInstrument("us:NVDA")
     }
 
-    func testStockDetailShuffleAdjacentCardTapExitsToTappedInstrument() throws {
+    func testStockDetailScrollAdjacentCardTapExitsToTappedInstrument() throws {
         enterWatchlist()
 
         let firstRow = waitFor("watchlist.row.us:NVDA")
@@ -886,27 +886,27 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         firstRow.tap()
 
         XCTAssertTrue(waitFor("stockDetail.page").exists)
-        waitFor("stockDetail.bottomActionBar.shuffle").tap()
+        waitFor("stockDetail.bottomActionBar.scroll").tap()
 
-        let shuffleRoot = waitFor("stockDetail.shuffle.root")
-        let nextCard = waitFor("stockDetail.shuffle.card.next")
+        let scrollRoot = waitFor("stockDetail.scroll.root")
+        let nextCard = waitFor("stockDetail.scroll.card.next")
         let appFrame = app.windows.firstMatch.frame
         XCTAssertTrue(nextCard.frame.intersects(appFrame), "The next-card peek should be visible")
 
         nextCard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.04)).tap()
         waitForParentCommittedInstrument("us:AAPL")
-        waitForDisappearance(shuffleRoot)
+        waitForDisappearance(scrollRoot)
         XCTAssertTrue(waitFor("stockDetail.page").exists)
         XCTAssertTrue(
             waitFor("stockDetail.navbar.title").label.contains("AAPL"),
-            "Tapping the next Shuffle card should exit to that instrument"
+            "Tapping the next Scroll card should exit to that instrument"
         )
 
         performHorizontalDrag(fromX: 0.01, toX: 0.82)
         XCTAssertTrue(waitFor("watchlist.root").exists)
     }
 
-    func testStockDetailShuffleQuoteExpansionIsSharedPersistedAndIndependent() throws {
+    func testStockDetailScrollQuoteExpansionIsSharedPersistedAndIndependent() throws {
         enterWatchlist()
 
         let firstRow = waitFor("watchlist.row.us:NVDA")
@@ -914,23 +914,23 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         firstRow.tap()
 
         XCTAssertTrue(waitFor("stockDetail.page").exists)
-        waitFor("stockDetail.bottomActionBar.shuffle").tap()
+        waitFor("stockDetail.bottomActionBar.scroll").tap()
 
-        let shuffleRoot = waitFor("stockDetail.shuffle.root")
+        let scrollRoot = waitFor("stockDetail.scroll.root")
         XCTAssertFalse(
-            shuffleRoot.descendants(matching: .any)
+            scrollRoot.descendants(matching: .any)
                 .matching(identifier: "stockDetail.page.headerTabs")
                 .firstMatch
                 .exists,
-            "Shuffle should not render the DetailPage tab bar"
+            "Scroll should not render the DetailPage tab bar"
         )
-        let expansionButtons = shuffleRoot
+        let expansionButtons = scrollRoot
             .descendants(matching: .button)
             .matching(identifier: "stockDetail.quoteData.expand")
         XCTAssertGreaterThanOrEqual(
             expansionButtons.count,
             1,
-            "Shuffle should expose the current card's QuoteData expansion control"
+            "Scroll should expose the current card's QuoteData expansion control"
         )
 
         let expansion = expansionButtons.firstMatch
@@ -938,16 +938,16 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         XCTAssertEqual(
             expansion.value as? String,
             "已展开",
-            "Shuffle QuoteData should be expanded by default"
+            "Scroll QuoteData should be expanded by default"
         )
         expansion.tap()
-        XCTAssertTrue(waitFor("stockDetail.shuffle.root").exists)
+        XCTAssertTrue(waitFor("stockDetail.scroll.root").exists)
 
         for index in 0..<expansionButtons.count {
             XCTAssertEqual(
                 expansionButtons.element(boundBy: index).value as? String,
                 "已收起",
-                "All visible Shuffle cards should share the collapsed state"
+                "All visible Scroll cards should share the collapsed state"
             )
         }
 
@@ -956,33 +956,33 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
             XCTAssertEqual(
                 expansionButtons.element(boundBy: index).value as? String,
                 "已展开",
-                "All visible Shuffle cards should share the expanded state"
+                "All visible Scroll cards should share the expanded state"
             )
         }
 
-        waitFor("stockDetail.shuffle.symbol.us:AAPL").tap()
+        waitFor("stockDetail.scroll.symbol.us:AAPL").tap()
         waitForCommittedInstrument("us:AAPL")
         XCTAssertEqual(
             expansionButtons.firstMatch.value as? String,
             "已展开",
-            "Changing instruments must preserve the shared Shuffle expansion state"
+            "Changing instruments must preserve the shared Scroll expansion state"
         )
 
-        waitFor("stockDetail.shuffle.close").tap()
-        waitForDisappearance(shuffleRoot)
+        waitFor("stockDetail.scroll.close").tap()
+        waitForDisappearance(scrollRoot)
         let detailExpansion = app.buttons["stockDetail.quoteData.expand"].firstMatch
         XCTAssertTrue(detailExpansion.waitForExistence(timeout: 5))
         XCTAssertEqual(
             detailExpansion.value as? String,
             "已收起",
-            "Shuffle expansion must not expand the underlying DetailPage"
+            "Scroll expansion must not expand the underlying DetailPage"
         )
 
-        waitFor("stockDetail.bottomActionBar.shuffle").tap()
-        let reopenedShuffle = waitFor("stockDetail.shuffle.root")
-        let reopenedCurrentCard = reopenedShuffle
+        waitFor("stockDetail.bottomActionBar.scroll").tap()
+        let reopenedScroll = waitFor("stockDetail.scroll.root")
+        let reopenedCurrentCard = reopenedScroll
             .descendants(matching: .any)
-            .matching(identifier: "stockDetail.shuffle.card.current")
+            .matching(identifier: "stockDetail.scroll.card.current")
             .firstMatch
         XCTAssertTrue(reopenedCurrentCard.waitForExistence(timeout: 5))
         let reopenedExpansion = reopenedCurrentCard
@@ -993,7 +993,7 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         XCTAssertEqual(
             reopenedExpansion.value as? String,
             "已展开",
-            "Shuffle expansion should be restored from local storage"
+            "Scroll expansion should be restored from local storage"
         )
 
         reopenedExpansion.tap()
@@ -1340,7 +1340,7 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
-        let status = waitFor("stockDetail.shuffle.committedInstrument", timeout: timeout)
+        let status = waitFor("stockDetail.scroll.committedInstrument", timeout: timeout)
         let expectation = XCTNSPredicateExpectation(
             predicate: NSPredicate(format: "label == %@", expectedID),
             object: status
@@ -1349,7 +1349,7 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         XCTAssertEqual(
             result,
             .completed,
-            "Shuffle selection was not committed to the parent detail page: \(expectedID)",
+            "Scroll selection was not committed to the parent detail page: \(expectedID)",
             file: file,
             line: line
         )
@@ -1370,7 +1370,7 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         XCTAssertEqual(
             result,
             .completed,
-            "Presenting DetailPage did not commit the Shuffle exit instrument: \(expectedID)",
+            "Presenting DetailPage did not commit the Scroll exit instrument: \(expectedID)",
             file: file,
             line: line
         )

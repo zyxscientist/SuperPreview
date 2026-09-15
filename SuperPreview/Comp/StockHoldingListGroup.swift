@@ -2,6 +2,10 @@
 //  StockHoldingListGroup.swift
 //  SuperPreview
 //
+//  组件名称：股票持仓分组列表
+//  简介：按市场分组展示股票持仓及其市值、成本和盈亏信息。
+//  用于：交易聚合 Demo 的股票资产明细区域。
+//
 
 import SwiftUI
 

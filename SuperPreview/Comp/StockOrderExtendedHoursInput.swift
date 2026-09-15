@@ -2,6 +2,10 @@
 //  StockOrderExtendedHoursInput.swift
 //  SuperPreview
 //
+//  组件名称：扩展交易时段输入项
+//  简介：以表单行形式展示并修改盘前盘后交易设置。
+//  用于：股票下单 Demo 的美股订单表单。
+//
 
 import SwiftUI
 

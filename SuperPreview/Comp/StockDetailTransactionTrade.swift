@@ -2,6 +2,10 @@
 //  StockDetailTransactionTrade.swift
 //  SuperPreview
 //
+//  组件名称：详情页交易面板
+//  简介：复用下单表单能力，为详情页提供快速买入和卖出操作。
+//  用于：详情页快捷交易模块的交易 Tab。
+//
 
 import SwiftUI
 

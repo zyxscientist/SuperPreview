@@ -2,6 +2,10 @@
 //  StockOrderConfirmationSheet.swift
 //  SuperPreview
 //
+//  组件名称：订单确认底部弹窗
+//  简介：汇总买卖方向、标的、价格和数量，并处理提交前确认。
+//  用于：股票下单 Demo 提交订单前的确认流程。
+//
 
 import SwiftUI
 

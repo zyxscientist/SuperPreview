@@ -2,6 +2,10 @@
 //  StockDetailBottomActionBar.swift
 //  SuperPreview
 //
+//  组件名称：详情页底部操作栏
+//  简介：提供交易、自选、提醒和切换股票等固定操作。
+//  用于：股票详情页底部的常驻操作区域。
+//
 
 import SwiftUI
 
@@ -14,7 +18,7 @@ struct StockDetailBottomActionBar: View {
     let onTrade: () -> Void
     let onWatchlist: () -> Void
     let onReminder: () -> Void
-    let onShuffle: () -> Void
+    let onScroll: () -> Void
 
     @Environment(\.demoLanguage) private var language
 
@@ -22,12 +26,12 @@ struct StockDetailBottomActionBar: View {
         onTrade: @escaping () -> Void = {},
         onWatchlist: @escaping () -> Void = {},
         onReminder: @escaping () -> Void = {},
-        onShuffle: @escaping () -> Void = {}
+        onScroll: @escaping () -> Void = {}
     ) {
         self.onTrade = onTrade
         self.onWatchlist = onWatchlist
         self.onReminder = onReminder
-        self.onShuffle = onShuffle
+        self.onScroll = onScroll
     }
 
     var body: some View {
@@ -99,13 +103,13 @@ struct StockDetailBottomActionBar: View {
                 )
 
                 utilityButton(
-                    title: language.text(.shuffle),
-                    iconAssetName: "stock_detail_shuffle",
+                    title: language.text(.scroll),
+                    iconAssetName: "stock_detail_scroll",
                     action: {
                         HapticManager.instance.impactHaptic(type: .medium)
-                        onShuffle()
+                        onScroll()
                     },
-                    identifier: "shuffle"
+                    identifier: "scroll"
                 )
             }
             .padding(.leading, StockDetailBottomActionBarLayout.primaryToUtilitySpacing)

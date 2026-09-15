@@ -2,6 +2,10 @@
 //  StockDetailQuoteDetails.swift
 //  SuperPreview
 //
+//  组件名称：展开行情详情
+//  简介：以网格形式展示最高价、最低价、成交额等扩展行情指标。
+//  用于：股票详情页报价区域的展开信息面板。
+//
 
 import SwiftUI
 

@@ -2,6 +2,10 @@
 //  StockDetailOrderBook.swift
 //  SuperPreview
 //
+//  组件名称：买卖盘盘口
+//  简介：展示不同市场的买一卖一或多档价格、数量和比例。
+//  用于：股票详情页行情图表附近的盘口模块。
+//
 
 import SwiftUI
 

@@ -2,6 +2,10 @@
 //  StockOrderOrdersAndPositions.swift
 //  SuperPreview
 //
+//  组件名称：订单与持仓摘要
+//  简介：在下单页快速查看当前标的的今日订单和持仓信息。
+//  用于：股票下单 Demo 的表单下方辅助信息区域。
+//
 
 import SwiftUI
 

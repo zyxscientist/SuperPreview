@@ -2,6 +2,10 @@
 //  StockDetailBrokerOrderBook.swift
 //  SuperPreview
 //
+//  组件名称：经纪商买卖盘
+//  简介：按价位和经纪商席位展示港股买卖盘深度。
+//  用于：港股详情页的经纪商盘口模块。
+//
 
 import Foundation
 import SwiftUI

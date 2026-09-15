@@ -149,7 +149,7 @@ final class StockOrderAdvancedTradingUITests: XCTestCase {
         waitFor("stockOrder.advancedTrading.section.market").tap()
         XCTAssertTrue(waitFor("stockDetail.page").exists)
         assertGone("stockDetail.page.fixedBottomActionBar")
-        assertGone("stockDetail.bottomActionBar.shuffle")
+        assertGone("stockDetail.bottomActionBar.scroll")
 
         waitFor("stockOrder.advancedTrading.section.trade").tap()
         XCTAssertTrue(waitFor("stockOrder.tradeActionBar").exists)
@@ -231,14 +231,14 @@ final class StockOrderAdvancedTradingUITests: XCTestCase {
             XCTAssertEqual(frame.height, initialFrame.height, accuracy: 1)
             if section == "market" {
                 waitFor("stockDetail.page")
-                // The shuffle button is a stable child of the quote action
+                // The scroll button is a stable child of the quote action
                 // surface; the parent glass container is not consistently
                 // exposed by Xcode 27's accessibility snapshot.
-                let quoteFrame = waitFor("stockDetail.bottomActionBar.shuffle").frame
+                let quoteFrame = waitFor("stockDetail.bottomActionBar.scroll").frame
                 let quoteSurfaceFrame = quoteFrame.insetBy(dx: 0, dy: -8)
                 XCTAssertEqual(quoteSurfaceFrame.minY - initialSurfaceFrame.maxY, 8, accuracy: 1)
                 XCTAssertEqual(quoteSurfaceFrame.maxY, tradeSurfaceFrame.maxY, accuracy: 1)
-                XCTAssertTrue(waitFor("stockDetail.bottomActionBar.shuffle").isHittable)
+                XCTAssertTrue(waitFor("stockDetail.bottomActionBar.scroll").isHittable)
             }
         }
         XCTAssertTrue(waitFor("stockOrder.tradeActionBar.buy").isHittable)
@@ -246,17 +246,17 @@ final class StockOrderAdvancedTradingUITests: XCTestCase {
         XCTAssertEqual(waitFor("stockOrder.tradeActionBar").frame.maxY, tradeFrame.maxY, accuracy: 1)
     }
 
-    func testSingleInstrumentShuffleCanCloseAndExitThroughCurrentCard() throws {
+    func testSingleInstrumentScrollCanCloseAndExitThroughCurrentCard() throws {
         enterStockOrder()
         waitFor("stockOrder.advancedTrading.section.market").tap()
-        for exit in ["stockDetail.shuffle.close", "stockDetail.shuffle.card.current"] {
-            waitFor("stockDetail.bottomActionBar.shuffle").tap()
-            XCTAssertTrue(waitFor("stockDetail.shuffle.root").exists)
-            XCTAssertTrue(waitFor("stockDetail.shuffle.committedInstrument").label.contains("09988"))
+        for exit in ["stockDetail.scroll.close", "stockDetail.scroll.card.current"] {
+            waitFor("stockDetail.bottomActionBar.scroll").tap()
+            XCTAssertTrue(waitFor("stockDetail.scroll.root").exists)
+            XCTAssertTrue(waitFor("stockDetail.scroll.committedInstrument").label.contains("09988"))
             waitFor(exit).tap()
-            assertGone("stockDetail.shuffle.root")
+            assertGone("stockDetail.scroll.root")
             XCTAssertTrue(waitFor("stockOrder.advancedTrading.section.market").isSelected)
-            XCTAssertTrue(waitFor("stockDetail.bottomActionBar.shuffle").isHittable)
+            XCTAssertTrue(waitFor("stockDetail.bottomActionBar.scroll").isHittable)
         }
     }
 
@@ -279,7 +279,7 @@ final class StockOrderAdvancedTradingUITests: XCTestCase {
         XCTAssertTrue(waitFor("stockOrder.symbolInput.selectedSymbol").exists)
     }
 
-    func testMiniChartSeriesSurvivesWatchlistDetailOrderAndAdvancedShuffle() throws {
+    func testMiniChartSeriesSurvivesWatchlistDetailOrderAndAdvancedScroll() throws {
         waitFor("mainTab.tab1").tap()
         let cases = [
             ("港股", "hk:09988", false),
@@ -304,8 +304,8 @@ final class StockOrderAdvancedTradingUITests: XCTestCase {
             XCTAssertEqual(waitFor("stockOrder.debug.status.miniKPoints").label, points)
             setToolsEnabled(true)
             waitFor("stockOrder.advancedTrading.section.market").tap()
-            waitFor("stockDetail.bottomActionBar.shuffle").tap()
-            waitFor("stockDetail.shuffle.close").tap()
+            waitFor("stockDetail.bottomActionBar.scroll").tap()
+            waitFor("stockDetail.scroll.close").tap()
             waitFor("stockOrder.advancedTrading.section.trade").tap()
             XCTAssertEqual(waitFor("stockOrder.debug.status.miniKPoints").label, points)
             waitFor("stockOrder.navbar.back").tap()

@@ -2,6 +2,10 @@
 //  StockAssetQuickMenu.swift
 //  SuperPreview
 //
+//  组件名称：股票资产快捷菜单
+//  简介：集中展示股票交易、今日订单、打新和入金等操作。
+//  用于：交易聚合 Demo 的股票资产页面。
+//
 
 import SwiftUI
 

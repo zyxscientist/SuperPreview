@@ -2,6 +2,10 @@
 //  AssetCategoryTabBar.swift
 //  SuperPreview
 //
+//  组件名称：资产分类标签栏
+//  简介：在股票、基金和虚拟资产之间切换当前资产类别。
+//  用于：交易聚合 Demo 的资产内容区域顶部。
+//
 
 import SwiftUI
 

@@ -2,6 +2,10 @@
 //  StockOrderExtendedHoursActionSheet.swift
 //  SuperPreview
 //
+//  组件名称：盘前盘后交易选择弹窗
+//  简介：配置美股订单是否参与盘前或盘后交易时段。
+//  用于：股票下单 Demo 的美股扩展交易时段设置。
+//
 
 import SwiftUI
 

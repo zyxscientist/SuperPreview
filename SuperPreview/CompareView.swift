@@ -245,12 +245,12 @@ struct CompareTab5View: View {
             // 结束
             
             NavigationLink(
-                destination: StockShuffleDemoView(),
+                destination: StockScrollDemoView(),
                 label:{
                     VStack(alignment: .leading, spacing: 2) {
                         Text("个股快切（交互原型）")
                             .font(.system(size: 16, weight: .semibold, design: .default))
-                        Text("WatchlistStock Shuffle(UX Demo)")
+                        Text("WatchlistStock Scroll(UX Demo)")
                             .foregroundColor(.gray)
                             .font(.system(size: 13, weight: .regular, design: .monospaced))
                     }

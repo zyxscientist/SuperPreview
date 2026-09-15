@@ -2,6 +2,10 @@
 //  StockOrderAmountField.swift
 //  SuperPreview
 //
+//  组件名称：订单金额输入框
+//  简介：显示并编辑本次下单所需的金额，适配不同市场币种。
+//  用于：股票下单 Demo 的金额输入区域。
+//
 
 import Foundation
 import SwiftUI

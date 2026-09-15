@@ -2,6 +2,10 @@
 //  StockDetailUSCommonStockPage.swift
 //  SuperPreview
 //
+//  组件名称：美股普通股详情模板
+//  简介：提供美股普通股详情页的报价、图表、关联信息和交易内容组合。
+//  用于：股票详情页的美股普通股变体。
+//
 
 import SwiftUI
 

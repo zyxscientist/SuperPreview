@@ -2,6 +2,10 @@
 //  StockOrderSymbolSearchSheet.swift
 //  SuperPreview
 //
+//  组件名称：订单标的搜索弹窗
+//  简介：支持按代码或名称搜索并选择可交易标的。
+//  用于：股票下单 Demo 的标的选择流程。
+//
 
 import SwiftUI
 

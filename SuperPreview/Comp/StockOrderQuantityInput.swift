@@ -2,6 +2,10 @@
 //  StockOrderQuantityInput.swift
 //  SuperPreview
 //
+//  组件名称：订单数量输入框
+//  简介：编辑下单数量，并按市场规则处理整数或小数数量。
+//  用于：股票下单 Demo 和详情页快捷交易面板。
+//
 
 import SwiftUI
 

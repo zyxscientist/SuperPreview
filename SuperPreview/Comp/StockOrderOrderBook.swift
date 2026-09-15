@@ -2,6 +2,10 @@
 //  StockOrderOrderBook.swift
 //  SuperPreview
 //
+//  组件名称：下单页盘口
+//  简介：展示买卖价格和数量，辅助用户在下单时参考市场深度。
+//  用于：股票下单 Demo 的盘口区域。
+//
 
 import SwiftUI
 

@@ -2,6 +2,10 @@
 //  SubAssetCard.swift
 //  SuperPreview
 //
+//  组件名称：子资产卡片容器
+//  简介：统一承载资产类别的摘要信息、展开状态和辅助交互。
+//  用于：交易聚合 Demo 的股票、基金和虚拟资产卡片。
+//
 
 import Foundation
 import SwiftUI

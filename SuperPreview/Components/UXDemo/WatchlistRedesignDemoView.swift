@@ -5,6 +5,10 @@
 //  Created by Codex on 2026/07/01.
 //  Copyright © 2026 PeterZ. All rights reserved.
 //
+//  组件名称：自选列表重设计 Demo
+//  简介：展示自选列表、行情刷新、标签、迷你 K 线和交互调试能力。
+//  用于：验证自选页面的新布局、动效和多语言表现。
+//
 
 import SwiftUI
 
@@ -199,7 +203,7 @@ struct WatchlistRedesignListPage: View {
     let isMiniKVisible: Bool
     let bottomContentClearance: CGFloat
 
-    private var shuffleInstruments: [StockDetailInstrument] {
+    private var scrollInstruments: [StockDetailInstrument] {
         var seen = Set<String>()
 
         return items.compactMap { item in
@@ -219,7 +223,7 @@ struct WatchlistRedesignListPage: View {
                         item: item,
                         shouldNavigateOnTap: shouldNavigateOnRowTap,
                         isMiniKVisible: isMiniKVisible,
-                        shuffleInstruments: shuffleInstruments
+                        scrollInstruments: scrollInstruments
                     )
                     .overlay(alignment: .topLeading) {
                         if PreviewRuntime.isUITesting {
@@ -248,7 +252,7 @@ struct WatchlistRedesignNavigableRow: View {
     let item: WatchlistRedesignItem
     let shouldNavigateOnTap: Bool
     let isMiniKVisible: Bool
-    let shuffleInstruments: [StockDetailInstrument]
+    let scrollInstruments: [StockDetailInstrument]
 
     var body: some View {
         if shouldNavigateOnTap {
@@ -273,7 +277,7 @@ struct WatchlistRedesignNavigableRow: View {
         } else {
             StockDetailPage(
                 instrument: item.stockDetailInstrument,
-                shuffleInstruments: shuffleInstruments
+                scrollInstruments: scrollInstruments
             )
         }
     }

@@ -2,6 +2,10 @@
 //  StockOrderPriceInput.swift
 //  SuperPreview
 //
+//  组件名称：订单价格输入框
+//  简介：编辑限价等订单价格，并提供跟随盘口价格的快捷操作。
+//  用于：股票下单 Demo 和详情页快捷交易面板。
+//
 
 import SwiftUI
 

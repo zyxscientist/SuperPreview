@@ -2,6 +2,10 @@
 //  StockSubAssetCard.swift
 //  SuperPreview
 //
+//  组件名称：股票子资产卡片
+//  简介：展示股票资产的净资产、现金、持仓市值和盈亏摘要。
+//  用于：交易聚合 Demo 的股票资产概览区域。
+//
 
 import SwiftUI
 

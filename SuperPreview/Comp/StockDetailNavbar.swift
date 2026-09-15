@@ -2,6 +2,10 @@
 //  StockDetailNavbar.swift
 //  SuperPreview
 //
+//  组件名称：详情页紧凑行情栏
+//  简介：在详情页滚动时显示股票名称及最新价格、涨跌幅和交易时段。
+//  用于：股票详情页向上滚动后的顶部导航栏。
+//
 
 import SwiftUI
 
@@ -101,7 +105,7 @@ enum StockDetailNavbarTrailingAction: Hashable {
 
 enum StockDetailNavbarPresentation: Hashable {
     case standard
-    case shuffle
+    case scroll
 }
 
 /// A stock-detail navigation bar with a scroll-driven quote reveal.
@@ -149,8 +153,8 @@ struct StockDetailNavbar: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            if presentation == .shuffle {
-                shuffleTitleContent
+            if presentation == .scroll {
+                scrollTitleContent
             } else {
                 HStack(spacing: StockDetailNavbarLayout.leadingTitleSpacing) {
                     Button(action: onBack) {
@@ -186,11 +190,11 @@ struct StockDetailNavbar: View {
         .padding(.horizontal, StockDetailNavbarLayout.horizontalPadding)
         .frame(
             maxWidth: .infinity,
-            minHeight: presentation == .shuffle
-                ? StockDetailNavbarLayout.shuffleHeight
+            minHeight: presentation == .scroll
+                ? StockDetailNavbarLayout.scrollHeight
                 : StockDetailNavbarLayout.height,
-            maxHeight: presentation == .shuffle
-                ? StockDetailNavbarLayout.shuffleHeight
+            maxHeight: presentation == .scroll
+                ? StockDetailNavbarLayout.scrollHeight
                 : StockDetailNavbarLayout.height
         )
         .background(Color("color-base-1"))
@@ -198,16 +202,16 @@ struct StockDetailNavbar: View {
         .accessibilityIdentifier("stockDetail.navbar")
     }
 
-    private var shuffleTitleContent: some View {
-        HStack(spacing: StockDetailNavbarLayout.shuffleTitleSpacing) {
+    private var scrollTitleContent: some View {
+        HStack(spacing: StockDetailNavbarLayout.scrollTitleSpacing) {
             Text(symbol)
             Text(displayName)
         }
         .modifier(
             CustomFontModifier(
-                size: StockDetailNavbarLayout.shuffleTitleFontSize,
+                size: StockDetailNavbarLayout.scrollTitleFontSize,
                 font: .bold,
-                lineHeight: StockDetailNavbarLayout.shuffleTitleLineHeight
+                lineHeight: StockDetailNavbarLayout.scrollTitleLineHeight
             )
         )
         .foregroundColor(Color("color-text-30"))
@@ -391,10 +395,10 @@ private enum StockDetailNavbarLayout {
     static let quoteRestingOffset: CGFloat = 42
     static let titleLift: CGFloat = 8
     static let quoteLift: CGFloat = 16
-    static let shuffleHeight: CGFloat = 52
-    static let shuffleTitleSpacing: CGFloat = 4
-    static let shuffleTitleFontSize: CGFloat = 20
-    static let shuffleTitleLineHeight: CGFloat = 32
+    static let scrollHeight: CGFloat = 52
+    static let scrollTitleSpacing: CGFloat = 4
+    static let scrollTitleFontSize: CGFloat = 20
+    static let scrollTitleLineHeight: CGFloat = 32
     static let quoteGroupSpacing: CGFloat = 8
     static let quoteValueSpacing: CGFloat = 4
     static let quoteTrendIconSize: CGFloat = 12
@@ -424,6 +428,16 @@ private struct StockDetailNavbarPreviewHarness: View {
 }
 
 private extension StockDetailNavbarQuote {
+    static func preview(session: StockDetailTradingSession) -> StockDetailNavbarQuote {
+        StockDetailNavbarQuote(
+            session: session,
+            price: "1,776.740",
+            change: "+1.079",
+            changePercent: "+0.25%",
+            trend: .up
+        )
+    }
+
     static let preview = StockDetailNavbarQuote(
         session: .trading,
         price: "1,776.740",
@@ -446,10 +460,42 @@ struct StockDetailNavbar_Previews: PreviewProvider {
             StockDetailNavbar(
                 symbol: "TSLA",
                 name: "特斯拉",
-                quote: .preview,
+                quote: .preview(session: .trading),
                 quoteRevealProgress: 1
             )
-            .previewDisplayName("Scrolled")
+            .previewDisplayName("Trading · Fully Revealed")
+
+            StockDetailNavbar(
+                symbol: "TSLA",
+                name: "特斯拉",
+                quote: .preview(session: .closed),
+                quoteRevealProgress: 1
+            )
+            .previewDisplayName("Closed · Fully Revealed")
+
+            StockDetailNavbar(
+                symbol: "TSLA",
+                name: "特斯拉",
+                quote: .preview(session: .halted),
+                quoteRevealProgress: 1
+            )
+            .previewDisplayName("Halted · Fully Revealed")
+
+            StockDetailNavbar(
+                symbol: "TSLA",
+                name: "特斯拉",
+                quote: .preview(session: .preMarketTrading),
+                quoteRevealProgress: 1
+            )
+            .previewDisplayName("Pre-market · Fully Revealed")
+
+            StockDetailNavbar(
+                symbol: "TSLA",
+                name: "特斯拉",
+                quote: .preview(session: .afterHoursTrading),
+                quoteRevealProgress: 1
+            )
+            .previewDisplayName("After-hours · Fully Revealed")
 
             StockDetailNavbarPreviewHarness()
                 .previewDisplayName("Interactive Reveal")

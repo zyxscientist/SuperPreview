@@ -2,6 +2,10 @@
 //  StockDetailTransactionOrders.swift
 //  SuperPreview
 //
+//  组件名称：详情页今日订单列表
+//  简介：筛选当前标的的今日订单，并提供展开和订单操作能力。
+//  用于：详情页快捷交易模块的订单 Tab。
+//
 
 import SwiftUI
 

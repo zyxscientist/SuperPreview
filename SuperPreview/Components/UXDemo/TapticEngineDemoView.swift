@@ -4,6 +4,10 @@
 //
 //  Created by Codex on 2026/07/15.
 //
+//  组件名称：触觉引擎 Demo
+//  简介：演示冲击、连续和自定义参数等触觉反馈效果。
+//  用于：验证交易交互中的触觉反馈强度、锐度和时长。
+//
 
 import CoreHaptics
 import SwiftUI

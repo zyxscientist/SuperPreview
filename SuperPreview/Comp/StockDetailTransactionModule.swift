@@ -2,6 +2,10 @@
 //  StockDetailTransactionModule.swift
 //  SuperPreview
 //
+//  组件名称：详情页快捷交易模块
+//  简介：承载交易、持仓、订单和历史四个 Tab，并管理模块内的切换状态。
+//  用于：股票详情页报价和图表下方的快捷交易区域。
+//
 
 import SwiftUI
 
@@ -130,7 +134,10 @@ struct StockDetailTransactionModule: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            StockDetailTransactionModuleTabBar(selection: tabSelection)
+            StockDetailTransactionModuleTabBar(
+                selection: tabSelection,
+                orderCount: activeOrderCount
+            )
             revealedContent
         }
         .frame(maxWidth: .infinity, alignment: .top)
@@ -186,6 +193,30 @@ struct StockDetailTransactionModule: View {
         )
     }
 
+    /// Counts only orders shown in the current symbol's list that are still
+    /// open or partially filled. Orders awaiting submission and terminal
+    /// statuses do not contribute to the tab count.
+    private var activeOrderCount: Int {
+        let normalizedSymbol = normalized(symbol.id)
+
+        return orders.reduce(into: 0) { count, order in
+            guard normalized(order.symbol) == normalizedSymbol else { return }
+
+            switch order.status {
+            case .submitted, .partiallyFilled:
+                count += 1
+            case .pending, .filled, .failed, .expired, .cancelled:
+                break
+            }
+        }
+    }
+
+    private func normalized(_ value: String) -> String {
+        value
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .uppercased()
+    }
+
     private func updateSelection(_ newSelection: StockDetailTransactionModuleTab?) {
         let isCurrentlyExpanded = selection != nil
         let shouldBeExpanded = newSelection != nil
@@ -222,11 +253,16 @@ struct StockDetailTransactionModule: View {
 /// It only owns tab selection. The complete module owns the selected content.
 struct StockDetailTransactionModuleTabBar: View {
     @Binding private var selection: StockDetailTransactionModuleTab?
+    private let orderCount: Int
 
     @Environment(\.demoLanguage) private var language
 
-    init(selection: Binding<StockDetailTransactionModuleTab?>) {
+    init(
+        selection: Binding<StockDetailTransactionModuleTab?>,
+        orderCount: Int = 0
+    ) {
         _selection = selection
+        self.orderCount = max(orderCount, 0)
     }
 
     var body: some View {
@@ -260,7 +296,7 @@ struct StockDetailTransactionModuleTabBar: View {
         width: CGFloat
     ) -> some View {
         let isSelected = selection == tab
-        let title = tab.title(for: language)
+        let title = displayTitle(for: tab)
 
         return Button {
             selection = isSelected ? nil : tab
@@ -312,6 +348,14 @@ struct StockDetailTransactionModuleTabBar: View {
         .accessibilityAddTraits(isSelected ? .isSelected : [])
         .accessibilityIdentifier("stockDetail.transactionModule.tab.\(tab.accessibilityIdentifier)")
     }
+
+    private func displayTitle(for tab: StockDetailTransactionModuleTab) -> String {
+        let title = tab.title(for: language)
+
+        guard tab == .orders, orderCount > 0 else { return title }
+
+        return "\(title)(\(orderCount))"
+    }
 }
 
 private enum StockDetailTransactionModuleTabBarLayout {
@@ -332,13 +376,21 @@ private enum StockDetailTransactionModuleTabBarLayout {
 
 private struct StockDetailTransactionModuleTabBarPreviewHarness: View {
     @State private var selection: StockDetailTransactionModuleTab?
+    let orderCount: Int
 
-    init(initialSelection: StockDetailTransactionModuleTab? = nil) {
+    init(
+        initialSelection: StockDetailTransactionModuleTab? = nil,
+        orderCount: Int = 0
+    ) {
         _selection = State(initialValue: initialSelection)
+        self.orderCount = orderCount
     }
 
     var body: some View {
-        StockDetailTransactionModuleTabBar(selection: $selection)
+        StockDetailTransactionModuleTabBar(
+            selection: $selection,
+            orderCount: orderCount
+        )
     }
 }
 
@@ -348,6 +400,13 @@ struct StockDetailTransactionModuleTabBar_Previews: PreviewProvider {
             StockDetailTransactionModuleTabBarPreviewHarness()
                 .environment(\.demoLanguage, .simplifiedChinese)
                 .previewDisplayName("简体中文 · 未选择")
+
+            StockDetailTransactionModuleTabBarPreviewHarness(
+                initialSelection: .orders,
+                orderCount: 2
+            )
+                .environment(\.demoLanguage, .simplifiedChinese)
+                .previewDisplayName("简体中文 · 订单(2)")
 
             StockDetailTransactionModuleTabBarPreviewHarness(initialSelection: .history)
                 .environment(\.demoLanguage, .english)

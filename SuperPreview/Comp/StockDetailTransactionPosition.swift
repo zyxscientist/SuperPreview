@@ -2,6 +2,10 @@
 //  StockDetailTransactionPosition.swift
 //  SuperPreview
 //
+//  组件名称：详情页持仓面板
+//  简介：展示当前标的的持仓数量、市值、成本和盈亏状态。
+//  用于：详情页快捷交易模块的持仓 Tab。
+//
 
 import SwiftUI
 

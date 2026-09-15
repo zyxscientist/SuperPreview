@@ -5,6 +5,10 @@
 //  Created by Peter Zhu on 2026/3/17.
 //  Copyright © 2026 PeterZ. All rights reserved.
 //
+//  组件名称：价格刷新动画 Demo
+//  简介：演示报价数值变化时的数字刷新和视觉反馈动画。
+//  用于：验证行情更新时的价格变动动效。
+//
 
 import SwiftUI
 
