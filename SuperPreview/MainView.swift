@@ -51,7 +51,10 @@ struct MainView: View {
                         )
                     }
                     tabLayer(.tab3) {
-                        MarketView(debugPresentation: $isShowingMarketDebugPanel)
+                        MarketView(
+                            debugPresentation: $isShowingMarketDebugPanel,
+                            isActive: selectedTab == .tab3
+                        )
                     }
                     tabLayer(.tab4) {
                         WealthView()

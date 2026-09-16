@@ -102,6 +102,8 @@
 		84F800012F85000000ABC001 /* SystemSegmentedControlDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F800002F85000000ABC001 /* SystemSegmentedControlDemoView.swift */; };
 		84F600012F83000000ABC001 /* DemoLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F600002F83000000ABC001 /* DemoLocalization.swift */; };
 		84F900012F90000000ABC001 /* MarketView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F900002F90000000ABC001 /* MarketView.swift */; };
+		84FA00012F91000000ABC001 /* MarketGlobeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FA00002F91000000ABC001 /* MarketGlobeView.swift */; };
+		84FB00012F92000000ABC001 /* MarketIndexCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB00002F92000000ABC001 /* MarketIndexCards.swift */; };
 		84F700022F84000000ABC001 /* logo.icon in Resources */ = {isa = PBXBuildFile; fileRef = 84F700012F84000000ABC001 /* logo.icon */; };
 		A1B2C3D4E5F6000000000011 /* StockOrderMotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000001 /* StockOrderMotion.swift */; };
 		A1B2C3D4E5F6000000000012 /* StockOrderNavbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6000000000002 /* StockOrderNavbar.swift */; };
@@ -307,6 +309,8 @@
 		84F800002F85000000ABC001 /* SystemSegmentedControlDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemSegmentedControlDemoView.swift; sourceTree = "<group>"; };
 		84F600002F83000000ABC001 /* DemoLocalization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoLocalization.swift; sourceTree = "<group>"; };
 		84F900002F90000000ABC001 /* MarketView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketView.swift; sourceTree = "<group>"; };
+		84FA00002F91000000ABC001 /* MarketGlobeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketGlobeView.swift; sourceTree = "<group>"; };
+		84FB00002F92000000ABC001 /* MarketIndexCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketIndexCards.swift; sourceTree = "<group>"; };
 		84F700012F84000000ABC001 /* logo.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = logo.icon; sourceTree = "<group>"; };
 		A1B2C3D4E5F6000000000001 /* StockOrderMotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderMotion.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6000000000002 /* StockOrderNavbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockOrderNavbar.swift; sourceTree = "<group>"; };
@@ -510,6 +514,8 @@
 			isa = PBXGroup;
 			children = (
 				84F900002F90000000ABC001 /* MarketView.swift */,
+				84FA00002F91000000ABC001 /* MarketGlobeView.swift */,
+				84FB00002F92000000ABC001 /* MarketIndexCards.swift */,
 				846A94A52CAA5886000C1721 /* IntradayCardView.swift */,
 				847296392CBE56A500676FE1 /* MacroDataCPIView.swift */,
 				8461BFF82CC0B9960014ED60 /* MacroDataPCEView.swift */,
@@ -1135,6 +1141,8 @@
 				84A729A3296FB4DF0056BA94 /* PriceQuantityViewModel.swift in Sources */,
 				84F000012F76000000ABC001 /* WatchlistRedesignViewModel.swift in Sources */,
 				84F900012F90000000ABC001 /* MarketView.swift in Sources */,
+				84FA00012F91000000ABC001 /* MarketGlobeView.swift in Sources */,
+				84FB00012F92000000ABC001 /* MarketIndexCards.swift in Sources */,
 				84F295CE296E60AA00976F4C /* PriceInputField.swift in Sources */,
 				C25F3BA3250CBE8200D30EAA /* TradeView.swift in Sources */,
 				C2A0247924FB5315004930F0 /* AppDelegate.swift in Sources */,

@@ -47,18 +47,18 @@ struct CobeMetalDemoView: View {
     @Environment(\.colorScheme) private var colorScheme
     @State private var phi = 0.0
     @State private var theta = 0.0
-    @State private var dark = 0.0
-    @State private var diffuse = 1.2
-    @State private var mapSamples = 16_000.0
-    @State private var mapBrightness = 6.0
-    @State private var mapBaseBrightness = 0.0
-    @State private var scale = 1.90
+    @State private var dark = Double(CobeMetalConfiguration.demoDark)
+    @State private var diffuse = Double(CobeMetalConfiguration.demoDiffuse)
+    @State private var mapSamples = Double(CobeMetalConfiguration.demoMapSamples)
+    @State private var mapBrightness = Double(CobeMetalConfiguration.demoMapBrightness)
+    @State private var mapBaseBrightness = Double(CobeMetalConfiguration.demoMapBaseBrightness)
+    @State private var scale = Double(CobeMetalConfiguration.demoScale)
     @State private var offsetX = 0.0
     @State private var offsetY = 0.0
-    @State private var opacity = 1.0
-    @State private var markerElevation = 0.02
-    @State private var arcHeight = 0.3
-    @State private var arcWidth = 0.5
+    @State private var opacity = Double(CobeMetalConfiguration.demoOpacity)
+    @State private var markerElevation = Double(CobeMetalConfiguration.demoMarkerElevation)
+    @State private var arcHeight = Double(CobeMetalConfiguration.demoArcHeight)
+    @State private var arcWidth = Double(CobeMetalConfiguration.demoArcWidth)
     @State private var showArcs = true
     @State private var showLabels = true
     @State private var autoRotate = true
@@ -469,68 +469,6 @@ private struct CobeLocationFocusPanel: View {
     }
 }
 
-/// A SwiftUI equivalent of COBE's invisible CSS anchor element.
-///
-/// The 1x1 clear view is positioned at the projected marker center. The label
-/// is overlaid with its bottom edge aligned to that view's bottom edge, which
-/// is the native equivalent of `bottom: anchor(top); left: anchor(center)`.
-private struct CobeMarkerAnchorLabel: View {
-    let text: String
-    let anchor: CobeProjectedPoint
-    let size: CGSize
-    let labelAlignment: CobeMetalMarkerLabelAlignment
-    let labelOffset: SIMD2<Float>
-
-    init(
-        text: String,
-        anchor: CobeProjectedPoint,
-        in size: CGSize,
-        labelAlignment: CobeMetalMarkerLabelAlignment,
-        labelOffset: SIMD2<Float>
-    ) {
-        self.text = text
-        self.anchor = anchor
-        self.size = size
-        self.labelAlignment = labelAlignment
-        self.labelOffset = labelOffset
-    }
-
-    var body: some View {
-        Color.clear
-            .frame(width: 1, height: 1)
-            .overlay(alignment: overlayAlignment) {
-                Text(text)
-                    .fixedSize()
-                    .font(.system(size: 10, weight: .semibold, design: .monospaced))
-                    .foregroundColor(Color("color-text-30"))
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 4)
-                    .background(Color("color-base-1").opacity(0.9))
-                    .clipShape(Capsule())
-                    .overlay(
-                        Capsule()
-                            .stroke(Color("color-text-90").opacity(0.5), lineWidth: 0.5)
-                    )
-            }
-            .position(anchor.point(in: size))
-            .offset(x: CGFloat(labelOffset.x), y: CGFloat(labelOffset.y))
-            .opacity(anchor.visible ? 1 : 0)
-            .zIndex(2)
-            .allowsHitTesting(false)
-    }
-
-    private var overlayAlignment: Alignment {
-        switch labelAlignment {
-        case .center:
-            return .bottom
-        case .leading:
-            return .bottomLeading
-        case .trailing:
-            return .bottomTrailing
-        }
-    }
-}
-
     private var configurationPanel: some View {
         VStack(alignment: .leading, spacing: 16) {
             panelHeader(title: "配置面板", subtitle: "对应 COBE 的公开 options")
@@ -823,7 +761,69 @@ private struct CobeMarkerAnchorLabel: View {
     }
 }
 
-private enum CobeMetalTheme {
+/// A SwiftUI equivalent of COBE's invisible CSS anchor element.
+///
+/// The 1x1 clear view is positioned at the projected marker center. The label
+/// is overlaid with its bottom edge aligned to that view's bottom edge, which
+/// is the native equivalent of `bottom: anchor(top); left: anchor(center)`.
+struct CobeMarkerAnchorLabel: View {
+    let text: String
+    let anchor: CobeProjectedPoint
+    let size: CGSize
+    let labelAlignment: CobeMetalMarkerLabelAlignment
+    let labelOffset: SIMD2<Float>
+
+    init(
+        text: String,
+        anchor: CobeProjectedPoint,
+        in size: CGSize,
+        labelAlignment: CobeMetalMarkerLabelAlignment,
+        labelOffset: SIMD2<Float>
+    ) {
+        self.text = text
+        self.anchor = anchor
+        self.size = size
+        self.labelAlignment = labelAlignment
+        self.labelOffset = labelOffset
+    }
+
+    var body: some View {
+        Color.clear
+            .frame(width: 1, height: 1)
+            .overlay(alignment: overlayAlignment) {
+                Text(text)
+                    .fixedSize()
+                    .modifier(CustomFontModifier(size: 10, font: .semibold))
+                    .foregroundColor(Color("color-text-30"))
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 4)
+                    .background(Color("color-base-1").opacity(0.9))
+                    .clipShape(Capsule())
+                    .overlay(
+                        Capsule()
+                            .stroke(Color("color-text-90").opacity(0.5), lineWidth: 0.5)
+                    )
+            }
+            .position(anchor.point(in: size))
+            .offset(x: CGFloat(labelOffset.x), y: CGFloat(labelOffset.y))
+            .opacity(anchor.visible ? 1 : 0)
+            .zIndex(2)
+            .allowsHitTesting(false)
+    }
+
+    private var overlayAlignment: Alignment {
+        switch labelAlignment {
+        case .center:
+            return .bottom
+        case .leading:
+            return .bottomLeading
+        case .trailing:
+            return .bottomTrailing
+        }
+    }
+}
+
+enum CobeMetalTheme {
     case monochrome
 
     var title: String { "Mono" }
@@ -878,7 +878,7 @@ private enum CobeMetalTheme {
     }
 }
 
-private enum CobeMarkerPreset: String, CaseIterable, Identifiable, Hashable {
+enum CobeMarkerPreset: String, CaseIterable, Identifiable, Hashable {
     case worldCities
     case usOffices
     case flightRoutes

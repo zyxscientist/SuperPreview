@@ -10,6 +10,10 @@ import Combine
 import Metal
 import MetalKit
 
+enum CobeMetalFrameRate {
+    static let preferredFramesPerSecond = 120
+}
+
 enum CobeMetalMarkerLabelAlignment: Equatable {
     case center
     case leading
@@ -103,6 +107,23 @@ struct CobeMetalConfiguration: Equatable {
     var opacity: Float = 1
     var markers: [CobeMetalMarker] = []
     var arcs: [CobeMetalArc] = []
+}
+
+/// Baseline values used by the native COBE demo. Production surfaces that
+/// show the same globe should render from this baseline first, then apply
+/// their own crop or interaction state. Keeping these values shared prevents
+/// a different viewport size from silently changing the land-dot lattice.
+extension CobeMetalConfiguration {
+    static let demoDark: Float = 0
+    static let demoDiffuse: Float = 1.2
+    static let demoMapSamples: Float = 16_000
+    static let demoMapBrightness: Float = 6
+    static let demoMapBaseBrightness: Float = 0
+    static let demoArcWidth: Float = 0.5
+    static let demoArcHeight: Float = 0.3
+    static let demoMarkerElevation: Float = 0.02
+    static let demoScale: Float = 1.90
+    static let demoOpacity: Float = 1
 }
 
 struct CobeProjectedPoint: Equatable {
@@ -370,7 +391,9 @@ final class CobeMetalRenderer: NSObject, MTKViewDelegate {
         metalView.framebufferOnly = true
         metalView.enableSetNeedsDisplay = false
         metalView.isPaused = false
-        metalView.preferredFramesPerSecond = 60
+        // The display link below drives this view manually, but keep MTKView's
+        // own preference aligned for any future non-paused rendering path.
+        metalView.preferredFramesPerSecond = CobeMetalFrameRate.preferredFramesPerSecond
 
         globePipeline = Self.makePipeline(
             device: device,

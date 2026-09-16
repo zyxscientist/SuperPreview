@@ -100,6 +100,14 @@ enum DemoCopyKey {
     case slow, medium, fast, mixed
     case all, hkStocks, chinaAShares, usStocks, etfs, custom
     case marketConnect, rwa
+    case marketIndexHangSeng, marketIndexEnterprises, marketIndexRedChips
+    case marketIndexDowJones, marketIndexNasdaq, marketIndexSP500
+    case marketIndexShanghai, marketIndexShenzhen, marketIndexCSI300
+    case marketGlobeAccessibility, exportMarketGlobeParameters
+    case marketGlobeExportFailedTitle, marketGlobeExportFailedMessage
+    case marketSanFrancisco, marketNewYork, marketToronto, marketLondon
+    case marketTokyo, marketShanghai, marketShenzhen, marketHongKong
+    case marketSingapore, marketSydney, marketSaoPaulo, marketCapeTown
     case name, price, enterPrice, decreasePrice, increasePrice, priceAction
     case share
     case quantity, enterQuantity, minimumQuantity, decreaseQuantity, increaseQuantity
@@ -296,6 +304,31 @@ private enum DemoCopy {
         .custom: ("自定义", "自訂", "Custom"),
         .marketConnect: ("沪深港通", "滬深港通", "Stock Connect"),
         .rwa: ("RWA", "RWA", "RWA"),
+        .marketIndexHangSeng: ("恒生指数", "恒生指數", "Hang Seng"),
+        .marketIndexEnterprises: ("国企指数", "國企指數", "HSCEI"),
+        .marketIndexRedChips: ("红筹指数", "紅籌指數", "Red Chips"),
+        .marketIndexDowJones: ("道琼斯指数", "道瓊斯指數", "Dow Jones"),
+        .marketIndexNasdaq: ("纳斯达克指数", "納斯達克指數", "Nasdaq"),
+        .marketIndexSP500: ("标普500指数", "標普500指數", "S&P 500"),
+        .marketIndexShanghai: ("上证指数", "上證指數", "SSE Index"),
+        .marketIndexShenzhen: ("深证成指", "深證成指", "SZSE Index"),
+        .marketIndexCSI300: ("沪深300", "滬深300", "CSI 300"),
+        .marketGlobeAccessibility: ("市场地球仪，可拖动旋转", "市場地球儀，可拖動旋轉", "Market globe, drag to rotate"),
+        .exportMarketGlobeParameters: ("导出当前参数", "匯出目前參數", "Export Current Parameters"),
+        .marketGlobeExportFailedTitle: ("导出失败", "匯出失敗", "Export Failed"),
+        .marketGlobeExportFailedMessage: ("无法生成参数文件，请重试。", "無法產生參數檔案，請重試。", "The parameter file could not be created. Please try again."),
+        .marketSanFrancisco: ("三藩市", "三藩市", "San Francisco"),
+        .marketNewYork: ("纽约", "紐約", "New York"),
+        .marketToronto: ("多伦多", "多倫多", "Toronto"),
+        .marketLondon: ("伦敦", "倫敦", "London"),
+        .marketShenzhen: ("深圳", "深圳", "Shenzhen"),
+        .marketHongKong: ("香港", "香港", "Hong Kong"),
+        .marketShanghai: ("上海", "上海", "Shanghai"),
+        .marketTokyo: ("东京", "東京", "Tokyo"),
+        .marketSingapore: ("新加坡", "新加坡", "Singapore"),
+        .marketSydney: ("悉尼", "悉尼", "Sydney"),
+        .marketSaoPaulo: ("圣保罗", "聖保羅", "São Paulo"),
+        .marketCapeTown: ("开普敦", "開普敦", "Cape Town"),
         .name: ("名称", "名稱", "Name"),
         .price: ("价格", "價格", "Price"),
         .share: ("分享", "分享", "Share"),
