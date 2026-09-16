@@ -36,6 +36,7 @@ struct CobeMetalView: UIViewRepresentable {
         context.coordinator.frameStore = frameStore
         context.coordinator.configurationProvider = configurationProvider
         context.coordinator.isActive = isActive
+        context.coordinator.startObservingApplicationLifecycle()
 
         if let renderer = CobeMetalRenderer(metalView: view) {
             context.coordinator.renderer = renderer
@@ -43,7 +44,7 @@ struct CobeMetalView: UIViewRepresentable {
             // native view uses one CADisplayLink as that shared frame clock.
             view.enableSetNeedsDisplay = true
             view.isPaused = true
-            if isActive {
+            if context.coordinator.canRender {
                 context.coordinator.render(configuration: configuration, in: view.bounds.size)
                 context.coordinator.startDisplayLink()
             }
@@ -53,13 +54,13 @@ struct CobeMetalView: UIViewRepresentable {
     }
 
     func updateUIView(_ view: MTKView, context: Context) {
-        let wasActive = context.coordinator.isActive
+        let wasRenderingAllowed = context.coordinator.canRender
         context.coordinator.frameStore = frameStore
         context.coordinator.configurationProvider = configurationProvider
         context.coordinator.isActive = isActive
 
-        if isActive {
-            if !wasActive {
+        if context.coordinator.canRender {
+            if !wasRenderingAllowed {
                 context.coordinator.render(configuration: configuration, in: view.bounds.size)
             }
             context.coordinator.startDisplayLink()
@@ -82,9 +83,42 @@ struct CobeMetalView: UIViewRepresentable {
 
         private let anchorManager = CobeMetalAnchorManager()
         private var displayLink: CADisplayLink?
+        private var isSceneActive = UIApplication.shared.applicationState == .active
+        private var isObservingApplicationLifecycle = false
+
+        var canRender: Bool {
+            isActive
+                && isSceneActive
+                && UIApplication.shared.applicationState == .active
+        }
+
+        func startObservingApplicationLifecycle() {
+            guard !isObservingApplicationLifecycle else { return }
+
+            let notificationCenter = NotificationCenter.default
+            notificationCenter.addObserver(
+                self,
+                selector: #selector(applicationWillResignActive(_:)),
+                name: UIApplication.willResignActiveNotification,
+                object: nil
+            )
+            notificationCenter.addObserver(
+                self,
+                selector: #selector(applicationDidEnterBackground(_:)),
+                name: UIApplication.didEnterBackgroundNotification,
+                object: nil
+            )
+            notificationCenter.addObserver(
+                self,
+                selector: #selector(applicationDidBecomeActive(_:)),
+                name: UIApplication.didBecomeActiveNotification,
+                object: nil
+            )
+            isObservingApplicationLifecycle = true
+        }
 
         func startDisplayLink() {
-            guard displayLink == nil else { return }
+            guard displayLink == nil, canRender else { return }
 
             let displayLink = CADisplayLink(
                 target: self,
@@ -114,6 +148,8 @@ struct CobeMetalView: UIViewRepresentable {
         }
 
         func render(configuration: CobeMetalConfiguration, in size: CGSize) {
+            guard canRender else { return }
+
             let anchors = anchorManager.update(
                 configuration: configuration,
                 in: size
@@ -129,7 +165,7 @@ struct CobeMetalView: UIViewRepresentable {
         }
 
         @objc private func displayLinkDidFire(_ displayLink: CADisplayLink) {
-            guard isActive,
+            guard canRender,
                   let metalView,
                   let configurationProvider
             else {
@@ -143,8 +179,34 @@ struct CobeMetalView: UIViewRepresentable {
             render(configuration: configuration, in: metalView.bounds.size)
         }
 
+        @objc private func applicationWillResignActive(_ notification: Notification) {
+            pauseRenderingForInactiveApplication()
+        }
+
+        @objc private func applicationDidEnterBackground(_ notification: Notification) {
+            // Keep this as a backstop in case the scene is backgrounded without
+            // a display-link turn occurring between the two lifecycle events.
+            pauseRenderingForInactiveApplication()
+        }
+
+        @objc private func applicationDidBecomeActive(_ notification: Notification) {
+            isSceneActive = true
+            guard isActive else { return }
+            startDisplayLink()
+        }
+
+        private func pauseRenderingForInactiveApplication() {
+            isSceneActive = false
+            stopDisplayLink()
+            // CobeMetalView uses explicit draw() calls from the display link.
+            // Keep MTKView paused as an additional guard during lifecycle
+            // transitions and while the app is suspended.
+            metalView?.isPaused = true
+        }
+
         deinit {
             stopDisplayLink()
+            NotificationCenter.default.removeObserver(self)
         }
     }
 }

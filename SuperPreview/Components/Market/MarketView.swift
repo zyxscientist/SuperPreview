@@ -17,6 +17,7 @@ struct MarketView: View {
     private let isActive: Bool
     @State private var selectedTab = "港股"
     @State private var isShowingDebugPanel = false
+    @State private var isShaderOnly = false
     @State private var marketGlobeOrientation = MarketGlobeOrientation()
     @State private var globeRotation: MarketGlobeRotation?
     @EnvironmentObject private var demoLanguageStore: DemoLanguageStore
@@ -54,6 +55,7 @@ struct MarketView: View {
             MarketDebugPanel(
                 language: demoLanguageBinding,
                 isReducedLiquidGlassUsageEnabled: reducedLiquidGlassUsageBinding,
+                isShaderOnly: $isShaderOnly,
                 globeOrientation: { globeRotation?.value(at: Date()) ?? marketGlobeOrientation },
                 selectedTab: selectedTab
             )
@@ -130,6 +132,9 @@ struct MarketView: View {
                 }
             }
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+            .opacity(isShaderOnly ? 0 : 1)
+            .allowsHitTesting(!isShaderOnly)
+            .accessibilityHidden(isShaderOnly)
             // Figma: cards overlap the lower globe at 108pt below the tabs.
             // The exposed upper globe retains its direct rotation gesture.
             .padding(.top, 108)
@@ -144,6 +149,7 @@ struct MarketView: View {
 private struct MarketDebugPanel: View {
     @Binding var language: DemoLanguage
     @Binding var isReducedLiquidGlassUsageEnabled: Bool
+    @Binding var isShaderOnly: Bool
     let globeOrientation: () -> MarketGlobeOrientation
     let selectedTab: String
 
@@ -177,6 +183,11 @@ private struct MarketDebugPanel: View {
                     isReducedLiquidGlassUsageEnabled: $isReducedLiquidGlassUsageEnabled
                 )
                 .accessibilityIdentifier("market.debug.reduceLiquidGlass")
+
+                Toggle(interfaceLanguage.text(.showShaderOnly), isOn: $isShaderOnly)
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(Color("color-text-30"))
+                    .accessibilityIdentifier("market.debug.showShaderOnly")
 
                 Button(action: exportGlobeParameters) {
                     HStack(spacing: 12) {

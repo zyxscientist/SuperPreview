@@ -103,7 +103,7 @@ enum DemoCopyKey {
     case marketIndexHangSeng, marketIndexEnterprises, marketIndexRedChips
     case marketIndexDowJones, marketIndexNasdaq, marketIndexSP500
     case marketIndexShanghai, marketIndexShenzhen, marketIndexCSI300
-    case marketGlobeAccessibility, exportMarketGlobeParameters
+    case marketGlobeAccessibility, exportMarketGlobeParameters, showShaderOnly
     case marketGlobeExportFailedTitle, marketGlobeExportFailedMessage
     case marketSanFrancisco, marketNewYork, marketToronto, marketLondon
     case marketTokyo, marketShanghai, marketShenzhen, marketHongKong
@@ -315,6 +315,7 @@ private enum DemoCopy {
         .marketIndexCSI300: ("沪深300", "滬深300", "CSI 300"),
         .marketGlobeAccessibility: ("市场地球仪，可拖动旋转", "市場地球儀，可拖動旋轉", "Market globe, drag to rotate"),
         .exportMarketGlobeParameters: ("导出当前参数", "匯出目前參數", "Export Current Parameters"),
+        .showShaderOnly: ("仅显示 Shader", "只顯示 Shader", "Show Shader Only"),
         .marketGlobeExportFailedTitle: ("导出失败", "匯出失敗", "Export Failed"),
         .marketGlobeExportFailedMessage: ("无法生成参数文件，请重试。", "無法產生參數檔案，請重試。", "The parameter file could not be created. Please try again."),
         .marketSanFrancisco: ("三藩市", "三藩市", "San Francisco"),
