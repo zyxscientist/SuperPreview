@@ -474,7 +474,7 @@ final class CobeMetalRenderer: NSObject, MTKViewDelegate {
     func draw(in view: MTKView) {
         guard let renderPassDescriptor = view.currentRenderPassDescriptor,
               let drawable = view.currentDrawable,
-              let commandBuffer = commandQueue.makeCommandBuffer(),
+              let commandBuffer = makeDiagnosticCommandBuffer(),
               let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor),
               let globePipeline,
               let mapTexture,
@@ -582,8 +582,16 @@ final class CobeMetalRenderer: NSObject, MTKViewDelegate {
         }
 
         encoder.endEncoding()
+        MarketLifecycleDiagnostics.shared.track(commandBuffer)
         commandBuffer.present(drawable)
         commandBuffer.commit()
+    }
+
+    private func makeDiagnosticCommandBuffer() -> MTLCommandBuffer? {
+        guard MarketLifecycleDiagnostics.isEnabled else { return commandQueue.makeCommandBuffer() }
+        let descriptor = MTLCommandBufferDescriptor()
+        descriptor.errorOptions = .encoderExecutionStatus
+        return commandQueue.makeCommandBuffer(descriptor: descriptor)
     }
 
     deinit {

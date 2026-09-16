@@ -8,6 +8,7 @@
       },
       "testTargets" : [
         {
+          "skippedTests" : [ "MarketLifecycleStressUITests" ],
           "target" : {
             "containerPath" : "container:SuperPreview.xcodeproj",
             "identifier" : "AA1700080000000000000001",
@@ -23,6 +24,7 @@
   },
   "testTargets" : [
     {
+      "skippedTests" : [ "MarketLifecycleStressUITests" ],
       "target" : {
         "containerPath" : "container:SuperPreview.xcodeproj",
         "identifier" : "AA1700080000000000000001",

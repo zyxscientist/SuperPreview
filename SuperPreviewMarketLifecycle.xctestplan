@@ -1,0 +1,21 @@
+{
+  "configurations" : [
+    {
+      "id" : "BBD8D402-0011-4C11-8844-000000000001",
+      "name" : "MarketLifecycle",
+      "options" : { "testTimeoutsEnabled" : true }
+    }
+  ],
+  "defaultOptions" : { "codeCoverage" : false, "disableAppThinning" : true },
+  "testTargets" : [
+    {
+      "selectedTests" : [ "MarketLifecycleStressUITests" ],
+      "target" : {
+        "containerPath" : "container:SuperPreview.xcodeproj",
+        "identifier" : "AA1700080000000000000001",
+        "name" : "SuperPreviewUITests"
+      }
+    }
+  ],
+  "version" : 1
+}

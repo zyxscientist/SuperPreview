@@ -43,7 +43,10 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <TestPlans>
          <TestPlanReference
-            reference = "container:SuperPreviewLayout.xctestplan" />
+            reference = "container:SuperPreviewLayout.xctestplan"
+            default = "YES" />
+         <TestPlanReference
+            reference = "container:SuperPreviewMarketLifecycle.xctestplan" />
       </TestPlans>
    </TestAction>
    <LaunchAction

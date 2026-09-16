@@ -31,6 +31,8 @@ struct CobeMetalView: UIViewRepresentable {
 
     func makeUIView(context: Context) -> MTKView {
         let view = MTKView(frame: .zero)
+        MarketLifecycleDiagnostics.shared.install()
+        MarketLifecycleDiagnostics.shared.event("metal-view-created")
         view.accessibilityIdentifier = "cobe.metal.canvas"
         context.coordinator.metalView = view
         context.coordinator.frameStore = frameStore
@@ -70,6 +72,7 @@ struct CobeMetalView: UIViewRepresentable {
     }
 
     static func dismantleUIView(_ view: MTKView, coordinator: Coordinator) {
+        MarketLifecycleDiagnostics.shared.event("metal-view-dismantled")
         coordinator.stopDisplayLink()
         coordinator.renderer = nil
     }
@@ -119,6 +122,7 @@ struct CobeMetalView: UIViewRepresentable {
 
         func startDisplayLink() {
             guard displayLink == nil, canRender else { return }
+            MarketLifecycleDiagnostics.shared.event("display-link-start")
 
             let displayLink = CADisplayLink(
                 target: self,
@@ -143,11 +147,12 @@ struct CobeMetalView: UIViewRepresentable {
         }
 
         func stopDisplayLink() {
+            if displayLink != nil { MarketLifecycleDiagnostics.shared.event("display-link-stop") }
             displayLink?.invalidate()
             displayLink = nil
         }
 
-        func render(configuration: CobeMetalConfiguration, in size: CGSize) {
+        func render(configuration: CobeMetalConfiguration, in size: CGSize, sampleStart: TimeInterval? = nil) {
             guard canRender else { return }
 
             let anchors = anchorManager.update(
@@ -158,10 +163,14 @@ struct CobeMetalView: UIViewRepresentable {
                 configuration: configuration,
                 anchors: anchors
             )
+            MarketLifecycleDiagnostics.shared.stage("frame-anchors-ready", since: sampleStart)
 
             renderer?.update(configuration)
+            MarketLifecycleDiagnostics.shared.stage("frame-resources-ready", since: sampleStart)
             frameStore?.publish(frame)
+            MarketLifecycleDiagnostics.shared.stage("frame-published", since: sampleStart)
             metalView?.draw()
+            MarketLifecycleDiagnostics.shared.stage("frame-draw-returned", since: sampleStart)
         }
 
         @objc private func displayLinkDidFire(_ displayLink: CADisplayLink) {
@@ -172,11 +181,13 @@ struct CobeMetalView: UIViewRepresentable {
                 return
             }
 
+            let sampleStart = MarketLifecycleDiagnostics.shared.beginFrameSample()
             let configuration = configurationProvider(
                 Date(),
                 metalView.bounds.size
             )
-            render(configuration: configuration, in: metalView.bounds.size)
+            MarketLifecycleDiagnostics.shared.stage("frame-configuration-ready", since: sampleStart)
+            render(configuration: configuration, in: metalView.bounds.size, sampleStart: sampleStart)
         }
 
         @objc private func applicationWillResignActive(_ notification: Notification) {
