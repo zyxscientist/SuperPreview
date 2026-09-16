@@ -103,6 +103,7 @@ enum DemoCopyKey {
     case marketIndexHangSeng, marketIndexEnterprises, marketIndexRedChips
     case marketIndexDowJones, marketIndexNasdaq, marketIndexSP500
     case marketIndexShanghai, marketIndexShenzhen, marketIndexCSI300
+    case marketCryptoBitcoin, marketCryptoEthereum, marketCryptoSolana
     case marketGlobeAccessibility, exportMarketGlobeParameters, showShaderOnly
     case marketGlobeExportFailedTitle, marketGlobeExportFailedMessage
     case marketSanFrancisco, marketNewYork, marketToronto, marketLondon
@@ -313,6 +314,9 @@ private enum DemoCopy {
         .marketIndexShanghai: ("上证指数", "上證指數", "SSE Index"),
         .marketIndexShenzhen: ("深证成指", "深證成指", "SZSE Index"),
         .marketIndexCSI300: ("沪深300", "滬深300", "CSI 300"),
+        .marketCryptoBitcoin: ("比特币", "比特幣", "Bitcoin"),
+        .marketCryptoEthereum: ("以太坊", "以太坊", "Ethereum"),
+        .marketCryptoSolana: ("索拉纳", "索拉納", "Solana"),
         .marketGlobeAccessibility: ("市场地球仪，可拖动旋转", "市場地球儀，可拖動旋轉", "Market globe, drag to rotate"),
         .exportMarketGlobeParameters: ("导出当前参数", "匯出目前參數", "Export Current Parameters"),
         .showShaderOnly: ("仅显示 Shader", "只顯示 Shader", "Show Shader Only"),

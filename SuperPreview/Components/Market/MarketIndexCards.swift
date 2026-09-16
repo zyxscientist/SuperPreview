@@ -1,4 +1,4 @@
-// Shared index cards for the three equity-market tabs.
+// Shared quote cards for equity and cryptocurrency tabs.
 import SwiftUI
 
 struct MarketIndexQuote: Identifiable {
@@ -12,6 +12,13 @@ struct MarketIndexQuote: Identifiable {
     static func previews(for tab: String) -> [Self] {
         let indices: [(String, DemoCopyKey)]
         switch tab {
+        case "加密货币":
+            // USD-denominated design fixtures, not a live market data feed.
+            return [
+                Self(id: "BTC", title: .marketCryptoBitcoin, value: "67,250.80", change: "+625.40", percentage: "+0.94%"),
+                Self(id: "ETH", title: .marketCryptoEthereum, value: "3,520.65", change: "+48.62", percentage: "+1.40%"),
+                Self(id: "SOL", title: .marketCryptoSolana, value: "148.32", change: "+4.16", percentage: "+2.89%")
+            ]
         case "港股":
             indices = [("HSI", .marketIndexHangSeng), ("HSCEI", .marketIndexEnterprises), ("HSCCI", .marketIndexRedChips)]
         case "美股":

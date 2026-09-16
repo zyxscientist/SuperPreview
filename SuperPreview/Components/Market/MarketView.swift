@@ -68,13 +68,21 @@ struct MarketView: View {
         }
         .environment(\.demoLanguage, demoLanguage)
         .onChange(of: selectedTab) { _, tab in
+            let current = globeRotation?.value(at: Date()) ?? marketGlobeOrientation
+            if tab == "加密货币" {
+                marketGlobeOrientation = current
+                globeRotation = .spinning(from: current)
+                return
+            }
             let target: MarketGlobeOrientation
             switch tab {
             case "港股", "沪深港通": target = MarketGlobeOrientation()
             case "美股": target = .unitedStates
-            default: return
+            default:
+                marketGlobeOrientation = current
+                globeRotation = nil
+                return
             }
-            let current = globeRotation?.value(at: Date()) ?? marketGlobeOrientation
             globeRotation = MarketGlobeRotation(from: current, to: target)
             marketGlobeOrientation = target
         }
@@ -104,6 +112,7 @@ struct MarketView: View {
         ZStack(alignment: .top) {
             MarketGlobeView(
                 isActive: isActive && showsGlobe,
+                isCrypto: selectedTab == "加密货币",
                 orientation: $marketGlobeOrientation,
                 rotation: $globeRotation
             )
@@ -142,7 +151,7 @@ struct MarketView: View {
     }
 
     private var showsGlobe: Bool {
-        selectedTab == "港股" || selectedTab == "美股" || selectedTab == "沪深港通"
+        selectedTab == "港股" || selectedTab == "美股" || selectedTab == "沪深港通" || selectedTab == "加密货币"
     }
 }
 

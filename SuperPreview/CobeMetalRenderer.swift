@@ -14,6 +14,15 @@ enum CobeMetalFrameRate {
     static let preferredFramesPerSecond = 120
 }
 
+/// A shared, small monotonic time value for CPU scheduling and GPU animation.
+enum CobeMetalAnimationClock {
+    private static let origin = ProcessInfo.processInfo.systemUptime
+    static var time: Float {
+        let start = origin
+        return Float(ProcessInfo.processInfo.systemUptime - start)
+    }
+}
+
 enum CobeMetalMarkerLabelAlignment: Equatable {
     case center
     case leading
@@ -33,6 +42,9 @@ struct CobeMetalMarker: Identifiable, Equatable {
     let labelAlignment: CobeMetalMarkerLabelAlignment
     /// Display-only label offset in points (positive right/down).
     let labelOffset: SIMD2<Float>
+    /// Start time, route duration, fade-in start/end in route reveal progress.
+    /// A zero duration keeps ordinary city markers fully visible.
+    let animation: SIMD4<Float>
 
     init(
         id: String,
@@ -42,7 +54,8 @@ struct CobeMetalMarker: Identifiable, Equatable {
         label: String? = nil,
         screenOffset: SIMD2<Float> = .zero,
         labelAlignment: CobeMetalMarkerLabelAlignment = .center,
-        labelOffset: SIMD2<Float> = .zero
+        labelOffset: SIMD2<Float> = .zero,
+        animation: SIMD4<Float> = .zero
     ) {
         self.id = id
         self.location = location
@@ -52,6 +65,7 @@ struct CobeMetalMarker: Identifiable, Equatable {
         self.screenOffset = screenOffset
         self.labelAlignment = labelAlignment
         self.labelOffset = labelOffset
+        self.animation = animation
     }
 }
 
@@ -61,19 +75,25 @@ struct CobeMetalArc: Identifiable, Equatable {
     let to: SIMD2<Float>
     let color: SIMD3<Float>?
     let label: String?
+    let startTime: Float
+    let duration: Float
 
     init(
         id: String,
         from: SIMD2<Float>,
         to: SIMD2<Float>,
         color: SIMD3<Float>? = nil,
-        label: String? = nil
+        label: String? = nil,
+        startTime: Float = 0,
+        duration: Float = 0
     ) {
         self.id = id
         self.from = from
         self.to = to
         self.color = color
         self.label = label
+        self.startTime = startTime
+        self.duration = duration
     }
 }
 
@@ -329,6 +349,7 @@ private struct CobeMarkerUniforms {
     var scale: Float
     var markerElevation: Float
     var markerColor: SIMD4<Float>
+    var animation: SIMD4<Float>
 }
 
 private struct CobeArcUniforms {
@@ -338,12 +359,14 @@ private struct CobeArcUniforms {
     var scale: Float
     var markerElevation: Float
     var arcColor: SIMD4<Float>
+    var animation: SIMD4<Float>
 }
 
 private struct CobeMarkerInstance {
     var positionAndSize: SIMD4<Float>
     var screenOffset: SIMD2<Float>
     var colorAndHasColor: SIMD4<Float>
+    var animation: SIMD4<Float>
 }
 
 private struct CobeArcInstance {
@@ -506,7 +529,8 @@ final class CobeMetalRenderer: NSObject, MTKViewDelegate {
                 rotation: SIMD2(configuration.phi, configuration.theta),
                 scale: configuration.scale,
                 markerElevation: configuration.markerElevation,
-                arcColor: SIMD4(configuration.arcColor, 1)
+                arcColor: SIMD4(configuration.arcColor, 1),
+                animation: SIMD4(CobeMetalAnimationClock.time, 0, 0, 0)
             )
             encoder.setVertexBytes(
                 &arcUniforms,
@@ -535,7 +559,8 @@ final class CobeMetalRenderer: NSObject, MTKViewDelegate {
                 rotation: SIMD2(configuration.phi, configuration.theta),
                 scale: configuration.scale,
                 markerElevation: configuration.markerElevation,
-                markerColor: SIMD4(configuration.markerColor, 1)
+                markerColor: SIMD4(configuration.markerColor, 1),
+                animation: SIMD4(CobeMetalAnimationClock.time, 0, 0, 0)
             )
             encoder.setVertexBytes(
                 &markerUniforms,
@@ -580,7 +605,8 @@ final class CobeMetalRenderer: NSObject, MTKViewDelegate {
                     marker.size
                 ),
                 screenOffset: marker.screenOffset,
-                colorAndHasColor: SIMD4(color, marker.color == nil ? 0 : 1)
+                colorAndHasColor: SIMD4(color, marker.color == nil ? 0 : 1),
+                animation: marker.animation
             )
         }
         markerBuffer = makeBuffer(from: instances)
@@ -596,8 +622,8 @@ final class CobeMetalRenderer: NSObject, MTKViewDelegate {
         let instances = arcs.map { arc in
             let color = arc.color ?? SIMD3<Float>(0, 0, 0)
             return CobeArcInstance(
-                from: SIMD4(CobeProjection.latLonTo3D(arc.from), 0),
-                to: SIMD4(CobeProjection.latLonTo3D(arc.to), 0),
+                from: SIMD4(CobeProjection.latLonTo3D(arc.from), arc.startTime),
+                to: SIMD4(CobeProjection.latLonTo3D(arc.to), arc.duration),
                 heightAndWidth: SIMD4(
                     configuration.arcHeight + configuration.markerElevation,
                     configuration.arcWidth * 0.005,

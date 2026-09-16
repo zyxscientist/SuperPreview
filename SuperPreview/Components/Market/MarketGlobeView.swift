@@ -10,6 +10,7 @@
 import Foundation
 import SwiftUI
 import UIKit
+import simd
 
 struct MarketGlobeOrientation: Codable, Equatable {
     // Captured on device in market-globe-parameters-2026-09-16T06-13-31Z.json.
@@ -33,8 +34,20 @@ struct MarketGlobeRotation {
     let to: MarketGlobeOrientation
     var startedAt = Date()
     let duration: Double = 0.5
+    var angularVelocity: Double = 0
+
+    /// Roughly two minutes per revolution, shared by tab entry and drag release.
+    static func spinning(from orientation: MarketGlobeOrientation) -> Self {
+        Self(from: orientation, to: orientation, angularVelocity: 0.05)
+    }
 
     func value(at date: Date) -> MarketGlobeOrientation {
+        if angularVelocity != 0 {
+            return MarketGlobeOrientation(
+                phi: from.phi + max(date.timeIntervalSince(startedAt), 0) * angularVelocity,
+                theta: from.theta
+            )
+        }
         let progress = min(max(date.timeIntervalSince(startedAt) / duration, 0), 1)
         // Cubic ease-out: starts promptly and decelerates into the target.
         let remaining = 1 - progress
@@ -53,6 +66,7 @@ struct MarketGlobeRotation {
 /// projection shared with the debug demo.
 struct MarketGlobeView: View {
     let isActive: Bool
+    let isCrypto: Bool
     @Binding var orientation: MarketGlobeOrientation
     @Binding var rotation: MarketGlobeRotation?
 
@@ -62,15 +76,18 @@ struct MarketGlobeView: View {
     @State private var dragStartPhi = MarketGlobeOrientation.initialPhi
     @State private var dragStartTheta = MarketGlobeOrientation.initialTheta
     @State private var isDragging = false
+    @State private var cryptoArcSeed = UInt64.random(in: 1...UInt64.max)
 
     private let theme: CobeMetalTheme = .monochrome
 
     init(
         isActive: Bool = true,
+        isCrypto: Bool = false,
         orientation: Binding<MarketGlobeOrientation>,
         rotation: Binding<MarketGlobeRotation?>
     ) {
         self.isActive = isActive
+        self.isCrypto = isCrypto
         self._orientation = orientation
         self._rotation = rotation
     }
@@ -181,6 +198,9 @@ struct MarketGlobeView: View {
             }
             .onEnded { _ in
                 isDragging = false
+                if isCrypto {
+                    rotation = .spinning(from: orientation)
+                }
             }
     }
 
@@ -191,16 +211,12 @@ struct MarketGlobeView: View {
                 location: marker.location,
                 size: marker.size,
                 color: marker.color,
-                label: marker.id == "london" ? nil : language.text(markerCopyKey(for: marker.id)),
+                label: isCrypto || marker.id == "london" ? nil : language.text(markerCopyKey(for: marker.id)),
                 screenOffset: marker.screenOffset,
                 labelAlignment: marker.labelAlignment,
                 labelOffset: marker.labelOffset
             )
         }
-    }
-
-    private var arcs: [CobeMetalArc] {
-        CobeMarkerPreset.worldCities.arcs
     }
 
     private func makeConfiguration(phi: Double, theta: Double, canvasSize: CGSize) -> CobeMetalConfiguration {
@@ -219,7 +235,8 @@ struct MarketGlobeView: View {
         configuration.arcColor = theme.arcColor(for: colorScheme)
         configuration.arcWidth = CobeMetalConfiguration.demoArcWidth
         configuration.arcHeight = CobeMetalConfiguration.demoArcHeight
-        configuration.markerElevation = CobeMetalConfiguration.demoMarkerElevation
+        // Crypto markers and arc endpoints sit directly on the globe surface.
+        configuration.markerElevation = isCrypto ? 0 : CobeMetalConfiguration.demoMarkerElevation
         // The market surface is a crop of the same COBE scene, not a scaled
         // crop of the Demo's oversized debug viewport.  Keep the renderer's
         // map/marker/arc parameters shared with the Demo, while using the
@@ -227,8 +244,27 @@ struct MarketGlobeView: View {
         configuration.scale = MarketGlobeLayout.renderScale
         configuration.offset = SIMD2(0, MarketGlobeLayout.sourceOffsetY)
         configuration.opacity = CobeMetalConfiguration.demoOpacity
-        configuration.markers = markers
-        configuration.arcs = arcs
+        if isCrypto {
+            // Sample once so markers and arcs share exactly the same endpoints,
+            // including frames on a route's cycle boundary.
+            let routes = MarketCryptoArcAnimation.arcs(at: CobeMetalAnimationClock.time, seed: cryptoArcSeed)
+            configuration.arcs = routes
+            configuration.markers = routes.flatMap { route in
+                [
+                    CobeMetalMarker(
+                        id: "\(route.id)-from", location: route.from, size: 0.015,
+                        animation: SIMD4(route.startTime, route.duration, 0, 0.06)
+                    ),
+                    CobeMetalMarker(
+                        id: "\(route.id)-to", location: route.to, size: 0.015,
+                        animation: SIMD4(route.startTime, route.duration, 0.8, 1)
+                    )
+                ]
+            }
+        } else {
+            configuration.markers = markers
+            configuration.arcs = CobeMarkerPreset.worldCities.arcs
+        }
         return configuration
     }
 
@@ -247,6 +283,49 @@ struct MarketGlobeView: View {
         case "saopaulo": return .marketSaoPaulo
         case "capetown": return .marketCapeTown
         default: return .marketGlobeAccessibility
+        }
+    }
+}
+
+/// Stable routes within each staggered four-second slot. Only the GPU advances
+/// their reveal/fade; routes and buffers change when a new journey starts.
+private enum MarketCryptoArcAnimation {
+    static func arcs(at time: Float, seed: UInt64) -> [CobeMetalArc] {
+        let duration: Float = 4
+        return (0..<5).map { slot in
+            let offset = Float(slot) * duration / 5
+            let cycle = UInt64(floor((time + offset) / duration))
+            var random = seed &+ (cycle &* 0x9E3779B97F4A7C15) &+ UInt64(slot) &* 0xBF58476D1CE4E5B9
+            func next() -> Float {
+                random = random &* 6364136223846793005 &+ 1442695040888963407
+                return Float(random >> 40) / Float(1 << 24)
+            }
+            func location() -> SIMD2<Float> {
+                // Uniform surface sampling, rather than selecting preset cities.
+                SIMD2(asin(next() * 2 - 1) * 180 / .pi, next() * 360 - 180)
+            }
+            // Anchor one end in the northern band exposed by the market crop.
+            // Longitude stays unrestricted; the globe's rotation reveals all sides.
+            let minimumY = sin(Float(25) * .pi / 180)
+            let maximumY = sin(Float(65) * .pi / 180)
+            let northernLatitude = asin(minimumY + next() * (maximumY - minimumY)) * 180 / .pi
+            let from = SIMD2(northernLatitude, next() * 360 - 180)
+            var to = location()
+            // Avoid almost coincident endpoints and near-antipodal Bezier arcs.
+            for _ in 0..<24 {
+                let separation = simd_dot(CobeProjection.latLonTo3D(from), CobeProjection.latLonTo3D(to))
+                if separation > -0.65 && separation < 0.9 { break }
+                to = location()
+            }
+            // The northern endpoint can be either the source or destination.
+            let reversed = next() < 0.5
+            return CobeMetalArc(
+                id: "crypto-\(slot)-\(cycle)",
+                from: reversed ? to : from,
+                to: reversed ? from : to,
+                startTime: Float(cycle) * duration - offset,
+                duration: duration
+            )
         }
     }
 }
@@ -509,7 +588,7 @@ private enum MarketGlobeLayout {
     // reference instead of the demo's initial Pacific-facing orientation.
     static let initialPhi = MarketGlobeOrientation.initialPhi
     static let initialTheta = MarketGlobeOrientation.initialTheta
-    static let renderScale: Float = 1.25
+    static let renderScale: Float = 1.27
     // Keep the full sphere inside the source MTKView before applying the
     // production crop.  The matching display compensation below cancels this
     // translation after the source raster has been transformed.

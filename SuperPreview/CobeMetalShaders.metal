@@ -28,6 +28,7 @@ struct CobeMarkerUniforms {
     float scale;
     float markerElevation;
     float4 markerColor;
+    float4 animation;
 };
 
 struct CobeArcUniforms {
@@ -37,12 +38,14 @@ struct CobeArcUniforms {
     float scale;
     float markerElevation;
     float4 arcColor;
+    float4 animation;
 };
 
 struct CobeMarkerInstance {
     float4 positionAndSize;
     float2 screenOffset;
     float4 colorAndHasColor;
+    float4 animation;
 };
 
 struct CobeArcInstance {
@@ -62,6 +65,7 @@ struct CobeMarkerVertexOut {
     float2 uv;
     float3 color;
     float hasColor;
+    float opacity;
 };
 
 struct CobeArcVertexOut {
@@ -70,6 +74,7 @@ struct CobeArcVertexOut {
     float hasColor;
     float depth;
     float radialDistance;
+    float opacity;
 };
 
 constant float2 cobeQuad[6] = {
@@ -316,6 +321,14 @@ vertex CobeMarkerVertexOut cobeMarkerVertex(
     output.uv = position;
     output.color = marker.colorAndHasColor.xyz;
     output.hasColor = marker.colorAndHasColor.w;
+    output.opacity = 1.0;
+    if (marker.animation.y > 0.0) {
+        float age = max(uniforms.animation.x - marker.animation.x, 0.0);
+        // Match the arc reveal duration: destination fades in over its final 20%.
+        float progress = clamp(age / (marker.animation.y * 0.55), 0.0, 1.0);
+        output.opacity = smoothstep(marker.animation.z, marker.animation.w, progress)
+            * (1.0 - smoothstep(marker.animation.y * 0.78, marker.animation.y, age));
+    }
 
     if (rotatedPoint.z < 0.0
         && length(rotatedPoint.xy) < cobeGlobeRadius) {
@@ -346,7 +359,7 @@ fragment float4 cobeMarkerFragment(
     float3 color = input.hasColor > 0.5
         ? input.color
         : uniforms.markerColor.xyz;
-    return float4(color, 1.0);
+    return float4(color, input.opacity);
 }
 
 float3 cobeBezierPoint(float3 p0, float3 p1, float3 p2, float t) {
@@ -380,7 +393,14 @@ vertex CobeArcVertexOut cobeArcVertex(
         * (cobeGlobeRadius + arc.heightAndWidth.x);
 
     uint segmentIndex = vertexID / 2;
-    float t = float(segmentIndex) / 32.0;
+    // duration == 0 preserves the static arcs used by equity tabs and the demo.
+    float age = max(uniforms.animation.x - arc.from.w, 0.0);
+    bool animated = arc.to.w > 0.0;
+    float progress = animated ? clamp(age / (arc.to.w * 0.55), 0.0, 1.0) : 1.0;
+    float opacity = animated
+        ? smoothstep(0.0, 0.12, age) * (1.0 - smoothstep(arc.to.w * 0.78, arc.to.w, age))
+        : 1.0;
+    float t = float(segmentIndex) / 32.0 * progress;
     float side = (vertexID % 2 == 0) ? -1.0 : 1.0;
     float3 arcPoint = cobeBezierPoint(from, midpoint, to, t);
     float3 rotatedPoint = cobeRotate(
@@ -417,6 +437,7 @@ vertex CobeArcVertexOut cobeArcVertex(
     output.hasColor = arc.colorAndHasColor.w;
     output.depth = rotatedPoint.z;
     output.radialDistance = length(rotatedPoint.xy);
+    output.opacity = opacity;
     return output;
 }
 
@@ -430,5 +451,5 @@ fragment float4 cobeArcFragment(
     float3 color = input.hasColor > 0.5
         ? input.color
         : uniforms.arcColor.xyz;
-    return float4(color, 1.0);
+    return float4(color, input.opacity);
 }
