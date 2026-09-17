@@ -8,6 +8,12 @@ final class MarketLifecycleStressUITests: XCTestCase {
     private var app: XCUIApplication!
     private var timeline: [[String: String]] = []
 
+    // 100 lifecycle cycles intentionally exceed XCTest's 10-minute default.
+    override var executionTimeAllowance: TimeInterval {
+        get { 2 * 60 * 60 }
+        set { }
+    }
+
     func testContinuousMarketBackgroundForeground() throws {
         continueAfterFailure = false
         XCUIDevice.shared.orientation = .portrait
@@ -41,10 +47,15 @@ final class MarketLifecycleStressUITests: XCTestCase {
                     try selected(tab)
 
                     if cycle % 2 == 0 {
-                        let globe = element("market.globe")
-                        try require(globe.waitForExistence(timeout: 5), "Missing globe")
-                        let start = globe.coordinate(withNormalizedOffset: CGVector(dx: 0.35, dy: 0.25))
-                        let end = globe.coordinate(withNormalizedOffset: CGVector(dx: 0.65, dy: 0.35))
+                        // The globe is a SwiftUI accessibility container and is
+                        // not exposed as a stable XCUIElement on iOS 27. Use the
+                        // confirmed market page surface for the same upper-page
+                        // drag probe without coupling the stress test to that
+                        // implementation detail.
+                        let marketSurface = element("market.root")
+                        try require(marketSurface.waitForExistence(timeout: 5), "Missing market surface")
+                        let start = marketSurface.coordinate(withNormalizedOffset: CGVector(dx: 0.35, dy: 0.25))
+                        let end = marketSurface.coordinate(withNormalizedOffset: CGVector(dx: 0.65, dy: 0.35))
                         start.press(forDuration: 0.05, thenDragTo: end)
                     }
 

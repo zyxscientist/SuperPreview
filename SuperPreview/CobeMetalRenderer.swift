@@ -323,9 +323,31 @@ struct CobeMetalFrame: Equatable {
 final class CobeMetalFrameStore: ObservableObject {
     @Published private(set) var frame: CobeMetalFrame?
 
+    // Rendering can run from makeUIView/updateUIView as well as from the
+    // display link. Keep the latest snapshot immediately, but defer the
+    // ObservableObject publication until SwiftUI has finished its current
+    // view-update transaction. Coalescing also prevents a slow SwiftUI pass
+    // from accumulating a queue of stale 120 Hz frames.
+    private var pendingFrame: CobeMetalFrame?
+    private var hasScheduledPublication = false
+
     func publish(_ frame: CobeMetalFrame) {
-        guard self.frame != frame else { return }
-        self.frame = frame
+        guard self.frame != frame, pendingFrame != frame else { return }
+
+        pendingFrame = frame
+        guard !hasScheduledPublication else { return }
+        hasScheduledPublication = true
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+
+            self.hasScheduledPublication = false
+            guard let pendingFrame = self.pendingFrame else { return }
+            self.pendingFrame = nil
+            guard self.frame != pendingFrame else { return }
+
+            self.frame = pendingFrame
+        }
     }
 }
 
