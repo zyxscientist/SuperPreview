@@ -192,7 +192,7 @@ struct MarketGlobeView: View {
 
                 orientation.phi = dragStartPhi + Double(value.translation.width) / 220
                 orientation.theta = min(
-                    max(dragStartTheta - Double(value.translation.height) / 220, -1.45),
+                    max(dragStartTheta + Double(value.translation.height) / 220, -1.45),
                     1.45
                 )
             }
