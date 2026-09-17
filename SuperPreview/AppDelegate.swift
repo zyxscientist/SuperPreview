@@ -25,7 +25,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     private func resetPersistedUIStateForUITests() {
-        let keys = [
+        var keys = [
             DemoLanguage.storageKey,
             TradeAggregationExpansionStorageKey.stockSubAssetCard,
             TradeAggregationExpansionStorageKey.fundSubAssetCard,
@@ -35,6 +35,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             TradeAggregationExpansionStorageKey.virtualAssetHoldingGroups,
             StockDetailScrollStorageKey.quoteDataIsExpanded
         ]
+
+        // The high-frequency switches deliberately have a persistence test.
+        // Reset them only for launches that explicitly request a clean test
+        // fixture; ordinary UI-test relaunches must preserve the preference.
+        if ProcessInfo.processInfo.environment["UITEST_RESET_HIGH_FREQUENCY_TRADING"] == "1" {
+            UserDefaults.standard.set(
+                false,
+                forKey: StockOrderAdvancedTradingPreferences.enabledKey
+            )
+            UserDefaults.standard.set(
+                StockOrderAdvancedTradingVersion.v0.rawValue,
+                forKey: StockOrderAdvancedTradingPreferences.versionKey
+            )
+        }
 
         for key in keys {
             UserDefaults.standard.removeObject(forKey: key)

@@ -121,6 +121,20 @@ private final class NavigationBackSwipeCoordinator: NSObject {
         self.navigationController = navigationController
         originalEdgeGestureDelegate = navigationController.interactivePopGestureRecognizer?.delegate
         super.init()
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(keyboardDidChange),
+            name: UIResponder.keyboardDidChangeFrameNotification, object: nil
+        )
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    @objc private func keyboardDidChange() {
+        guard navigationController?.viewIfLoaded?.window != nil else { return }
+        needsHorizontalContentScan = true
+        refreshWhenStable(source: "keyboard.didChangeFrame")
     }
 
     static func install(on navigationController: UINavigationController) -> NavigationBackSwipeCoordinator {
@@ -215,6 +229,9 @@ private final class NavigationBackSwipeCoordinator: NSObject {
                 guard let self, self.transitionWaitID == transitionID else { return }
 
                 self.transitionWaitID = nil
+                // Modal dismissal and route changes may replace SwiftUI's
+                // underlying scroll views even when the policy is unchanged.
+                self.needsHorizontalContentScan = true
                 self.scheduleRefresh(source: "\(source).transitionCompletion")
             }
         }
@@ -548,6 +565,9 @@ private final class NavigationBackSwipePageHostViewController: UIViewController 
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        // Reapply after UIKit has restored the presenting page. Do not reuse
+        // the scan performed before a full-screen cover was dismissed.
+        hasRegisteredPolicy = false
         applyPolicy(source: "page.viewDidAppear")
     }
 

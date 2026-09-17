@@ -287,7 +287,12 @@ struct StockHoldingListGroup: View {
             .frame(width: viewportWidth, height: contentHeight)
             .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
 
+            // Keep the fixed name/action column above the horizontally
+            // scrollable metrics layer. The explicit z-index is important on
+            // iOS 26, where the embedded ScrollView can otherwise remain the
+            // hit-test owner even when the action bar is visibly expanded.
             fixedContent
+                .zIndex(1)
         }
         .frame(
             width: viewportWidth,
@@ -569,11 +574,9 @@ private struct StockHoldingScrollableMarketTable: View {
                     Color.clear
                         .frame(
                             width: StockHoldingLayout.contentWidth,
-                            height: StockHoldingLayout.actionAreaHeight
-                        )
-                        .subAssetExpansion(
-                            isExpanded: expandedHoldingID == holding.id,
-                            blurRadius: 0
+                            height: expandedHoldingID == holding.id
+                                ? StockHoldingLayout.actionAreaHeight
+                                : 0
                         )
                         .allowsHitTesting(false)
                 }
@@ -665,6 +668,13 @@ private struct StockHoldingFixedMarketTable: View {
                         isExpanded: expandedHoldingID == holding.id,
                         blurRadius: expandedHoldingID == holding.id ? 0 : 5
                     )
+                    // The action bar lives above an embedded horizontal
+                    // ScrollView. Keep its expanded hit region explicit so
+                    // SwiftUI does not route taps to the scroll layer on
+                    // iOS 26 even though the buttons are visibly on top.
+                    .contentShape(Rectangle())
+                    .allowsHitTesting(expandedHoldingID == holding.id)
+                    .zIndex(expandedHoldingID == holding.id ? 2 : 0)
                 }
                 .frame(width: viewportWidth, alignment: .topLeading)
             }

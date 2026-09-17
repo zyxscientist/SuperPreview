@@ -203,9 +203,18 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         XCTAssertEqual(pinnedMenu.frame.minX, inlineFrame.minX, accuracy: 1)
         XCTAssertEqual(pinnedMenu.frame.width, inlineFrame.width, accuracy: 1)
 
+        // The pinned menu covers the first holding after the vertical swipe.
+        // Return to the normal scroll position before tapping that row; this
+        // keeps the test gesture on the holding rather than on the overlay.
+        for _ in 0..<3 where pinnedMenu.exists {
+            scroll.swipeDown()
+        }
+        XCTAssertFalse(pinnedMenu.exists, "Pinned menu should release before tapping the first holding")
+
         let holding = waitFor("trade.holding.hk-tencent")
         holding.tap()
-        XCTAssertTrue(waitFor("trade.holding.hk-tencent.quote").isHittable)
+        let quote = waitFor("trade.holding.hk-tencent.quote")
+        XCTAssertTrue(quote.isHittable)
 
         let lastHolding = waitFor("trade.holding.us-tesla")
         for _ in 0..<12 where !lastHolding.isHittable {
@@ -293,18 +302,26 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
 
         let detailEntry = waitFor("compare.stockDetailUSCommonStock")
         let componentLibrary = waitFor("compare.componentLibrary")
+        let mainTabBarItem = waitFor("mainTab.tab6")
 
         for _ in 0..<6 where !detailEntry.isHittable {
             componentLibrary.swipeUp()
         }
 
+        // The last component-library cell can report as hittable while it is
+        // still covered by the persistent main tab bar. Move it fully above
+        // that bar before delivering the tap.
+        for _ in 0..<8 where detailEntry.frame.maxY >= mainTabBarItem.frame.minY {
+            componentLibrary.swipeUp()
+        }
+
         XCTAssertTrue(
-            detailEntry.isHittable,
+            detailEntry.isHittable && detailEntry.frame.maxY < mainTabBarItem.frame.minY,
             "Stock detail entry should be reachable in the component library"
         )
         detailEntry.tap()
 
-        XCTAssertTrue(waitFor("stockDetail.usCommonStockPage").exists)
+        XCTAssertTrue(waitFor("stockDetail.page").exists)
         waitFor("stockDetail.navbar.debug").tap()
         XCTAssertTrue(waitFor("stockDetail.debug.sheet").exists)
         selectStockDetailLanguage("简体中文")
@@ -1070,7 +1087,7 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
             "The repeated banner should eventually leave the viewport"
         )
 
-        debugButton.tap()
+        openTradeDebugPanelWhileNotificationsRepeat()
         toggleDebugSwitch("trade.debug.inAppNotification")
         dismissDebugPanel()
         XCTAssertEqual(
@@ -1194,7 +1211,15 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         let end = window.coordinate(
             withNormalizedOffset: CGVector(dx: toX, dy: y)
         )
-        start.press(forDuration: 0.01, thenDragTo: end)
+        // A short drag must settle before release; a fast flick can legitimately
+        // complete UIKit's interactive pop even below the distance threshold.
+        let isCancellation = fromX < 0.05 && abs(toX - fromX) < 0.25
+        start.press(
+            forDuration: 0.01,
+            thenDragTo: end,
+            withVelocity: isCancellation ? .slow : .default,
+            thenHoldForDuration: isCancellation ? 0.5 : 0
+        )
     }
 
     private func assertStockOrderPrefill(
@@ -1243,6 +1268,60 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         XCTAssertTrue(close.waitForExistence(timeout: 5), "Missing debug close button")
         close.tap()
         _ = waitFor("trade.root", timeout: 5)
+    }
+
+    private func openTradeDebugPanelWhileNotificationsRepeat() {
+        // The next notification can cover Debug between an existence check
+        // and XCTest's event delivery. Dismiss it and verify presentation.
+        for _ in 0..<4 {
+            if visibleElement("trade.debug.close") != nil {
+                return
+            }
+
+            if let banner = onScreenElement("inAppNotification.tradeBanner") {
+                dismissOnScreenNotification(banner)
+                XCTAssertTrue(
+                    waitUntilDisappears(banner, timeout: 2),
+                    "Notification banner should dismiss before opening Debug"
+                )
+                continue
+            }
+
+            waitForHittable("trade.debug.open", timeout: 2).tap()
+            if waitForVisibleElement("trade.debug.close", timeout: 2) != nil {
+                return
+            }
+        }
+
+        XCTFail("Trade debug panel did not open")
+    }
+
+    private func dismissOnScreenNotification(_ banner: XCUIElement) {
+        let window = app.windows.firstMatch
+        let windowFrame = window.frame
+        let bannerFrame = banner.frame
+        let start = window.coordinate(
+            withNormalizedOffset: CGVector(
+                dx: bannerFrame.midX / windowFrame.width,
+                dy: bannerFrame.midY / windowFrame.height
+            )
+        )
+        let end = window.coordinate(
+            withNormalizedOffset: CGVector(
+                dx: bannerFrame.midX / windowFrame.width,
+                dy: max(0.02, (bannerFrame.minY - 80) / windowFrame.height)
+            )
+        )
+
+        // Use a window coordinate because the banner can be temporarily
+        // marked accessibility-hidden while its UIKit pan recognizer remains
+        // interactive above the navigation bar.
+        start.press(
+            forDuration: 0.05,
+            thenDragTo: end,
+            withVelocity: .slow,
+            thenHoldForDuration: 0.1
+        )
     }
 
     private func toggleDebugSwitch(_ identifier: String) {
@@ -1392,6 +1471,12 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
             file: file,
             line: line
         )
+        let settleDeadline = Date().addingTimeInterval(2)
+        while banner.exists,
+              Date() < settleDeadline,
+              abs(banner.frame.minY - navigationBar.frame.minY) > 1 {
+            RunLoop.current.run(until: Date().addingTimeInterval(0.05))
+        }
         XCTAssertEqual(banner.frame.minX, 10, accuracy: 1, file: file, line: line)
         XCTAssertEqual(
             banner.frame.width,
@@ -1430,6 +1515,61 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
 
     private func element(_ identifier: String) -> XCUIElement {
         app.descendants(matching: .any)[identifier].firstMatch
+    }
+
+    private func visibleElement(_ identifier: String) -> XCUIElement? {
+        let candidates = app.descendants(matching: .any).matching(
+            NSPredicate(format: "identifier == %@", identifier)
+        )
+
+        return candidates.allElementsBoundByIndex.first {
+            $0.exists && $0.isHittable && !$0.frame.isEmpty
+        }
+    }
+
+    private func waitForVisibleElement(
+        _ identifier: String,
+        timeout: TimeInterval
+    ) -> XCUIElement? {
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            if let element = visibleElement(identifier) {
+                return element
+            }
+            RunLoop.current.run(until: Date().addingTimeInterval(0.1))
+        }
+        return visibleElement(identifier)
+    }
+
+    private func onScreenElement(_ identifier: String) -> XCUIElement? {
+        let candidates = app.descendants(matching: .any).matching(
+            NSPredicate(format: "identifier == %@", identifier)
+        )
+        let screenFrame = app.windows.firstMatch.frame
+
+        return candidates.allElementsBoundByIndex.first {
+            let frame = $0.frame
+            return $0.exists
+                && !frame.isEmpty
+                && frame.intersects(screenFrame)
+        }
+    }
+
+    @discardableResult
+    private func waitForHittable(
+        _ identifier: String,
+        timeout: TimeInterval = 8
+    ) -> XCUIElement {
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            if let element = visibleElement(identifier) {
+                return element
+            }
+            RunLoop.current.run(until: Date().addingTimeInterval(0.1))
+        }
+
+        XCTFail("Missing hittable element: \(identifier)")
+        return element(identifier)
     }
 }
 

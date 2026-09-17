@@ -210,13 +210,11 @@ final class StockOrderAdvancedTradingUITests: XCTestCase {
 
     func testToolbarPositionAndActionBarGapStayConstantAcrossPeers() throws {
         enterStockOrder()
-        let initialFrame = waitFor("stockOrder.advancedTrading.toolbar").frame
-        let tradeFrame = waitFor("stockOrder.tradeActionBar").frame
-        // XCUITest reports the inner content bounds of the glass surfaces.
-        // Expand those bounds by the component insets before asserting the
-        // visible geometry from the design.
-        let initialSurfaceFrame = initialFrame.insetBy(dx: 0, dy: -3)
-        let tradeSurfaceFrame = tradeFrame.insetBy(dx: 0, dy: -8)
+        let initialFrame = waitFor("stockOrder.advancedTrading.toolbar.geometry").frame
+        let tradeFrame = waitFor("stockOrder.tradeActionBar.geometry").frame
+        // Measure explicit layout bounds, not accessibility unions of glass children.
+        let initialSurfaceFrame = initialFrame
+        let tradeSurfaceFrame = tradeFrame
         XCTAssertEqual(initialSurfaceFrame.height, 40, accuracy: 1)
         XCTAssertEqual(
             tradeSurfaceFrame.minY - initialSurfaceFrame.maxY,
@@ -226,16 +224,12 @@ final class StockOrderAdvancedTradingUITests: XCTestCase {
 
         for section in ["market", "orders", "positions", "trade"] {
             waitFor("stockOrder.advancedTrading.section.\(section)").tap()
-            let frame = waitFor("stockOrder.advancedTrading.toolbar").frame
+            let frame = waitFor("stockOrder.advancedTrading.toolbar.geometry").frame
             XCTAssertEqual(frame.minY, initialFrame.minY, accuracy: 1)
             XCTAssertEqual(frame.height, initialFrame.height, accuracy: 1)
             if section == "market" {
                 waitFor("stockDetail.page")
-                // The scroll button is a stable child of the quote action
-                // surface; the parent glass container is not consistently
-                // exposed by Xcode 27's accessibility snapshot.
-                let quoteFrame = waitFor("stockDetail.bottomActionBar.scroll").frame
-                let quoteSurfaceFrame = quoteFrame.insetBy(dx: 0, dy: -8)
+                let quoteSurfaceFrame = waitFor("stockDetail.bottomActionBar.geometry").frame
                 XCTAssertEqual(quoteSurfaceFrame.minY - initialSurfaceFrame.maxY, 8, accuracy: 1)
                 XCTAssertEqual(quoteSurfaceFrame.maxY, tradeSurfaceFrame.maxY, accuracy: 1)
                 XCTAssertTrue(waitFor("stockDetail.bottomActionBar.scroll").isHittable)
@@ -243,7 +237,7 @@ final class StockOrderAdvancedTradingUITests: XCTestCase {
         }
         XCTAssertTrue(waitFor("stockOrder.tradeActionBar.buy").isHittable)
         setToolsEnabled(false)
-        XCTAssertEqual(waitFor("stockOrder.tradeActionBar").frame.maxY, tradeFrame.maxY, accuracy: 1)
+        XCTAssertEqual(waitFor("stockOrder.tradeActionBar.geometry").frame.maxY, tradeFrame.maxY, accuracy: 1)
     }
 
     func testSingleInstrumentScrollCanCloseAndExitThroughCurrentCard() throws {

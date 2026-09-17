@@ -13,13 +13,20 @@ enum StockOrderAdvancedTradingPreferences {
     static let enabledKey = "stockOrder.highFrequencyTrading.enabled"
     static let versionKey = "stockOrder.highFrequencyTrading.version"
 
-    // Reset once per process only when explicitly requested by UI tests.
-    // Relaunching without this flag exercises the real persisted preference.
+    // Reset the test-only preference once for the app process. Stock-order
+    // views can also be hosted off-screen while the Scroll route prewarms its
+    // next page, so this must not run once per view instance.
     static let prepareForUITesting: Void = {
         guard PreviewRuntime.isUITesting,
-              ProcessInfo.processInfo.environment["UITEST_RESET_HIGH_FREQUENCY_TRADING"] == "1" else { return }
-        UserDefaults.standard.removeObject(forKey: enabledKey)
-        UserDefaults.standard.removeObject(forKey: versionKey)
+              ProcessInfo.processInfo.environment["UITEST_RESET_HIGH_FREQUENCY_TRADING"] == "1" else {
+            return
+        }
+
+        // Set deterministic values instead of removing the keys. This also
+        // notifies any prewarmed StockOrderDemoView that already observes the
+        // shared defaults store before the clean fixture is presented.
+        UserDefaults.standard.set(false, forKey: enabledKey)
+        UserDefaults.standard.set(StockOrderAdvancedTradingVersion.v0.rawValue, forKey: versionKey)
     }()
 }
 
@@ -157,7 +164,7 @@ struct StockOrderAdvancedTradingToolBar: View {
     }
 
     var body: some View {
-        if PreviewRuntime.isUITesting && version == .v1 {
+        if PreviewRuntime.isUITesting {
             toolbarSurface
                 .background {
                     Color.clear

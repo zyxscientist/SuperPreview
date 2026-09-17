@@ -104,7 +104,6 @@ struct StockDetailUSCommonStockPage: View {
             instrument: .nvidiaPreview,
             initialTab: initialTab.stockDetailPageTab
         )
-        .accessibilityIdentifier("stockDetail.usCommonStockPage")
     }
 }
 

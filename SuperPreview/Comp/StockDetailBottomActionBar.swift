@@ -37,6 +37,15 @@ struct StockDetailBottomActionBar: View {
     var body: some View {
         glassWrappedActions
             .padding(.horizontal, StockDetailBottomActionBarLayout.horizontalPadding)
+            .background {
+                if PreviewRuntime.isUITesting {
+                    Color.clear
+                        .accessibilityElement()
+                        .accessibilityLabel("Quote action bar bounds")
+                        .accessibilityIdentifier("stockDetail.bottomActionBar.geometry")
+                        .allowsHitTesting(false)
+                }
+            }
             .frame(maxWidth: .infinity)
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("stockDetail.bottomActionBar")

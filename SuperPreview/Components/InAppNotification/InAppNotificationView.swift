@@ -312,7 +312,11 @@ private struct InAppNotificationWindowPresenter: UIViewRepresentable {
             let hostedView = configuration.makeContentView()
             hostedView.translatesAutoresizingMaskIntoConstraints = false
             hostedView.backgroundColor = .clear
-            hostedView.isUserInteractionEnabled = true
+            // Gesture interaction is enabled only while the banner is fully
+            // visible. During the enter/exit animations the transformed host
+            // can still cover controls underneath it, even though it is
+            // visually out of the way and hidden from accessibility.
+            hostedView.isUserInteractionEnabled = false
             hostedView.accessibilityElementsHidden = true
             hostedView.isHidden = true
 
@@ -374,8 +378,12 @@ private struct InAppNotificationWindowPresenter: UIViewRepresentable {
             window.bringSubviewToFront(hostedView)
             hostedView.layer.removeAllAnimations()
             hostedView.isHidden = false
-            hostedView.accessibilityElementsHidden = false
+            // Do not expose the banner to VoiceOver/XCTest while it is still
+            // off-screen. Its accessibility frame would otherwise report the
+            // pre-animation position and can intercept controls underneath it.
+            hostedView.accessibilityElementsHidden = true
             hostedView.alpha = 1
+            hostedView.isUserInteractionEnabled = false
             window.layoutIfNeeded()
             hostedView.transform = hiddenTransform(in: window)
             state = .entering
@@ -397,6 +405,8 @@ private struct InAppNotificationWindowPresenter: UIViewRepresentable {
                 }
 
                 self.state = .visible
+                hostedView.accessibilityElementsHidden = false
+                hostedView.isUserInteractionEnabled = true
                 self.scheduleCurrentNotificationTransition()
             }
         }
@@ -418,6 +428,8 @@ private struct InAppNotificationWindowPresenter: UIViewRepresentable {
             cancelScheduledAction()
             isTrackingTouch = false
             state = .exiting
+            hostedView.accessibilityElementsHidden = true
+            hostedView.isUserInteractionEnabled = false
             hostedView.layer.removeAllAnimations()
 
             let animations = {

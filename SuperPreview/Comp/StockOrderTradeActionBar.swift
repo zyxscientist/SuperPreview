@@ -57,6 +57,15 @@ struct StockOrderTradeActionBar: View {
     var body: some View {
         actionBarContent
             .frame(maxWidth: .infinity)
+            .background {
+                if PreviewRuntime.isUITesting {
+                    Color.clear
+                        .accessibilityElement()
+                        .accessibilityLabel("Trade action bar bounds")
+                        .accessibilityIdentifier("stockOrder.tradeActionBar.geometry")
+                        .allowsHitTesting(false)
+                }
+            }
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("stockOrder.tradeActionBar")
     }
