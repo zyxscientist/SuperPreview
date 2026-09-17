@@ -7,6 +7,11 @@ constant float cobeTau = 6.28318530717958647692;
 constant float cobeSqrt5 = 2.23606797749978969640;
 constant float cobePhi = 1.61803398874989484820;
 constant float cobeGlobeRadius = 0.8;
+// The filled land-dot core is approximately 2.5pt on the production market
+// viewport after its current 1.27 render scale. Keep the antialiasing band
+// proportional so the Demo and market globe retain the same dot geometry.
+constant float cobeLandDotCoreRadius = 0.005;
+constant float cobeLandDotEdgeRadius = 0.0066666667;
 
 struct CobeGlobeUniforms {
     float2 resolution;
@@ -252,11 +257,11 @@ fragment float4 cobeGlobeFragment(
             * float2(1.0 / aspect, 1.0);
         float dotDistance = length(latticeDelta);
         // Keep a filled circular core and reserve only the outer edge for
-        // anti-aliasing. The radius is unchanged from the previous square
-        // dot, so this only changes the shape of the land points.
+        // anti-aliasing. The core is tuned to approximately 2.5pt on the
+        // market viewport.
         float dotCoverage = 1.0 - smoothstep(
-            0.006,
-            0.008,
+            cobeLandDotCoreRadius,
+            cobeLandDotEdgeRadius,
             dotDistance
         );
         float dotSample = mapColor
