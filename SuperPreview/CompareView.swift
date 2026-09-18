@@ -414,6 +414,17 @@ struct CompareTab5View: View {
                 }
             )
             .accessibilityIdentifier("compare.cobeMetalGlobe")
+
+            NavigationLink(destination: RotateBeamDemoView()) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Rotate Beam 环绕光效")
+                        .font(.system(size: 16, weight: .semibold))
+                    Text("Rotating Border · Native SwiftUI")
+                        .foregroundColor(.gray)
+                        .font(.system(size: 13, design: .monospaced))
+                }
+            }
+            .accessibilityIdentifier("compare.rotateBeam")
             
             // 结束
             

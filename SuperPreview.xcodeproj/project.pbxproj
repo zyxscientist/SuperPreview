@@ -98,6 +98,7 @@
 		84F300012F80000000ABC001 /* MainTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F300002F80000000ABC001 /* MainTabBar.swift */; };
 		84F300032F76000000ABC001 /* TradeAggregationDemoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F300022F76000000ABC001 /* TradeAggregationDemoViewModel.swift */; };
 		84F400012F81000000ABC001 /* JakartaMonospacedComparisonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F400002F81000000ABC001 /* JakartaMonospacedComparisonView.swift */; };
+		84FA00012F88000000ABC001 /* RotateBeamDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FA00002F88000000ABC001 /* RotateBeamDemoView.swift */; };
 		84F500012F82000000ABC001 /* LiquidGlassResearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F500002F82000000ABC001 /* LiquidGlassResearchView.swift */; };
 		84F800012F85000000ABC001 /* SystemSegmentedControlDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F800002F85000000ABC001 /* SystemSegmentedControlDemoView.swift */; };
 		84F600012F83000000ABC001 /* DemoLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F600002F83000000ABC001 /* DemoLocalization.swift */; };
@@ -307,6 +308,7 @@
 		84F300002F80000000ABC001 /* MainTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBar.swift; sourceTree = "<group>"; };
 		84F300022F76000000ABC001 /* TradeAggregationDemoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TradeAggregationDemoViewModel.swift; sourceTree = "<group>"; };
 		84F400002F81000000ABC001 /* JakartaMonospacedComparisonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JakartaMonospacedComparisonView.swift; sourceTree = "<group>"; };
+		84FA00002F88000000ABC001 /* RotateBeamDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RotateBeamDemoView.swift; sourceTree = "<group>"; };
 		84F500002F82000000ABC001 /* LiquidGlassResearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassResearchView.swift; sourceTree = "<group>"; };
 		84F800002F85000000ABC001 /* SystemSegmentedControlDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemSegmentedControlDemoView.swift; sourceTree = "<group>"; };
 		84F600002F83000000ABC001 /* DemoLocalization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoLocalization.swift; sourceTree = "<group>"; };
@@ -573,6 +575,7 @@
 				84F000022F76000000ABC001 /* WatchlistRedesignDemoView.swift */,
 				84F100002F77000000ABC001 /* TapticEngineDemoView.swift */,
 				84F400002F81000000ABC001 /* JakartaMonospacedComparisonView.swift */,
+				84FA00002F88000000ABC001 /* RotateBeamDemoView.swift */,
 				84F500002F82000000ABC001 /* LiquidGlassResearchView.swift */,
 				84F800002F85000000ABC001 /* SystemSegmentedControlDemoView.swift */,
 			);
@@ -1079,6 +1082,7 @@
 				84F200012F78000000ABC001 /* TotalAsset.swift in Sources */,
 				84F100012F77000000ABC001 /* TapticEngineDemoView.swift in Sources */,
 				84F400012F81000000ABC001 /* JakartaMonospacedComparisonView.swift in Sources */,
+				84FA00012F88000000ABC001 /* RotateBeamDemoView.swift in Sources */,
 				84F500012F82000000ABC001 /* LiquidGlassResearchView.swift in Sources */,
 				84F800012F85000000ABC001 /* SystemSegmentedControlDemoView.swift in Sources */,
 				C2330E512851DA7A00382AE1 /* CustomFontModifier.swift in Sources */,
