@@ -706,9 +706,9 @@ private struct StockDetailPageHeaderTabs: View {
         HStack(spacing: 0) {
             ScrollView(.horizontal, showsIndicators: false) {
                 tabButtons
-                    .padding(.leading, 10)
+                    .padding(.leading, StockDetailPageHeaderTabsLayout.leadingInset)
                     .padding(.trailing, 48)
-                    .padding(.vertical, 8)
+                    .padding(.vertical, StockDetailPageHeaderTabsLayout.rowVerticalInset)
                     .animation(selectionAnimation, value: selection)
             }
         }
@@ -756,6 +756,10 @@ private struct StockDetailPageHeaderTabs: View {
                         ) { anchor in
                             [tab: anchor]
                         }
+                        // Keep the Figma-sized visual pill while retaining a
+                        // comfortable 44pt vertical hit target for each tab.
+                        .frame(height: StockDetailPageHeaderTabsLayout.tapTargetHeight)
+                        .contentShape(Rectangle())
                 }
                 .buttonStyle(PlainButtonStyle())
                 .accessibilityAddTraits(isSelected ? .isSelected : [])
@@ -937,11 +941,14 @@ private enum StockDetailPageLayout {
 
 private enum StockDetailPageHeaderTabsLayout {
     static let height: CGFloat = 48
+    static let leadingInset: CGFloat = 16
+    static let rowVerticalInset: CGFloat = 2
     static let tabSpacing: CGFloat = 2
     static let itemHorizontalPadding: CGFloat = 14
-    static let itemHeight: CGFloat = 32
+    static let itemHeight: CGFloat = 28
+    static let tapTargetHeight: CGFloat = 44
     static let fontSize: CGFloat = 14
-    static let lineHeight: CGFloat = 24
+    static let lineHeight: CGFloat = 20
 }
 
 private struct StockDetailPageTabFramePreferenceKey: PreferenceKey {
