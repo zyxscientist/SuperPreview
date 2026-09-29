@@ -345,6 +345,10 @@ struct StockDetailPage: View {
                     isExpanded: quoteDetailsExpansionBinding
                 )
 
+                if configuration.variant == .crypto {
+                    StockDetailHistoryPerformance()
+                }
+
                 if !configuration.relatedItems.isEmpty {
                     StockDetailRelatedInfo(
                         items: configuration.relatedItems,
@@ -422,6 +426,10 @@ struct StockDetailPage: View {
                 isExpanded: quoteDetailsExpansionBinding,
                 onBadgesTap: onScrollCardInteraction
             )
+
+            if configuration.variant == .crypto {
+                StockDetailHistoryPerformance()
+            }
 
             if !configuration.relatedItems.isEmpty {
                 StockDetailRelatedInfo(

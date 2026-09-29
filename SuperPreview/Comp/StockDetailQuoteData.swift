@@ -290,8 +290,13 @@ struct StockDetailQuoteData: View {
             priceSection
 
             if let details = data.details {
-                StockDetailQuoteDetails(data: details)
-                    .stockDetailQuoteExpansion(isExpanded: isShowingDetails)
+                switch details.presentation {
+                case .alwaysVisible:
+                    StockDetailQuoteDetails(data: details)
+                case .disclosure:
+                    StockDetailQuoteDetails(data: details)
+                        .stockDetailQuoteExpansion(isExpanded: isExpanded)
+                }
             }
         }
         .padding(.horizontal, StockDetailQuoteDataLayout.horizontalPadding)

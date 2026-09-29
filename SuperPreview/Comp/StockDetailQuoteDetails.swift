@@ -160,10 +160,10 @@ struct StockDetailQuoteDetails: View {
     private func chineseDetailItem(_ item: StockDetailQuoteDetailItem) -> some View {
         HStack(spacing: StockDetailQuoteDetailsLayout.inlineItemSpacing) {
             label(for: item)
-
-            Spacer(minLength: 0)
+                .fixedSize(horizontal: true, vertical: false)
 
             value(for: item)
+                .frame(maxWidth: .infinity, alignment: .trailing)
         }
         .frame(height: StockDetailQuoteDetailsLayout.chineseCellHeight)
         .accessibilityElement(children: .combine)
@@ -407,7 +407,7 @@ extension StockDetailQuoteDetailsData {
         presentation: .alwaysVisible,
         items: [
             .detail("high24h", chineseLabel: "24H 最高", englishLabel: "24H High", chineseValue: "988,988.11", englishValue: "978855.88", tone: .positive),
-            .detail("turnover24h", chineseLabel: "24H 额HKD", englishLabel: "Turnover(HKD)", chineseValue: "4,001.22万", englishValue: "2144.99万"),
+            .detail("turnover24h", chineseLabel: "24H 额HKD", englishLabel: "Turnover(HKD)", chineseValue: "4001.22万", englishValue: "2144.99万"),
             .detail("low24h", chineseLabel: "24H 最低", englishLabel: "24H Low", chineseValue: "988,988.11", englishValue: "978855.88"),
             .detail("volume24h", chineseLabel: "24H 量BTC", englishLabel: "Volume(BTC)", chineseValue: "260.12345")
         ]

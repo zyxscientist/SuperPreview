@@ -591,7 +591,7 @@ enum StockDetailPageConfigurationFactory {
             change: signedChange,
             changePercent: signedPercent(instrument.quote.changePercent, trend: instrument.quote.trend),
             trend: instrument.quote.trend,
-            summaryItems: [
+            summaryItems: variant == .crypto ? [] : [
                 StockDetailQuoteSummaryItem(
                     localizedLabel: .init(
                         simplifiedChinese: "最高",

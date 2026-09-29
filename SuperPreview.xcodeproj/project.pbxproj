@@ -215,6 +215,7 @@
 		D1A4C6E0F2174A3B9C8D0049 /* StockDetailPageConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D0048 /* StockDetailPageConfiguration.swift */; };
 		D1A4C6E0F2174A3B9C8D004B /* StockDetailPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D004A /* StockDetailPage.swift */; };
 		D1A4C6E0F2174A3B9C8D004D /* StockDetailScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D004C /* StockDetailScrollView.swift */; };
+		D1A4C6E0F2174A3B9C8D0051 /* StockDetailHistoryPerformance.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D0050 /* StockDetailHistoryPerformance.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -428,6 +429,7 @@
 		D1A4C6E0F2174A3B9C8D0048 /* StockDetailPageConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailPageConfiguration.swift; sourceTree = "<group>"; };
 		D1A4C6E0F2174A3B9C8D004A /* StockDetailPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailPage.swift; sourceTree = "<group>"; };
 		D1A4C6E0F2174A3B9C8D004C /* StockDetailScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailScrollView.swift; sourceTree = "<group>"; };
+		D1A4C6E0F2174A3B9C8D0050 /* StockDetailHistoryPerformance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailHistoryPerformance.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -684,6 +686,7 @@
 				D1A4C6E0F2174A3B9C8D0018 /* StockDetailRelatedInfo.swift */,
 				D1A4C6E0F2174A3B9C8D0016 /* StockDetailQuoteDetails.swift */,
 				D1A4C6E0F2174A3B9C8D0014 /* StockDetailQuoteData.swift */,
+				D1A4C6E0F2174A3B9C8D0050 /* StockDetailHistoryPerformance.swift */,
 				D1A4C6E0F2174A3B9C8D0012 /* StockDetailNavbar.swift */,
 				A1B2C3D4E5F6000000000037 /* StockOrderConfirmationSheet.swift */,
 				A1B2C3D4E5F6000000000029 /* StockOrderTradeActionBar.swift */,
@@ -1063,6 +1066,7 @@
 				D1A4C6E0F2174A3B9C8D0049 /* StockDetailPageConfiguration.swift in Sources */,
 				D1A4C6E0F2174A3B9C8D004B /* StockDetailPage.swift in Sources */,
 				D1A4C6E0F2174A3B9C8D004D /* StockDetailScrollView.swift in Sources */,
+				D1A4C6E0F2174A3B9C8D0051 /* StockDetailHistoryPerformance.swift in Sources */,
 				84F300012F80000000ABC001 /* MainTabBar.swift in Sources */,
 				84F2001E2F7D000000ABC001 /* TradeAggregationDemoView.swift in Sources */,
 				84F300032F76000000ABC001 /* TradeAggregationDemoViewModel.swift in Sources */,
