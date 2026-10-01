@@ -63,3 +63,6 @@ xcuserdata/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Xcode DerivedData created inside the repository
+/build/
