@@ -109,7 +109,7 @@ struct MarketIPOCenterView: View {
     private var tabs: some View {
         HStack(spacing: 8) {
             Text("今日认购 \(subscriptions.count)")
-                .modifier(CustomFontModifier(size: 14, font: .medium, lineHeight: 20))
+                .modifier(CustomFontModifier(size: 14, font: .bold, lineHeight: 20))
                 .foregroundStyle(Color("color-text-30"))
                 .frame(height: 20)
                 .padding(.horizontal, 12)
@@ -190,7 +190,7 @@ struct MarketIPOCenterView: View {
             .accessibilityIdentifier("market.ipoCenter.subscribe.\(subscription.id)")
         }
         .padding(.leading, 16)
-        .padding(.trailing, 8)
+        .padding(.trailing, 12)
         .padding(.vertical, 16)
         .frame(minHeight: 78)
         .background {
