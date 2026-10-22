@@ -20,6 +20,7 @@ struct MarketView: View {
     @State private var isShaderOnly = false
     @State private var marketGlobeOrientation = MarketGlobeOrientation()
     @State private var globeRotation: MarketGlobeRotation?
+    @State private var pageContentHeights: [String: CGFloat] = [:]
     @EnvironmentObject private var demoLanguageStore: DemoLanguageStore
     @EnvironmentObject private var demoAppearanceStore: DemoAppearanceStore
 
@@ -107,55 +108,93 @@ struct MarketView: View {
     }
 
     private var marketContent: some View {
-        // One stationary globe sits behind the pager. Each page owns its cards
-        // so the entire card view follows interactive horizontal paging.
-        ZStack(alignment: .top) {
-            MarketGlobeView(
-                isActive: isActive && showsGlobe,
-                isCrypto: selectedTab == "加密货币",
-                orientation: $marketGlobeOrientation,
-                rotation: $globeRotation
-            )
-            .opacity(showsGlobe ? 1 : 0)
-            .allowsHitTesting(showsGlobe)
-            .accessibilityHidden(!showsGlobe)
+        GeometryReader { viewport in
+            // The shared globe and horizontal pager have one vertical scroll
+            // owner. The globe keeps its identity while categories page past it.
+            ScrollView(.vertical, showsIndicators: false) {
+                ZStack(alignment: .top) {
+                    MarketGlobeView(
+                        isActive: isActive && showsGlobe,
+                        isCrypto: selectedTab == "加密货币",
+                        orientation: $marketGlobeOrientation,
+                        rotation: $globeRotation
+                    )
+                    .opacity(showsGlobe ? 1 : 0)
+                    .allowsHitTesting(showsGlobe)
+                    .accessibilityHidden(!showsGlobe)
 
-            TabView(selection: $selectedTab) {
-                ForEach(Self.marketTabs, id: \.self) { tab in
-                    let indices = MarketIndexQuote.previews(for: tab)
-                    ZStack(alignment: .top) {
-                        Color.clear
-
-                        if !indices.isEmpty {
-                            VStack(spacing: 32) {
-                                MarketIndexCards(
-                                    indices: indices,
-                                    reducesGlass: demoAppearanceStore.isReducedLiquidGlassUsageEnabled
-                                )
-                                .padding(.horizontal, 16)
-
-                                MarketBreadthDistributionView()
-                            }
+                    TabView(selection: $selectedTab) {
+                        ForEach(Self.marketTabs, id: \.self) { tab in
+                            marketPage(for: tab)
+                                .tag(tab)
                         }
                     }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-                    .contentShape(Rectangle())
-                    .tag(tab)
-                    .accessibilityIdentifier("market.content.\(tab)")
+                    .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                    // TabView has no intrinsic height inside a ScrollView.
+                    // Measure each page's content before filling the pager.
+                    .frame(height: max(
+                        viewport.size.height - 108,
+                        pageContentHeights[selectedTab] ?? 0
+                    ))
+                    .opacity(isShaderOnly ? 0 : 1)
+                    .allowsHitTesting(!isShaderOnly)
+                    .accessibilityHidden(isShaderOnly)
+                    // Cards overlap the lower globe, as in the original layout.
+                    .padding(.top, 108)
+                }
+                .frame(minHeight: viewport.size.height, alignment: .top)
+            }
+            .accessibilityIdentifier("market.scroll")
+            .onPreferenceChange(MarketPageContentHeightKey.self) { heights in
+                pageContentHeights.merge(heights, uniquingKeysWith: { _, new in new })
+            }
+        }
+    }
+
+    private func marketPage(for tab: String) -> some View {
+        let indices = MarketIndexQuote.previews(for: tab)
+
+        return VStack(spacing: 32) {
+            if !indices.isEmpty {
+                MarketIndexCards(
+                    indices: indices,
+                    reducesGlass: demoAppearanceStore.isReducedLiquidGlassUsageEnabled
+                )
+                .padding(.horizontal, 16)
+
+                MarketBreadthDistributionView()
+
+                if tab == "港股" {
+                    MarketQuickMenu()
+                    MarketIPOCenterView()
                 }
             }
-            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-            .opacity(isShaderOnly ? 0 : 1)
-            .allowsHitTesting(!isShaderOnly)
-            .accessibilityHidden(isShaderOnly)
-            // Figma: cards overlap the lower globe at 108pt below the tabs.
-            // The exposed upper globe retains its direct rotation gesture.
-            .padding(.top, 108)
         }
+        .padding(.bottom, 32)
+        .fixedSize(horizontal: false, vertical: true)
+        .background {
+            GeometryReader { content in
+                Color.clear.preference(
+                    key: MarketPageContentHeightKey.self,
+                    value: [tab: content.size.height]
+                )
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .contentShape(Rectangle())
+        .accessibilityIdentifier("market.content.\(tab)")
     }
 
     private var showsGlobe: Bool {
         selectedTab == "港股" || selectedTab == "美股" || selectedTab == "沪深港通" || selectedTab == "加密货币"
+    }
+}
+
+private struct MarketPageContentHeightKey: PreferenceKey {
+    static var defaultValue: [String: CGFloat] = [:]
+
+    static func reduce(value: inout [String: CGFloat], nextValue: () -> [String: CGFloat]) {
+        value.merge(nextValue(), uniquingKeysWith: { _, new in new })
     }
 }
 

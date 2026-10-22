@@ -33,6 +33,18 @@ struct AssetQuickMenuItem: Identifiable {
 
 struct AssetQuickMenu: View {
     let items: [AssetQuickMenuItem]
+    let itemHeight: CGFloat
+    let accessibilityIdentifier: String
+
+    init(
+        items: [AssetQuickMenuItem],
+        itemHeight: CGFloat = 74,
+        accessibilityIdentifier: String = "trade.quickMenu"
+    ) {
+        self.items = items
+        self.itemHeight = itemHeight
+        self.accessibilityIdentifier = accessibilityIdentifier
+    }
 
     var body: some View {
         GeometryReader { proxy in
@@ -55,19 +67,19 @@ struct AssetQuickMenu: View {
                                 .allowsTightening(true)
                                 .frame(maxWidth: .infinity, minHeight: 20, maxHeight: 20)
                         }
-                        .frame(width: itemWidth, height: 74)
+                        .frame(width: itemWidth, height: itemHeight)
                         .contentShape(Rectangle())
                     }
                     .buttonStyle(PlainButtonStyle())
                     .accessibilityLabel(item.accessibilityLabel)
                 }
             }
-            .frame(width: proxy.size.width, height: 74)
+            .frame(width: proxy.size.width, height: itemHeight)
         }
         .frame(maxWidth: .infinity)
-        .frame(height: 74)
+        .frame(height: itemHeight)
         .background(Color("color-base-1"))
         .accessibilityElement(children: .contain)
-        .accessibilityIdentifier("trade.quickMenu")
+        .accessibilityIdentifier(accessibilityIdentifier)
     }
 }

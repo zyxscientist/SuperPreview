@@ -179,9 +179,9 @@ struct MarketGlobeView: View {
         .accessibilityIdentifier("market.globe")
     }
 
-    private var rotationGesture: some Gesture {
-        DragGesture(minimumDistance: 8)
-            .onChanged { value in
+    private var rotationGesture: MarketGlobeRotationGesture {
+        MarketGlobeRotationGesture(
+            onChanged: { translation in
                 if !isDragging {
                     orientation = rotation?.value(at: Date()) ?? orientation
                     rotation = nil
@@ -190,18 +190,20 @@ struct MarketGlobeView: View {
                     isDragging = true
                 }
 
-                orientation.phi = dragStartPhi + Double(value.translation.width) / 220
+                orientation.phi = dragStartPhi + Double(translation.x) / 220
                 orientation.theta = min(
-                    max(dragStartTheta + Double(value.translation.height) / 220, -1.45),
+                    max(dragStartTheta + Double(translation.y) / 220, -1.45),
                     1.45
                 )
-            }
-            .onEnded { _ in
+            },
+            onEnded: {
+                guard isDragging else { return }
                 isDragging = false
                 if isCrypto {
                     rotation = .spinning(from: orientation)
                 }
             }
+        )
     }
 
     private var markers: [CobeMetalMarker] {
@@ -283,6 +285,43 @@ struct MarketGlobeView: View {
         case "saopaulo": return .marketSaoPaulo
         case "capetown": return .marketCapeTown
         default: return .marketGlobeAccessibility
+        }
+    }
+}
+
+/// Decide the drag axis before recognition so vertical drags remain available
+/// to the enclosing ScrollView, including drags that start on the globe.
+private struct MarketGlobeRotationGesture: UIGestureRecognizerRepresentable {
+    let onChanged: (CGPoint) -> Void
+    let onEnded: () -> Void
+
+    func makeCoordinator(converter: CoordinateSpaceConverter) -> Coordinator {
+        Coordinator()
+    }
+
+    func makeUIGestureRecognizer(context: Context) -> UIPanGestureRecognizer {
+        let recognizer = UIPanGestureRecognizer()
+        recognizer.maximumNumberOfTouches = 1
+        recognizer.delegate = context.coordinator
+        return recognizer
+    }
+
+    func handleUIGestureRecognizerAction(_ recognizer: UIPanGestureRecognizer, context: Context) {
+        switch recognizer.state {
+        case .began, .changed:
+            onChanged(recognizer.translation(in: recognizer.view))
+        case .ended, .cancelled, .failed:
+            onEnded()
+        default:
+            break
+        }
+    }
+
+    final class Coordinator: NSObject, UIGestureRecognizerDelegate {
+        func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+            guard let pan = gestureRecognizer as? UIPanGestureRecognizer else { return false }
+            let velocity = pan.velocity(in: pan.view)
+            return abs(velocity.x) > abs(velocity.y)
         }
     }
 }
