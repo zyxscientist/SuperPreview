@@ -138,10 +138,9 @@ struct SubAssetCardHeader: View {
                     .foregroundColor(Color("color-text-60"))
                     .frame(height: 20)
 
-                Text(SubAssetCardValue.display(netAsset, isNumberHidden: isNumberHidden))
-                    .font(.custom("PlusJakartaSans-Bold", size: 24, relativeTo: .title2))
+                AssetAmountText(SubAssetCardValue.display(netAsset, isNumberHidden: isNumberHidden))
                     .foregroundColor(Color("color-text-30"))
-                    .frame(height: 36)
+                    .frame(height: 40)
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
 
@@ -175,7 +174,7 @@ struct SubAssetCardHeader: View {
     }
 
     private var headerHeight: CGFloat {
-        profitLossTitle != nil && profitLoss != nil ? 84 : 60
+        profitLossTitle != nil && profitLoss != nil ? 88 : 64
     }
 }
 

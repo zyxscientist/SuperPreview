@@ -79,6 +79,7 @@
 		84F000032F76000000ABC001 /* WatchlistRedesignDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F000022F76000000ABC001 /* WatchlistRedesignDemoView.swift */; };
 		84F100012F77000000ABC001 /* TapticEngineDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F100002F77000000ABC001 /* TapticEngineDemoView.swift */; };
 		84F200012F78000000ABC001 /* TotalAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F200002F78000000ABC001 /* TotalAsset.swift */; };
+		B1CA00012F9C000000ABC001 /* AssetAmountText.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1CA00002F9C000000ABC001 /* AssetAmountText.swift */; };
 		84F200042F78000000ABC001 /* AssetChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F200032F78000000ABC001 /* AssetChart.swift */; };
 		84F200062F78000000ABC001 /* AssetCategoryTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F200052F78000000ABC001 /* AssetCategoryTabBar.swift */; };
 		84F200082F78000000ABC001 /* SubAssetCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F200072F78000000ABC001 /* SubAssetCard.swift */; };
@@ -293,6 +294,7 @@
 		84F000022F76000000ABC001 /* WatchlistRedesignDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchlistRedesignDemoView.swift; sourceTree = "<group>"; };
 		84F100002F77000000ABC001 /* TapticEngineDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapticEngineDemoView.swift; sourceTree = "<group>"; };
 		84F200002F78000000ABC001 /* TotalAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalAsset.swift; sourceTree = "<group>"; };
+		B1CA00002F9C000000ABC001 /* AssetAmountText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetAmountText.swift; sourceTree = "<group>"; };
 		84F200032F78000000ABC001 /* AssetChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetChart.swift; sourceTree = "<group>"; };
 		84F200052F78000000ABC001 /* AssetCategoryTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCategoryTabBar.swift; sourceTree = "<group>"; };
 		84F200072F78000000ABC001 /* SubAssetCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubAssetCard.swift; sourceTree = "<group>"; };
@@ -733,6 +735,7 @@
 				84F200052F78000000ABC001 /* AssetCategoryTabBar.swift */,
 				84F200032F78000000ABC001 /* AssetChart.swift */,
 				84F200002F78000000ABC001 /* TotalAsset.swift */,
+				B1CA00002F9C000000ABC001 /* AssetAmountText.swift */,
 			);
 			path = Comp;
 			sourceTree = "<group>";
@@ -1093,6 +1096,7 @@
 				84F200062F78000000ABC001 /* AssetCategoryTabBar.swift in Sources */,
 				84F200042F78000000ABC001 /* AssetChart.swift in Sources */,
 				84F200012F78000000ABC001 /* TotalAsset.swift in Sources */,
+				B1CA00012F9C000000ABC001 /* AssetAmountText.swift in Sources */,
 				84F100012F77000000ABC001 /* TapticEngineDemoView.swift in Sources */,
 				84F400012F81000000ABC001 /* JakartaMonospacedComparisonView.swift in Sources */,
 				84FA00012F88000000ABC001 /* RotateBeamDemoView.swift in Sources */,

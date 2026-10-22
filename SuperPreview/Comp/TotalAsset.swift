@@ -54,8 +54,7 @@ struct TotalAsset: View {
             title
 
             HStack(alignment: .bottom, spacing: 0) {
-                Text(numberIsHidden ? "***" : displayedTotalAmount)
-                    .font(.custom("PlusJakartaSans-Bold", size: 30, relativeTo: .largeTitle))
+                AssetAmountText(numberIsHidden ? "***" : displayedTotalAmount)
                     .foregroundColor(Color("color-text-30"))
                     .frame(width: 230, height: 40, alignment: .leading)
                     .lineLimit(1)
