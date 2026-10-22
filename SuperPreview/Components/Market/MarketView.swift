@@ -127,11 +127,15 @@ struct MarketView: View {
                         Color.clear
 
                         if !indices.isEmpty {
-                            MarketIndexCards(
-                                indices: indices,
-                                reducesGlass: demoAppearanceStore.isReducedLiquidGlassUsageEnabled
-                            )
-                            .padding(.horizontal, 16)
+                            VStack(spacing: 32) {
+                                MarketIndexCards(
+                                    indices: indices,
+                                    reducesGlass: demoAppearanceStore.isReducedLiquidGlassUsageEnabled
+                                )
+                                .padding(.horizontal, 16)
+
+                                MarketBreadthDistributionView()
+                            }
                         }
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
