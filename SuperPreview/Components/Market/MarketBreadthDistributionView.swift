@@ -3,7 +3,7 @@
 //  SuperPreview
 //
 //  组件名称：涨跌分布
-//  简介：展示上涨、平盘和下跌数量及其分布条。
+//  简介：展示三段涨跌分布条及上涨、下跌数量。
 //
 
 import SwiftUI
@@ -66,13 +66,21 @@ struct MarketBreadthDistributionView: View {
 
     private var distributionBar: some View {
         GeometryReader { geometry in
-            ZStack {
-                barSegments(width: geometry.size.width)
-                    .opacity(0.1)
-                    .blur(radius: 4)
-                    .offset(y: 4)
+            // Preserve the Figma widths (178:39:145) with fixed 4pt gaps.
+            let scale = max(geometry.size.width - 8, 0) / 362
 
-                barSegments(width: geometry.size.width)
+            HStack(spacing: 4) {
+                Capsule()
+                    .fill(Color("color-utility3-green"))
+                    .frame(width: 178 * scale)
+
+                Capsule()
+                    .fill(Color("color-text-60"))
+                    .frame(width: 39 * scale)
+
+                Capsule()
+                    .fill(Color("color-utility3-red"))
+                    .frame(width: 145 * scale)
             }
         }
         .frame(maxWidth: .infinity)
@@ -80,38 +88,9 @@ struct MarketBreadthDistributionView: View {
         .accessibilityHidden(true)
     }
 
-    private func barSegments(width: CGFloat) -> some View {
-        let scale = width / 370
-        let unchangedBand = Path { path in
-            path.move(to: CGPoint(x: 170 * scale, y: 0))
-            path.addLine(to: CGPoint(x: 204 * scale, y: 0))
-            path.addLine(to: CGPoint(x: 202 * scale, y: 8))
-            path.addLine(to: CGPoint(x: 168 * scale, y: 8))
-            path.closeSubpath()
-        }
-
-        return ZStack {
-            Capsule()
-                .fill(Color("color-utility3-green"))
-
-            Color("color-utility3-red")
-                .frame(width: width / 2)
-                .frame(width: width, alignment: .trailing)
-
-            unchangedBand.stroke(Color("color-base-1"), lineWidth: 4)
-            unchangedBand.fill(Color("color-text-90"))
-        }
-        .frame(width: width, height: 8)
-        .clipShape(Capsule())
-    }
-
     private var countSummary: some View {
         HStack(spacing: 0) {
             downCount
-
-            Spacer(minLength: 0)
-
-            unchangedCount
 
             Spacer(minLength: 0)
 
@@ -123,10 +102,12 @@ struct MarketBreadthDistributionView: View {
     private var downCount: some View {
         HStack(spacing: 4) {
             Image("market_breadth_distribution_down")
+                .renderingMode(.template)
                 .resizable()
                 .frame(width: 10, height: 8)
                 .rotationEffect(.degrees(90))
                 .frame(width: 8, height: 10)
+                .foregroundColor(Color("color-utility3-green"))
                 .accessibilityHidden(true)
 
             Text(formatted(data.downCount))
@@ -137,21 +118,6 @@ struct MarketBreadthDistributionView: View {
         .accessibilityLabel("下跌 \(formatted(data.downCount))")
     }
 
-    private var unchangedCount: some View {
-        HStack(spacing: 4) {
-            Capsule()
-                .fill(Color("color-text-90"))
-                .frame(width: 6, height: 2)
-                .accessibilityHidden(true)
-
-            Text(formatted(data.unchangedCount))
-                .modifier(CustomFontModifier(size: 14, font: .bold, lineHeight: 20))
-                .foregroundColor(Color("color-text-90"))
-        }
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("平盘 \(formatted(data.unchangedCount))")
-    }
-
     private var upCount: some View {
         HStack(spacing: 4) {
             Text(formatted(data.upCount))
@@ -159,10 +125,12 @@ struct MarketBreadthDistributionView: View {
                 .foregroundColor(Color("color-utility3-red"))
 
             Image("market_breadth_distribution_up")
+                .renderingMode(.template)
                 .resizable()
                 .frame(width: 10, height: 8)
                 .rotationEffect(.degrees(-90))
                 .frame(width: 8, height: 10)
+                .foregroundColor(Color("color-utility3-red"))
                 .accessibilityHidden(true)
         }
         .accessibilityElement(children: .combine)
@@ -170,7 +138,7 @@ struct MarketBreadthDistributionView: View {
     }
 
     private func formatted(_ count: Int) -> String {
-        count.formatted(.number.locale(Locale(identifier: "en_US_POSIX")))
+        count.formatted(.number.locale(Locale(identifier: "en_US")))
     }
 }
 
