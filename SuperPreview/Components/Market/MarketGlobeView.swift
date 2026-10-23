@@ -67,15 +67,13 @@ struct MarketGlobeRotation {
 struct MarketGlobeView: View {
     let isActive: Bool
     let isCrypto: Bool
+    let showsBottomFade: Bool
     @Binding var orientation: MarketGlobeOrientation
     @Binding var rotation: MarketGlobeRotation?
 
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.demoLanguage) private var language
     @StateObject private var frameStore = CobeMetalFrameStore()
-    @State private var dragStartPhi = MarketGlobeOrientation.initialPhi
-    @State private var dragStartTheta = MarketGlobeOrientation.initialTheta
-    @State private var isDragging = false
     @State private var cryptoArcSeed = UInt64.random(in: 1...UInt64.max)
 
     private let theme: CobeMetalTheme = .monochrome
@@ -83,11 +81,13 @@ struct MarketGlobeView: View {
     init(
         isActive: Bool = true,
         isCrypto: Bool = false,
+        showsBottomFade: Bool = true,
         orientation: Binding<MarketGlobeOrientation>,
         rotation: Binding<MarketGlobeRotation?>
     ) {
         self.isActive = isActive
         self.isCrypto = isCrypto
+        self.showsBottomFade = showsBottomFade
         self._orientation = orientation
         self._rotation = rotation
     }
@@ -151,59 +151,25 @@ struct MarketGlobeView: View {
                     }
                 }
             }
-            // Metal renders on the same 355pt source canvas as the Demo. The
-            // market-specific transform happens inside this clipped viewport,
-            // so the 143pt height does not alter the land-dot sampling.
+            // The taller drawable includes the entire sphere. Compensating
+            // its camera scale keeps the original size, position, and dots.
             .frame(width: sourceCanvasSize.width, height: sourceCanvasSize.height, alignment: .topLeading)
             .frame(width: geometry.size.width, height: geometry.size.height, alignment: .topLeading)
             .overlay(alignment: .bottom) {
-                LinearGradient(
-                    colors: [
-                        Color("color-base-1").opacity(0),
-                        Color("color-base-1")
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .frame(height: MarketGlobeLayout.bottomFadeHeight)
-                .allowsHitTesting(false)
+                if showsBottomFade {
+                    MarketGlobeBottomFade()
+                }
             }
         }
-        .frame(height: MarketGlobeLayout.visibleHeight)
         .background(Color("color-base-1"))
-        .clipped()
-        .contentShape(Rectangle())
-        .gesture(rotationGesture)
+        .modifier(MarketGlobeRotationInteraction(
+            isCrypto: isCrypto,
+            orientation: $orientation,
+            rotation: $rotation
+        ))
         .accessibilityElement(children: .contain)
         .accessibilityLabel(language.text(.marketGlobeAccessibility))
         .accessibilityIdentifier("market.globe")
-    }
-
-    private var rotationGesture: MarketGlobeRotationGesture {
-        MarketGlobeRotationGesture(
-            onChanged: { translation in
-                if !isDragging {
-                    orientation = rotation?.value(at: Date()) ?? orientation
-                    rotation = nil
-                    dragStartPhi = orientation.phi
-                    dragStartTheta = orientation.theta
-                    isDragging = true
-                }
-
-                orientation.phi = dragStartPhi + Double(translation.x) / 220
-                orientation.theta = min(
-                    max(dragStartTheta + Double(translation.y) / 220, -1.45),
-                    1.45
-                )
-            },
-            onEnded: {
-                guard isDragging else { return }
-                isDragging = false
-                if isCrypto {
-                    rotation = .spinning(from: orientation)
-                }
-            }
-        )
     }
 
     private var markers: [CobeMetalMarker] {
@@ -239,11 +205,9 @@ struct MarketGlobeView: View {
         configuration.arcHeight = CobeMetalConfiguration.demoArcHeight
         // Crypto markers and arc endpoints sit directly on the globe surface.
         configuration.markerElevation = isCrypto ? 0 : CobeMetalConfiguration.demoMarkerElevation
-        // The market surface is a crop of the same COBE scene, not a scaled
-        // crop of the Demo's oversized debug viewport.  Keep the renderer's
-        // map/marker/arc parameters shared with the Demo, while using the
-        // camera scale required by the 143pt production viewport.
-        configuration.scale = MarketGlobeLayout.renderScale
+        // Preserve the reference camera's point scale while allowing the
+        // larger drawable to render the lower hemisphere as well.
+        configuration.scale = MarketGlobeLayout.renderScale(for: canvasSize)
         configuration.offset = SIMD2(0, MarketGlobeLayout.sourceOffsetY)
         configuration.opacity = CobeMetalConfiguration.demoOpacity
         if isCrypto {
@@ -289,35 +253,109 @@ struct MarketGlobeView: View {
     }
 }
 
-/// Decide the drag axis before recognition so vertical drags remain available
-/// to the enclosing ScrollView, including drags that start on the globe.
-private struct MarketGlobeRotationGesture: UIGestureRecognizerRepresentable {
-    let onChanged: (CGPoint) -> Void
-    let onEnded: () -> Void
+/// Share the original mask between the fixed globe's standalone mode and the
+/// scrolling card backdrop, with only one visible copy in either mode.
+struct MarketGlobeBottomFade: View {
+    var body: some View {
+        LinearGradient(
+            colors: [Color("color-base-1").opacity(0), Color("color-base-1")],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+        .frame(height: MarketGlobeLayout.bottomFadeHeight)
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+    }
+}
 
-    func makeCoordinator(converter: CoordinateSpaceConverter) -> Coordinator {
-        Coordinator()
+/// The same rotation interaction can live on a transparent scrolling region
+/// while the Metal view itself remains fixed behind the content.
+struct MarketGlobeRotationInteraction: ViewModifier {
+    let isCrypto: Bool
+    @Binding var orientation: MarketGlobeOrientation
+    @Binding var rotation: MarketGlobeRotation?
+
+    func body(content: Content) -> some View {
+        content
+            .contentShape(Rectangle())
+            .overlay {
+                MarketGlobeTouchSurface(
+                    isCrypto: isCrypto,
+                    orientation: $orientation,
+                    rotation: $rotation
+                )
+            }
+    }
+}
+
+/// A native hit-test boundary prevents the page controller underneath the
+/// transparent header from taking horizontal drags intended for the globe.
+/// Vertical drags fail recognition so the enclosing ScrollView can handle them.
+private struct MarketGlobeTouchSurface: UIViewRepresentable {
+    let isCrypto: Bool
+    @Binding var orientation: MarketGlobeOrientation
+    @Binding var rotation: MarketGlobeRotation?
+    @Environment(\.demoLanguage) private var language
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(surface: self)
     }
 
-    func makeUIGestureRecognizer(context: Context) -> UIPanGestureRecognizer {
-        let recognizer = UIPanGestureRecognizer()
+    func makeUIView(context: Context) -> UIView {
+        let view = UIView()
+        view.backgroundColor = .clear
+        view.isOpaque = false
+        view.isAccessibilityElement = true
+        view.accessibilityIdentifier = "market.globe.interaction"
+        let recognizer = UIPanGestureRecognizer(
+            target: context.coordinator,
+            action: #selector(Coordinator.handlePan(_:))
+        )
         recognizer.maximumNumberOfTouches = 1
         recognizer.delegate = context.coordinator
-        return recognizer
+        view.addGestureRecognizer(recognizer)
+        return view
     }
 
-    func handleUIGestureRecognizerAction(_ recognizer: UIPanGestureRecognizer, context: Context) {
-        switch recognizer.state {
-        case .began, .changed:
-            onChanged(recognizer.translation(in: recognizer.view))
-        case .ended, .cancelled, .failed:
-            onEnded()
-        default:
-            break
-        }
+    func updateUIView(_ view: UIView, context: Context) {
+        context.coordinator.surface = self
+        view.accessibilityLabel = language.text(.marketGlobeAccessibility)
     }
 
     final class Coordinator: NSObject, UIGestureRecognizerDelegate {
+        var surface: MarketGlobeTouchSurface
+        private var dragStart: MarketGlobeOrientation?
+
+        init(surface: MarketGlobeTouchSurface) {
+            self.surface = surface
+        }
+
+        @objc func handlePan(_ recognizer: UIPanGestureRecognizer) {
+            switch recognizer.state {
+            case .began, .changed:
+                if dragStart == nil {
+                    surface.orientation = surface.rotation?.value(at: Date()) ?? surface.orientation
+                    surface.rotation = nil
+                    dragStart = surface.orientation
+                }
+                guard let dragStart else { return }
+                let translation = recognizer.translation(in: recognizer.view)
+                surface.orientation.phi = dragStart.phi + Double(translation.x) / 220
+                surface.orientation.theta = min(
+                    max(dragStart.theta + Double(translation.y) / 220, -1.45),
+                    1.45
+                )
+            case .ended, .cancelled, .failed:
+                guard dragStart != nil else { return }
+                dragStart = nil
+                if surface.isCrypto {
+                    surface.rotation = .spinning(from: surface.orientation)
+                }
+            default:
+                break
+            }
+        }
+
         func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
             guard let pan = gestureRecognizer as? UIPanGestureRecognizer else { return false }
             let velocity = pan.velocity(in: pan.view)
@@ -423,7 +461,7 @@ enum MarketGlobeParameterExporter {
                 arcWidth: Double(CobeMetalConfiguration.demoArcWidth),
                 arcHeight: Double(CobeMetalConfiguration.demoArcHeight),
                 markerElevation: Double(CobeMetalConfiguration.demoMarkerElevation),
-                scale: Double(MarketGlobeLayout.renderScale),
+                scale: Double(MarketGlobeLayout.renderScale(for: referenceCanvas)),
                 offset: Vector2(
                     x: 0,
                     y: Double(MarketGlobeLayout.sourceOffsetY)
@@ -612,14 +650,17 @@ enum MarketGlobeParameterExporter {
     }
 }
 
-private enum MarketGlobeLayout {
-    // The Figma hero is a 143pt viewport with a 24pt white bottom mask.
+enum MarketGlobeLayout {
+    // Resting hero footprint, used to align the foreground cards and fade.
+    // The globe itself is no longer clipped to this height.
     static let visibleHeight: CGFloat = 140
     static let bottomFadeHeight: CGFloat = 32
+    static let contentTopInset = visibleHeight - bottomFadeHeight
 
     static let horizontalInset: CGFloat = 16
     static let globeTopInset: CGFloat = 8
-    static let sourceCanvasHeight: CGFloat = 355
+    static let sourceCanvasHeight: CGFloat = 480
+    private static let referenceCanvasHeight: CGFloat = 355
     static let referenceDeviceWidth: CGFloat = 402
     static let referenceMetalEarthWidth: CGFloat = 441
 
@@ -627,10 +668,9 @@ private enum MarketGlobeLayout {
     // reference instead of the demo's initial Pacific-facing orientation.
     static let initialPhi = MarketGlobeOrientation.initialPhi
     static let initialTheta = MarketGlobeOrientation.initialTheta
-    static let renderScale: Float = 1.27
-    // Keep the full sphere inside the source MTKView before applying the
-    // production crop.  The matching display compensation below cancels this
-    // translation after the source raster has been transformed.
+    private static let referenceRenderScale: Float = 1.27
+    // The display compensation below cancels this camera translation while
+    // the larger drawable leaves room for the entire lower hemisphere.
     static let sourceOffsetY: Float = 50
 
     static func sourceCanvasSize(for containerWidth: CGFloat) -> CGSize {
@@ -638,6 +678,10 @@ private enum MarketGlobeLayout {
             width: max(containerWidth, 1),
             height: sourceCanvasHeight
         )
+    }
+
+    static func renderScale(for canvasSize: CGSize) -> Float {
+        referenceRenderScale * Float(referenceCanvasHeight / max(canvasSize.height, 1))
     }
 
     static func displayScale(for containerWidth: CGFloat) -> CGFloat {
@@ -658,7 +702,7 @@ private enum MarketGlobeLayout {
         // The design's globe centre sits lower than the source canvas centre;
         // this is what exposes the apex/outline while retaining the 16pt side
         // clearance in the visible part of the sphere.
-        let sourceTranslation = CGFloat(sourceOffsetY * renderScale / 2)
+        let sourceTranslation = CGFloat(sourceOffsetY * renderScale(for: sourceCanvasSize) / 2)
         let displayCompensation = sourceTranslation * displayScale(for: containerWidth)
         return CGSize(
             width: 0,
