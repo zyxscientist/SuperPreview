@@ -1,0 +1,1188 @@
+{
+  "figmaFileKey": "sSOb11JOfSPoLLKQmRshYu",
+  "figmaLibraryNodeId": "15736:97329",
+  "mappingDocument": "https://alidocs.dingtalk.com/i/nodes/X6GRezwJl2Y0ew5oi0YeG169WdqbropQ",
+  "mappingSheets": [
+    "分类版",
+    "去重版"
+  ],
+  "canvasSizePoints": {
+    "width": 70,
+    "height": 70
+  },
+  "scales": [
+    2,
+    3
+  ],
+  "icons": [
+    {
+      "figmaNodeId": "15736:97328",
+      "figmaVariant": "贵金属",
+      "mappingCategory": "贵金属",
+      "assetName": "market_industry_precious_metals",
+      "caseName": "preciousMetals",
+      "industryNames": [
+        "贵金属",
+        "貴金屬",
+        "Precious Metals",
+        "黄金与贵金属",
+        "黃金與貴金屬",
+        "Gold & Precious Metals"
+      ]
+    },
+    {
+      "figmaNodeId": "16185:246635",
+      "figmaVariant": "海上运输",
+      "mappingCategory": "海上运输",
+      "assetName": "market_industry_marine_shipping",
+      "caseName": "marineShipping",
+      "industryNames": [
+        "海上运输",
+        "海上航运",
+        "海上航運",
+        "Marine Shipping"
+      ]
+    },
+    {
+      "figmaNodeId": "16335:289932",
+      "figmaVariant": "工业制造",
+      "mappingCategory": "工业制造",
+      "assetName": "market_industry_industrial_manufacturing",
+      "caseName": "industrialManufacturing",
+      "industryNames": [
+        "工业制造",
+        "工业制品",
+        "工業製品",
+        "Industrial Products",
+        "工业专业产品",
+        "工業專業產品",
+        "Industrial Specialties",
+        "工业综合企业",
+        "工業綜合企業",
+        "Industrial Conglomerates",
+        "其他制造业",
+        "其他製造業",
+        "Miscellaneous Manufacturing"
+      ]
+    },
+    {
+      "figmaNodeId": "16185:246822",
+      "figmaVariant": "工业机械",
+      "mappingCategory": "工业机械",
+      "assetName": "market_industry_industrial_machinery",
+      "caseName": "industrialMachinery",
+      "industryNames": [
+        "工业机械",
+        "工業機械",
+        "Industrial Machinery",
+        "工业机械与设备",
+        "工業機械與設備",
+        "Industrial Machinery & Equipment"
+      ]
+    },
+    {
+      "figmaNodeId": "16185:246643",
+      "figmaVariant": "矿产",
+      "mappingCategory": "矿产",
+      "assetName": "market_industry_mining",
+      "caseName": "mining",
+      "industryNames": [
+        "矿产",
+        "金属加工",
+        "金屬加工",
+        "Metal Fabrication",
+        "金属与采矿",
+        "金屬與採礦",
+        "Metals & Mining",
+        "其他金属/矿产",
+        "其他金屬/礦產",
+        "Other Metals/Minerals"
+      ]
+    },
+    {
+      "figmaNodeId": "16177:246298",
+      "figmaVariant": "纺织品",
+      "mappingCategory": "纺织品",
+      "assetName": "market_industry_textiles",
+      "caseName": "textiles",
+      "industryNames": [
+        "纺织品",
+        "紡織品",
+        "Textiles"
+      ]
+    },
+    {
+      "figmaNodeId": "16141:246153",
+      "figmaVariant": "办公用品",
+      "mappingCategory": "办公用品",
+      "assetName": "market_industry_office_supplies",
+      "caseName": "officeSupplies",
+      "industryNames": [
+        "办公用品",
+        "办公设备/用品",
+        "辦公設備/用品",
+        "Office Equipment/Supplies"
+      ]
+    },
+    {
+      "figmaNodeId": "16185:246612",
+      "figmaVariant": "电子设备",
+      "mappingCategory": "电子设备",
+      "assetName": "market_industry_electronic_equipment",
+      "caseName": "electronicEquipment",
+      "industryNames": [
+        "电子设备",
+        "电子设备/仪器",
+        "電子設備/儀器",
+        "Electronic Equipment/Instruments",
+        "电子生产设备",
+        "電子生產設備",
+        "Electronic Production Equipment",
+        "计算机外围设备",
+        "電腦周邊設備",
+        "Computer Peripherals"
+      ]
+    },
+    {
+      "figmaNodeId": "16335:289929",
+      "figmaVariant": "家居装修连锁店",
+      "mappingCategory": "家居装修连锁店",
+      "assetName": "market_industry_home_improvement_chains",
+      "caseName": "homeImprovementChains",
+      "industryNames": [
+        "家居装修连锁店",
+        "家居裝修連鎖店",
+        "Home Improvement Chains"
+      ]
+    },
+    {
+      "figmaNodeId": "16323:289860",
+      "figmaVariant": "建筑与工程",
+      "mappingCategory": "建筑与工程",
+      "assetName": "market_industry_construction_engineering",
+      "caseName": "constructionEngineering",
+      "industryNames": [
+        "建筑与工程",
+        "工程与建筑",
+        "工程與建築",
+        "Engineering & Construction",
+        "建筑",
+        "建築",
+        "Construction"
+      ]
+    },
+    {
+      "figmaNodeId": "16323:289864",
+      "figmaVariant": "其他",
+      "mappingCategory": "其他",
+      "assetName": "market_industry_miscellaneous",
+      "caseName": "miscellaneous",
+      "industryNames": [
+        "其他",
+        "Miscellaneous"
+      ]
+    },
+    {
+      "figmaNodeId": "16323:289868",
+      "figmaVariant": "汽车零部件与售后",
+      "mappingCategory": "汽车零部件与售后",
+      "assetName": "market_industry_auto_parts_aftermarket",
+      "caseName": "autoPartsAftermarket",
+      "industryNames": [
+        "汽车零部件与售后",
+        "汽车零部件：原厂",
+        "汽車零部件：原廠",
+        "Auto Parts: OEM",
+        "汽车售后市场",
+        "汽車售後市場",
+        "Automotive Aftermarket"
+      ]
+    },
+    {
+      "figmaNodeId": "16323:289878",
+      "figmaVariant": "石油与天然气",
+      "mappingCategory": "石油与天然气",
+      "assetName": "market_industry_oil_gas",
+      "caseName": "oilGas",
+      "industryNames": [
+        "石油与天然气",
+        "合约钻井",
+        "合約鑽井",
+        "Contract Drilling",
+        "炼油/营销",
+        "煉油/營銷",
+        "Oil Refining/Marketing",
+        "石油與天然氣",
+        "Oil & Gas",
+        "石油与天然气管道",
+        "石油與天然氣管道",
+        "Oil & Gas Pipelines",
+        "石油与天然气生产",
+        "石油與天然氣生產",
+        "Oil & Gas Production",
+        "油田服务/设备",
+        "油田服務/設備",
+        "Oilfield Services/Equipment",
+        "综合石油",
+        "綜合石油",
+        "Integrated Oil"
+      ]
+    },
+    {
+      "figmaNodeId": "16323:289882",
+      "figmaVariant": "铁路",
+      "mappingCategory": "铁路",
+      "assetName": "market_industry_railroads",
+      "caseName": "railroads",
+      "industryNames": [
+        "铁路",
+        "鐵路",
+        "Railroads"
+      ]
+    },
+    {
+      "figmaNodeId": "16323:289886",
+      "figmaVariant": "休闲",
+      "mappingCategory": "休闲",
+      "assetName": "market_industry_leisure",
+      "caseName": "leisure",
+      "industryNames": [
+        "休闲",
+        "休闲产品",
+        "休閒產品",
+        "Recreational Products",
+        "休闲设备与用品",
+        "休閒設備與用品",
+        "Leisure Products"
+      ]
+    },
+    {
+      "figmaNodeId": "16185:246582",
+      "figmaVariant": "半导体与电子元件",
+      "mappingCategory": "半导体与电子元件",
+      "assetName": "market_industry_semiconductors_components",
+      "caseName": "semiconductorsComponents",
+      "industryNames": [
+        "半导体与电子元件",
+        "半导体",
+        "半導體",
+        "Semiconductors",
+        "电子元件",
+        "電子元件",
+        "Electronic Components"
+      ]
+    },
+    {
+      "figmaNodeId": "16185:246586",
+      "figmaVariant": "保险",
+      "mappingCategory": "保险",
+      "assetName": "market_industry_insurance",
+      "caseName": "insurance",
+      "industryNames": [
+        "保险",
+        "保險",
+        "Insurance",
+        "保险经纪/服务",
+        "保險經紀/服務",
+        "Insurance Brokers/Services",
+        "财产/意外保险",
+        "財產/意外保險",
+        "Property/Casualty Insurance",
+        "多元保险",
+        "多元保險",
+        "Multi-Line Insurance",
+        "人寿/健康保险",
+        "人壽/健康保險",
+        "Life/Health Insurance",
+        "专业保险",
+        "專業保險",
+        "Specialty Insurance"
+      ]
+    },
+    {
+      "figmaNodeId": "16185:246590",
+      "figmaVariant": "博彩",
+      "mappingCategory": "博彩",
+      "assetName": "market_industry_gaming",
+      "caseName": "gaming",
+      "industryNames": [
+        "博彩",
+        "赌场/博彩",
+        "賭場/博彩",
+        "Casinos/Gaming"
+      ]
+    },
+    {
+      "figmaNodeId": "16185:246618",
+      "figmaVariant": "分销商",
+      "mappingCategory": "分销商",
+      "assetName": "market_industry_distributors",
+      "caseName": "distributors",
+      "industryNames": [
+        "分销商",
+        "电子产品分销商",
+        "電子產品分銷商",
+        "Electronics Distributors",
+        "目录/专业分销",
+        "目錄/專業分銷",
+        "Catalog/Specialty Distribution",
+        "批发分销商",
+        "批發分銷商",
+        "Wholesale Distributors",
+        "食品分销商",
+        "食品分銷商",
+        "Food Distributors",
+        "医疗分销商",
+        "醫療分銷商",
+        "Medical Distributors"
+      ]
+    },
+    {
+      "figmaNodeId": "16323:289611",
+      "figmaVariant": "航空公司",
+      "mappingCategory": "航空公司",
+      "assetName": "market_industry_airlines",
+      "caseName": "airlines",
+      "industryNames": [
+        "航空公司",
+        "Airlines"
+      ]
+    },
+    {
+      "figmaNodeId": "16323:289615",
+      "figmaVariant": "航空航天与国防",
+      "mappingCategory": "航空航天与国防",
+      "assetName": "market_industry_aerospace_defense",
+      "caseName": "aerospaceDefense",
+      "industryNames": [
+        "航空航天与国防",
+        "航空航天與國防",
+        "Aerospace & Defense"
+      ]
+    },
+    {
+      "figmaNodeId": "16323:289893",
+      "figmaVariant": "航空货运",
+      "mappingCategory": "航空货运",
+      "assetName": "market_industry_air_freight",
+      "caseName": "airFreight",
+      "industryNames": [
+        "航空货运",
+        "航空货运/快递",
+        "航空貨運/速遞",
+        "Air Freight/Couriers"
+      ]
+    },
+    {
+      "figmaNodeId": "16323:289899",
+      "figmaVariant": "数据处理服务",
+      "mappingCategory": "数据处理服务",
+      "assetName": "market_industry_data_processing",
+      "caseName": "dataProcessing",
+      "industryNames": [
+        "数据处理服务",
+        "數據處理服務",
+        "Data Processing Services"
+      ]
+    },
+    {
+      "figmaNodeId": "16323:289903",
+      "figmaVariant": "投资管理人",
+      "mappingCategory": "投资管理人",
+      "assetName": "market_industry_investment_managers",
+      "caseName": "investmentManagers",
+      "industryNames": [
+        "投资管理人",
+        "投資管理人",
+        "Investment Managers",
+        "投资银行/经纪",
+        "投資銀行/經紀",
+        "Investment Banks/Brokers"
+      ]
+    },
+    {
+      "figmaNodeId": "16323:289907",
+      "figmaVariant": "烟草",
+      "mappingCategory": "烟草",
+      "assetName": "market_industry_tobacco",
+      "caseName": "tobacco",
+      "industryNames": [
+        "烟草",
+        "煙草",
+        "Tobacco"
+      ]
+    },
+    {
+      "figmaNodeId": "16323:289911",
+      "figmaVariant": "药房连锁店",
+      "mappingCategory": "药房连锁店",
+      "assetName": "market_industry_drugstore_chains",
+      "caseName": "drugstoreChains",
+      "industryNames": [
+        "药房连锁店",
+        "藥房連鎖店",
+        "Drugstore Chains"
+      ]
+    },
+    {
+      "figmaNodeId": "16335:289915",
+      "figmaVariant": "一般政府",
+      "mappingCategory": "一般政府",
+      "assetName": "market_industry_general_government",
+      "caseName": "generalGovernment",
+      "industryNames": [
+        "一般政府",
+        "General Government"
+      ]
+    },
+    {
+      "figmaNodeId": "16335:289919",
+      "figmaVariant": "商业印刷/表格",
+      "mappingCategory": "商业印刷/表格",
+      "assetName": "market_industry_commercial_printing",
+      "caseName": "commercialPrinting",
+      "industryNames": [
+        "商业印刷/表格",
+        "商業印刷/表格",
+        "Commercial Printing/Forms"
+      ]
+    },
+    {
+      "figmaNodeId": "16335:289923",
+      "figmaVariant": "广告/营销服务",
+      "mappingCategory": "广告/营销服务",
+      "assetName": "market_industry_advertising_marketing",
+      "caseName": "advertisingMarketing",
+      "industryNames": [
+        "广告/营销服务",
+        "廣告/營銷服務",
+        "Advertising/Marketing Services"
+      ]
+    },
+    {
+      "figmaNodeId": "16668:46855",
+      "figmaVariant": "电力公用事业",
+      "mappingCategory": "电力公用事业",
+      "assetName": "market_industry_electric_utilities",
+      "caseName": "electricUtilities",
+      "industryNames": [
+        "电力公用事业",
+        "電力公用事業",
+        "Electric Utilities",
+        "电气产品",
+        "電氣產品",
+        "Electrical Products"
+      ]
+    },
+    {
+      "figmaNodeId": "16668:46895",
+      "figmaVariant": "铝",
+      "mappingCategory": "铝",
+      "assetName": "market_industry_aluminum",
+      "caseName": "aluminum",
+      "industryNames": [
+        "铝",
+        "鋁",
+        "Aluminum"
+      ]
+    },
+    {
+      "figmaNodeId": "17010:48630",
+      "figmaVariant": "燃气分销商",
+      "mappingCategory": "燃气分销商",
+      "assetName": "market_industry_gas_distributors",
+      "caseName": "gasDistributors",
+      "industryNames": [
+        "燃气分销商",
+        "燃氣分銷商",
+        "Gas Distributors"
+      ]
+    },
+    {
+      "figmaNodeId": "16668:46899",
+      "figmaVariant": "食品：肉类+鱼类+乳制品",
+      "mappingCategory": "食品：肉类/鱼类/乳制品",
+      "assetName": "market_industry_meat_fish_dairy",
+      "caseName": "meatFishDairy",
+      "industryNames": [
+        "食品：肉类+鱼类+乳制品",
+        "食品：肉类/鱼类/乳制品",
+        "食品：肉類/魚類/乳製品",
+        "Food: Meat/Fish/Dairy"
+      ]
+    },
+    {
+      "figmaNodeId": "16668:46903",
+      "figmaVariant": "水务公用事业",
+      "mappingCategory": "水务公用事业",
+      "assetName": "market_industry_water_utilities",
+      "caseName": "waterUtilities",
+      "industryNames": [
+        "水务公用事业",
+        "水務公用事業",
+        "Water Utilities"
+      ]
+    },
+    {
+      "figmaNodeId": "16668:46907",
+      "figmaVariant": "特色食品+糖果",
+      "mappingCategory": "特色食品/糖果",
+      "assetName": "market_industry_specialty_food_candy",
+      "caseName": "specialtyFoodCandy",
+      "industryNames": [
+        "特色食品+糖果",
+        "特色食品/糖果",
+        "Food: Specialty/Candy"
+      ]
+    },
+    {
+      "figmaNodeId": "16668:46914",
+      "figmaVariant": "电视",
+      "mappingCategory": "电视",
+      "assetName": "market_industry_television",
+      "caseName": "television",
+      "industryNames": [
+        "电视",
+        "有线/卫星电视",
+        "有線/衛星電視",
+        "Cable/Satellite TV"
+      ]
+    },
+    {
+      "figmaNodeId": "16668:46874",
+      "figmaVariant": "非酒精饮料",
+      "mappingCategory": "非酒精饮料",
+      "assetName": "market_industry_non_alcoholic_beverages",
+      "caseName": "nonAlcoholicBeverages",
+      "industryNames": [
+        "非酒精饮料",
+        "非酒精飲料",
+        "Beverages: Non-Alcoholic"
+      ]
+    },
+    {
+      "figmaNodeId": "16668:46878",
+      "figmaVariant": "服装+鞋类",
+      "mappingCategory": "服装/鞋类",
+      "assetName": "market_industry_apparel_footwear",
+      "caseName": "apparelFootwear",
+      "industryNames": [
+        "服装+鞋类",
+        "服装/鞋类",
+        "服裝/鞋類",
+        "Apparel/Footwear",
+        "服装/鞋类零售",
+        "服裝/鞋類零售",
+        "Apparel/Footwear Retail"
+      ]
+    },
+    {
+      "figmaNodeId": "16668:46883",
+      "figmaVariant": "钢铁",
+      "mappingCategory": "钢铁",
+      "assetName": "market_industry_steel",
+      "caseName": "steel",
+      "industryNames": [
+        "钢铁",
+        "鋼鐵",
+        "Steel"
+      ]
+    },
+    {
+      "figmaNodeId": "16668:46887",
+      "figmaVariant": "酒精饮料",
+      "mappingCategory": "酒精饮料",
+      "assetName": "market_industry_alcoholic_beverages",
+      "caseName": "alcoholicBeverages",
+      "industryNames": [
+        "酒精饮料",
+        "酒精飲料",
+        "Beverages: Alcoholic"
+      ]
+    },
+    {
+      "figmaNodeId": "17010:48690",
+      "figmaVariant": "广播",
+      "mappingCategory": "广播",
+      "assetName": "market_industry_broadcasting",
+      "caseName": "broadcasting",
+      "industryNames": [
+        "广播",
+        "廣播",
+        "Broadcasting"
+      ]
+    },
+    {
+      "figmaNodeId": "16335:289927",
+      "figmaVariant": "影视与广播电视",
+      "mappingCategory": "影视与广播电视",
+      "assetName": "market_industry_media_entertainment",
+      "caseName": "mediaEntertainment",
+      "industryNames": [
+        "影视与广播电视",
+        "电影/娱乐",
+        "電影/娛樂",
+        "Movies/Entertainment",
+        "媒体与娱乐",
+        "媒體與娛樂",
+        "Media & Entertainment",
+        "媒体综合企业",
+        "媒體綜合企業",
+        "Media Conglomerates"
+      ]
+    },
+    {
+      "figmaNodeId": "16323:289619",
+      "figmaVariant": "特专科技",
+      "mappingCategory": "特专科技",
+      "assetName": "market_industry_specialized_technology",
+      "caseName": "specializedTechnology",
+      "industryNames": [
+        "特专科技",
+        "特專科技",
+        "Specialized Technology"
+      ]
+    },
+    {
+      "figmaNodeId": "16185:246594",
+      "figmaVariant": "出版",
+      "mappingCategory": "出版",
+      "assetName": "market_industry_publishing",
+      "caseName": "publishing",
+      "industryNames": [
+        "出版",
+        "出版：报纸",
+        "出版：報紙",
+        "Publishing: Newspapers",
+        "出版：书籍/杂志",
+        "出版：書籍/雜誌",
+        "Publishing: Books/Magazines"
+      ]
+    },
+    {
+      "figmaNodeId": "16141:246107",
+      "figmaVariant": "服装、鞋类与奢侈品",
+      "mappingCategory": "服装、鞋类与奢侈品",
+      "assetName": "market_industry_apparel_luxury_goods",
+      "caseName": "apparelLuxuryGoods",
+      "industryNames": [
+        "服装、鞋类与奢侈品",
+        "纺织品、服装与奢侈品",
+        "紡織品、服裝與奢侈品",
+        "Textiles, Apparel & Luxury Goods"
+      ]
+    },
+    {
+      "figmaNodeId": "16185:246598",
+      "figmaVariant": "电信",
+      "mappingCategory": "电信",
+      "assetName": "market_industry_telecommunications",
+      "caseName": "telecommunications",
+      "industryNames": [
+        "电信",
+        "电信设备",
+        "電訊設備",
+        "Telecommunications Equipment",
+        "电讯业",
+        "電訊業",
+        "Telecommunications",
+        "计算机通信",
+        "電腦通訊",
+        "Computer Communications",
+        "无线电信",
+        "無線電訊",
+        "Wireless Telecommunications",
+        "主要电信",
+        "主要電訊",
+        "Major Telecommunications",
+        "专业电信",
+        "專業電訊",
+        "Specialty Telecommunications"
+      ]
+    },
+    {
+      "figmaNodeId": "16185:246622",
+      "figmaVariant": "工具与五金",
+      "mappingCategory": "工具与五金",
+      "assetName": "market_industry_tools_hardware",
+      "caseName": "toolsHardware",
+      "industryNames": [
+        "工具与五金",
+        "工具與五金",
+        "Tools & Hardware"
+      ]
+    },
+    {
+      "figmaNodeId": "16141:246129",
+      "figmaVariant": "化工",
+      "mappingCategory": "化工",
+      "assetName": "market_industry_chemicals",
+      "caseName": "chemicals",
+      "industryNames": [
+        "化工",
+        "大型综合化工",
+        "大型綜合化工",
+        "Chemicals: Major Diversified",
+        "化工产品",
+        "化工產品",
+        "Chemicals",
+        "农业化学品",
+        "農業化學品",
+        "Chemicals: Agricultural",
+        "特种化学品",
+        "特種化學品",
+        "Chemicals: Specialty"
+      ]
+    },
+    {
+      "figmaNodeId": "16185:246816",
+      "figmaVariant": "环境服务",
+      "mappingCategory": "环境服务",
+      "assetName": "market_industry_environmental_services",
+      "caseName": "environmentalServices",
+      "industryNames": [
+        "环境服务",
+        "環境服務",
+        "Environmental Services"
+      ]
+    },
+    {
+      "figmaNodeId": "16141:246111",
+      "figmaVariant": "房地产",
+      "mappingCategory": "房地产",
+      "assetName": "market_industry_real_estate",
+      "caseName": "realEstate",
+      "industryNames": [
+        "房地产",
+        "地产",
+        "地產",
+        "Real Estate",
+        "房地产开发",
+        "房地產開發",
+        "Real Estate Development",
+        "住宅建筑",
+        "住宅建築",
+        "Homebuilding"
+      ]
+    },
+    {
+      "figmaNodeId": "16141:246087",
+      "figmaVariant": "公路货运与物流",
+      "mappingCategory": "公路货运与物流",
+      "assetName": "market_industry_trucking_logistics",
+      "caseName": "truckingLogistics",
+      "industryNames": [
+        "公路货运与物流",
+        "货运卡车",
+        "貨運卡車",
+        "Trucking",
+        "其他运输",
+        "其他運輸",
+        "Other Transportation",
+        "运输",
+        "運輸",
+        "Transportation"
+      ]
+    },
+    {
+      "figmaNodeId": "16141:246101",
+      "figmaVariant": "家庭日用品",
+      "mappingCategory": "家庭日用品",
+      "assetName": "market_industry_household_goods",
+      "caseName": "householdGoods",
+      "industryNames": [
+        "家庭日用品",
+        "家居用品",
+        "Home Furnishings",
+        "家庭/个人护理",
+        "家庭/個人護理",
+        "Household/Personal Care",
+        "家庭耐用消费品",
+        "家庭耐用消費品",
+        "Household Durables",
+        "家庭与个人用品",
+        "家庭與個人用品",
+        "Household & Personal Products",
+        "其他特色消费品",
+        "其他特色消費品",
+        "Other Consumer Specialties",
+        "日用消费品",
+        "日用消費品",
+        "Consumer Sundries"
+      ]
+    },
+    {
+      "figmaNodeId": "16177:246328",
+      "figmaVariant": "互联网零售",
+      "mappingCategory": "互联网零售",
+      "assetName": "market_industry_internet_retail",
+      "caseName": "internetRetail",
+      "industryNames": [
+        "互联网零售",
+        "互聯網零售",
+        "Internet Retail"
+      ]
+    },
+    {
+      "figmaNodeId": "16141:246157",
+      "figmaVariant": "家电",
+      "mappingCategory": "家电",
+      "assetName": "market_industry_home_appliances",
+      "caseName": "homeAppliances",
+      "industryNames": [
+        "家电",
+        "电子产品/家电",
+        "電子產品/家電",
+        "Electronics/Appliances",
+        "电子产品/家电商店",
+        "電子產品/家電商店",
+        "Electronics/Appliance Stores"
+      ]
+    },
+    {
+      "figmaNodeId": "16141:246161",
+      "figmaVariant": "建筑材料",
+      "mappingCategory": "建筑材料",
+      "assetName": "market_industry_construction_materials",
+      "caseName": "constructionMaterials",
+      "industryNames": [
+        "建筑材料",
+        "建築材料",
+        "Construction Materials",
+        "建筑产品",
+        "建築產品",
+        "Building Products"
+      ]
+    },
+    {
+      "figmaNodeId": "15736:97325",
+      "figmaVariant": "酒店餐馆",
+      "mappingCategory": "酒店餐馆",
+      "assetName": "market_industry_hotels_restaurants",
+      "caseName": "hotelsRestaurants",
+      "industryNames": [
+        "酒店餐馆",
+        "餐馆",
+        "餐館",
+        "Restaurants",
+        "酒店/度假村/邮轮",
+        "酒店/度假村/郵輪",
+        "Hotels/Resorts/Cruise lines",
+        "酒店、餐馆与休闲",
+        "酒店、餐館與休閒",
+        "Hotels, Restaurants & Leisure"
+      ]
+    },
+    {
+      "figmaNodeId": "16177:246286",
+      "figmaVariant": "零售业",
+      "mappingCategory": "零售业",
+      "assetName": "market_industry_retail",
+      "caseName": "retail",
+      "industryNames": [
+        "零售业",
+        "百货商店",
+        "百貨公司",
+        "Department Stores",
+        "零售業",
+        "Retailing",
+        "食品零售",
+        "Food Retail",
+        "折扣店",
+        "Discount Stores",
+        "专业商店",
+        "專業商店",
+        "Specialty Stores"
+      ]
+    },
+    {
+      "figmaNodeId": "15736:97323",
+      "figmaVariant": "煤炭",
+      "mappingCategory": "煤炭",
+      "assetName": "market_industry_coal",
+      "caseName": "coal",
+      "industryNames": [
+        "煤炭",
+        "Coal"
+      ]
+    },
+    {
+      "figmaNodeId": "16141:246149",
+      "figmaVariant": "农产品",
+      "mappingCategory": "农产品",
+      "assetName": "market_industry_agricultural_products",
+      "caseName": "agriculturalProducts",
+      "industryNames": [
+        "农产品",
+        "農產品",
+        "Agricultural Products",
+        "农业商品/制粉",
+        "農業商品/製粉",
+        "Agricultural Commodities/Milling"
+      ]
+    },
+    {
+      "figmaNodeId": "15736:97324",
+      "figmaVariant": "汽车",
+      "mappingCategory": "汽车",
+      "assetName": "market_industry_automobiles",
+      "caseName": "automobiles",
+      "industryNames": [
+        "汽车",
+        "汽車",
+        "Automobiles",
+        "Motor Vehicles",
+        "Automobiles / Motor Vehicles"
+      ]
+    },
+    {
+      "figmaNodeId": "16141:246221",
+      "figmaVariant": "容器与包装",
+      "mappingCategory": "容器与包装",
+      "assetName": "market_industry_containers_packaging",
+      "caseName": "containersPackaging",
+      "industryNames": [
+        "容器与包装",
+        "容器與包裝",
+        "Containers & Packaging",
+        "Containers/Packaging",
+        "Containers & Packaging / Containers/Packaging"
+      ]
+    },
+    {
+      "figmaNodeId": "15736:97326",
+      "figmaVariant": "软件与互联网服务",
+      "mappingCategory": "软件与互联网服务",
+      "assetName": "market_industry_software_internet_services",
+      "caseName": "softwareInternetServices",
+      "industryNames": [
+        "软件与互联网服务",
+        "互联网软件/服务",
+        "互聯網軟件/服務",
+        "Internet Software/Services",
+        "软件服务",
+        "軟件服務",
+        "Software Services",
+        "套装软件",
+        "套裝軟件",
+        "Packaged Software",
+        "信息技术服务",
+        "資訊科技服務",
+        "Information Technology Services"
+      ]
+    },
+    {
+      "figmaNodeId": "16141:246131",
+      "figmaVariant": "商业服务",
+      "mappingCategory": "商业服务",
+      "assetName": "market_industry_commercial_services",
+      "caseName": "commercialServices",
+      "industryNames": [
+        "商业服务",
+        "其他商业服务",
+        "其他商業服務",
+        "Miscellaneous Commercial Services",
+        "其他消费者服务",
+        "其他消費者服務",
+        "Other Consumer Services",
+        "人力服务",
+        "人力服務",
+        "Personnel Services",
+        "支援服务",
+        "支援服務",
+        "Support Services"
+      ]
+    },
+    {
+      "figmaNodeId": "16141:246097",
+      "figmaVariant": "食品与饮料",
+      "mappingCategory": "食品与饮料",
+      "assetName": "market_industry_food_beverages",
+      "caseName": "foodBeverages",
+      "industryNames": [
+        "食品与饮料",
+        "大型综合食品",
+        "大型綜合食品",
+        "Food: Major Diversified",
+        "食品與飲料",
+        "Food & Beverage"
+      ]
+    },
+    {
+      "figmaNodeId": "16177:246343",
+      "figmaVariant": "医疗健康",
+      "mappingCategory": "医疗健康",
+      "assetName": "market_industry_health_care",
+      "caseName": "healthCare",
+      "industryNames": [
+        "医疗健康",
+        "管理式医疗保健",
+        "管理式醫療保健",
+        "Managed Health Care",
+        "医疗/护理服务",
+        "醫療/護理服務",
+        "Medical/Nursing Services",
+        "医疗保健设备与服务",
+        "醫療保健設備與服務",
+        "Health Care Equipment & Services",
+        "医疗行业服务",
+        "醫療行業服務",
+        "Services to the Health Industry",
+        "医疗专科",
+        "醫療專科",
+        "Medical Specialties",
+        "医院/护理管理",
+        "醫院/護理管理",
+        "Hospital/Nursing Management"
+      ]
+    },
+    {
+      "figmaNodeId": "16141:246127",
+      "figmaVariant": "银行",
+      "mappingCategory": "银行",
+      "assetName": "market_industry_banks",
+      "caseName": "banks",
+      "industryNames": [
+        "银行",
+        "储蓄银行",
+        "儲蓄銀行",
+        "Savings Banks",
+        "大型银行",
+        "大型銀行",
+        "Major Banks",
+        "地区银行",
+        "地區銀行",
+        "Regional Banks",
+        "銀行",
+        "Banks"
+      ]
+    },
+    {
+      "figmaNodeId": "15736:97327",
+      "figmaVariant": "纸业与林业",
+      "mappingCategory": "纸业与林业",
+      "assetName": "market_industry_paper_forest_products",
+      "caseName": "paperForestProducts",
+      "industryNames": [
+        "纸业与林业",
+        "林业产品",
+        "林業產品",
+        "Forest Products",
+        "纸浆与造纸",
+        "紙漿與造紙",
+        "Pulp & Paper",
+        "纸类与林业产品",
+        "紙類與林業產品",
+        "Paper & Forest Products"
+      ]
+    },
+    {
+      "figmaNodeId": "16177:246310",
+      "figmaVariant": "制药与生物科技",
+      "mappingCategory": "制药与生物科技",
+      "assetName": "market_industry_pharmaceuticals_biotechnology",
+      "caseName": "pharmaceuticalsBiotechnology",
+      "industryNames": [
+        "制药与生物科技",
+        "大型制药",
+        "大型製藥",
+        "Pharmaceuticals: Major",
+        "仿制药",
+        "仿製藥",
+        "Pharmaceuticals: Generic",
+        "其他制药",
+        "其他製藥",
+        "Pharmaceuticals: Other",
+        "生物科技",
+        "Biotechnology",
+        "製藥與生物科技",
+        "Pharmaceuticals & Biotechnology"
+      ]
+    },
+    {
+      "figmaNodeId": "16141:246145",
+      "figmaVariant": "综合金融",
+      "mappingCategory": "综合金融",
+      "assetName": "market_industry_diversified_financials",
+      "caseName": "diversifiedFinancials",
+      "industryNames": [
+        "综合金融",
+        "房地产投资信托基金",
+        "房地產投資信託基金",
+        "Real Estate Investment Trusts",
+        "金融/租赁",
+        "金融/租賃",
+        "Finance/Rental/Leasing",
+        "金融出版/服务",
+        "金融出版/服務",
+        "Financial Publishing/Services",
+        "投资信托/共同基金",
+        "投資信託/互惠基金",
+        "Investment Trusts/Mutual Funds",
+        "综合金融服务",
+        "綜合金融服務",
+        "Diversified Financials"
+      ]
+    },
+    {
+      "figmaNodeId": "16177:246435",
+      "figmaVariant": "公用事业与替代能源",
+      "mappingCategory": "公用事业与替代能源",
+      "assetName": "market_industry_utilities_alternative_energy",
+      "caseName": "utilitiesAlternativeEnergy",
+      "industryNames": [
+        "公用事业与替代能源",
+        "公用事业",
+        "公用事業",
+        "Utilities",
+        "替代能源发电",
+        "替代能源發電",
+        "Alternative Power Generation"
+      ]
+    },
+    {
+      "figmaNodeId": "16177:246467",
+      "figmaVariant": "综合企业",
+      "mappingCategory": "综合企业",
+      "assetName": "market_industry_conglomerates",
+      "caseName": "conglomerates",
+      "industryNames": [
+        "综合企业",
+        "金融综合企业",
+        "金融綜合企業",
+        "Financial Conglomerates",
+        "綜合企業",
+        "Conglomerates"
+      ]
+    },
+    {
+      "figmaNodeId": "16177:246469",
+      "figmaVariant": "计算机硬件",
+      "mappingCategory": "计算机硬件",
+      "assetName": "market_industry_computer_hardware",
+      "caseName": "computerHardware",
+      "industryNames": [
+        "计算机硬件",
+        "计算机处理硬件",
+        "電腦處理硬件",
+        "Computer Processing Hardware",
+        "资讯科技硬件与设备",
+        "資訊科技硬件與設備",
+        "Information Technology Hardware & Equipment"
+      ]
+    },
+    {
+      "figmaNodeId": "16668:46891",
+      "figmaVariant": "农业机械",
+      "mappingCategory": "农业机械",
+      "assetName": "market_industry_farm_machinery",
+      "caseName": "farmMachinery",
+      "industryNames": [
+        "农业机械",
+        "卡车/建筑/农业机械",
+        "卡車/建築/農業機械",
+        "Trucks/Construction/Farm Machinery"
+      ]
+    }
+  ]
+}

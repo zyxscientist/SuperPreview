@@ -20,8 +20,6 @@ struct MarketView: View {
     @State private var isShaderOnly = false
     @State private var marketGlobeOrientation = MarketGlobeOrientation()
     @State private var globeRotation: MarketGlobeRotation?
-    @State private var pageContentHeights: [String: CGFloat] = [:]
-    @State private var pullDownDistance: CGFloat = 0
     @EnvironmentObject private var demoLanguageStore: DemoLanguageStore
     @EnvironmentObject private var demoAppearanceStore: DemoAppearanceStore
 
@@ -124,67 +122,29 @@ struct MarketView: View {
                 .allowsHitTesting(showsGlobe && isShaderOnly)
                 .accessibilityHidden(!showsGlobe || !isShaderOnly)
 
-                ScrollView(.vertical, showsIndicators: false) {
-                    VStack(spacing: 0) {
-                        // Keep input inside the ScrollView even though the
-                        // visible globe stays fixed behind it. The exposed
-                        // region shrinks naturally as cards scroll over it.
-                        Color.clear
-                            .frame(height: MarketGlobeLayout.contentTopInset)
-                            .modifier(MarketGlobeRotationInteraction(
-                                isCrypto: selectedTab == "加密货币",
-                                orientation: $marketGlobeOrientation,
-                                rotation: $globeRotation
-                            ))
-                            .allowsHitTesting(showsGlobe)
-                            .accessibilityElement(children: .ignore)
-                            .accessibilityLabel(demoLanguage.text(.marketGlobeAccessibility))
-                            .accessibilityIdentifier("market.globe")
-                            .accessibilityHidden(!showsGlobe)
-                            .zIndex(1)
-
-                        TabView(selection: $selectedTab) {
-                            ForEach(Self.marketTabs, id: \.self) { tab in
-                                marketPage(for: tab)
-                                    .tag(tab)
-                            }
+                // The pager keeps the viewport's fixed size throughout a
+                // horizontal transition. Each category owns its vertical
+                // scrolling instead of resizing a shared outer ScrollView.
+                TabView(selection: $selectedTab) {
+                    ForEach(Self.marketTabs, id: \.self) { tab in
+                        MarketScrollingPage(
+                            tab: tab,
+                            viewportHeight: viewport.size.height,
+                            showsGlobe: hasGlobe(for: tab),
+                            orientation: $marketGlobeOrientation,
+                            rotation: $globeRotation
+                        ) {
+                            marketPage(for: tab)
                         }
-                        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                        // TabView has no intrinsic height inside a ScrollView.
-                        // Measure each page before filling the pager.
-                        .frame(height: max(
-                            viewport.size.height - MarketGlobeLayout.contentTopInset,
-                            pageContentHeights[selectedTab] ?? 0
-                        ))
-                        .background {
-                            // This is the original fade underneath the index
-                            // cards. It now travels with their opaque backdrop
-                            // to cover the fixed globe as content scrolls up.
-                            VStack(spacing: 0) {
-                                MarketGlobeBottomFade()
-                                Color("color-base-1")
-                            }
-                            .allowsHitTesting(false)
-                            .accessibilityHidden(true)
-                        }
+                        .tag(tab)
                     }
-                    .frame(minHeight: viewport.size.height, alignment: .top)
-                    // Give the foreground enough travel to uncover the full
-                    // fixed globe within one pull, without changing layout.
-                    .offset(y: pullDownDistance * 0.75)
                 }
+                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                .frame(width: viewport.size.width, height: viewport.size.height)
                 .opacity(isShaderOnly ? 0 : 1)
                 .allowsHitTesting(!isShaderOnly)
                 .accessibilityHidden(isShaderOnly)
-                .accessibilityIdentifier("market.scroll")
-                .onScrollGeometryChange(for: CGFloat.self) { scroll in
-                    max(-(scroll.contentOffset.y + scroll.contentInsets.top), 0)
-                } action: { _, distance in
-                    pullDownDistance = distance
-                }
-                .onPreferenceChange(MarketPageContentHeightKey.self) { heights in
-                    pageContentHeights.merge(heights, uniquingKeysWith: { _, new in new })
-                }
+                .accessibilityIdentifier("market.pages")
             }
         }
     }
@@ -206,34 +166,98 @@ struct MarketView: View {
                     MarketQuickMenu()
                     MarketIPOCenterView()
                     MarketHeatmapView()
+                    MarketIndustrySectorsView()
                 }
             }
         }
         .padding(.bottom, 32)
-        .fixedSize(horizontal: false, vertical: true)
-        .background {
-            GeometryReader { content in
-                Color.clear.preference(
-                    key: MarketPageContentHeightKey.self,
-                    value: [tab: content.size.height]
-                )
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .frame(maxWidth: .infinity, alignment: .top)
         .contentShape(Rectangle())
         .accessibilityIdentifier("market.content.\(tab)")
     }
 
     private var showsGlobe: Bool {
-        selectedTab == "港股" || selectedTab == "美股" || selectedTab == "沪深港通" || selectedTab == "加密货币"
+        hasGlobe(for: selectedTab)
+    }
+
+    private func hasGlobe(for tab: String) -> Bool {
+        tab == "港股" || tab == "美股" || tab == "沪深港通" || tab == "加密货币"
     }
 }
 
-private struct MarketPageContentHeightKey: PreferenceKey {
-    static var defaultValue: [String: CGFloat] = [:]
+/// Vertical scroll state stays local to a category. Pulling down never
+/// invalidates the market pager or the shared Metal globe's ownership.
+private struct MarketScrollingPage<Content: View>: View {
+    let tab: String
+    let viewportHeight: CGFloat
+    let showsGlobe: Bool
+    @Binding var orientation: MarketGlobeOrientation
+    @Binding var rotation: MarketGlobeRotation?
+    let content: Content
+    @State private var pullDownDistance: CGFloat = 0
+    @Environment(\.demoLanguage) private var language
 
-    static func reduce(value: inout [String: CGFloat], nextValue: () -> [String: CGFloat]) {
-        value.merge(nextValue(), uniquingKeysWith: { _, new in new })
+    init(
+        tab: String,
+        viewportHeight: CGFloat,
+        showsGlobe: Bool,
+        orientation: Binding<MarketGlobeOrientation>,
+        rotation: Binding<MarketGlobeRotation?>,
+        @ViewBuilder content: () -> Content
+    ) {
+        self.tab = tab
+        self.viewportHeight = viewportHeight
+        self.showsGlobe = showsGlobe
+        self._orientation = orientation
+        self._rotation = rotation
+        self.content = content()
+    }
+
+    var body: some View {
+        ScrollView(.vertical, showsIndicators: false) {
+            VStack(spacing: 0) {
+                Color.clear
+                    .frame(height: MarketGlobeLayout.contentTopInset)
+                    .modifier(MarketGlobeRotationInteraction(
+                        isCrypto: tab == "加密货币",
+                        orientation: $orientation,
+                        rotation: $rotation
+                    ))
+                    .allowsHitTesting(showsGlobe)
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel(language.text(.marketGlobeAccessibility))
+                    .accessibilityIdentifier("market.globe")
+                    .accessibilityHidden(!showsGlobe)
+                    .zIndex(1)
+
+                content
+                    .frame(
+                        minHeight: max(viewportHeight - MarketGlobeLayout.contentTopInset, 0),
+                        alignment: .top
+                    )
+                    .background {
+                        // Preserve the index cards' original shallow fade.
+                        // The opaque remainder scrolls over the fixed globe.
+                        VStack(spacing: 0) {
+                            MarketGlobeBottomFade()
+                            Color("color-base-1")
+                        }
+                        .allowsHitTesting(false)
+                        .accessibilityHidden(true)
+                    }
+
+            }
+            .frame(minHeight: viewportHeight, alignment: .top)
+            .offset(y: pullDownDistance * 0.75)
+        }
+        .scrollBounceBehavior(.always, axes: .vertical)
+        .onScrollGeometryChange(for: CGFloat.self) { scroll in
+            max(-(scroll.contentOffset.y + scroll.contentInsets.top), 0)
+        } action: { _, distance in
+            pullDownDistance = distance
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("market.scroll.\(tab)")
     }
 }
 

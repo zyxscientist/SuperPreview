@@ -361,6 +361,18 @@ private struct MarketGlobeTouchSurface: UIViewRepresentable {
             let velocity = pan.velocity(in: pan.view)
             return abs(velocity.x) > abs(velocity.y)
         }
+
+        func gestureRecognizer(
+            _ gestureRecognizer: UIGestureRecognizer,
+            shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer
+        ) -> Bool {
+            guard gestureRecognizer.numberOfTouches > 0,
+                  otherGestureRecognizer is UIPanGestureRecognizer,
+                  let surface = gestureRecognizer.view,
+                  surface.bounds.contains(gestureRecognizer.location(in: surface)),
+                  let ancestor = otherGestureRecognizer.view else { return false }
+            return surface !== ancestor && surface.isDescendant(of: ancestor)
+        }
     }
 }
 
