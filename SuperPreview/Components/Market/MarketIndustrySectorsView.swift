@@ -52,6 +52,7 @@ struct MarketIndustrySectorsView: View {
     private let columnWidth: CGFloat = 240
     private let rowHeight: CGFloat = 94
     private let itemSpacing: CGFloat = 16
+    @Environment(\.demoLanguage) private var language
 
     init(
         sectors: [MarketIndustrySector] = MarketIndustrySector.figmaReference,
@@ -107,8 +108,8 @@ struct MarketIndustrySectorsView: View {
     private var header: some View {
         Button(action: onShowAll) {
             HStack(spacing: 8) {
-                Text("行业板块")
-                    .modifier(CustomFontModifier(size: 18, font: .medium, lineHeight: 28))
+                Text(language.text(.marketIndustrySectors))
+                    .modifier(CustomFontModifier(size: 18, font: .bold, lineHeight: 28))
                     .foregroundStyle(Color("color-text-30"))
 
                 Spacer(minLength: 0)
@@ -124,12 +125,15 @@ struct MarketIndustrySectorsView: View {
         }
         .buttonStyle(.plain)
         .padding(.horizontal, 16)
-        .accessibilityLabel("行业板块，查看全部")
+        .accessibilityLabel(language.actionAccessibilityLabel(name: language.text(.marketIndustrySectors), action: language.text(.viewAll)))
         .accessibilityIdentifier("market.industrySectors.showAll")
     }
 
     private func sectorRow(_ sector: MarketIndustrySector) -> some View {
-        Button {
+        let sectorName = language.marketDataName("industry.\(sector.id)", fallback: sector.name)
+        let leadingStockName = language.marketDataName("industry-leader.\(sector.id)", fallback: sector.leadingStockName)
+
+        return Button {
             onSelect(sector)
         } label: {
             HStack(spacing: 12) {
@@ -147,7 +151,7 @@ struct MarketIndustrySectorsView: View {
 
                 VStack(alignment: .leading, spacing: 8) {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(sector.name)
+                        Text(sectorName)
                             .foregroundStyle(Color("color-text-30"))
                             .frame(height: 20, alignment: .leading)
 
@@ -157,7 +161,7 @@ struct MarketIndustrySectorsView: View {
                     }
                     .modifier(CustomFontModifier(size: 14, font: .medium, lineHeight: 20))
 
-                    leadingStockTag(sector)
+                    leadingStockTag(sector, name: leadingStockName)
                 }
                 .lineLimit(1)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -169,13 +173,13 @@ struct MarketIndustrySectorsView: View {
         }
         .buttonStyle(.plain)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(sector.name)，\(formattedChange(sector.percentChange))，领涨股\(sector.leadingStockName)，\(formattedChange(sector.leadingStockPercentChange))")
+        .accessibilityLabel(String(format: language.text(.marketIndustryAccessibilityFormat), sectorName, formattedChange(sector.percentChange), leadingStockName, formattedChange(sector.leadingStockPercentChange)))
         .accessibilityIdentifier("market.industrySectors.sector.\(sector.id)")
     }
 
-    private func leadingStockTag(_ sector: MarketIndustrySector) -> some View {
+    private func leadingStockTag(_ sector: MarketIndustrySector, name: String) -> some View {
         HStack(spacing: 8) {
-            Text(sector.leadingStockName)
+            Text(name)
                 .foregroundStyle(Color("color-text-30"))
                 .truncationMode(.tail)
 

@@ -25,6 +25,7 @@ struct MarketBreadthDistributionData: Hashable {
 /// A standalone market-breadth summary matching the Figma "涨跌分布" component.
 struct MarketBreadthDistributionView: View {
     let data: MarketBreadthDistributionData
+    @Environment(\.demoLanguage) private var language
 
     init(data: MarketBreadthDistributionData = .figmaReference) {
         self.data = data
@@ -49,13 +50,13 @@ struct MarketBreadthDistributionView: View {
 
     private var header: some View {
         HStack(alignment: .center, spacing: 10) {
-            Text("涨跌分布")
-                .modifier(CustomFontModifier(size: 18, font: .medium, lineHeight: 28))
+            Text(language.text(.marketBreadthDistribution))
+                .modifier(CustomFontModifier(size: 18, font: .bold, lineHeight: 28))
                 .foregroundColor(Color("color-text-30"))
 
             Spacer(minLength: 0)
 
-            Text("更新：\(data.updatedAt)")
+            Text(String(format: language.text(.marketBreadthUpdatedFormat), data.updatedAt))
                 .modifier(CustomFontModifier(size: 12, font: .regular, lineHeight: 16))
                 .foregroundColor(Color("color-text-90"))
                 .lineLimit(1)
@@ -115,7 +116,7 @@ struct MarketBreadthDistributionView: View {
                 .foregroundColor(Color("color-utility3-green"))
         }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("下跌 \(formatted(data.downCount))")
+        .accessibilityLabel(String(format: language.text(.marketBreadthDownAccessibilityFormat), formatted(data.downCount)))
     }
 
     private var upCount: some View {
@@ -134,7 +135,7 @@ struct MarketBreadthDistributionView: View {
                 .accessibilityHidden(true)
         }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("上涨 \(formatted(data.upCount))")
+        .accessibilityLabel(String(format: language.text(.marketBreadthUpAccessibilityFormat), formatted(data.upCount)))
     }
 
     private func formatted(_ count: Int) -> String {

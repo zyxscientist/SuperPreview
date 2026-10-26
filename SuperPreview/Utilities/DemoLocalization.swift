@@ -106,6 +106,18 @@ enum DemoCopyKey {
     case marketCryptoBitcoin, marketCryptoEthereum, marketCryptoSolana
     case marketGlobeAccessibility, exportMarketGlobeParameters, showShaderOnly
     case marketGlobeExportFailedTitle, marketGlobeExportFailedMessage
+    case marketBreadthDistribution, marketBreadthUpdatedFormat
+    case marketBreadthDownAccessibilityFormat, marketBreadthUpAccessibilityFormat
+    case marketQuickStockScreener, marketQuickETF, marketQuickWarrants
+    case marketQuickHKADRs, marketQuickMarginableStocks
+    case marketIndustrySectors, marketHeatmapTitle, marketRankingsTitle, viewAll
+    case marketMainBoard, marketGemBoard
+    case marketIndustryAccessibilityFormat, marketHeatmapAccessibilityFormat
+    case marketRankingAccessibilityFormat
+    case ipoTodaySubscriptionsFormat, ipoUpcomingListingsFormat, ipoNameAndCodeFormat
+    case ipoSubscribeAccessibilityFormat
+    case ipoSubscribe, ipoRemainingHoursFormat, ipoRemainingDaysHoursFormat
+    case ipoUpTo, ipoLeverage, ipoCashSubscriptionFeeZero
     case marketSanFrancisco, marketNewYork, marketToronto, marketLondon
     case marketTokyo, marketShanghai, marketShenzhen, marketHongKong
     case marketSingapore, marketSydney, marketSaoPaulo, marketCapeTown
@@ -249,6 +261,38 @@ extension DemoLanguage {
         }
     }
 
+    func marketDataName(_ id: String, fallback: String) -> String {
+        guard let values = DemoCopy.marketDataNames[id] else { return fallback }
+        switch self {
+        case .simplifiedChinese: return values.0
+        case .traditionalChinese: return values.1
+        case .english: return values.2
+        }
+    }
+
+    func marketSecurityName(code: String, fallback: String) -> String {
+        guard let id = DemoCopy.marketSecurityNameIDs[code] else { return fallback }
+        return securityName(id: id, fallback: fallback)
+    }
+
+    func ipoCompanyName(id: String, fallback: String) -> String {
+        guard let id = DemoCopy.ipoCompanyNameIDs[id] else { return fallback }
+        return securityName(id: id, fallback: fallback)
+    }
+
+    func ipoRemainingTime(hours: Int) -> String {
+        let days = hours / 24
+        let remainingHours = hours % 24
+        let key: DemoCopyKey = days == 0 ? .ipoRemainingHoursFormat : .ipoRemainingDaysHoursFormat
+        let arguments: [CVarArg] = days == 0 ? [hours] : [days, remainingHours]
+
+        return String(
+            format: text(key),
+            locale: Locale(identifier: rawValue),
+            arguments: arguments
+        )
+    }
+
     func watchlistName(symbol: String, fallback: String) -> String {
         let localizationID = DemoCopy.watchlistNameIDs[symbol]
         return localizationID.map { securityName(id: $0, fallback: fallback) } ?? fallback
@@ -322,6 +366,34 @@ private enum DemoCopy {
         .showShaderOnly: ("仅显示 Shader", "只顯示 Shader", "Show Shader Only"),
         .marketGlobeExportFailedTitle: ("导出失败", "匯出失敗", "Export Failed"),
         .marketGlobeExportFailedMessage: ("无法生成参数文件，请重试。", "無法產生參數檔案，請重試。", "The parameter file could not be created. Please try again."),
+        .marketBreadthDistribution: ("涨跌分布", "漲跌分布", "Market Overview"),
+        .marketBreadthUpdatedFormat: ("更新：%@", "更新：%@", "Updated: %@"),
+        .marketBreadthDownAccessibilityFormat: ("下跌 %@", "下跌 %@", "Down %@"),
+        .marketBreadthUpAccessibilityFormat: ("上涨 %@", "上漲 %@", "Up %@"),
+        .marketQuickStockScreener: ("选股器", "選股器", "Screener"),
+        .marketQuickETF: ("ETF", "ETF", "ETF"),
+        .marketQuickWarrants: ("窝轮牛熊", "窩輪牛熊", "Warrants"),
+        .marketQuickHKADRs: ("港股ADR", "港股ADR", "HK ADRs"),
+        .marketQuickMarginableStocks: ("可融资股票", "可融資股票", "Marginable"),
+        .marketIndustrySectors: ("行业板块", "行業板塊", "Sectors"),
+        .marketHeatmapTitle: ("热力图", "熱力圖", "Heatmap"),
+        .marketRankingsTitle: ("港股榜单", "港股榜單", "Stock Rankings"),
+        .viewAll: ("查看全部", "查看全部", "View All"),
+        .marketMainBoard: ("主板", "主板", "Main Board"),
+        .marketGemBoard: ("创业板", "創業板", "GEM"),
+        .marketIndustryAccessibilityFormat: ("%@，涨跌幅 %@，领涨股 %@ %@", "%@，漲跌幅 %@，領漲股 %@ %@", "%@, change %@, leading stock %@ %@"),
+        .marketHeatmapAccessibilityFormat: ("%@，涨跌幅 %@", "%@，漲跌幅 %@", "%@, change %@"),
+        .marketRankingAccessibilityFormat: ("%@，%@，价格 %@，涨跌幅 %@", "%@，%@，價格 %@，漲跌幅 %@", "%@, %@, Price %@, change %@"),
+        .ipoTodaySubscriptionsFormat: ("今日认购 %d", "今日認購 %d", "Available %d"),
+        .ipoUpcomingListingsFormat: ("待上市  %d", "待上市  %d", "Listing Soon  %d"),
+        .ipoNameAndCodeFormat: ("%@（%@）", "%@（%@）", "%@ (%@)"),
+        .ipoSubscribeAccessibilityFormat: ("认购%@，%@", "認購%@，%@", "Subscribe to %@. Time remaining: %@"),
+        .ipoSubscribe: ("认购", "認購", "Subscribe"),
+        .ipoRemainingHoursFormat: ("剩余%d小时", "剩餘%d小時", "%dH left"),
+        .ipoRemainingDaysHoursFormat: ("剩余%d天%d小时", "剩餘%d天%d小時", "%dD %dH left"),
+        .ipoUpTo: ("最高 ", "最高 ", "Up to "),
+        .ipoLeverage: (" 倍杠杆", " 倍槓桿", "× leverage"),
+        .ipoCashSubscriptionFeeZero: ("现金认购手续费0", "現金認購手續費0", "Zero cash subscription fee"),
         .marketSanFrancisco: ("三藩市", "三藩市", "San Francisco"),
         .marketNewYork: ("纽约", "紐約", "New York"),
         .marketToronto: ("多伦多", "多倫多", "Toronto"),
@@ -576,9 +648,9 @@ private enum DemoCopy {
         .hkStockGroup: ("港股 · HKD", "港股 · HKD", "Hong Kong Stocks · HKD"),
         .chinaStockGroup: ("A股 · CNH", "A股 · CNH", "China A-Shares · CNH"),
         .usStockGroup: ("美股 · USD", "美股 · USD", "U.S. Stocks · USD"),
-        .hkdFundGroup: ("港币基金", "港幣基金", "Hong Kong Dollar Funds"),
-        .usdFundGroup: ("美元基金", "美元基金", "U.S. Dollar Funds"),
-        .cnyFundGroup: ("人民币基金", "人民幣基金", "Renminbi Funds"),
+        .hkdFundGroup: ("港币基金", "港幣基金", "HKD Fund"),
+        .usdFundGroup: ("美元基金", "美元基金", "USD Fund"),
+        .cnyFundGroup: ("人民币基金", "人民幣基金", "CNH Fund"),
         .cryptoGroup: ("加密货币 · USD", "加密貨幣 · USD", "Cryptocurrency · USD"),
         .rwaGroup: ("RWA · USD", "RWA · USD", "Real-World Assets (RWA) · USD"),
         .cryptoPricingInfo: ("您可以港币或美元直接买卖加密货币。成交后，加密货币持仓明细将以美元计价。", "您可以港幣或美元直接買賣加密貨幣。成交後，加密貨幣持倉明細將以美元計價。", "Trade crypto in HKD or USD. Positions are valued in USD after execution."),
@@ -609,6 +681,19 @@ private enum DemoCopy {
     ]
 
     static let securityNames: [String: Values] = [
+        "market-hk-meituan": ("美团-W", "美團-W", "Meituan-W"),
+        "market-hk-byd": ("比亚迪股份", "比亞迪股份", "BYD Company"),
+        "market-hk-zijin": ("紫金矿业", "紫金礦業", "Zijin Mining"),
+        "market-hk-alibaba": ("阿里巴巴-W", "阿里巴巴-W", "Alibaba-W"),
+        "market-hk-kingdee": ("金蝶国际", "金蝶國際", "Kingdee International"),
+        "market-hk-tencent": ("腾讯控股", "騰訊控股", "Tencent Holdings"),
+        "market-hk-shangri-la": ("香格里拉(亚洲)", "香格里拉（亞洲）", "Shangri-La Asia"),
+        "market-hk-aia": ("友邦保险", "友邦保險", "AIA Group"),
+        "market-hk-shenhua": ("中国神华", "中國神華", "China Shenhua Energy"),
+        "market-hk-china-mobile": ("中国移动", "中國移動", "China Mobile"),
+        "market-hk-crmi": ("中国再生医学", "中國再生醫學", "China Regenerative Medicine"),
+        "ipo-eswin": ("奕斯伟计算", "奕斯偉計算", "ESWIN Computing"),
+        "ipo-dji": ("大疆创新", "大疆創新", "DJI"),
         "hk-tencent": ("腾讯控股", "騰訊控股", "Tencent"),
         "hk-hstech": ("南方恒生科技", "南方恆生科技", "CSOP HST"),
         "hk-alibaba": ("阿里巴巴-W", "阿里巴巴-W", "Alibaba-W"),
@@ -670,6 +755,54 @@ private enum DemoCopy {
         "wl-crypto-eth": ("以太坊/美元", "以太坊/美元", "Ethereum/USD"),
         "wl-us-alibaba": ("阿里巴巴", "阿里巴巴", "Alibaba"),
         "wl-etf-fxi": ("安硕中国大盘ETF", "安碩中國大型股ETF", "China Large-Cap ETF")
+    ]
+
+    static let marketSecurityNameIDs: [String: String] = [
+        "03690": "market-hk-meituan",
+        "01211": "market-hk-byd",
+        "02899": "market-hk-zijin",
+        "09988": "market-hk-alibaba",
+        "00268": "market-hk-kingdee",
+        "00700": "market-hk-tencent",
+        "00069": "market-hk-shangri-la",
+        "01299": "market-hk-aia",
+        "01088": "market-hk-shenhua",
+        "00941": "market-hk-china-mobile",
+        "08158": "market-hk-crmi"
+    ]
+
+    static let ipoCompanyNameIDs: [String: String] = [
+        "subscription-1": "ipo-eswin",
+        "subscription-2": "ipo-dji",
+        "subscription-3": "ipo-dji"
+    ]
+
+    static let marketDataNames: [String: Values] = [
+        "industry.precious-metals": ("黄金与贵金属", "黃金與貴金屬", "Gold & Precious Metals"),
+        "industry.hotels-restaurants": ("酒店餐馆与休闲", "酒店餐館與休閒", "Hotels, Restaurants & Leisure"),
+        "industry.paper-forest-products": ("纸类与林业产品", "紙類與林業產品", "Paper & Forest Products"),
+        "industry.automobiles": ("汽车", "汽車", "Automobiles"),
+        "industry.software-services": ("软件服务", "軟體服務", "Software Services"),
+        "industry.coal": ("煤炭", "煤炭", "Coal"),
+        "industry.internet-content": ("互联网内容与信息", "互聯網內容與資訊", "Internet Content & Information"),
+        "industry.pharmaceuticals": ("制药", "製藥", "Pharmaceuticals"),
+        "industry.insurance": ("保险", "保險", "Insurance"),
+        "industry-leader.precious-metals": ("紫金矿业 02899", "紫金礦業 02899", "Zijin Mining 02899"),
+        "industry-leader.hotels-restaurants": ("香格里拉(亚洲) 00069", "香格里拉（亞洲） 00069", "Shangri-La Asia 00069"),
+        "industry-leader.paper-forest-products": ("理文造纸 02314", "理文造紙 02314", "Lee & Man Paper 02314"),
+        "industry-leader.automobiles": ("比亚迪股份 01211", "比亞迪股份 01211", "BYD Company 01211"),
+        "industry-leader.software-services": ("金蝶国际 00268", "金蝶國際 00268", "Kingdee International 00268"),
+        "industry-leader.coal": ("中国神华 01088", "中國神華 01088", "China Shenhua Energy 01088"),
+        "industry-leader.internet-content": ("腾讯控股 00700", "騰訊控股 00700", "Tencent Holdings 00700"),
+        "industry-leader.pharmaceuticals": ("石药集团 01093", "石藥集團 01093", "CSPC Pharmaceutical Group 01093"),
+        "industry-leader.insurance": ("友邦保险 01299", "友邦保險 01299", "AIA Group 01299"),
+        "heatmap.internet-content": ("互联网内容与信息", "互聯網內容與資訊", "Internet Content & Information"),
+        "heatmap.bank": ("银行", "銀行", "Banks"),
+        "heatmap.insurance": ("保险", "保險", "Insurance"),
+        "heatmap.biotech-pharma": ("药品制造商-生物", "藥品製造商－生物", "Biopharmaceuticals"),
+        "heatmap.internet-retail": ("互联网零售", "互聯網零售", "Internet Retail"),
+        "heatmap.software": ("软件-基", "軟體－基礎設施", "Software - Infrastructure"),
+        "heatmap.semiconductor": ("半导体", "半導體", "Semiconductors")
     ]
 
     static let watchlistNameIDs: [String: String] = [

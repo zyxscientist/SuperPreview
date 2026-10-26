@@ -35,6 +35,7 @@ struct MarketHeatmapSector: Identifiable, Hashable {
 struct MarketHeatmapView: View {
     let rows: [[MarketHeatmapSector]]
     let onShowAll: () -> Void
+    @Environment(\.demoLanguage) private var language
 
     init(
         rows: [[MarketHeatmapSector]] = MarketHeatmapSector.figmaReferenceRows,
@@ -63,8 +64,8 @@ struct MarketHeatmapView: View {
     private var header: some View {
         Button(action: onShowAll) {
             HStack(spacing: 8) {
-                Text("热力图")
-                    .modifier(CustomFontModifier(size: 18, font: .medium, lineHeight: 28))
+                Text(language.text(.marketHeatmapTitle))
+                    .modifier(CustomFontModifier(size: 18, font: .bold, lineHeight: 28))
                     .foregroundStyle(Color("color-text-30"))
 
                 Spacer(minLength: 0)
@@ -79,7 +80,7 @@ struct MarketHeatmapView: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("热力图，查看全部")
+        .accessibilityLabel(language.actionAccessibilityLabel(name: language.text(.marketHeatmapTitle), action: language.text(.viewAll)))
         .accessibilityIdentifier("market.heatmap.showAll")
     }
 
@@ -106,8 +107,10 @@ struct MarketHeatmapView: View {
         columnIndex: Int,
         columnCount: Int
     ) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(sector.name)
+        let name = language.marketDataName("heatmap.\(sector.id)", fallback: sector.name)
+
+        return VStack(alignment: .leading, spacing: 6) {
+            Text(name)
                 .foregroundStyle(Color("color-text-30"))
                 .lineLimit(1)
                 .truncationMode(.tail)
@@ -133,7 +136,7 @@ struct MarketHeatmapView: View {
             )
         )
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(sector.name)，\(formattedChange(sector.percentChange))")
+        .accessibilityLabel(String(format: language.text(.marketHeatmapAccessibilityFormat), name, formattedChange(sector.percentChange)))
         .accessibilityIdentifier("market.heatmap.tile.\(sector.id)")
     }
 

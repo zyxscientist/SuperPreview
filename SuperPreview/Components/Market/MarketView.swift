@@ -29,22 +29,25 @@ struct MarketView: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            WatchlistRedesignTabs(
-                tabs: Self.marketTabs,
-                selectedTab: $selectedTab,
-                fontSize: 14,
-                isReducedLiquidGlassUsageEnabled: demoAppearanceStore.isReducedLiquidGlassUsageEnabled,
-                titleProvider: demoLanguage.marketTabTitle,
-                accessibilityPrefix: "market",
-                showsSortMenu: false,
-                leadingPadding: 16
-            )
+        GeometryReader { geometry in
+            VStack(spacing: 0) {
+                WatchlistRedesignTabs(
+                    tabs: Self.marketTabs,
+                    selectedTab: $selectedTab,
+                    fontSize: 14,
+                    isReducedLiquidGlassUsageEnabled: demoAppearanceStore.isReducedLiquidGlassUsageEnabled,
+                    titleProvider: demoLanguage.marketTabTitle,
+                    accessibilityPrefix: "market",
+                    showsSortMenu: false,
+                    leadingPadding: 16
+                )
 
-            marketContent
+                marketContent(bottomContentClearance: geometry.safeAreaInsets.bottom + 28)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .background(Color("color-base-1").ignoresSafeArea())
+            .ignoresSafeArea(.container, edges: .bottom)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(Color("color-base-1").ignoresSafeArea())
         .accessibilityIdentifier("market.root")
         .sheet(
             isPresented: $isShowingDebugPanel,
@@ -106,7 +109,7 @@ struct MarketView: View {
         )
     }
 
-    private var marketContent: some View {
+    private func marketContent(bottomContentClearance: CGFloat) -> some View {
         GeometryReader { viewport in
             // One fixed Metal surface remains behind the scrolling pages, so
             // neither scrolling nor horizontal paging recreates the globe.
@@ -130,6 +133,7 @@ struct MarketView: View {
                         MarketScrollingPage(
                             tab: tab,
                             viewportHeight: viewport.size.height,
+                            bottomContentClearance: bottomContentClearance,
                             showsGlobe: hasGlobe(for: tab),
                             orientation: $marketGlobeOrientation,
                             rotation: $globeRotation
@@ -170,7 +174,7 @@ struct MarketView: View {
                 }
             }
         }
-        .padding(.bottom, 32)
+        .padding(.bottom, tab == "港股" ? 16 : 32)
         .frame(maxWidth: .infinity, alignment: .top)
         .contentShape(Rectangle())
         .accessibilityIdentifier("market.content.\(tab)")
@@ -190,6 +194,7 @@ struct MarketView: View {
 private struct MarketScrollingPage<Content: View>: View {
     let tab: String
     let viewportHeight: CGFloat
+    let bottomContentClearance: CGFloat
     let showsGlobe: Bool
     @Binding var orientation: MarketGlobeOrientation
     @Binding var rotation: MarketGlobeRotation?
@@ -200,6 +205,7 @@ private struct MarketScrollingPage<Content: View>: View {
     init(
         tab: String,
         viewportHeight: CGFloat,
+        bottomContentClearance: CGFloat,
         showsGlobe: Bool,
         orientation: Binding<MarketGlobeOrientation>,
         rotation: Binding<MarketGlobeRotation?>,
@@ -207,6 +213,7 @@ private struct MarketScrollingPage<Content: View>: View {
     ) {
         self.tab = tab
         self.viewportHeight = viewportHeight
+        self.bottomContentClearance = bottomContentClearance
         self.showsGlobe = showsGlobe
         self._orientation = orientation
         self._rotation = rotation
@@ -214,6 +221,14 @@ private struct MarketScrollingPage<Content: View>: View {
     }
 
     var body: some View {
+        ScrollViewReader { scrollProxy in
+            scrollContent {
+                scrollProxy.scrollTo("market.hkRankings.top", anchor: .top)
+            }
+        }
+    }
+
+    private func scrollContent(onRankingBoardChange: @escaping () -> Void) -> some View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(spacing: 0) {
                 Color.clear
@@ -246,6 +261,22 @@ private struct MarketScrollingPage<Content: View>: View {
                         .accessibilityHidden(true)
                     }
 
+                if tab == "港股" {
+                    LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
+                        MarketHongKongRankingsView(
+                            headerTopInset: 16,
+                            minimumRowsHeight: max(viewportHeight - 104 - bottomContentClearance, 0),
+                            onBoardChange: onRankingBoardChange
+                        )
+                    }
+                    .id("market.hkRankings.top")
+                }
+
+                // Match the watchlist: rows scroll behind the floating tab bar,
+                // and the last row can still be brought fully above it.
+                Color("color-base-1")
+                    .frame(height: bottomContentClearance)
+                    .accessibilityHidden(true)
             }
             .frame(minHeight: viewportHeight, alignment: .top)
             .offset(y: pullDownDistance * 0.75)

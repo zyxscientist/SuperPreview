@@ -10,6 +10,8 @@
 import SwiftUI
 
 struct MarketQuickMenu: View {
+    @Environment(\.demoLanguage) private var language
+
     var body: some View {
         AssetQuickMenu(
             items: items,
@@ -21,27 +23,27 @@ struct MarketQuickMenu: View {
     private var items: [AssetQuickMenuItem] {
         [
             AssetQuickMenuItem(
-                title: "选股器",
+                title: language.text(.marketQuickStockScreener),
                 imageName: "market_quick_menu_stock_selector",
                 action: {}
             ),
             AssetQuickMenuItem(
-                title: "ETF",
+                title: language.text(.marketQuickETF),
                 imageName: "market_quick_menu_etf",
                 action: {}
             ),
             AssetQuickMenuItem(
-                title: "窝轮牛熊",
+                title: language.text(.marketQuickWarrants),
                 imageName: "market_quick_menu_warrant",
                 action: {}
             ),
             AssetQuickMenuItem(
-                title: "港股ADR",
+                title: language.text(.marketQuickHKADRs),
                 imageName: "market_quick_menu_adr",
                 action: {}
             ),
             AssetQuickMenuItem(
-                title: "可融资股票",
+                title: language.text(.marketQuickMarginableStocks),
                 imageName: "market_quick_menu_marginable_stock",
                 action: {}
             )

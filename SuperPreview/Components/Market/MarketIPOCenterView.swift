@@ -18,7 +18,7 @@ struct MarketIPOSubscription: Identifiable, Hashable {
     let id: String
     let name: String
     let code: String
-    let remainingTime: String
+    let remainingTimeHours: Int
     let promotion: Promotion?
 
     static let figmaReference: [Self] = [
@@ -26,21 +26,21 @@ struct MarketIPOSubscription: Identifiable, Hashable {
             id: "subscription-1",
             name: "奕斯伟计算",
             code: "01256",
-            remainingTime: "剩余23小时",
+            remainingTimeHours: 23,
             promotion: .leverage(10)
         ),
         Self(
             id: "subscription-2",
             name: "大疆创新",
             code: "01234",
-            remainingTime: "剩余2天23小时",
+            remainingTimeHours: 71,
             promotion: .zeroCashSubscriptionFee
         ),
         Self(
             id: "subscription-3",
             name: "大疆创新",
             code: "01234",
-            remainingTime: "剩余5天23小时",
+            remainingTimeHours: 143,
             promotion: nil
         )
     ]
@@ -53,6 +53,7 @@ struct MarketIPOCenterView: View {
     let upcomingListingCount: Int
     let onShowAll: () -> Void
     let onSubscribe: (MarketIPOSubscription) -> Void
+    @Environment(\.demoLanguage) private var language
 
     init(
         subscriptions: [MarketIPOSubscription] = MarketIPOSubscription.figmaReference,
@@ -85,8 +86,8 @@ struct MarketIPOCenterView: View {
     private var header: some View {
         Button(action: onShowAll) {
             HStack(spacing: 8) {
-                Text("新股中心")
-                    .modifier(CustomFontModifier(size: 18, font: .medium, lineHeight: 28))
+                Text(language.text(.ipoCenter))
+                    .modifier(CustomFontModifier(size: 18, font: .bold, lineHeight: 28))
                     .foregroundStyle(Color("color-text-30"))
 
                 Spacer(minLength: 0)
@@ -102,13 +103,13 @@ struct MarketIPOCenterView: View {
         }
         .buttonStyle(.plain)
         .padding(.horizontal, 16)
-        .accessibilityLabel("新股中心，查看全部")
+        .accessibilityLabel(language.actionAccessibilityLabel(name: language.text(.ipoCenter), action: language.text(.viewAll)))
         .accessibilityIdentifier("market.ipoCenter.showAll")
     }
 
     private var tabs: some View {
         HStack(spacing: 8) {
-            Text("今日认购 \(subscriptions.count)")
+            Text(String(format: language.text(.ipoTodaySubscriptionsFormat), subscriptions.count))
                 .modifier(CustomFontModifier(size: 14, font: .bold, lineHeight: 20))
                 .foregroundStyle(Color("color-text-30"))
                 .frame(height: 20)
@@ -122,7 +123,7 @@ struct MarketIPOCenterView: View {
                 .accessibilityIdentifier("market.ipoCenter.tab.subscriptions")
 
             // The upcoming-listings state will be added with its design.
-            Text("待上市  \(upcomingListingCount)")
+            Text(String(format: language.text(.ipoUpcomingListingsFormat), upcomingListingCount))
                 .modifier(CustomFontModifier(size: 14, font: .regular, lineHeight: 20))
                 .foregroundStyle(Color("color-text-60"))
                 .frame(height: 20)
@@ -156,9 +157,13 @@ struct MarketIPOCenterView: View {
         isFirst: Bool,
         isLast: Bool
     ) -> some View {
-        HStack(spacing: 12) {
+        let localizedName = language.ipoCompanyName(id: subscription.id, fallback: subscription.name)
+        let nameAndCode = String(format: language.text(.ipoNameAndCodeFormat), localizedName, subscription.code)
+        let remainingTime = language.ipoRemainingTime(hours: subscription.remainingTimeHours)
+
+        return HStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 6) {
-                Text("\(subscription.name)(\(subscription.code))")
+                Text(nameAndCode)
                     .modifier(CustomFontModifier(size: 14, font: .medium, lineHeight: 20))
                     .foregroundStyle(Color("color-text-30"))
                     .lineLimit(1)
@@ -174,7 +179,7 @@ struct MarketIPOCenterView: View {
             Button {
                 onSubscribe(subscription)
             } label: {
-                Text(subscription.remainingTime)
+                Text(remainingTime)
                     .modifier(CustomFontModifier(size: 14, font: .medium, lineHeight: 16))
                     .foregroundStyle(Color("color-text-r"))
                     .lineLimit(1)
@@ -186,7 +191,7 @@ struct MarketIPOCenterView: View {
                     .contentShape(Capsule())
             }
             .buttonStyle(.plain)
-            .accessibilityLabel("认购\(subscription.name)，\(subscription.remainingTime)")
+            .accessibilityLabel(String(format: language.text(.ipoSubscribeAccessibilityFormat), localizedName, remainingTime))
             .accessibilityIdentifier("market.ipoCenter.subscribe.\(subscription.id)")
         }
         .padding(.leading, 16)
@@ -218,9 +223,9 @@ struct MarketIPOCenterView: View {
                     .accessibilityHidden(true)
 
                 (
-                    Text("最高 ")
+                    Text(language.text(.ipoUpTo))
                     + Text("\(multiplier)").font(.custom(CustomFontModifier.CustomFont.bold.rawValue, size: 12))
-                    + Text(" 倍杠杆")
+                    + Text(language.text(.ipoLeverage))
                 )
                 .modifier(CustomFontModifier(size: 12, font: .regular, lineHeight: 16))
                 .foregroundStyle(Color("color-utility6-orange"))
@@ -238,7 +243,7 @@ struct MarketIPOCenterView: View {
             }
 
         case .zeroCashSubscriptionFee:
-            Text("现金认购手续费0")
+            Text(language.text(.ipoCashSubscriptionFeeZero))
                 .modifier(CustomFontModifier(size: 12, font: .regular, lineHeight: 16))
                 .foregroundStyle(Color("color-brand-blue"))
                 .frame(height: 16)
