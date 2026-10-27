@@ -44,7 +44,9 @@ struct CobeMetalView: UIViewRepresentable {
             context.coordinator.renderer = renderer
             // COBE updates anchors and draws from one animation update. The
             // native view uses one CADisplayLink as that shared frame clock.
-            view.enableSetNeedsDisplay = true
+            // Only the guarded display-link path may draw. Inactive surfaces
+            // must not render in response to UIKit display invalidations.
+            view.enableSetNeedsDisplay = false
             view.isPaused = true
             if context.coordinator.canRender {
                 context.coordinator.render(configuration: configuration, in: view.bounds.size)

@@ -681,6 +681,17 @@ enum MarketGlobeLayout {
     static let initialPhi = MarketGlobeOrientation.initialPhi
     static let initialTheta = MarketGlobeOrientation.initialTheta
     private static let referenceRenderScale: Float = 1.27
+
+    /// The globe remains exposed until this page's fully opaque background
+    /// reaches the top of the viewport. Observe the fade's actual frame so
+    /// its 32pt height, pull-down offset, and horizontal paging are included.
+    static func isExposed(fadeFrame: CGRect, viewport: CGRect) -> Bool {
+        guard !viewport.isEmpty, !fadeFrame.isEmpty else { return false }
+
+        let horizontalOverlap = min(fadeFrame.maxX, viewport.maxX)
+            - max(fadeFrame.minX, viewport.minX)
+        return horizontalOverlap > 0 && fadeFrame.maxY > viewport.minY
+    }
     // The display compensation below cancels this camera translation while
     // the larger drawable leaves room for the entire lower hemisphere.
     static let sourceOffsetY: Float = 50

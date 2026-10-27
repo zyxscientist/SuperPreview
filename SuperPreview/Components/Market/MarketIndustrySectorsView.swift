@@ -22,24 +22,24 @@ struct MarketIndustrySector: Identifiable, Hashable {
     }
 
     static let figmaReference: [Self] = [
-        Self(id: "precious-metals", name: "黄金与贵金属", percentChange: 1.82,
-             leadingStockName: "紫金矿业 02899", leadingStockPercentChange: 2.46),
-        Self(id: "hotels-restaurants", name: "酒店餐馆与休闲", percentChange: 0.74,
-             leadingStockName: "香格里拉(亚洲) 00069", leadingStockPercentChange: 1.15),
-        Self(id: "paper-forest-products", name: "纸类与林业产品", percentChange: -0.63,
-             leadingStockName: "理文造纸 02314", leadingStockPercentChange: -0.88),
-        Self(id: "automobiles", name: "汽车", percentChange: 2.36,
-             leadingStockName: "比亚迪股份 01211", leadingStockPercentChange: 3.12),
-        Self(id: "software-services", name: "软件服务", percentChange: 1.27,
-             leadingStockName: "金蝶国际 00268", leadingStockPercentChange: 2.04),
-        Self(id: "coal", name: "煤炭", percentChange: -0.42,
-             leadingStockName: "中国神华 01088", leadingStockPercentChange: -0.31),
-        Self(id: "internet-content", name: "互联网内容与信息", percentChange: 0.96,
-             leadingStockName: "腾讯控股 00700", leadingStockPercentChange: 1.38),
-        Self(id: "pharmaceuticals", name: "制药", percentChange: -1.14,
-             leadingStockName: "石药集团 01093", leadingStockPercentChange: -1.62),
-        Self(id: "insurance", name: "保险", percentChange: 0.58,
-             leadingStockName: "友邦保险 01299", leadingStockPercentChange: 0.83)
+        Self(id: "precious-metals", name: "黄金与贵金属", percentChange: 12.34,
+             leadingStockName: "紫金矿业 02899", leadingStockPercentChange: 9.73),
+        Self(id: "hotels-restaurants", name: "酒店餐馆与休闲", percentChange: -4.23,
+             leadingStockName: "香格里拉(亚洲) 00069", leadingStockPercentChange: -3.73),
+        Self(id: "paper-forest-products", name: "纸类与林业产品", percentChange: 8.12,
+             leadingStockName: "理文造纸 02314", leadingStockPercentChange: 9.73),
+        Self(id: "automobiles", name: "汽车", percentChange: -8.90,
+             leadingStockName: "比亚迪股份 01211", leadingStockPercentChange: -4.73),
+        Self(id: "software-services", name: "软件服务", percentChange: 19.00,
+             leadingStockName: "金蝶国际 00268", leadingStockPercentChange: 9.73),
+        Self(id: "coal", name: "煤炭", percentChange: -2.34,
+             leadingStockName: "中国神华 01088", leadingStockPercentChange: -2.13),
+        Self(id: "health-care", name: "医疗健康", percentChange: 5.67,
+             leadingStockName: "药明生物 02269", leadingStockPercentChange: 9.73),
+        Self(id: "electric-utilities", name: "电力公用事业", percentChange: -0.45,
+             leadingStockName: "华润电力 00836", leadingStockPercentChange: -0.73),
+        Self(id: "agricultural-products", name: "农产品", percentChange: 0.56,
+             leadingStockName: "中粮家佳康 01610", leadingStockPercentChange: 9.73)
     ]
 }
 
@@ -49,9 +49,10 @@ struct MarketIndustrySectorsView: View {
     let onSelect: (MarketIndustrySector) -> Void
 
     private let rowsPerColumn = 3
-    private let columnWidth: CGFloat = 240
-    private let rowHeight: CGFloat = 94
-    private let itemSpacing: CGFloat = 16
+    private let columnWidth: CGFloat = 260
+    private let rowHeight: CGFloat = 104
+    private let columnSpacing: CGFloat = 12
+    private let rowSpacing: CGFloat = 10
     @Environment(\.demoLanguage) private var language
 
     init(
@@ -71,9 +72,9 @@ struct MarketIndustrySectorsView: View {
             header
 
             MarketIndustryCarousel(contentWidth: carouselWidth) {
-                HStack(alignment: .top, spacing: itemSpacing) {
+                HStack(alignment: .top, spacing: columnSpacing) {
                     ForEach(columns.indices, id: \.self) { columnIndex in
-                        VStack(alignment: .leading, spacing: itemSpacing) {
+                        VStack(alignment: .leading, spacing: rowSpacing) {
                             ForEach(columns[columnIndex]) { sector in
                                 sectorRow(sector)
                             }
@@ -98,11 +99,11 @@ struct MarketIndustrySectorsView: View {
 
     private var columnHeight: CGFloat {
         let rowCount = min(rowsPerColumn, sectors.count)
-        return CGFloat(rowCount) * rowHeight + CGFloat(max(rowCount - 1, 0)) * itemSpacing
+        return CGFloat(rowCount) * rowHeight + CGFloat(max(rowCount - 1, 0)) * rowSpacing
     }
 
     private var carouselWidth: CGFloat {
-        CGFloat(columns.count) * columnWidth + CGFloat(max(columns.count - 1, 0)) * itemSpacing + 32
+        CGFloat(columns.count) * columnWidth + CGFloat(max(columns.count - 1, 0)) * columnSpacing + 32
     }
 
     private var header: some View {
@@ -140,7 +141,7 @@ struct MarketIndustrySectorsView: View {
                 Image(sector.icon.assetName)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 70, height: 70)
+                    .frame(width: 80, height: 80)
                     .background(Color("color-base-1"))
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                     .overlay {
@@ -149,7 +150,7 @@ struct MarketIndustrySectorsView: View {
                     }
                     .accessibilityHidden(true)
 
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: 10) {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(sectorName)
                             .foregroundStyle(Color("color-text-30"))
@@ -164,7 +165,7 @@ struct MarketIndustrySectorsView: View {
                     leadingStockTag(sector, name: leadingStockName)
                 }
                 .lineLimit(1)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(width: 156, alignment: .leading)
             }
             .padding(.trailing, 12)
             .padding(.vertical, 12)
@@ -187,7 +188,7 @@ struct MarketIndustrySectorsView: View {
                 .foregroundStyle(changeColor(sector.leadingStockPercentChange))
                 .fixedSize(horizontal: true, vertical: false)
         }
-        .modifier(CustomFontModifier(size: 11, font: .regular, lineHeight: 16))
+        .modifier(CustomFontModifier(size: 12, font: .regular, lineHeight: 16))
         .frame(height: 16)
         .padding(.horizontal, 6)
         .padding(.vertical, 2)
@@ -327,7 +328,7 @@ struct MarketIndustrySectorsView_Previews: PreviewProvider {
     static var previews: some View {
         MarketIndustrySectorsView()
             .background(Color("color-base-1"))
-            .previewLayout(.fixed(width: 402, height: 354))
+            .previewLayout(.fixed(width: 402, height: 372))
             .previewDisplayName("行业板块")
     }
 }

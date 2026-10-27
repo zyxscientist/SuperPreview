@@ -20,6 +20,7 @@ struct MarketView: View {
     @State private var isShaderOnly = false
     @State private var marketGlobeOrientation = MarketGlobeOrientation()
     @State private var globeRotation: MarketGlobeRotation?
+    @State private var globeExposingPages: Set<String> = ["港股"]
     @EnvironmentObject private var demoLanguageStore: DemoLanguageStore
     @EnvironmentObject private var demoAppearanceStore: DemoAppearanceStore
 
@@ -116,12 +117,13 @@ struct MarketView: View {
             ZStack(alignment: .top) {
                 MarketGlobeView(
                     isActive: isActive && showsGlobe,
-                    isCrypto: selectedTab == "加密货币",
+                    isCrypto: globeShowsCrypto,
                     showsBottomFade: isShaderOnly,
                     orientation: $marketGlobeOrientation,
                     rotation: $globeRotation
                 )
                 .opacity(showsGlobe ? 1 : 0)
+                .animation(nil, value: showsGlobe)
                 .allowsHitTesting(showsGlobe && isShaderOnly)
                 .accessibilityHidden(!showsGlobe || !isShaderOnly)
 
@@ -133,10 +135,14 @@ struct MarketView: View {
                         MarketScrollingPage(
                             tab: tab,
                             viewportHeight: viewport.size.height,
+                            globeViewport: viewport.frame(in: .global),
                             bottomContentClearance: bottomContentClearance,
                             showsGlobe: hasGlobe(for: tab),
                             orientation: $marketGlobeOrientation,
-                            rotation: $globeRotation
+                            rotation: $globeRotation,
+                            onGlobeExposureChange: { isExposed in
+                                updateGlobeExposure(for: tab, isExposed: isExposed)
+                            }
                         ) {
                             marketPage(for: tab)
                         }
@@ -181,7 +187,21 @@ struct MarketView: View {
     }
 
     private var showsGlobe: Bool {
-        hasGlobe(for: selectedTab)
+        isShaderOnly ? hasGlobe(for: selectedTab) : !globeExposingPages.isEmpty
+    }
+
+    private var globeShowsCrypto: Bool {
+        selectedTab == "加密货币"
+            || (!hasGlobe(for: selectedTab) && globeExposingPages.contains("加密货币"))
+    }
+
+    private func updateGlobeExposure(for tab: String, isExposed: Bool) {
+        guard globeExposingPages.contains(tab) != isExposed else { return }
+        if isExposed {
+            globeExposingPages.insert(tab)
+        } else {
+            globeExposingPages.remove(tab)
+        }
     }
 
     private func hasGlobe(for tab: String) -> Bool {
@@ -194,29 +214,36 @@ struct MarketView: View {
 private struct MarketScrollingPage<Content: View>: View {
     let tab: String
     let viewportHeight: CGFloat
+    let globeViewport: CGRect
     let bottomContentClearance: CGFloat
     let showsGlobe: Bool
     @Binding var orientation: MarketGlobeOrientation
     @Binding var rotation: MarketGlobeRotation?
+    let onGlobeExposureChange: (Bool) -> Void
     let content: Content
     @State private var pullDownDistance: CGFloat = 0
+    @State private var isGlobeExposed: Bool?
     @Environment(\.demoLanguage) private var language
 
     init(
         tab: String,
         viewportHeight: CGFloat,
+        globeViewport: CGRect,
         bottomContentClearance: CGFloat,
         showsGlobe: Bool,
         orientation: Binding<MarketGlobeOrientation>,
         rotation: Binding<MarketGlobeRotation?>,
+        onGlobeExposureChange: @escaping (Bool) -> Void,
         @ViewBuilder content: () -> Content
     ) {
         self.tab = tab
         self.viewportHeight = viewportHeight
+        self.globeViewport = globeViewport
         self.bottomContentClearance = bottomContentClearance
         self.showsGlobe = showsGlobe
         self._orientation = orientation
         self._rotation = rotation
+        self.onGlobeExposureChange = onGlobeExposureChange
         self.content = content()
     }
 
@@ -250,16 +277,6 @@ private struct MarketScrollingPage<Content: View>: View {
                         minHeight: max(viewportHeight - MarketGlobeLayout.contentTopInset, 0),
                         alignment: .top
                     )
-                    .background {
-                        // Preserve the index cards' original shallow fade.
-                        // The opaque remainder scrolls over the fixed globe.
-                        VStack(spacing: 0) {
-                            MarketGlobeBottomFade()
-                            Color("color-base-1")
-                        }
-                        .allowsHitTesting(false)
-                        .accessibilityHidden(true)
-                    }
 
                 if tab == "港股" {
                     LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
@@ -279,16 +296,57 @@ private struct MarketScrollingPage<Content: View>: View {
                     .accessibilityHidden(true)
             }
             .frame(minHeight: viewportHeight, alignment: .top)
+            .background(scrollingBackground)
             .offset(y: pullDownDistance * 0.75)
         }
+        // A category without a globe must cover its own part of the shared
+        // Metal surface while a neighboring page is still visible mid-swipe.
+        .background(showsGlobe ? Color.clear : Color("color-base-1"))
         .scrollBounceBehavior(.always, axes: .vertical)
         .onScrollGeometryChange(for: CGFloat.self) { scroll in
             max(-(scroll.contentOffset.y + scroll.contentInsets.top), 0)
         } action: { _, distance in
             pullDownDistance = distance
         }
+        .onAppear {
+            if let isGlobeExposed {
+                onGlobeExposureChange(isGlobeExposed)
+            }
+        }
+        .onDisappear {
+            onGlobeExposureChange(false)
+        }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("market.scroll.\(tab)")
+    }
+
+    private var scrollingBackground: some View {
+        GeometryReader { geometry in
+            VStack(spacing: 0) {
+                if showsGlobe {
+                    Color.clear
+                        .frame(height: MarketGlobeLayout.contentTopInset)
+
+                    MarketGlobeBottomFade()
+                        .onGeometryChange(for: Bool.self) { fade in
+                            MarketGlobeLayout.isExposed(
+                                fadeFrame: fade.frame(in: .global),
+                                viewport: globeViewport
+                            )
+                        } action: { _, isExposed in
+                            isGlobeExposed = isExposed
+                            onGlobeExposureChange(isExposed)
+                        }
+                }
+
+                Color("color-base-1")
+            }
+            // One continuous opaque surface sits outside all row buttons.
+            // Extending it below the content also covers bottom overscroll.
+            .frame(width: geometry.size.width, height: geometry.size.height + viewportHeight)
+        }
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
     }
 }
 
