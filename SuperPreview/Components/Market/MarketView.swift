@@ -170,13 +170,22 @@ struct MarketView: View {
                 )
                 .padding(.horizontal, 16)
 
-                MarketBreadthDistributionView()
-
                 if tab == "港股" {
+                    MarketBreadthDistributionView()
                     MarketQuickMenu()
                     MarketIPOCenterView()
                     MarketHeatmapView()
                     MarketIndustrySectorsView()
+                } else if tab == "美股" {
+                    MarketStockScreenerCard(
+                        reducesGlass: demoAppearanceStore.isReducedLiquidGlassUsageEnabled
+                    )
+                    .padding(.horizontal, 16)
+                    MarketHeatmapView(headerSpacing: 20)
+                    MarketIndustrySectorsView(sectors: MarketIndustrySector.usReference)
+                    MarketConceptSectorsView()
+                } else {
+                    MarketBreadthDistributionView()
                 }
             }
         }
@@ -250,7 +259,8 @@ private struct MarketScrollingPage<Content: View>: View {
     var body: some View {
         ScrollViewReader { scrollProxy in
             scrollContent {
-                scrollProxy.scrollTo("market.hkRankings.top", anchor: .top)
+                let target = tab == "美股" ? "market.usRankings.top" : "market.hkRankings.top"
+                scrollProxy.scrollTo(target, anchor: .top)
             }
         }
     }
@@ -287,6 +297,15 @@ private struct MarketScrollingPage<Content: View>: View {
                         )
                     }
                     .id("market.hkRankings.top")
+                } else if tab == "美股" {
+                    LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
+                        MarketUSRankingsView(
+                            headerTopInset: 0,
+                            minimumRowsHeight: max(viewportHeight - 52 - bottomContentClearance, 0),
+                            onTabChange: onRankingBoardChange
+                        )
+                    }
+                    .id("market.usRankings.top")
                 }
 
                 // Match the watchlist: rows scroll behind the floating tab bar,

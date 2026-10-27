@@ -41,6 +41,28 @@ struct MarketIndustrySector: Identifiable, Hashable {
         Self(id: "agricultural-products", name: "农产品", percentChange: 0.56,
              leadingStockName: "中粮家佳康 01610", leadingStockPercentChange: 9.73)
     ]
+
+    // U.S. companies are illustrative fixtures; the changes are not live quotes.
+    static let usReference: [Self] = [
+        Self(id: "us-semiconductors", name: "半导体与电子元件", percentChange: 3.26,
+             leadingStockName: "英伟达 NVDA", leadingStockPercentChange: 4.18),
+        Self(id: "us-internet-retail", name: "互联网零售", percentChange: -1.44,
+             leadingStockName: "亚马逊 AMZN", leadingStockPercentChange: -0.82),
+        Self(id: "us-aerospace-defense", name: "航空航天与国防", percentChange: 2.08,
+             leadingStockName: "洛克希德·马丁 LMT", leadingStockPercentChange: 1.67),
+        Self(id: "us-banks", name: "银行", percentChange: 0.89,
+             leadingStockName: "摩根大通 JPM", leadingStockPercentChange: 1.24),
+        Self(id: "us-oil-gas", name: "石油与天然气", percentChange: -0.73,
+             leadingStockName: "埃克森美孚 XOM", leadingStockPercentChange: -0.36),
+        Self(id: "us-pharma-biotech", name: "制药与生物科技", percentChange: 4.12,
+             leadingStockName: "礼来 LLY", leadingStockPercentChange: 5.03),
+        Self(id: "us-airlines", name: "航空公司", percentChange: -1.26,
+             leadingStockName: "达美航空 DAL", leadingStockPercentChange: -1.91),
+        Self(id: "us-real-estate", name: "房地产", percentChange: 0.57,
+             leadingStockName: "普洛斯 PLD", leadingStockPercentChange: 0.74),
+        Self(id: "us-food-beverages", name: "食品与饮料", percentChange: 1.65,
+             leadingStockName: "可口可乐 KO", leadingStockPercentChange: 1.12)
+    ]
 }
 
 struct MarketIndustrySectorsView: View {

@@ -34,19 +34,22 @@ struct MarketHeatmapSector: Identifiable, Hashable {
 /// A reusable two-row market heatmap using fixed visual sample data by default.
 struct MarketHeatmapView: View {
     let rows: [[MarketHeatmapSector]]
+    let headerSpacing: CGFloat
     let onShowAll: () -> Void
     @Environment(\.demoLanguage) private var language
 
     init(
         rows: [[MarketHeatmapSector]] = MarketHeatmapSector.figmaReferenceRows,
+        headerSpacing: CGFloat = 12,
         onShowAll: @escaping () -> Void = { /* TODO: connect the heatmap destination. */ }
     ) {
         self.rows = rows
+        self.headerSpacing = headerSpacing
         self.onShowAll = onShowAll
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: headerSpacing) {
             header
 
             VStack(spacing: 2) {

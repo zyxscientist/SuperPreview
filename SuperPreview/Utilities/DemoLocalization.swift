@@ -110,6 +110,12 @@ enum DemoCopyKey {
     case marketBreadthDownAccessibilityFormat, marketBreadthUpAccessibilityFormat
     case marketQuickStockScreener, marketQuickETF, marketQuickWarrants
     case marketQuickHKADRs, marketQuickMarginableStocks
+    case marketStockScreenerTitle, marketStockScreenerSubtitle
+    case marketConceptSectorsTitle, marketConceptAI, marketConceptSemiconductors
+    case marketConceptCloudComputing, marketConceptElectricVehicles
+    case marketConceptCybersecurity, marketConceptBigTech
+    case marketConceptAccessibilityFormat
+    case marketUSPopularStocks, marketUSChinaStocks, marketUSTechStocks, marketUSETFs
     case marketIndustrySectors, marketHeatmapTitle, marketRankingsTitle, viewAll
     case marketMainBoard, marketGemBoard
     case marketIndustryAccessibilityFormat, marketHeatmapAccessibilityFormat
@@ -355,7 +361,7 @@ private enum DemoCopy {
         .marketIndexRedChips: ("红筹指数", "紅籌指數", "Red Chips"),
         .marketIndexDowJones: ("道琼斯指数", "道瓊斯指數", "Dow Jones"),
         .marketIndexNasdaq: ("纳斯达克指数", "納斯達克指數", "Nasdaq"),
-        .marketIndexSP500: ("标普500指数", "標普500指數", "S&P 500"),
+        .marketIndexSP500: ("标普500", "標普500", "S&P 500"),
         .marketIndexShanghai: ("上证指数", "上證指數", "SSE Index"),
         .marketIndexShenzhen: ("深证成指", "深證成指", "SZSE Index"),
         .marketIndexCSI300: ("沪深300", "滬深300", "CSI 300"),
@@ -376,6 +382,20 @@ private enum DemoCopy {
         .marketQuickWarrants: ("窝轮牛熊", "窩輪牛熊", "Warrants"),
         .marketQuickHKADRs: ("港股ADR", "港股ADR", "HK ADRs"),
         .marketQuickMarginableStocks: ("可融资股票", "可融資股票", "Marginable"),
+        .marketStockScreenerTitle: ("选股器", "選股器", "Stock Screener"),
+        .marketStockScreenerSubtitle: ("自定义条件，发现心仪股票", "自訂條件，發現心儀股票", "Build custom filters to find stocks you like"),
+        .marketConceptSectorsTitle: ("概念板块", "概念板塊", "Concepts"),
+        .marketConceptAI: ("人工智能", "人工智能", "Artificial Intelligence"),
+        .marketConceptSemiconductors: ("半导体", "半導體", "Semiconductors"),
+        .marketConceptCloudComputing: ("云计算", "雲端計算", "Cloud Computing"),
+        .marketConceptElectricVehicles: ("新能源汽车", "新能源汽車", "Electric Vehicles"),
+        .marketConceptCybersecurity: ("网络安全", "網絡安全", "Cybersecurity"),
+        .marketConceptBigTech: ("大型科技", "大型科技股", "Big Tech"),
+        .marketConceptAccessibilityFormat: ("%@，涨跌幅 %@，领涨股 %@ %@", "%@，漲跌幅 %@，領漲股 %@ %@", "%@, change %@, leading stock %@ %@"),
+        .marketUSPopularStocks: ("热门股票", "熱門股票", "Popular"),
+        .marketUSChinaStocks: ("中概股", "中概股", "China Stocks"),
+        .marketUSTechStocks: ("科技股", "科技股", "Tech"),
+        .marketUSETFs: ("ETF", "ETF", "ETF"),
         .marketIndustrySectors: ("行业板块", "行業板塊", "Sectors"),
         .marketHeatmapTitle: ("热力图", "熱力圖", "Heatmap"),
         .marketRankingsTitle: ("港股榜单", "港股榜單", "Stock Rankings"),
@@ -805,6 +825,24 @@ private enum DemoCopy {
         "industry-leader.health-care": ("药明生物 02269", "藥明生物 02269", "WuXi Biologics 02269"),
         "industry-leader.electric-utilities": ("华润电力 00836", "華潤電力 00836", "China Resources Power 00836"),
         "industry-leader.agricultural-products": ("中粮家佳康 01610", "中糧家佳康 01610", "COFCO Joycome 01610"),
+        "industry.us-semiconductors": ("半导体与电子元件", "半導體與電子元件", "Semiconductors & Components"),
+        "industry.us-internet-retail": ("互联网零售", "互聯網零售", "Internet Retail"),
+        "industry.us-aerospace-defense": ("航空航天与国防", "航空航天與國防", "Aerospace & Defense"),
+        "industry.us-banks": ("银行", "銀行", "Banks"),
+        "industry.us-oil-gas": ("石油与天然气", "石油與天然氣", "Oil & Gas"),
+        "industry.us-pharma-biotech": ("制药与生物科技", "製藥與生物科技", "Pharmaceuticals & Biotechnology"),
+        "industry.us-airlines": ("航空公司", "航空公司", "Airlines"),
+        "industry.us-real-estate": ("房地产", "房地產", "Real Estate"),
+        "industry.us-food-beverages": ("食品与饮料", "食品與飲料", "Food & Beverage"),
+        "industry-leader.us-semiconductors": ("英伟达 NVDA", "英偉達 NVDA", "NVIDIA NVDA"),
+        "industry-leader.us-internet-retail": ("亚马逊 AMZN", "亞馬遜 AMZN", "Amazon AMZN"),
+        "industry-leader.us-aerospace-defense": ("洛克希德·马丁 LMT", "洛克希德·馬丁 LMT", "Lockheed Martin LMT"),
+        "industry-leader.us-banks": ("摩根大通 JPM", "摩根大通 JPM", "JPMorgan Chase JPM"),
+        "industry-leader.us-oil-gas": ("埃克森美孚 XOM", "埃克森美孚 XOM", "Exxon Mobil XOM"),
+        "industry-leader.us-pharma-biotech": ("礼来 LLY", "禮來 LLY", "Eli Lilly LLY"),
+        "industry-leader.us-airlines": ("达美航空 DAL", "達美航空 DAL", "Delta Air Lines DAL"),
+        "industry-leader.us-real-estate": ("普洛斯 PLD", "普洛斯 PLD", "Prologis PLD"),
+        "industry-leader.us-food-beverages": ("可口可乐 KO", "可口可樂 KO", "Coca-Cola KO"),
         "heatmap.internet-content": ("互联网内容与信息", "互聯網內容與資訊", "Internet Content & Information"),
         "heatmap.bank": ("银行", "銀行", "Banks"),
         "heatmap.insurance": ("保险", "保險", "Insurance"),

@@ -22,7 +22,11 @@ struct MarketIndexQuote: Identifiable {
         case "港股":
             indices = [("HSI", .marketIndexHangSeng), ("HSCEI", .marketIndexEnterprises), ("HSCCI", .marketIndexRedChips)]
         case "美股":
-            indices = [("DJI", .marketIndexDowJones), ("IXIC", .marketIndexNasdaq), ("SPX", .marketIndexSP500)]
+            return [
+                Self(id: "DJI", title: .marketIndexDowJones, value: "19309.52", change: "+94.58", percentage: "+0.94%"),
+                Self(id: "IXIC", title: .marketIndexNasdaq, value: "19309.52", change: "+94.58", percentage: "+0.94%"),
+                Self(id: "SPX", title: .marketIndexSP500, value: "19309.52", change: "+94.58", percentage: "+0.94%")
+            ]
         case "沪深港通":
             indices = [("000001", .marketIndexShanghai), ("399001", .marketIndexShenzhen), ("000300", .marketIndexCSI300)]
         default:
@@ -32,6 +36,11 @@ struct MarketIndexQuote: Identifiable {
             Self(id: $0.0, title: $0.1, value: "19309.52", change: "+94.58", percentage: "+0.94%")
         }
     }
+
+    var changeColor: Color {
+        Color(change.hasPrefix("-") ? "color-utility3-green" : "color-utility3-red")
+    }
+
 }
 
 struct MarketIndexCards: View {
@@ -105,12 +114,12 @@ private struct MarketIndexCard: View {
             .frame(height: 12)
             .padding(.top, 2)
 
-            MarketIndexSparkline()
-                .frame(height: 40)
-                .padding(.top, 13)
-                .accessibilityHidden(true)
+            MarketIndexSparkline(color: quote.changeColor)
+            .frame(height: 40)
+            .padding(.top, 13)
+            .accessibilityHidden(true)
         }
-        .foregroundStyle(Color("color-utility3-red"))
+        .foregroundStyle(quote.changeColor)
         .lineLimit(1)
         .minimumScaleFactor(0.7)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -126,6 +135,7 @@ private struct MarketIndexCard: View {
 /// The Figma sparkline rendered as a native path, keeping its stroke in points
 /// regardless of card width. Inset the path so round caps are never clipped.
 private struct MarketIndexSparkline: View {
+    let color: Color
     private static let points: [CGPoint] = [
         .init(x: 1, y: 38.5), .init(x: 5.27641, y: 34.0421),
         .init(x: 7.50007, y: 30.2211), .init(x: 10.8355, y: 30.2211),
@@ -160,10 +170,10 @@ private struct MarketIndexSparkline: View {
                 path.closeSubpath()
             }
             area.fill(LinearGradient(
-                colors: [Color("color-utility3-red").opacity(0.15), Color("color-utility3-red").opacity(0.01)],
+                colors: [color.opacity(0.15), color.opacity(0.01)],
                 startPoint: .top, endPoint: .bottom
             ))
-            line.stroke(Color("color-utility3-red"), style: StrokeStyle(
+            line.stroke(color, style: StrokeStyle(
                 lineWidth: 1.5, lineCap: .round, lineJoin: .round
             ))
         }
