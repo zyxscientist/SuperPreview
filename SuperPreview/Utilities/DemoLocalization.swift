@@ -117,6 +117,7 @@ enum DemoCopyKey {
     case ipoTodaySubscriptionsFormat, ipoUpcomingListingsFormat, ipoNameAndCodeFormat
     case ipoSubscribeAccessibilityFormat
     case ipoSubscribe, ipoRemainingHoursFormat, ipoRemainingDaysHoursFormat
+    case ipoGreyMarketTradingTime, ipoListingTime, ipoAddToWatchlist
     case ipoUpTo, ipoLeverage, ipoCashSubscriptionFeeZero
     case marketSanFrancisco, marketNewYork, marketToronto, marketLondon
     case marketTokyo, marketShanghai, marketShenzhen, marketHongKong
@@ -391,6 +392,9 @@ private enum DemoCopy {
         .ipoSubscribe: ("认购", "認購", "Subscribe"),
         .ipoRemainingHoursFormat: ("剩余%d小时", "剩餘%d小時", "%dH left"),
         .ipoRemainingDaysHoursFormat: ("剩余%d天%d小时", "剩餘%d天%d小時", "%dD %dH left"),
+        .ipoGreyMarketTradingTime: ("暗盘交易时间：", "暗盤交易時間：", "Grey Market Trading: "),
+        .ipoListingTime: ("上市时间：", "上市時間：", "Listing Date: "),
+        .ipoAddToWatchlist: ("添加到自选", "加入自選", "Add to watchlist"),
         .ipoUpTo: ("最高 ", "最高 ", "Up to "),
         .ipoLeverage: (" 倍杠杆", " 倍槓桿", "× leverage"),
         .ipoCashSubscriptionFeeZero: ("现金认购手续费0", "現金認購手續費0", "Zero cash subscription fee"),
@@ -693,7 +697,9 @@ private enum DemoCopy {
         "market-hk-china-mobile": ("中国移动", "中國移動", "China Mobile"),
         "market-hk-crmi": ("中国再生医学", "中國再生醫學", "China Regenerative Medicine"),
         "ipo-eswin": ("奕斯伟计算", "奕斯偉計算", "ESWIN Computing"),
+        "ipo-eswin-computer": ("奕斯伟计算机", "奕斯偉計算機", "ESWIN Computer"),
         "ipo-dji": ("大疆创新", "大疆創新", "DJI"),
+        "ipo-starwave": ("星海科技", "星海科技", "Starwave Technology"),
         "hk-tencent": ("腾讯控股", "騰訊控股", "Tencent"),
         "hk-hstech": ("南方恒生科技", "南方恆生科技", "CSOP HST"),
         "hk-alibaba": ("阿里巴巴-W", "阿里巴巴-W", "Alibaba-W"),
@@ -774,7 +780,10 @@ private enum DemoCopy {
     static let ipoCompanyNameIDs: [String: String] = [
         "subscription-1": "ipo-eswin",
         "subscription-2": "ipo-dji",
-        "subscription-3": "ipo-dji"
+        "subscription-3": "ipo-dji",
+        "upcoming-1": "ipo-eswin-computer",
+        "upcoming-2": "ipo-dji",
+        "upcoming-3": "ipo-starwave"
     ]
 
     static let marketDataNames: [String: Values] = [
