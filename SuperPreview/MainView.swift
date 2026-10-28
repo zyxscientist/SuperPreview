@@ -17,6 +17,7 @@ struct MainView: View {
     @State private var isShowingWatchlistDebugPanel = false
     @State private var isShowingTradeDebugPanel = false
     @State private var isShowingMarketDebugPanel = false
+    @State private var isShowingNewsDebugPanel = false
     private let isPreview = PreviewRuntime.isRunning || PreviewRuntime.isUITesting
     
     @ViewBuilder
@@ -60,7 +61,7 @@ struct MainView: View {
                         WealthView()
                     }
                     tabLayer(.tab5) {
-                        NewsView()
+                        NewsDemoView()
                     }
                     tabLayer(.tab6) {
                         CompareView()
@@ -94,7 +95,8 @@ struct MainView: View {
                         language: demoLanguageStore.language,
                         watchlistDebugPresentation: $isShowingWatchlistDebugPanel,
                         tradeDebugPresentation: $isShowingTradeDebugPanel,
-                        marketDebugPresentation: $isShowingMarketDebugPanel
+                        marketDebugPresentation: $isShowingMarketDebugPanel,
+                        newsDebugPresentation: $isShowingNewsDebugPanel
                     )
                 )
             } else {
@@ -112,6 +114,11 @@ struct MainView: View {
             }
         }
         .navigationViewStyle(StackNavigationViewStyle())
+        .sheet(isPresented: $isShowingNewsDebugPanel) {
+            NewsDebugPanel(language: demoLanguageBinding)
+                .environment(\.demoLanguage, demoLanguageStore.language)
+                .presentationDragIndicator(.visible)
+        }
     }
 
     @ViewBuilder
@@ -136,6 +143,13 @@ struct MainView: View {
         case .tab6: return language.text(.me)
         }
     }
+
+    private var demoLanguageBinding: Binding<DemoLanguage> {
+        Binding(
+            get: { demoLanguageStore.language },
+            set: { demoLanguageStore.language = $0 }
+        )
+    }
 }
 
 private struct MainViewToolbarModifier: ViewModifier {
@@ -144,13 +158,17 @@ private struct MainViewToolbarModifier: ViewModifier {
     @Binding var watchlistDebugPresentation: Bool
     @Binding var tradeDebugPresentation: Bool
     @Binding var marketDebugPresentation: Bool
+    @Binding var newsDebugPresentation: Bool
 
     func body(content: Content) -> some View {
         // Keep the content (including UITabBar and all tab pages) at the same
         // structural identity when only the trailing toolbar item changes.
         content.toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
-                if selectedTab == .tab1 || selectedTab == .tab2 || selectedTab == .tab3 {
+                if selectedTab == .tab1
+                    || selectedTab == .tab2
+                    || selectedTab == .tab3
+                    || selectedTab == .tab5 {
                     debugButton(
                         identifier: debugIdentifier,
                         action: {
@@ -158,8 +176,10 @@ private struct MainViewToolbarModifier: ViewModifier {
                                 watchlistDebugPresentation = true
                             } else if selectedTab == .tab2 {
                                 tradeDebugPresentation = true
-                            } else {
+                            } else if selectedTab == .tab3 {
                                 marketDebugPresentation = true
+                            } else {
+                                newsDebugPresentation = true
                             }
                         }
                     )
@@ -175,6 +195,7 @@ private struct MainViewToolbarModifier: ViewModifier {
         case .tab1: return "watchlist.debug.open"
         case .tab2: return "trade.debug.open"
         case .tab3: return "market.debug.open"
+        case .tab5: return "news.debug.open"
         default: return "main.debug.open"
         }
     }

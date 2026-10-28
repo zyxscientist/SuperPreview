@@ -1,0 +1,2872 @@
+{
+  "stories": [
+    {
+      "id": "market-001",
+      "title": {
+        "simplified": "全球股市受AI情绪提振，市场等待关键财报与央行决定",
+        "traditional": "全球股市受AI情緒提振，市場等待關鍵財報與央行決定",
+        "english": "Global stocks get AI lift ahead of packed 48 hours"
+      },
+      "summary": {
+        "simplified": "路透社报道，AI交易回暖带动全球股市小幅走高；未来48小时将密集迎来大型科技公司财报和多国央行决议。",
+        "traditional": "路透社報道，AI交易回暖帶動全球股市小幅走高；未來48小時將密集迎來大型科技公司財報和多國央行決議。",
+        "english": "Reuters reported that renewed AI enthusiasm lifted global shares as investors prepared for major tech earnings and central-bank decisions."
+      },
+      "body": {
+        "simplified": "路透社援引市场数据称，MSCI全球指数上涨0.2%，美国股指期货小幅上扬，韩国KOSPI因芯片股业绩强劲领涨。新西兰央行维持2.75%利率不变，而投资者正等待美联储、欧洲央行、日本央行及微软、Alphabet等关键事件。",
+        "traditional": "路透社援引市場資料稱，MSCI全球指數上漲0.2%，美國股指期貨小幅上揚，韓國KOSPI因晶片股業績強勁領漲。紐西蘭央行維持2.75%利率不變，而投資者正等待美聯儲、歐洲央行、日本央行及微軟、Alphabet等關鍵事件。",
+        "english": "Reuters reported a modest rise in the MSCI All-World index and U.S. equity futures, with South Korea's Kospi leading gains after strong chip earnings. New Zealand's central bank held rates at 2.75%, while markets awaited decisions from the Fed, ECB and BOJ and results from Microsoft and Alphabet."
+      },
+      "source": {
+        "name": {
+          "simplified": "路透社",
+          "traditional": "路透社",
+          "english": "Reuters"
+        },
+        "url": "https://www.reuters.com/world/china/global-markets-global-markets-2026-10-28/"
+      },
+      "date": {
+        "publishedAt": "2026-10-28",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "topics",
+        "research"
+      ],
+      "image": null
+    },
+    {
+      "id": "market-005",
+      "title": {
+        "simplified": "特朗普就伊朗战事表态，报道称相关成本升至470亿美元",
+        "traditional": "特朗普就伊朗戰事表態，報道稱相關成本升至470億美元",
+        "english": "Trump says Iran war will end 'when I want it to' as costs reportedly balloon to $47 billion"
+      },
+      "summary": {
+        "simplified": "CNBC报道，特朗普称伊朗战事将在他希望的时候结束；报道同时称相关成本已增至约470亿美元。",
+        "traditional": "CNBC報道，特朗普稱伊朗戰事將在他希望的時候結束；報道同時稱相關成本已增至約470億美元。",
+        "english": "CNBC reported that President Trump said the Iran war would end when he wanted, while citing a report that related costs had climbed to about $47 billion."
+      },
+      "body": {
+        "simplified": "CNBC援引报道说，美国在这场冲突中的成本估算升至约470亿美元，特朗普对结束战事的时间给出了强硬表述。该条关注战争财政成本、霍尔木兹海峡风险及对能源市场的外溢影响。",
+        "traditional": "CNBC援引報道說，美國在這場衝突中的成本估算升至約470億美元，特朗普對結束戰事的時間給出了強硬表述。該條關注戰爭財政成本、霍爾木茲海峽風險及對能源市場的外溢影響。",
+        "english": "CNBC cited a report estimating U.S. costs tied to the conflict at about $47 billion and highlighted Trump's remarks on the timing of an end to hostilities. The story focused on fiscal costs, Strait of Hormuz risks and spillovers into energy markets."
+      },
+      "source": {
+        "name": {
+          "simplified": "CNBC",
+          "traditional": "CNBC",
+          "english": "CNBC"
+        },
+        "url": "https://www.cnbc.com/2026/10/28/us-iran-war-trump-hormuz-costs-centcom.html"
+      },
+      "date": {
+        "publishedAt": "2026-10-28",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "topics"
+      ],
+      "image": null
+    },
+    {
+      "id": "market-006",
+      "title": {
+        "simplified": "美国抵押贷款利率连续第二周下降，借款人转向更高风险产品",
+        "traditional": "美國抵押貸款利率連續第二週下降，借款人轉向更高風險產品",
+        "english": "Mortgage rates fell for the second straight week, but more borrowers still sought savings in riskier loans"
+      },
+      "summary": {
+        "simplified": "CNBC报道，美国抵押贷款利率连续第二周回落，但更多借款人仍通过风险更高的贷款结构寻求更低成本。",
+        "traditional": "CNBC報道，美國抵押貸款利率連續第二週回落，但更多借款人仍透過風險更高的貸款結構尋求更低成本。",
+        "english": "CNBC reported a second consecutive weekly decline in U.S. mortgage rates, even as more borrowers turned to riskier loan structures for savings."
+      },
+      "body": {
+        "simplified": "报道将利率下降与借款人行为变化联系起来：即使融资成本有所缓和，部分购房者仍选择潜在风险更高的贷款方案以降低当前支出。新闻没有提供实时行情，利率数据以报道发布时为准。",
+        "traditional": "報道將利率下降與借款人行為變化聯絡起來：即使融資成本有所緩和，部分購房者仍選擇潛在風險更高的貸款方案以降低當前支出。新聞沒有提供實時行情，利率資料以報道釋出時為準。",
+        "english": "CNBC linked the rate decline to changing borrower behavior: some homebuyers still chose riskier loan terms to reduce near-term costs despite the modest improvement in financing conditions. The item is based on the report's publication-time data rather than live quotes."
+      },
+      "source": {
+        "name": {
+          "simplified": "CNBC",
+          "traditional": "CNBC",
+          "english": "CNBC"
+        },
+        "url": "https://www.cnbc.com/2026/10/28/mortgage-rates-fell-for-the-second-straight-week.html"
+      },
+      "date": {
+        "publishedAt": "2026-10-28",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live"
+      ],
+      "image": null
+    },
+    {
+      "id": "market-007",
+      "title": {
+        "simplified": "西班牙高铁相撞事故据报道至少30人死亡",
+        "traditional": "西班牙高鐵相撞事故據報道至少30人死亡",
+        "english": "At least 30 people reported dead in high-speed Spain train crash"
+      },
+      "summary": {
+        "simplified": "CNBC报道，西班牙发生高速列车相撞事故，至少30人死亡；这是该国今年第二起致命高铁事故。",
+        "traditional": "CNBC報道，西班牙發生高速列車相撞事故，至少30人死亡；這是該國今年第二起致命高鐵事故。",
+        "english": "CNBC reported that at least 30 people were killed in a high-speed train collision in Spain, the country's second deadly such crash this year."
+      },
+      "body": {
+        "simplified": "报道给出的死亡人数为至少30人。CNBC指出，这是西班牙今年发生的第二起致命高速铁路相撞事件。伤亡数字可能随救援和核实进展调整，引用时应保留“据报道”及报道时间。",
+        "traditional": "報道給出的死亡人數為至少30人。CNBC指出，這是西班牙今年發生的第二起致命高速鐵路相撞事件。傷亡數字可能隨救援和核實進展調整，引用時應保留“據報道”及報道時間。",
+        "english": "CNBC put the death toll at no fewer than 30 and noted that the incident was Spain's second fatal high-speed rail collision this year. The casualty figure could be revised as rescue and verification work continues, so the report date should remain attached to any reuse."
+      },
+      "source": {
+        "name": {
+          "simplified": "CNBC",
+          "traditional": "CNBC",
+          "english": "CNBC"
+        },
+        "url": "https://www.cnbc.com/2026/10/28/spain-high-speed-train-crash.html"
+      },
+      "date": {
+        "publishedAt": "2026-10-28",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live"
+      ],
+      "image": null
+    },
+    {
+      "id": "market-008",
+      "title": {
+        "simplified": "以色列选举陷入僵局，债券与谢克尔走低",
+        "traditional": "以色列選舉陷入僵局，債券與謝克爾走低",
+        "english": "Israeli bonds, shekel fall as election leaves Netanyahu and others far short of majorities"
+      },
+      "summary": {
+        "simplified": "CNBC报道，以色列选举结果未能让内塔尼亚胡及其他阵营取得明显多数，以色列债券和谢克尔随之下跌。",
+        "traditional": "CNBC報道，以色列選舉結果未能讓內塔尼亞胡及其他陣營取得明顯多數，以色列債券和謝克爾隨之下跌。",
+        "english": "CNBC reported that Israeli bonds and the shekel fell after an election left Prime Minister Netanyahu and other blocs short of clear majorities."
+      },
+      "body": {
+        "simplified": "报道指出，出口民调和市场反应显示政治组阁前景不明。投资者以债券和汇率走势回应选举僵局；新闻围绕市场即时反应，未对最终组阁结果作提前判断。",
+        "traditional": "報道指出，出口民調和市場反應顯示政治組閣前景不明。投資者以債券和匯率走勢回應選舉僵局；新聞圍繞市場即時反應，未對最終組閣結果作提前判斷。",
+        "english": "The report said election results and exit polls pointed to an uncertain path toward forming a government. Investors responded through Israeli bonds and the currency; the item captures the market reaction without claiming a final coalition outcome."
+      },
+      "source": {
+        "name": {
+          "simplified": "CNBC",
+          "traditional": "CNBC",
+          "english": "CNBC"
+        },
+        "url": "https://www.cnbc.com/2026/10/28/israel-election-netanyahu-trump-gaza-.html"
+      },
+      "date": {
+        "publishedAt": "2026-10-28",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live"
+      ],
+      "image": null
+    },
+    {
+      "id": "market-009",
+      "title": {
+        "simplified": "瑞银三季度税前利润增长27%至35.9亿美元",
+        "traditional": "瑞銀三季度稅前利潤增長27%至35.9億美元",
+        "english": "UBS pretax profits jump 27% in third quarter to $3.59 billion as wealth inflows surge"
+      },
+      "summary": {
+        "simplified": "CNBC报道，瑞银第三季度税前利润同比增长27%，约35.9亿美元，财富管理资金流入成为重要支撑。",
+        "traditional": "CNBC報道，瑞銀第三季度稅前利潤同比增長27%，約35.9億美元，財富管理資金流入成為重要支撐。",
+        "english": "CNBC reported that UBS posted a 27% rise in third-quarter pretax profit to about $3.59 billion, helped by strong wealth-management inflows."
+      },
+      "body": {
+        "simplified": "报道给出的三季度税前利润接近36亿美元，同比增幅为27%。资金流入主要来自财富管理业务。该结果反映瑞银在整合和业务调整阶段的盈利表现，但不应外推为未来季度指引。",
+        "traditional": "報道給出的三季度稅前利潤接近36億美元，同比增幅為27%。資金流入主要來自財富管理業務。該結果反映瑞銀在整合和業務調整階段的盈利表現，但不應外推為未來季度指引。",
+        "english": "Third-quarter pretax profit reached almost $3.6 billion, a 27% increase from a year earlier, with wealth-management flows providing support. The result describes the reported quarter and should not be treated as a forecast for future periods."
+      },
+      "source": {
+        "name": {
+          "simplified": "CNBC",
+          "traditional": "CNBC",
+          "english": "CNBC"
+        },
+        "url": "https://www.cnbc.com/2026/10/28/ubs-earnings-third-quarter.html"
+      },
+      "date": {
+        "publishedAt": "2026-10-28",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "topics"
+      ],
+      "image": null
+    },
+    {
+      "id": "market-012",
+      "title": {
+        "simplified": "SK海力士创纪录季度利润后股价大涨11%",
+        "traditional": "SK海力士創紀錄季度利潤後股價大漲11%",
+        "english": "SK Hynix shares jump 11% after record quarterly profit, outperforming broader market"
+      },
+      "summary": {
+        "simplified": "CNBC报道，SK海力士公布创纪录季度利润后，股价上涨11%，表现强于大盘。",
+        "traditional": "CNBC報道，SK海力士公佈創紀錄季度利潤後，股價上漲11%，表現強於大盤。",
+        "english": "CNBC reported that SK Hynix shares rose 11% after the chipmaker reported record quarterly profit."
+      },
+      "body": {
+        "simplified": "报道把股价表现与创纪录季度利润直接关联。SK海力士的业绩强化了市场对芯片与AI基础设施需求的情绪，但具体价格和涨幅以报道发布时为准。",
+        "traditional": "報道把股價表現與創紀錄季度利潤直接關聯。SK海力士的業績強化了市場對晶片與AI基礎設施需求的情緒，但具體價格和漲幅以報道釋出時為準。",
+        "english": "The share move followed the record profit announcement and outperformed the broader market. The result reinforced sentiment around chip demand and AI infrastructure, with the figure tied to the report's publication time."
+      },
+      "source": {
+        "name": {
+          "simplified": "CNBC",
+          "traditional": "CNBC",
+          "english": "CNBC"
+        },
+        "url": "https://www.cnbc.com/2026/10/28/sk-hynix-third-quarter-profit.html"
+      },
+      "date": {
+        "publishedAt": "2026-10-28",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "topics",
+        "priceMovement"
+      ],
+      "image": null
+    },
+    {
+      "id": "market-013",
+      "title": {
+        "simplified": "斯特兰蒂斯转型持续推进，季度现金流出达45亿美元",
+        "traditional": "斯特蘭蒂斯轉型持續推進，季度現金流出達45億美元",
+        "english": "Stellantis reports $4.5 billion cash drain as massive turnaround plan continues"
+      },
+      "summary": {
+        "simplified": "CNBC报道，斯特兰蒂斯在推进大规模转型计划期间出现约45亿美元现金流出。",
+        "traditional": "CNBC報道，斯特蘭蒂斯在推進大規模轉型計劃期間出現約45億美元現金流出。",
+        "english": "CNBC reported a $4.5 billion cash drain at Stellantis while the automaker continued a large turnaround program."
+      },
+      "body": {
+        "simplified": "报道将巨额现金使用与公司转型计划联系起来。该数字反映报告期内的现金消耗，文章同时讨论管理层正在采取的重组措施；不能把单季现金流出直接等同于全年结果。",
+        "traditional": "報道將鉅額現金使用與公司轉型計劃聯絡起來。該數字反映報告期內的現金消耗，文章同時討論管理層正在採取的重組措施；不能把單季現金流出直接等同於全年結果。",
+        "english": "The cash figure was tied to the company's transformation efforts. The article also covered management's restructuring actions; the quarterly outflow should not be treated as a full-year result."
+      },
+      "source": {
+        "name": {
+          "simplified": "CNBC",
+          "traditional": "CNBC",
+          "english": "CNBC"
+        },
+        "url": "https://www.cnbc.com/2026/10/28/stellantis-45-billion-cash-drain-turnaround.html"
+      },
+      "date": {
+        "publishedAt": "2026-10-28",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "topics",
+        "priceMovement"
+      ],
+      "image": null
+    },
+    {
+      "id": "market-029",
+      "title": {
+        "simplified": "泡泡玛特三季度销售骤降，股价延续跌势",
+        "traditional": "泡泡瑪特三季度銷售驟降，股價延續跌勢",
+        "english": "Labubu-maker Pop Mart's shares extend declines as third-quarter sales plunge"
+      },
+      "summary": {
+        "simplified": "CNBC报道，泡泡玛特第三季度销售大幅下降，股价继续下跌。",
+        "traditional": "CNBC報道，泡泡瑪特第三季度銷售大幅下降，股價繼續下跌。",
+        "english": "CNBC reported that Pop Mart shares extended losses after a sharp decline in third-quarter sales."
+      },
+      "body": {
+        "simplified": "报道把股价走弱与三季度销售快速下滑联系起来。该条记录的是报道发布时的公司经营与股价反应，不提供实时行情，也不推断后续季度必然延续同一趋势。",
+        "traditional": "報道把股價走弱與三季度銷售快速下滑聯絡起來。該條記錄的是報道釋出時的公司經營與股價反應，不提供實時行情，也不推斷後續季度必然延續同一趨勢。",
+        "english": "The article connected the share weakness to the rapid sales drop. It records the company update and market reaction at publication time and neither supplies a live quote nor assumes that the trend must continue."
+      },
+      "source": {
+        "name": {
+          "simplified": "CNBC",
+          "traditional": "CNBC",
+          "english": "CNBC"
+        },
+        "url": "https://www.cnbc.com/2026/10/28/labubu-pop-mart-third-quarter-earnings.html"
+      },
+      "date": {
+        "publishedAt": "2026-10-28",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "topics",
+        "priceMovement"
+      ],
+      "image": null
+    },
+    {
+      "id": "market-030",
+      "title": {
+        "simplified": "印度交易应用向散户开放英伟达、SpaceX、苹果等海外资产入口",
+        "traditional": "印度交易應用向散戶開放英偉達、SpaceX、蘋果等海外資產入口",
+        "english": "Indian investors rush to Nvidia, SpaceX, Apple as local trading apps roll out access to overseas assets"
+      },
+      "summary": {
+        "simplified": "CNBC报道，印度交易平台开始向本地投资者提供英伟达、SpaceX和苹果等标的的接入，散户需求随之上升。",
+        "traditional": "CNBC報道，印度交易平臺開始向本地投資者提供英偉達、SpaceX和蘋果等標的的接入，散戶需求隨之上升。",
+        "english": "CNBC reported growing Indian demand for Nvidia, SpaceX, Apple and other overseas assets as local trading apps broadened access."
+      },
+      "body": {
+        "simplified": "报道把产品接入与印度散户对海外科技资产的兴趣联系起来。文中所列标的来自平台扩展后的可选范围，不代表这些资产在印度本地交易所直接上市，也不构成投资建议。",
+        "traditional": "報道把產品接入與印度散戶對海外科技資產的興趣聯絡起來。文中所列標的來自平臺擴充套件後的可選範圍，不代表這些資產在印度本地交易所直接上市，也不構成投資建議。",
+        "english": "The story connected product rollouts with retail interest in overseas technology assets. The listed names reflect the apps' expanded offering rather than an Indian listing for every asset and do not constitute investment advice."
+      },
+      "source": {
+        "name": {
+          "simplified": "CNBC",
+          "traditional": "CNBC",
+          "english": "CNBC"
+        },
+        "url": "https://www.cnbc.com/2026/10/28/india-us-stocks-retail-access.html"
+      },
+      "date": {
+        "publishedAt": "2026-10-28",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "usStocks",
+        "topics",
+        "watchlist"
+      ],
+      "image": null,
+      "relatedWatchlistAssets": [
+        {
+          "symbol": "NVDA",
+          "role": "primary"
+        },
+        {
+          "symbol": "AAPL",
+          "role": "primary"
+        }
+      ]
+    },
+    {
+      "id": "market-033",
+      "title": {
+        "simplified": "Jio上市首日估值达1370亿美元",
+        "traditional": "Jio上市首日估值達1370億美元",
+        "english": "Ambani's Jio reaches $137 billion valuation, becoming India's second-most valuable firm"
+      },
+      "summary": {
+        "simplified": "路透社报道，Jio在完成印度史上规模最大的32亿美元IPO后上市首日走高，估值达到1370亿美元，成为印度市值第二高公司。",
+        "traditional": "路透社報道，Jio在完成印度史上規模最大的32億美元IPO後上市首日走高，估值達到1370億美元，成為印度市值第二高公司。",
+        "english": "Reuters reported that Jio reached a $137 billion valuation on its trading debut after India's largest IPO, becoming the country's second-most valuable company."
+      },
+      "body": {
+        "simplified": "报道关注Jio从融资阶段进入公开市场交易后的估值变化。上市首日表现涉及公司规模、印度资本市场热度与投资者预期，后续价格应参考交易所实时数据，不能沿用本文数字。",
+        "traditional": "報道關注Jio從融資階段進入公開市場交易後的估值變化。上市首日表現涉及公司規模、印度資本市場熱度與投資者預期，後續價格應參考交易所實時資料，不能沿用本文數字。",
+        "english": "The report tracked the transition from Jio's $3.2 billion fundraising to public trading and the valuation reached in the debut session. Any later market value should be checked against exchange data rather than reusing the article's figure."
+      },
+      "source": {
+        "name": {
+          "simplified": "路透社",
+          "traditional": "路透社",
+          "english": "Reuters"
+        },
+        "url": "https://www.reuters.com/world/india/ambanis-jio-make-mumbai-trading-debut-after-record-32-billion-india-ipo-2026-10-28/"
+      },
+      "date": {
+        "publishedAt": "2026-10-28",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "topics",
+        "ipoObservation",
+        "priceMovement"
+      ],
+      "image": null
+    },
+    {
+      "id": "market-034",
+      "title": {
+        "simplified": "谷歌将扩大TPU销售渠道，首次由Oracle向外部客户提供",
+        "traditional": "谷歌將擴大TPU銷售渠道，首次由Oracle向外部客戶提供",
+        "english": "Google alters its cloud playbook, enlisting partners to sell more AI chips"
+      },
+      "summary": {
+        "simplified": "CNBC报道，Alphabet正把TPU业务延伸到自有云之外，Oracle将向客户提供谷歌定制AI芯片，以争取更大市场份额。",
+        "traditional": "CNBC報道，Alphabet正把TPU業務延伸到自有云之外，Oracle將向客戶提供谷歌定製AI晶片，以爭取更大市場份額。",
+        "english": "CNBC reported that Alphabet was extending its TPU business beyond Google Cloud, with Oracle set to offer the custom AI chips to outside customers."
+      },
+      "body": {
+        "simplified": "报道援引Alphabet的说法称，这是客户首次可以在谷歌自有基础设施之外使用TPU。谷歌云业务此前已在第二季度向外部数据中心开放TPU，市场将关注这一渠道能否扩大AI芯片收入并挑战英伟达的主导地位。",
+        "traditional": "報道援引Alphabet的說法稱，這是客戶首次可以在谷歌自有基礎設施之外使用TPU。谷歌雲業務此前已在第二季度向外部資料中心開放TPU，市場將關注這一渠道能否擴大AI晶片收入並挑戰英偉達的主導地位。",
+        "english": "The move marked the first time customers could access TPUs outside Google-owned infrastructure, according to the report. Google had already opened TPUs to outside data centers in the second quarter, and markets were watching whether the model could broaden AI-chip revenue."
+      },
+      "source": {
+        "name": {
+          "simplified": "CNBC",
+          "traditional": "CNBC",
+          "english": "CNBC"
+        },
+        "url": "https://www.cnbc.com/2026/10/28/google-alters-cloud-playbook-turning-to-partners-to-sell-more-ai-chips.html"
+      },
+      "date": {
+        "publishedAt": "2026-10-28",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "watchlist",
+        "usStocks",
+        "topics"
+      ],
+      "image": null,
+      "relatedWatchlistAssets": [
+        {
+          "symbol": "GOOGL",
+          "role": "primary"
+        },
+        {
+          "symbol": "NVDA",
+          "role": "secondary"
+        }
+      ]
+    },
+    {
+      "body": {
+        "english": "Moody's also considered reserve overcollateralization, segregated third-party custody and redemption arrangements. The rating makes the stablecoin's reserve structure easier for institutional counterparties to assess.",
+        "simplified": "穆迪的判断还考虑了储备超额覆盖、第三方隔离托管和赎回安排。这项评级使机构交易对手更容易评估其储备结构。",
+        "traditional": "穆迪的判斷還考慮了儲備超額覆蓋、第三方隔離托管和贖回安排。這項評級使機構交易對手更容易評估其儲備結構。"
+      },
+      "categories": [
+        "crypto",
+        "headlines",
+        "topics"
+      ],
+      "date": {
+        "precision": "day",
+        "publishedAt": "2026-10-28"
+      },
+      "id": "crypto-01",
+      "image": null,
+      "source": {
+        "name": {
+          "english": "The Block",
+          "simplified": "The Block",
+          "traditional": "The Block"
+        },
+        "url": "https://www.theblock.co/news/web3/2026-10-28-moodys-ripple-rlusd-stablecoin-431969"
+      },
+      "summary": {
+        "english": "Moody's Ratings assigned RLUSD an A2 long-term and P-1 short-term deposit rating, citing the quality and liquidity of reserves invested mostly in short-duration U.S. government assets and cash. The report put RLUSD's market capitalization at about $2.5 billion.",
+        "simplified": "穆迪评级将 RLUSD 的长期存款评级定为 A2、短期评级定为 P-1，称其储备主要配置于高流动性、短久期的美国政府资产和现金。报道指出，RLUSD 市值约为 25 亿美元。",
+        "traditional": "穆迪評級將 RLUSD 的長期存款評級定為 A2、短期評級定為 P-1，稱其儲備主要配置於高流動性、短久期的美國政府資產和現金。報道指出，RLUSD 市值約為 25 億美元。"
+      },
+      "title": {
+        "english": "Moody's assigns investment-grade ratings to Ripple's RLUSD stablecoin",
+        "simplified": "穆迪给予 Ripple 美元稳定币 RLUSD 投资级评级",
+        "traditional": "穆迪給予 Ripple 美元穩定幣 RLUSD 投資級評級"
+      }
+    },
+    {
+      "id": "market-003",
+      "title": {
+        "simplified": "9月中国工业企业利润加速增长，经济分化仍突出",
+        "traditional": "9月中國工業企業利潤加速增長，經濟分化仍突出",
+        "english": "China's industrial profit growth picks up amid deepening economic divergence"
+      },
+      "summary": {
+        "simplified": "路透社援引国家统计局数据称，9月规模以上工业企业利润同比增长14.4%，增速较8月加快，但不同行业表现明显分化。",
+        "traditional": "路透社援引國家統計局資料稱，9月規模以上工業企業利潤同比增長14.4%，增速較8月加快，但不同行業表現明顯分化。",
+        "english": "Reuters reported that Chinese industrial profits accelerated in September, although performance varied sharply across sectors."
+      },
+      "body": {
+        "simplified": "报道显示，9月工业企业利润同比增速由8月的4.2%升至14.4%，前三季度累计增长15.5%。电子设备制造业表现较强，家具制造业承压；出口企业仍在应对贸易摩擦和需求不确定性。",
+        "traditional": "報道顯示，9月工業企業利潤同比增速由8月的4.2%升至14.4%，前三季度累計增長15.5%。電子裝置製造業表現較強，傢俱製造業承壓；出口企業仍在應對貿易摩擦和需求不確定性。",
+        "english": "Citing National Bureau of Statistics data, Reuters said industrial profits rose 14.4% year on year in September, up from 4.2% in August, while January-September growth reached 15.5%. Electronics manufacturing outperformed, furniture lagged, and exporters faced trade uncertainty."
+      },
+      "source": {
+        "name": {
+          "simplified": "路透社",
+          "traditional": "路透社",
+          "english": "Reuters"
+        },
+        "url": "https://www.reuters.com/world/asia-pacific/chinas-industrial-profit-growth-picks-up-amid-two-speed-economy-2026-10-27/"
+      },
+      "date": {
+        "publishedAt": "2026-10-27",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "topics",
+        "aShares",
+        "research"
+      ],
+      "image": null
+    },
+    {
+      "id": "market-004",
+      "title": {
+        "simplified": "中东外交进展压低油价，供应风险仍未解除",
+        "traditional": "中東外交進展壓低油價，供應風險仍未解除",
+        "english": "Oil falls almost $2 as Middle East talks help ease supply worries"
+      },
+      "summary": {
+        "simplified": "路透社报道，市场对中东外交谈判的期待令油价单日下跌近2美元，但沙特设施遇袭和地区军事风险仍限制跌幅。",
+        "traditional": "路透社報道，市場對中東外交談判的期待令油價單日下跌近2美元，但沙特設施遇襲和地區軍事風險仍限制跌幅。",
+        "english": "Reuters reported that hopes for Middle East diplomacy pushed oil down by nearly $2 a barrel, while attacks and military risks kept supply concerns alive."
+      },
+      "body": {
+        "simplified": "报道说，交易员一方面消化可能缓解供应担忧的外交消息，另一方面继续评估胡塞武装袭击沙特及海湾军事部署的影响。多名市场人士认为，原油价格仍包含明显的地缘风险溢价。",
+        "traditional": "報道說，交易員一方面消化可能緩解供應擔憂的外交訊息，另一方面繼續評估胡塞武裝襲擊沙特及海灣軍事部署的影響。多名市場人士認為，原油價格仍包含明顯的地緣風險溢價。",
+        "english": "Traders weighed diplomatic signals that could reduce supply fears against continued Houthi attacks on Saudi Arabia and a larger military presence in the Gulf. Market participants said crude still carried a meaningful geopolitical risk premium."
+      },
+      "source": {
+        "name": {
+          "simplified": "路透社",
+          "traditional": "路透社",
+          "english": "Reuters"
+        },
+        "url": "https://www.reuters.com/business/energy/oil-eases-middle-east-diplomacy-hopes-saudi-attacks-keep-supply-worries-alive-2026-10-27/"
+      },
+      "date": {
+        "publishedAt": "2026-10-27",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "topics"
+      ],
+      "image": null
+    },
+    {
+      "id": "market-010",
+      "title": {
+        "simplified": "美国三季度早期财报显示消费仍有韧性，但压力迹象增多",
+        "traditional": "美國三季度早期財報顯示消費仍有韌性，但壓力跡象增多",
+        "english": "Early third-quarter earnings show a 'resilient' U.S. consumer, with signs of strain"
+      },
+      "summary": {
+        "simplified": "CNBC梳理早期三季度业绩后称，美国消费者的支出仍具韧性，同时部分品类和客群已经显露压力。",
+        "traditional": "CNBC梳理早期三季度業績後稱，美國消費者的支出仍具韌性，同時部分品類和客群已經顯露壓力。",
+        "english": "CNBC said early third-quarter results pointed to a resilient U.S. consumer while also showing pockets of financial strain."
+      },
+      "body": {
+        "simplified": "报道把整体销售韧性与结构性疲弱并列：企业仍能看到消费需求，但成本和客群差异令部分业务承压。该条适合作为市场与零售类标的的宏观背景，而非对单一公司的业绩判断。",
+        "traditional": "報道把整體銷售韌性與結構性疲弱並列：企業仍能看到消費需求，但成本和客群差異令部分業務承壓。該條適合作為市場與零售類標的的宏觀背景，而非對單一公司的業績判斷。",
+        "english": "The report presented firm consumer demand alongside signs of pressure in some categories and customer groups. It is useful as macro context for retail and consumer stocks, rather than a conclusion about any single company."
+      },
+      "source": {
+        "name": {
+          "simplified": "CNBC",
+          "traditional": "CNBC",
+          "english": "CNBC"
+        },
+        "url": "https://www.cnbc.com/2026/10/27/q3-earnings-resilient-consumer.html"
+      },
+      "date": {
+        "publishedAt": "2026-10-27",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "topics",
+        "research"
+      ],
+      "image": null
+    },
+    {
+      "id": "market-011",
+      "title": {
+        "simplified": "亚马逊内部备忘录要求工程师更谨慎使用AI编程额度",
+        "traditional": "亞馬遜內部備忘錄要求工程師更謹慎使用AI程式設計額度",
+        "english": "Amazon's anti-tokenmaxxing memo says engineers should be pickier about using AI"
+      },
+      "summary": {
+        "simplified": "CNBC报道，亚马逊内部备忘录要求工程师更有选择地使用AI编程工具，避免不必要地消耗大量模型额度。",
+        "traditional": "CNBC報道，亞馬遜內部備忘錄要求工程師更有選擇地使用AI程式設計工具，避免不必要地消耗大量模型額度。",
+        "english": "CNBC reported that an internal Amazon memo told engineers to be more selective in their use of AI coding tools and avoid unnecessary token consumption."
+      },
+      "body": {
+        "simplified": "报道显示，亚马逊正在管理AI编码工具的使用强度。管理层并非宣布停止使用AI，而是要求工程师优先把模型资源投向价值更高的任务，以控制成本和提升效率。",
+        "traditional": "報道顯示，亞馬遜正在管理AI編碼工具的使用強度。管理層並非宣佈停止使用AI，而是要求工程師優先把模型資源投向價值更高的任務，以控制成本和提升效率。",
+        "english": "The memo pointed to efforts to manage the intensity of AI coding usage. Rather than ending AI use, Amazon asked engineers to direct model resources toward higher-value tasks while controlling cost and improving efficiency."
+      },
+      "source": {
+        "name": {
+          "simplified": "CNBC",
+          "traditional": "CNBC",
+          "english": "CNBC"
+        },
+        "url": "https://www.cnbc.com/2026/10/27/amazon-ai-coding-tokenmaxxing.html"
+      },
+      "date": {
+        "publishedAt": "2026-10-27",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "watchlist",
+        "usStocks",
+        "topics"
+      ],
+      "image": null,
+      "relatedWatchlistAssets": [
+        {
+          "symbol": "AMZN",
+          "role": "primary"
+        }
+      ]
+    },
+    {
+      "id": "market-015",
+      "title": {
+        "simplified": "波音称737 Max产量要到2027年下半年才显著增产",
+        "traditional": "波音稱737 Max產量要到2027年下半年才顯著增產",
+        "english": "Boeing says it won't significantly ramp up 737 Max production until late 2027"
+      },
+      "summary": {
+        "simplified": "CNBC报道，波音表示737 Max的产量要到2027年下半年才显著增产。",
+        "traditional": "CNBC報道，波音表示737 Max的產量要到2027年下半年才顯著增產。",
+        "english": "CNBC reported that Boeing would not significantly increase 737 Max output until late 2027."
+      },
+      "body": {
+        "simplified": "报道显示，波音对增产保持谨慎，将显著增产时间表定在2027年下半年。该表态与公司近期现金流和制造执行受到关注有关，但文章没有把产能计划描述为确定订单承诺。",
+        "traditional": "報道顯示，波音對增產保持謹慎，將顯著增產時間表定在2027年晚些時候。該表態與公司近期現金流和製造執行受到關注有關，但文章沒有把產能計劃描述為確定訂單承諾。",
+        "english": "Boeing signaled a cautious production-ramp timetable, placing a substantial increase in late 2027. The report tied the cautious approach to scrutiny of cash flow and manufacturing execution and did not characterize the plan as a firm order commitment."
+      },
+      "source": {
+        "name": {
+          "simplified": "CNBC",
+          "traditional": "CNBC",
+          "english": "CNBC"
+        },
+        "url": "https://www.cnbc.com/2026/10/27/-boeing-ba-q3-2026-earnings.html"
+      },
+      "date": {
+        "publishedAt": "2026-10-27",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "usStocks",
+        "topics"
+      ],
+      "image": null
+    },
+    {
+      "id": "market-016",
+      "title": {
+        "simplified": "可口可乐上调盈利指引，但北美需求表现平淡",
+        "traditional": "可口可樂上調盈利指引，但北美需求表現平淡",
+        "english": "Coca-Cola hikes earnings outlook, even as it sees lackluster demand in North America"
+      },
+      "summary": {
+        "simplified": "CNBC报道，可口可乐上调年度盈利展望，同时承认北美市场需求仍显疲弱。",
+        "traditional": "CNBC報道，可口可樂上調年度盈利展望，同時承認北美市場需求仍顯疲弱。",
+        "english": "CNBC reported that Coca-Cola raised its earnings outlook while still seeing lackluster North American demand."
+      },
+      "body": {
+        "simplified": "报道把上调指引与北美销售动力不足并列。公司盈利预期改善并不意味着所有地区需求同步走强；引用时应保留区域分化这一前提。",
+        "traditional": "報道把上調指引與北美銷售動力不足並列。公司盈利預期改善並不意味著所有地區需求同步走強；引用時應保留區域分化這一前提。",
+        "english": "The improved profit guidance came alongside weak momentum in the North American market. The report shows regional differences, rather than uniform demand strength across the company."
+      },
+      "source": {
+        "name": {
+          "simplified": "CNBC",
+          "traditional": "CNBC",
+          "english": "CNBC"
+        },
+        "url": "https://www.cnbc.com/2026/10/27/coca-cola-ko-q3-2026-earnings.html"
+      },
+      "date": {
+        "publishedAt": "2026-10-27",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "watchlist",
+        "usStocks",
+        "topics"
+      ],
+      "image": null,
+      "relatedWatchlistAssets": [
+        {
+          "symbol": "KO",
+          "role": "primary"
+        }
+      ]
+    },
+    {
+      "id": "market-022",
+      "title": {
+        "simplified": "美团发行12亿美元点心债，订单规模超过30亿美元",
+        "traditional": "美團發行12億美元點心債，訂單規模超過30億美元",
+        "english": "Meituan launches $1.2 billion dim sum bond sale after orders top $3 billion"
+      },
+      "summary": {
+        "simplified": "路透社报道，美团发行80亿元人民币计价的双批次点心债，总额约12亿美元，认购订单超过30亿美元。",
+        "traditional": "路透社報道，美團發行80億元人民幣計價的雙批次點心債，總額約12億美元，認購訂單超過30億美元。",
+        "english": "Reuters reported that Meituan launched a sale of about $1.2 billion in offshore yuan bonds after orders exceeded $3 billion."
+      },
+      "body": {
+        "simplified": "报道援引条款清单称，发行分为45亿元人民币五年期和35亿元人民币十年期两个批次。强劲认购反映债券市场对美团的融资需求，但不等同于对其股价方向或信用风险的实时判断。",
+        "traditional": "報道援引條款清單稱，發行分為45億元人民幣五年期和35億元人民幣十年期兩個批次。強勁認購反映債券市場對美團的融資需求，但不等同於對其股價方向或信用風險的實時判斷。",
+        "english": "Citing a term sheet, Reuters said the 8 billion yuan issue comprised a 4.5 billion yuan five-year tranche and a 3.5 billion yuan 10-year tranche. Strong demand describes the debt sale and is not a live judgment on the stock or credit outlook."
+      },
+      "source": {
+        "name": {
+          "simplified": "路透社",
+          "traditional": "路透社",
+          "english": "Reuters"
+        },
+        "url": "https://www.reuters.com/business/retail-consumer/meituan-launches-12-billion-dim-sum-bond-sale-after-orders-top-3-billion-2026-10-27/"
+      },
+      "date": {
+        "publishedAt": "2026-10-27",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "watchlist",
+        "hongKong",
+        "topics"
+      ],
+      "image": null,
+      "relatedWatchlistAssets": [
+        {
+          "symbol": "03690",
+          "role": "primary"
+        }
+      ]
+    },
+    {
+      "id": "market-025",
+      "title": {
+        "simplified": "阿里获法院临时禁制令，五角大楼合同限制暂受影响",
+        "traditional": "阿里獲法院臨時禁制令，五角大樓合同限制暫受影響",
+        "english": "Alibaba wins injunction against Pentagon contract restrictions tied to China blacklist"
+      },
+      "summary": {
+        "simplified": "路透社报道，美国联邦法官批准阿里巴巴的临时禁制令申请，暂时阻止政府因其与说客往来而拒绝向公司授予五角大楼合同。",
+        "traditional": "路透社報道，美國聯邦法官批准阿里巴巴的臨時禁制令申請，暫時阻止政府因其與說客往來而拒絕向公司授予五角大樓合同。",
+        "english": "Reuters reported that a U.S. federal judge granted Alibaba a preliminary injunction affecting restrictions on Pentagon contracts tied to lobbying relationships."
+      },
+      "body": {
+        "simplified": "报道指出，这项裁决不把阿里巴巴从五角大楼清单中移除，但允许公司继续使用同时代表国防承包商的说客，为其挑战清单身份创造条件。阿里巴巴否认与军方存在关联。",
+        "traditional": "報道指出，這項裁決不把阿里巴巴從五角大樓清單中移除，但允許公司繼續使用同時代表國防承包商的說客，為其挑戰清單身份創造條件。阿里巴巴否認與軍方存在關聯。",
+        "english": "The ruling did not remove Alibaba from the Pentagon list, but it allowed the company to retain lobbyists who also represent defense contractors while it challenges the designation. Alibaba has denied military ties."
+      },
+      "source": {
+        "name": {
+          "simplified": "路透社",
+          "traditional": "路透社",
+          "english": "Reuters"
+        },
+        "url": "https://www.reuters.com/legal/litigation/alibaba-wins-injunction-against-pentagon-contract-restrictions-tied-china-2026-10-27/"
+      },
+      "date": {
+        "publishedAt": "2026-10-27",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "watchlist",
+        "hongKong",
+        "usStocks",
+        "topics",
+        "priceMovement"
+      ],
+      "image": null,
+      "relatedWatchlistAssets": [
+        {
+          "symbol": "09988",
+          "role": "primary"
+        },
+        {
+          "symbol": "BABA",
+          "role": "primary"
+        }
+      ]
+    },
+    {
+      "id": "market-027",
+      "title": {
+        "simplified": "FCC批准Amazon Leo以115亿美元收购Globalstar",
+        "traditional": "FCC批准Amazon Leo以115億美元收購Globalstar",
+        "english": "US agency approves Amazon Leo's $11.5 billion acquisition of Globalstar"
+      },
+      "summary": {
+        "simplified": "路透社报道，美国联邦通信委员会批准Amazon Leo以115亿美元收购全球星，以扩展卫星通信网络并挑战Starlink。",
+        "traditional": "路透社報道，美國聯邦通訊委員會批准Amazon Leo以115億美元收購全球星，以擴充套件衛星通訊網路並挑戰Starlink。",
+        "english": "Reuters reported that the FCC approved Amazon Leo's $11.5 billion acquisition of Globalstar as Amazon builds a satellite network to challenge Starlink."
+      },
+      "body": {
+        "simplified": "报道称，Amazon Leo自2025年4月以来已发射近400颗卫星，交易将增加全球星约24颗卫星及移动卫星频谱。亚马逊计划在2026年底前推出商业卫星服务，并借此进入手机直连市场。",
+        "traditional": "報道稱，Amazon Leo自2025年4月以來已發射近400顆衛星，交易將增加全球星約24顆衛星及移動衛星頻譜。亞馬遜計劃在2026年底前推出商業衛星服務，並藉此進入手機直連市場。",
+        "english": "Amazon Leo had launched nearly 400 satellites since April 2025, and the deal adds about two dozen Globalstar satellites plus mobile-satellite spectrum. Amazon was preparing commercial service by the end of 2026 and gaining a route into direct-to-device connectivity."
+      },
+      "source": {
+        "name": {
+          "simplified": "路透社",
+          "traditional": "路透社",
+          "english": "Reuters"
+        },
+        "url": "https://www.reuters.com/business/media-telecom/us-agency-approves-amazon-leos-115-billion-acquisition-globalstar-2026-10-27/"
+      },
+      "date": {
+        "publishedAt": "2026-10-27",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "watchlist",
+        "usStocks",
+        "topics"
+      ],
+      "image": null,
+      "relatedWatchlistAssets": [
+        {
+          "symbol": "AMZN",
+          "role": "primary"
+        }
+      ]
+    },
+    {
+      "id": "market-028",
+      "title": {
+        "simplified": "Robinhood三季度利润受数字资产市场低迷拖累，股价下跌",
+        "traditional": "Robinhood三季度利潤受數字資產市場低迷拖累，股價下跌",
+        "english": "Robinhood shares fall as crypto slump weighs on profits, offsetting gains in new businesses"
+      },
+      "summary": {
+        "simplified": "CNBC报道，Robinhood第三季度利润未达预期，数字资产市场持续低迷抵消了其他新业务的改善。",
+        "traditional": "CNBC報道，Robinhood第三季度利潤未達預期，數字資產市場持續低迷抵消了其他新業務的改善。",
+        "english": "CNBC reported that a prolonged digital-asset downturn weighed on Robinhood's third-quarter profit and offset gains in newer businesses."
+      },
+      "body": {
+        "simplified": "报道称，加密交易环境走弱拖累公司利润，股价随业绩反应走低，而预测市场等新业务提供了部分缓冲。该条是上市公司的业绩新闻，数字资产仅作为解释季度收入变化的业务因素。",
+        "traditional": "報道稱，加密交易環境走弱拖累公司利潤，股價隨業績反應走低，而預測市場等新業務提供了部分緩衝。該條是上市公司的業績新聞，數字資產僅作為解釋季度收入變化的業務因素。",
+        "english": "The weak trading environment pressured results, while newer areas such as prediction markets provided some offset. This item focuses on Robinhood's corporate earnings, with digital-asset activity treated only as a business driver."
+      },
+      "source": {
+        "name": {
+          "simplified": "CNBC",
+          "traditional": "CNBC",
+          "english": "CNBC"
+        },
+        "url": "https://www.cnbc.com/2026/10/27/robinhood-hood-q3-2026-earnings.html"
+      },
+      "date": {
+        "publishedAt": "2026-10-27",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "topics",
+        "priceMovement"
+      ],
+      "image": null
+    },
+    {
+      "id": "market-031",
+      "title": {
+        "simplified": "中俄重塑北极贸易，欧洲寻求应对",
+        "traditional": "中俄重塑北極貿易，歐洲尋求應對",
+        "english": "China and Russia are redrawing Arctic trade. Can Europe fight back?"
+      },
+      "summary": {
+        "simplified": "CNBC分析报道，中国与俄罗斯正扩大在北极航运和贸易中的影响力，欧洲正在评估应对方式。",
+        "traditional": "CNBC分析報道，中國與俄羅斯正擴大在北極航運和貿易中的影響力，歐洲正在評估應對方式。",
+        "english": "CNBC reported that China and Russia were expanding their influence over Arctic shipping and trade as Europe considered its response."
+      },
+      "body": {
+        "simplified": "报道将北极航线、能源与贸易联系放在地缘政治和供应链重塑的背景下观察。它适合用于长期主题筛选，并不代表某条航线或项目的商业可行性已经得到最终验证。",
+        "traditional": "報道將北極航線、能源與貿易聯絡放在地緣政治和供應鏈重塑的背景下觀察。它適合用於長期主題篩選，並不代表某條航線或專案的商業可行性已經得到最終驗證。",
+        "english": "The analysis placed Arctic routes, energy and trade within a broader shift in geopolitics and supply chains. It fits long-term thematic filtering and does not claim that every proposed project or route has been commercially validated."
+      },
+      "source": {
+        "name": {
+          "simplified": "CNBC",
+          "traditional": "CNBC",
+          "english": "CNBC"
+        },
+        "url": "https://www.cnbc.com/2026/10/27/arctic-shipping-china-and-russia-expand-grip-can-europe-fight-back.html"
+      },
+      "date": {
+        "publishedAt": "2026-10-27",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "topics"
+      ],
+      "image": null
+    },
+    {
+      "id": "market-032",
+      "title": {
+        "simplified": "Anthropic现金储备超过几乎所有美国大型公司",
+        "traditional": "Anthropic現金儲備超過幾乎所有美國大型公司",
+        "english": "Chart: Anthropic's cash pile towers over nearly every U.S. company"
+      },
+      "summary": {
+        "simplified": "CNBC图表报道，Anthropic持有的现金规模超过几乎所有美国公司，凸显其IPO前的融资能力和AI资本竞争格局。",
+        "traditional": "CNBC圖表報道，Anthropic持有的現金規模超過幾乎所有美國公司，凸顯其IPO前的融資能力和AI資本競爭格局。",
+        "english": "CNBC reported that Anthropic's cash holdings exceeded those of nearly every U.S. company, highlighting its pre-IPO funding capacity."
+      },
+      "body": {
+        "simplified": "报道用公司间比较展示Anthropic庞大的现金储备。现金充足有利于持续投入算力和研发，但大规模支出与IPO估值仍需结合公司收入、亏损和未来融资条件评估。",
+        "traditional": "報道用公司間比較展示Anthropic龐大的現金儲備。現金充足有利於持續投入算力和研發，但大規模支出與IPO估值仍需結合公司收入、虧損和未來融資條件評估。",
+        "english": "The comparison showed an unusually large cash reserve that can support continued compute and research spending. Its significance still depends on revenue, losses and future financing terms alongside any IPO valuation."
+      },
+      "source": {
+        "name": {
+          "simplified": "CNBC",
+          "traditional": "CNBC",
+          "english": "CNBC"
+        },
+        "url": "https://www.cnbc.com/2026/10/27/anthropic-cash-investments-ipo.html"
+      },
+      "date": {
+        "publishedAt": "2026-10-27",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "topics",
+        "research",
+        "ipoObservation"
+      ],
+      "image": null
+    },
+    {
+      "id": "market-036",
+      "title": {
+        "simplified": "博通获分析师上调评级，AI客户IPO或缓解订单担忧",
+        "traditional": "博通獲分析師上調評級，AI客戶IPO或緩解訂單擔憂",
+        "english": "How Broadcom’s stock can surge and overcome ‘the biggest dislocation in the market’"
+      },
+      "summary": {
+        "simplified": "MarketWatch报道，D.A. Davidson将博通评级上调至买入，认为Anthropic和OpenAI的IPO若顺利推进，将支持博通定制芯片业务的长期目标。",
+        "traditional": "MarketWatch報道，D.A. Davidson將博通評級上調至買入，認為Anthropic和OpenAI的IPO若順利推進，將支援博通定製晶片業務的長期目標。",
+        "english": "MarketWatch reported that D.A. Davidson raised Broadcom to buy, arguing that successful IPOs for Anthropic and OpenAI could support the chipmaker’s long-term AI targets."
+      },
+      "body": {
+        "simplified": "报道称，Anthropic公开的五年期数据中心硬件租约涉及约1612亿美元，Broadcom同时参与其AI基础设施融资安排。分析师则指出，博通股价此前落后于半导体板块，部分原因是对大型AI客户融资能力的疑虑。",
+        "traditional": "報道稱，Anthropic公開的五年期資料中心硬體租約涉及約1612億美元，Broadcom同時參與其AI基礎設施融資安排。分析師則指出，博通股價此前落後於半導體板塊，部分原因是對大型AI客戶融資能力的疑慮。",
+        "english": "The report noted a five-year hardware lease disclosed by Anthropic valued at about $161.2 billion before interest, alongside Broadcom’s role in related financing. It also said Broadcom shares had lagged the semiconductor sector amid doubts about AI customers’ funding capacity."
+      },
+      "source": {
+        "name": {
+          "simplified": "MarketWatch",
+          "traditional": "MarketWatch",
+          "english": "MarketWatch"
+        },
+        "url": "https://www.marketwatch.com/story/how-broadcoms-stock-can-surge-and-overcome-the-biggest-dislocation-in-the-market-9719e2a8"
+      },
+      "date": {
+        "publishedAt": "2026-10-27",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "watchlist",
+        "usStocks",
+        "research",
+        "topics",
+        "priceMovement"
+      ],
+      "image": null,
+      "relatedWatchlistAssets": [
+        {
+          "symbol": "AVGO",
+          "role": "primary"
+        }
+      ]
+    },
+    {
+      "id": "market-037",
+      "title": {
+        "simplified": "英伟达拟投资30亿美元、AMD拟投资10亿美元，参与Meta 950亿美元融资计划",
+        "traditional": "英偉達擬投資30億美元、AMD擬投資10億美元，參與Meta 950億美元融資計劃",
+        "english": "Nvidia, AMD to invest $4 billion in Meta as tech giants deepen AI partnership"
+      },
+      "summary": {
+        "simplified": "CNBC报道，Meta计划发行总额950亿美元的股票，英伟达拟投资30亿美元、AMD拟投资10亿美元。",
+        "traditional": "CNBC報道，Meta計劃發行總額950億美元的股票，英偉達擬投資30億美元、AMD擬投資10億美元。",
+        "english": "CNBC reported that AMD planned to invest $1 billion in Meta, while Nvidia planned a $3 billion investment as part of Meta’s $95 billion fundraising."
+      },
+      "body": {
+        "simplified": "报道显示，Meta计划通过承销股票发行募集350亿美元，并可能通过按市价发行机制募集最多600亿美元。AMD的10亿美元股权投资发生在这项AI基础设施融资安排中，英伟达和AMD还将与Meta扩大芯片、CPU和AI代理相关合作。",
+        "traditional": "報道顯示，Meta計劃透過承銷股票發行募集350億美元，並可能透過按市價發行機制募集最多600億美元。AMD的10億美元股權投資發生在這項AI基礎設施融資安排中，英偉達和AMD還將與Meta擴大晶片、CPU和AI代理相關合作。",
+        "english": "Meta plans to raise $35 billion through an underwritten equity offering and may raise up to $60 billion more through an at-the-market program. Nvidia plans to invest $3 billion in Meta and AMD plans to invest $1 billion in Meta as part of the AI-infrastructure financing, alongside expanded work on chips, CPUs and AI agents."
+      },
+      "source": {
+        "name": {
+          "simplified": "CNBC",
+          "traditional": "CNBC",
+          "english": "CNBC"
+        },
+        "url": "https://www.cnbc.com/2026/10/27/nvidia-invest-meta.html"
+      },
+      "date": {
+        "publishedAt": "2026-10-27",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "watchlist",
+        "usStocks",
+        "topics"
+      ],
+      "image": null,
+      "relatedWatchlistAssets": [
+        {
+          "symbol": "NVDA",
+          "role": "primary"
+        },
+        {
+          "symbol": "AMD",
+          "role": "primary"
+        },
+        {
+          "symbol": "META",
+          "role": "primary"
+        }
+      ]
+    },
+    {
+      "id": "market-039",
+      "title": {
+        "simplified": "沃尔玛墨西哥公司三季度利润不及预期，成本增速快于销售",
+        "traditional": "沃爾瑪墨西哥公司三季度利潤不及預期，成本增速快於銷售",
+        "english": "Walmart's margins in Mexico tighten as costs outpace sales growth"
+      },
+      "summary": {
+        "simplified": "路透社报道，沃尔玛墨西哥公司三季度净利润下降6%至110.3亿比索，低于市场预期，成本和投入上升压缩了利润率。",
+        "traditional": "路透社報道，沃爾瑪墨西哥公司三季度淨利潤下降6%至110.3億比索，低於市場預期，成本和投入上升壓縮了利潤率。",
+        "english": "Reuters reported that Walmart’s Mexico unit missed third-quarter profit estimates as costs rose faster than sales."
+      },
+      "body": {
+        "simplified": "报道显示，公司收入为2488.3亿比索，同比增长约3%，但低于分析师预期；EBITDA利润率为10.2%，收窄30个基点。墨西哥电商商品交易总额增长15%，成为业绩亮点。",
+        "traditional": "報道顯示，公司收入為2488.3億比索，同比增長約3%，但低於分析師預期；EBITDA利潤率為10.2%，收窄30個基點。墨西哥電商商品交易總額增長15%，成為業績亮點。",
+        "english": "Net profit fell 6% to 11.03 billion pesos, while revenue rose about 3% to 248.83 billion pesos but missed expectations. The EBITDA margin narrowed 30 basis points to 10.2%; Mexican e-commerce GMV grew 15%."
+      },
+      "source": {
+        "name": {
+          "simplified": "路透社",
+          "traditional": "路透社",
+          "english": "Reuters"
+        },
+        "url": "https://www.reuters.com/world/americas/walmarts-margins-mexico-tighten-costs-outpace-sales-growth-2026-10-27/"
+      },
+      "date": {
+        "publishedAt": "2026-10-27",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "usStocks",
+        "topics"
+      ],
+      "image": null
+    },
+    {
+      "body": {
+        "english": "The perpetual contracts have no expiry and include take-profit, stop-loss and isolated-margin features. Eligible-user and jurisdictional limits remain part of the U.S. regulatory structure, and the report did not publish every access condition.",
+        "simplified": "这些永续合约没有到期日，并提供止盈、止损和逐仓保证金功能。适用资格与地区限制取决于美国监管架构，报道没有公布完整的准入条件。",
+        "traditional": "這些永續合約沒有到期日，並提供止盈、止損和逐倉保證金功能。適用資格與地區限制取決於美國監管架構，報道沒有公佈完整的准入條件。"
+      },
+      "categories": [
+        "crypto",
+        "live"
+      ],
+      "date": {
+        "precision": "day",
+        "publishedAt": "2026-10-27"
+      },
+      "id": "crypto-04",
+      "image": null,
+      "source": {
+        "name": {
+          "english": "The Block",
+          "simplified": "The Block",
+          "traditional": "The Block"
+        },
+        "url": "https://www.theblock.co/news/markets/2026-10-27-crypto-com-og-com-launch-us-crypto-perps-up-to-5x-leverage-431902"
+      },
+      "summary": {
+        "english": "Eligible U.S. traders can now access crypto perpetual futures with up to 5x leverage through OG.com's CFTC-regulated exchange and clearinghouse. Crypto.com recently registered as an introducing broker with the National Futures Association.",
+        "simplified": "双方开始向符合条件的美国交易者提供最高 5 倍杠杆的加密永续合约，交易通过 OG.com 的 CFTC 监管交易所和清算机构运行。Crypto.com 近期已在美国全国期货协会注册为介绍经纪商。",
+        "traditional": "雙方開始向符合條件的美國交易者提供最高 5 倍槓桿的加密永續合約，交易通過 OG.com 的 CFTC 監管交易所和清算機構運行。Crypto.com 近期已在美國全國期貨協會註冊為介紹經紀商。"
+      },
+      "title": {
+        "english": "Crypto.com and OG.com launch U.S. crypto perpetual futures",
+        "simplified": "Crypto.com 与 OG.com 向美国用户推出加密永续合约",
+        "traditional": "Crypto.com 與 OG.com 向美國用戶推出加密永續合約"
+      }
+    },
+    {
+      "body": {
+        "english": "SoFi now reports crypto alongside other investment products, making digital assets part of its formal operating metrics. The gap between gross and net transaction revenue shows that trading activity does not translate one-for-one into profit.",
+        "simplified": "SoFi 将加密产品数量与投资产品并列披露，显示其数字资产业务已进入正式经营指标。毛收入和净收入差距也说明交易规模并不等同于较高的即时利润。",
+        "traditional": "SoFi 將加密產品數量與投資產品並列披露，顯示其數字資產業務已進入正式經營指標。毛收入和淨收入差距也說明交易規模並不等同於較高的即時利潤。"
+      },
+      "categories": [
+        "crypto",
+        "live",
+        "headlines"
+      ],
+      "date": {
+        "precision": "day",
+        "publishedAt": "2026-10-27"
+      },
+      "id": "crypto-05",
+      "image": null,
+      "source": {
+        "name": {
+          "english": "The Block",
+          "simplified": "The Block",
+          "traditional": "The Block"
+        },
+        "url": "https://www.theblock.co/news/markets/2026-10-27-sofi-discloses-503000-crypto-products-as-gross-crypto-revenue-hits-162-million-431897"
+      },
+      "summary": {
+        "english": "SoFi reported 503,000 crypto products for the quarter ended September 30, with $161.6 million in gross crypto transaction revenue, up 20% from the prior quarter. Net crypto transaction revenue was just $1.6 million after related costs.",
+        "simplified": "截至 9 月 30 日的第三季度，SoFi 首次在产品披露中列出 50.3 万个加密产品，毛加密交易收入为 1.616 亿美元，环比增长 20%。扣除相关成本后的净加密交易收入仅为 160 万美元。",
+        "traditional": "截至 9 月 30 日的第三季度，SoFi 首次在產品披露中列出 50.3 萬個加密產品，毛加密交易收入為 1.616 億美元，環比增長 20%。扣除相關成本後的淨加密交易收入僅為 160 萬美元。"
+      },
+      "title": {
+        "english": "SoFi reports 503,000 crypto products and $162 million in gross crypto revenue",
+        "simplified": "SoFi 三季度披露 50.3 万个加密产品，毛加密收入达 1.62 亿美元",
+        "traditional": "SoFi 三季度披露 50.3 萬個加密產品，毛加密收入達 1.62 億美元"
+      }
+    },
+    {
+      "body": {
+        "english": "Bowe said ZCG already has more than $125 million in available funding, a scale well above recent grant spending. The community could still fund commitments from existing reserves, and the proposal would not change block rewards immediately.",
+        "simplified": "Bowe 指出，ZCG 现有资金已超过 1.25 亿美元，自动拨款规模远高于近年补助支出。社区仍可通过现有资产继续履行拨款承诺，提案本身不会立即改变区块奖励分配。",
+        "traditional": "Bowe 指出，ZCG 現有資金已超過 1.25 億美元，自動撥款規模遠高於近年補助支出。社區仍可通過現有資產繼續履行撥款承諾，提案本身不會立即改變區塊獎勵分配。"
+      },
+      "categories": [
+        "crypto",
+        "topics"
+      ],
+      "date": {
+        "precision": "day",
+        "publishedAt": "2026-10-27"
+      },
+      "id": "crypto-06",
+      "image": null,
+      "source": {
+        "name": {
+          "english": "The Block",
+          "simplified": "The Block",
+          "traditional": "The Block"
+        },
+        "url": "https://www.theblock.co/news/ecosystems/2026-10-27-zcash-co-founder-proposes-ending-grants-subsidy-citing-125-million-treasury-431847"
+      },
+      "summary": {
+        "english": "Sean Bowe proposed ending the automatic Zcash Community Grants allocation and redirecting its remaining 8% block subsidy to the network's sustainability mechanism while leaving ZCG's existing assets intact. The proposal has no activation height and would require a future network upgrade.",
+        "simplified": "Sean Bowe 提议停止 Zcash Community Grants 的自动拨款，并将剩余 8% 区块补贴转给网络可持续发展机制，同时保留 ZCG 现有资产。该提案尚未设定激活高度，未来需要通过网络升级才能生效。",
+        "traditional": "Sean Bowe 提議停止 Zcash Community Grants 的自動撥款，並將剩餘 8% 區塊補貼轉給網絡可持續發展機制，同時保留 ZCG 現有資產。該提案尚未設定激活高度，未來需要通過網絡升級才能生效。"
+      },
+      "title": {
+        "english": "Zcash co-founder proposes ending the automatic community-grants funding stream",
+        "simplified": "Zcash 联合创始人提议终止社区赠款自动资金流",
+        "traditional": "Zcash 聯合創始人提議終止社區贈款自動資金流"
+      }
+    },
+    {
+      "id": "market-002",
+      "title": {
+        "simplified": "美联储或暂缓加息，但政策停顿可能不会持久",
+        "traditional": "美聯儲或暫緩加息，但政策停頓可能不會持久",
+        "english": "Fed to hit pause on rate hikes, but maybe not for long"
+      },
+      "summary": {
+        "simplified": "路透社称，投资者预计美联储本周维持利率不变，但通胀反弹和经济韧性使市场认为暂停加息的窗口可能较短。",
+        "traditional": "路透社稱，投資者預計美聯儲本週維持利率不變，但通脹反彈和經濟韌性使市場認為暫停加息的視窗可能較短。",
+        "english": "Reuters reported that investors expected the Fed to hold rates this week, while persistent inflation risks made a long pause unlikely."
+      },
+      "body": {
+        "simplified": "报道说，市场预计联邦基金利率将保持在3.75%至4.00%区间，随后公布的数据可能显示通胀范围扩大、经济增长加快。报道把AI相关资本开支和高企的国债收益率列为影响政策判断的重要变量。",
+        "traditional": "報道說，市場預計聯邦基金利率將保持在3.75%至4.00%區間，隨後公佈的資料可能顯示通脹範圍擴大、經濟增長加快。報道把AI相關資本開支和高企的國債收益率列為影響政策判斷的重要變數。",
+        "english": "The report said the federal funds rate was expected to remain in the 3.75%-4.00% range before data that could show broader inflation and faster growth. It also identified AI investment and elevated Treasury yields as key factors in the policy debate."
+      },
+      "source": {
+        "name": {
+          "simplified": "路透社",
+          "traditional": "路透社",
+          "english": "Reuters"
+        },
+        "url": "https://www.reuters.com/business/fed-hit-pause-rate-hikes-maybe-not-long-2026-10-26/"
+      },
+      "date": {
+        "publishedAt": "2026-10-26",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "topics",
+        "research"
+      ],
+      "image": null
+    },
+    {
+      "id": "market-014",
+      "title": {
+        "simplified": "Anthropic公开招股书：高速增长与巨额亏损同时出现",
+        "traditional": "Anthropic公開招股書：高速增長與鉅額虧損同時出現",
+        "english": "Anthropic's soaring sales, steep losses put AI frenzy to IPO test"
+      },
+      "summary": {
+        "simplified": "路透社报道，Anthropic IPO进程推进，但招股书同时显示收入高速增长和显著亏损，成为检验AI估值的重要案例。",
+        "traditional": "路透社報道，Anthropic IPO程序推進，但招股書同時顯示收入高速增長和顯著虧損，成為檢驗AI估值的重要案例。",
+        "english": "Reuters reported that Anthropic moved closer to an IPO, offering investors a test case of rapid AI revenue growth against steep losses."
+      },
+      "body": {
+        "simplified": "报道援引招股书称，公司截至6月的当季收入同比增长1368%，上半年经营亏损收窄至6.93亿美元，调整后经营利润转为16.2亿美元。上半年净亏损扩大至807亿美元，主要受可转换债券相关非经营项目影响。",
+        "traditional": "報道援引招股書稱，公司截至6月的當季收入同比增長1368%，上半年經營虧損收窄至6.93億美元，調整後經營利潤轉為16.2億美元。上半年淨虧損擴大至807億美元，主要受可轉換債券相關非經營專案影響。",
+        "english": "The prospectus cited by Reuters showed revenue growth of 1,368% in the quarter ended June, a narrower operating loss of $693 million and adjusted operating income of $1.62 billion. First-half net loss widened to $80.7 billion, largely because of a non-operating convertible-bond item."
+      },
+      "source": {
+        "name": {
+          "simplified": "路透社",
+          "traditional": "路透社",
+          "english": "Reuters"
+        },
+        "url": "https://www.reuters.com/legal/transactional/anthropic-opens-books-ais-explosive-growth-staggering-costs-2026-10-26/"
+      },
+      "date": {
+        "publishedAt": "2026-10-26",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "topics",
+        "research",
+        "ipoObservation"
+      ],
+      "image": null
+    },
+    {
+      "id": "market-017",
+      "title": {
+        "simplified": "苹果为何被市场视为“反AI交易”",
+        "traditional": "蘋果為何被市場視為“反AI交易”",
+        "english": "Apple stock has become an anti-AI trade. Here's why"
+      },
+      "summary": {
+        "simplified": "CNBC分析称，随着AI资本开支成为科技股的主要交易主线，苹果相对克制的AI投入使其股价表现被部分投资者视为“反AI交易”。",
+        "traditional": "CNBC分析稱，隨著AI資本開支成為科技股的主要交易主線，蘋果相對剋制的AI投入使其股價表現被部分投資者視為“反AI交易”。",
+        "english": "CNBC argued that Apple's more restrained AI spending has made its stock behave as a partial counterpoint to the market's AI-infrastructure trade."
+      },
+      "body": {
+        "simplified": "报道认为，苹果过去常在科技板块中扮演风向标，但当前AI投资周期改变了这一关系。苹果相对较少的AI基础设施支出可能在板块狂热时落后，也可能在市场重新审视投入回报时体现防御属性。",
+        "traditional": "報道認為，蘋果過去常在科技板塊中扮演風向標，但當前AI投資週期改變了這一關係。蘋果相對較少的AI基礎設施支出可能在板塊狂熱時落後，也可能在市場重新審視投入回報時體現防禦屬性。",
+        "english": "The report said Apple's traditional role as a tech-sector bellwether has shifted during the current AI investment cycle. Its lower infrastructure exposure can lag a broad AI rally while also offering defensive characteristics if investors reassess spending returns."
+      },
+      "source": {
+        "name": {
+          "simplified": "CNBC",
+          "traditional": "CNBC",
+          "english": "CNBC"
+        },
+        "url": "https://www.cnbc.com/2026/10/26/apple-stock-has-become-an-anti-ai-trade-heres-why.html"
+      },
+      "date": {
+        "publishedAt": "2026-10-26",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "watchlist",
+        "usStocks",
+        "research",
+        "topics"
+      ],
+      "image": null,
+      "relatedWatchlistAssets": [
+        {
+          "symbol": "AAPL",
+          "role": "primary"
+        }
+      ]
+    },
+    {
+      "id": "market-019",
+      "title": {
+        "simplified": "微软向约6万名员工提供自愿买断以控制成本",
+        "traditional": "微軟向約6萬名員工提供自願買斷以控制成本",
+        "english": "Microsoft offers buyouts to around 60,000 employees to contain costs"
+      },
+      "summary": {
+        "simplified": "路透社报道，微软向约6万名员工提供自愿买断方案，涉及超过四分之一员工，旨在控制成本并支持AI投资。",
+        "traditional": "路透社報道，微軟向約6萬名員工提供自願買斷方案，涉及超過四分之一員工，旨在控制成本並支援AI投資。",
+        "english": "Reuters reported that Microsoft offered voluntary buyouts to about 60,000 employees as it sought to contain costs and help fund AI investments."
+      },
+      "body": {
+        "simplified": "报道援引公司信息称，符合条件的员工将获得自愿离职选择，方案覆盖多个部门并有地区和职级限制。微软当时有22.3万名全职员工；报道同时指出公司正在为大规模AI基础设施支出控制成本。",
+        "traditional": "報道援引公司資訊稱，符合條件的員工將獲得自願離職選擇，方案覆蓋多個部門並有地區和職級限制。微軟當時有22.3萬名全職員工；報道同時指出公司正在為大規模AI基礎設施支出控制成本。",
+        "english": "The program covered eligible workers across several units, with geographic and job-level limits. Microsoft had 223,000 full-time employees as of late June, and the report tied the cost effort to its large AI infrastructure program."
+      },
+      "source": {
+        "name": {
+          "simplified": "路透社",
+          "traditional": "路透社",
+          "english": "Reuters"
+        },
+        "url": "https://www.reuters.com/technology/microsoft-is-offering-buyouts-around-60000-employees-business-insider-reports-2026-10-26/"
+      },
+      "date": {
+        "publishedAt": "2026-10-26",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "watchlist",
+        "usStocks",
+        "topics"
+      ],
+      "image": null,
+      "relatedWatchlistAssets": [
+        {
+          "symbol": "MSFT",
+          "role": "primary"
+        }
+      ]
+    },
+    {
+      "id": "market-020",
+      "title": {
+        "simplified": "Meta拟分两步发行股票募资至多950亿美元：先承销发行350亿美元，随后按市价机制至多600亿美元",
+        "traditional": "Meta擬分兩步發行股票募資至多950億美元：先承銷發行350億美元，隨後按市價機制至多600億美元",
+        "english": "Meta plans to raise up to $95 billion in a two-step stock sale: $35 billion offering, then up to $60 billion at-the-market"
+      },
+      "summary": {
+        "simplified": "CNBC报道，Meta计划分两步发行股票，募资总额至多950亿美元：先通过承销发行募集350亿美元，随后通过按市价发行机制募集最多600亿美元，以支持AI扩张及相关基础设施投入。",
+        "traditional": "CNBC報道，Meta計劃分兩步發行股票，募資總額至多950億美元：先透過承銷發行募集350億美元，隨後透過按市價發行機制募集最多600億美元，以支援AI擴張及相關基礎設施投入。",
+        "english": "CNBC reported that Meta plans to raise up to $95 billion through a two-step stock sale: a $35 billion underwritten offering, followed by up to $60 billion through an at-the-market program, to fund AI expansion and related infrastructure."
+      },
+      "body": {
+        "simplified": "报道显示，Meta计划分两步发行股票募资至多950亿美元：先通过承销发行募集350亿美元，随后通过按市价发行机制募集最多600亿美元，为AI战略提供资金。该计划规模巨大，投资者关注稀释影响与资本回报；后续执行情况需以公司正式发行文件为准。",
+        "traditional": "報道顯示，Meta計劃分兩步發行股票募資至多950億美元：先透過承銷發行募集350億美元，隨後透過按市價發行機制募集最多600億美元，為AI戰略提供資金。該計劃規模巨大，投資者關注稀釋影響與資本回報；後續執行情況需以公司正式發行檔案為準。",
+        "english": "Meta plans to raise up to $95 billion through a two-step stock sale: a $35 billion underwritten offering, followed by up to $60 billion through an at-the-market program, to finance its AI strategy. The plan puts dilution and capital-return questions in focus, with final execution terms subject to the company's formal offering documents."
+      },
+      "source": {
+        "name": {
+          "simplified": "CNBC",
+          "traditional": "CNBC",
+          "english": "CNBC"
+        },
+        "url": "https://www.cnbc.com/2026/10/26/meta-stock-offering-ai.html"
+      },
+      "date": {
+        "publishedAt": "2026-10-26",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "watchlist",
+        "usStocks",
+        "topics"
+      ],
+      "image": null,
+      "relatedWatchlistAssets": [
+        {
+          "symbol": "META",
+          "role": "primary"
+        }
+      ]
+    },
+    {
+      "id": "market-035",
+      "title": {
+        "simplified": "特斯拉辅助驾驶软件新增欧洲获批市场，欧盟推广仍待评估",
+        "traditional": "特斯拉輔助駕駛軟體新增歐洲獲批市場，歐盟推廣仍待評估",
+        "english": "Tesla owners in Slovakia welcome assisted-drive tech as EU weighs rollout across bloc"
+      },
+      "summary": {
+        "simplified": "路透社报道，拉脱维亚批准特斯拉辅助驾驶软件，成为第十个放行的欧洲国家；斯洛伐克此前也已批准。",
+        "traditional": "路透社報道，拉脫維亞批准特斯拉輔助駕駛軟體，成為第十個放行的歐洲國家；斯洛伐克此前也已批准。",
+        "english": "Reuters reported that Latvia became the tenth European country to approve Tesla Assisted Driving software, after Slovakia did so earlier this month."
+      },
+      "body": {
+        "simplified": "报道说，特斯拉正争取在欧盟层面获得更广泛推广所需的支持，而监管机构仍关注驾驶安全和驾驶员注意力。测试显示系统能处理拥堵高速和并道，但在封闭路障等场景仍需驾驶员接管。",
+        "traditional": "報道說，特斯拉正爭取在歐盟層面獲得更廣泛推廣所需的支援，而監管機構仍關注駕駛安全和駕駛員注意力。測試顯示系統能處理擁堵高速和並道，但在封閉路障等場景仍需駕駛員接管。",
+        "english": "Tesla was seeking support ahead of a European Union vote that could enable a wider rollout, while regulators continued to examine safety and driver attention. A test drive handled congested highways but still required driver intervention in some situations."
+      },
+      "source": {
+        "name": {
+          "simplified": "路透社",
+          "traditional": "路透社",
+          "english": "Reuters"
+        },
+        "url": "https://www.reuters.com/business/tesla-owners-slovakia-welcome-assisted-drive-tech-eu-weighs-rollout-across-bloc-2026-10-26/"
+      },
+      "date": {
+        "publishedAt": "2026-10-26",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "watchlist",
+        "usStocks",
+        "topics"
+      ],
+      "image": null,
+      "relatedWatchlistAssets": [
+        {
+          "symbol": "TSLA",
+          "role": "primary"
+        }
+      ]
+    },
+    {
+      "body": {
+        "english": "A national trust charter does not permit ordinary deposit-taking or lending. Ripple will place reserve management and custody under federal supervision while keeping its New York-regulated subsidiary as the stablecoin issuer.",
+        "simplified": "全国性信托银行牌照不允许吸收存款或发放一般贷款。Ripple 采用联邦监管的储备与托管架构，同时保留纽约州实体作为 RLUSD 发行人。",
+        "traditional": "全國性信託銀行牌照不允許吸收存款或發放一般貸款。Ripple 採用聯邦監管的儲備與托管架構，同時保留紐約州實體作為 RLUSD 發行人。"
+      },
+      "categories": [
+        "crypto",
+        "headlines"
+      ],
+      "date": {
+        "precision": "day",
+        "publishedAt": "2026-10-26"
+      },
+      "id": "crypto-02",
+      "image": null,
+      "source": {
+        "name": {
+          "english": "The Block",
+          "simplified": "The Block",
+          "traditional": "The Block"
+        },
+        "url": "https://www.theblock.co/news/regulation/2026-10-26-ripple-gains-final-occ-approval-rlusd-431810"
+      },
+      "summary": {
+        "english": "The U.S. Office of the Comptroller of the Currency gave Ripple final approval to establish Ripple National Trust Bank. The bank will manage RLUSD's segregated reserves and provide digital-asset custody under federal oversight, while the stablecoin remains issued by a New York-regulated entity.",
+        "simplified": "美国货币监理署批准 Ripple 设立 Ripple National Trust Bank。该行将在联邦监管下管理 RLUSD 的隔离储备并提供数字资产托管服务，而 RLUSD 的发行仍由纽约州监管实体负责。",
+        "traditional": "美國貨幣監理署批准 Ripple 設立 Ripple National Trust Bank。該行將在聯邦監管下管理 RLUSD 的隔離儲備並提供數字資產托管服務，而 RLUSD 的發行仍由紐約州監管實體負責。"
+      },
+      "title": {
+        "english": "Ripple wins final OCC approval for a national trust bank",
+        "simplified": "Ripple 获 OCC 最终批准设立全国性信托银行",
+        "traditional": "Ripple 獲 OCC 最終批准設立全國性信託銀行"
+      }
+    },
+    {
+      "body": {
+        "english": "The planned work will examine how different financial institutions could access tokenized funds and JPYSC, including distribution in Japan and internationally. BlackRock's existing BUIDL fund has about $2.17 billion in assets, although the report did not say it would directly underpin this project.",
+        "simplified": "合作计划评估不同金融机构如何接入代币化基金与 JPYSC，并考虑日本及国际市场的分销渠道。贝莱德现有的 BUIDL 基金规模约为 21.7 亿美元，但报道没有说明它会直接成为本次项目的基础资产。",
+        "traditional": "合作計劃評估不同金融機構如何接入代幣化基金與 JPYSC，並考慮日本及國際市場的分銷渠道。貝萊德現有的 BUIDL 基金規模約為 21.7 億美元，但報道沒有說明它會直接成為本次項目的基礎資產。"
+      },
+      "categories": [
+        "crypto",
+        "topics",
+        "headlines"
+      ],
+      "date": {
+        "precision": "day",
+        "publishedAt": "2026-10-26"
+      },
+      "id": "crypto-03",
+      "image": null,
+      "source": {
+        "name": {
+          "english": "The Block",
+          "simplified": "The Block",
+          "traditional": "The Block"
+        },
+        "url": "https://www.theblock.co/news/business/2026-10-26-blackrock-sbi-startale-mou-431642"
+      },
+      "summary": {
+        "english": "The three companies signed a memorandum of understanding to study connecting tokenized money-market funds with SBI's yen stablecoin JPYSC. The work covers technology, distribution and regulation; no integrated product has been announced as live.",
+        "simplified": "三家公司签署谅解备忘录，研究将代币化货币市场基金与 SBI 的日元稳定币 JPYSC 连接，重点涉及技术基础、业务分销和监管环境。目前披露的是探索性合作，尚未宣布相关产品上线。",
+        "traditional": "三家公司簽署諒解備忘錄，研究將代幣化貨幣市場基金與 SBI 的日元穩定幣 JPYSC 連接，重點涉及技術基礎、業務分銷和監管環境。目前披露的是探索性合作，尚未宣佈相關產品上線。"
+      },
+      "title": {
+        "english": "BlackRock, SBI and Startale explore linking tokenized funds with a yen stablecoin",
+        "simplified": "贝莱德、SBI 与 Startale 探索连接代币化基金和日元稳定币",
+        "traditional": "貝萊德、SBI 與 Startale 探索連接代幣化基金和日元穩定幣"
+      }
+    },
+    {
+      "body": {
+        "english": "The holding represents more than 4% of bitcoin's total supply. Pausing purchases while repurchasing preferred stock shows the company managing both asset concentration and its capital structure.",
+        "simplified": "这批持仓占比特币总供应量的4%以上。暂停增持并回购优先股表明，公司正在同时管理资产集中度和资本结构。",
+        "traditional": "這批持倉占比特幣總供應量的4%以上。暫停增持並回購優先股表明，公司正在同時管理資產集中度和資本結構。"
+      },
+      "categories": [
+        "crypto",
+        "live",
+        "headlines",
+        "watchlist"
+      ],
+      "date": {
+        "precision": "day",
+        "publishedAt": "2026-10-26"
+      },
+      "id": "crypto-20",
+      "image": null,
+      "source": {
+        "name": {
+          "english": "The Block",
+          "simplified": "The Block",
+          "traditional": "The Block"
+        },
+        "url": "https://www.theblock.co/news/business/2026-10-26-strategy-pauses-bitcoin-buys-repurchases-205-million-of-strc-preferred-shares-431699"
+      },
+      "summary": {
+        "english": "Strategy neither bought nor sold bitcoin last week, leaving its holdings unchanged at 848,517 BTC. Instead, it used cash reserves to repurchase 2.07 million STRC preferred shares for about $204.9 million.",
+        "simplified": "Strategy 上周没有买入或卖出比特币，持仓维持在 848,517 BTC。公司动用美元现金储备回购 207 万股 STRC 优先股，金额约为 2.049 亿美元。",
+        "traditional": "Strategy 上周沒有買入或賣出比特幣，持倉維持在 848,517 BTC。公司動用美元現金儲備回購 207 萬股 STRC 優先股，金額約為 2.049 億美元。"
+      },
+      "title": {
+        "english": "Strategy pauses bitcoin purchases and repurchases about $204.9 million of STRC preferred shares",
+        "simplified": "Strategy 暂停增持比特币，回购约 2.049 亿美元 STRC 优先股",
+        "traditional": "Strategy 暫停增持比特幣，回購約 2.049 億美元 STRC 優先股"
+      },
+      "relatedWatchlistAssets": [
+        {
+          "symbol": "BTC/USD",
+          "role": "primary"
+        }
+      ]
+    },
+    {
+      "body": {
+        "english": "The purchase moves Strive closer to the largest public-company bitcoin holders while leaving it behind larger treasuries such as Strategy. The new financing program may fund future purchases, although its maximum size does not mean the full amount has been raised.",
+        "simplified": "增持后，Strive 接近公开公司比特币持仓前列，但仍低于 Strategy 等更大持有者。新增融资工具可能为后续购买提供资金，但发行规模并不等同于已经完成募资。",
+        "traditional": "增持後，Strive 接近公開公司比特幣持倉前列，但仍低於 Strategy 等更大持有者。新增融資工具可能為後續購買提供資金，但發行規模並不等同於已經完成募資。"
+      },
+      "categories": [
+        "crypto",
+        "live",
+        "headlines",
+        "watchlist"
+      ],
+      "date": {
+        "precision": "day",
+        "publishedAt": "2026-10-26"
+      },
+      "id": "crypto-21",
+      "image": null,
+      "source": {
+        "name": {
+          "english": "The Block",
+          "simplified": "The Block",
+          "traditional": "The Block"
+        },
+        "url": "https://www.theblock.co/news/business/2026-10-26-strive-closes-in-second-largest-corporate-bitcoin-treasury-511-million-purchase-431729"
+      },
+      "summary": {
+        "english": "Strive acquired 6,182 BTC for about $511 million between October 17 and 23, raising its total holdings to 43,000 BTC. It also established an at-the-market program for up to $1 billion of SATS preferred stock.",
+        "simplified": "Strive 在 10 月 17 日至 23 日之间购入 6,182 BTC，价值约 5.11 亿美元，总持仓升至 43,000 BTC。公司还设立了最高 10 亿美元的 SATS 优先股按市价发行计划。",
+        "traditional": "Strive 在 10 月 17 日至 23 日之間購入 6,182 BTC，價值約 5.11 億美元，總持倉升至 43,000 BTC。公司還設立了最高 10 億美元的 SATS 優先股按市價發行計劃。"
+      },
+      "title": {
+        "english": "Strive buys 6,182 bitcoin for about $511 million",
+        "simplified": "Strive 以约 5.11 亿美元购入 6,182 枚比特币",
+        "traditional": "Strive 以約 5.11 億美元購入 6,182 枚比特幣"
+      },
+      "relatedWatchlistAssets": [
+        {
+          "symbol": "BTC/USD",
+          "role": "primary"
+        }
+      ]
+    },
+    {
+      "body": {
+        "english": "About 5.227 million ETH, or 86% of the company's holdings, were staked through its platform and partners. The report also includes the chairman's market view, while staking totals and company revenue projections are not the same as market consensus.",
+        "simplified": "其中约 522.7 万 ETH 已通过自有平台和质押伙伴进行质押，占公司持仓约 86%。报道同时包含公司董事长对行情的看法，但质押规模和公司自报收入预测不等同于市场共识。",
+        "traditional": "其中約 522.7 萬 ETH 已通過自有平台和質押夥伴進行質押，佔公司持倉約 86%。報道同時包含公司董事長對行情的看法，但質押規模和公司自報收入預測不等同於市場共識。"
+      },
+      "categories": [
+        "crypto",
+        "live",
+        "topics",
+        "watchlist"
+      ],
+      "date": {
+        "precision": "day",
+        "publishedAt": "2026-10-26"
+      },
+      "id": "crypto-22",
+      "image": null,
+      "source": {
+        "name": {
+          "english": "The Block",
+          "simplified": "The Block",
+          "traditional": "The Block"
+        },
+        "url": "https://www.theblock.co/news/business/2026-10-26-tom-lee-insists-crypto-bull-market-is-underway-as-bitmine-adds-10452-eth-431743"
+      },
+      "summary": {
+        "english": "Bitmine added 10,452 ETH over the prior week, bringing its total to about 6.05 million ETH, or roughly 4.95% of circulating supply. Its ether holdings were worth about $14.3 billion as of October 25.",
+        "simplified": "Bitmine 在过去一周增持 10,452 ETH，总持仓达到约 605 万 ETH，占流通供应量约 4.95%。截至 10 月 25 日，其 ETH 持仓价值约为 143 亿美元。",
+        "traditional": "Bitmine 在過去一週增持 10,452 ETH，總持倉達到約 605 萬 ETH，佔流通供應量約 4.95%。截至 10 月 25 日，其 ETH 持倉價值約為 143 億美元。"
+      },
+      "title": {
+        "english": "Bitmine adds 10,452 ETH, reaching about 4.95% of Ethereum supply",
+        "simplified": "Bitmine 增持 10,452 枚 ETH，持仓约占以太坊供应量 4.95%",
+        "traditional": "Bitmine 增持 10,452 枚 ETH，持倉約佔以太坊供應量 4.95%"
+      },
+      "relatedWatchlistAssets": [
+        {
+          "symbol": "ETH/USD",
+          "role": "primary"
+        }
+      ]
+    },
+    {
+      "body": {
+        "english": "The fund holds high-grade, sterling-denominated short-term debt instruments and offers daily liquidity. Tokenization may broaden distribution and programmable settlement, but the fund's underlying assets and regulated structure remain offchain.",
+        "simplified": "该基金投资高等级、英镑计价的短期债务工具，并提供每日流动性。代币化份额扩大分销和可编程结算的可能，但底层资产与基金合规结构没有因此迁移到链上。",
+        "traditional": "該基金投資高等級、英鎊計價的短期債務工具，並提供每日流動性。代幣化份額擴大分銷和可編程結算的可能，但底層資產與基金合規結構沒有因此遷移到鏈上。"
+      },
+      "categories": [
+        "crypto",
+        "topics",
+        "headlines"
+      ],
+      "date": {
+        "precision": "day",
+        "publishedAt": "2026-10-26"
+      },
+      "id": "crypto-23",
+      "image": null,
+      "source": {
+        "name": {
+          "english": "The Block",
+          "simplified": "The Block",
+          "traditional": "The Block"
+        },
+        "url": "https://www.theblock.co/news/business/2026-10-26-aviva-investors-ripple-tokenized-share-class-sterling-fund-xrp-ledger-431712"
+      },
+      "summary": {
+        "english": "Aviva Investors launched a tokenized share class for its roughly £22 billion, or $29.4 billion, Sterling Liquidity Fund on the XRP Ledger and seeded it with £50 million. The underlying fund remains offchain while tokenized holdings mirror it in a digital-twin structure.",
+        "simplified": "Aviva Investors 在 XRP Ledger 上为其约 220 亿英镑（约 294 亿美元）的 Sterling Liquidity Fund 推出代币化份额类别，并首先投入 5,000 万英镑。该基金本身仍在链下运行，链上份额作为其“数字孪生”。",
+        "traditional": "Aviva Investors 在 XRP Ledger 上為其約 220 億英鎊（約 294 億美元）的 Sterling Liquidity Fund 推出代幣化份額類別，並首先投入 5,000 萬英鎊。該基金本身仍在鏈下運行，鏈上份額作為其“數字孿生”。"
+      },
+      "title": {
+        "english": "Aviva and Ripple launch a tokenized share class for a $29 billion fund on the XRP Ledger",
+        "simplified": "Aviva 与 Ripple 在 XRP Ledger 推出 290 亿美元基金的代币化份额",
+        "traditional": "Aviva 與 Ripple 在 XRP Ledger 推出 290 億美元基金的代幣化份額"
+      }
+    },
+    {
+      "body": {
+        "english": "The exchange said its automatic sweeping process failed for a period, leaving new deposits at old addresses exposed through deprecated infrastructure with unknown vulnerabilities. CoinDCX said trading and withdrawals continued; the $16 million loss was not a loss of all customer assets.",
+        "simplified": "交易所称自动扫款机制在一段时间内失效，使新存款停留在旧地址，最终被具有未知漏洞的旧钱包基础设施利用。公司表示交易和提现未受中断；这是一宗具体安全事件，不应扩展为所有资金均已受损。",
+        "traditional": "交易所稱自動掃款機制在一段時間內失效，使新存款停留在舊地址，最終被具有未知漏洞的舊錢包基礎設施利用。公司表示交易和提現未受中斷；這是一宗具體安全事件，不應擴展為所有資金均已受損。"
+      },
+      "categories": [
+        "crypto",
+        "live",
+        "headlines"
+      ],
+      "date": {
+        "precision": "day",
+        "publishedAt": "2026-10-25"
+      },
+      "id": "crypto-24",
+      "image": null,
+      "source": {
+        "name": {
+          "english": "The Block",
+          "simplified": "The Block",
+          "traditional": "The Block"
+        },
+        "url": "https://www.theblock.co/news/business/2026-10-25-coindcx-confirms-16-million-loss-from-retired-wallets-days-after-ceo-called-breach-reports-a-false-alarm-431617"
+      },
+      "summary": {
+        "english": "CoinDCX confirmed that about 15.99 million USDT was taken from retired deposit wallets and said the company would absorb the loss to protect user funds. The disclosure followed the CEO's earlier description of preliminary breach reports as a false alarm.",
+        "simplified": "CoinDCX 确认约有 1,599 万 USDT 从已停用的存款钱包中被转走，公司称将自行承担损失并保障用户资金。事件发生在 CEO 将初步入侵报告称为“虚惊一场”数日之后。",
+        "traditional": "CoinDCX 確認約有 1,599 萬 USDT 從已停用的存款錢包中被轉走，公司稱將自行承擔損失並保障用戶資金。事件發生在 CEO 將初步入侵報告稱為“虛驚一場”數日之後。"
+      },
+      "title": {
+        "english": "CoinDCX confirms a $16 million loss from an attack on retired wallets",
+        "simplified": "CoinDCX 确认旧钱包遭攻击损失约 1,600 万美元",
+        "traditional": "CoinDCX 確認舊錢包遭攻擊損失約 1,600 萬美元"
+      }
+    },
+    {
+      "id": "market-023",
+      "title": {
+        "simplified": "比亚迪拟将巴西工厂年产能提高一倍",
+        "traditional": "比亞迪擬將巴西工廠年產能提高一倍",
+        "english": "China's BYD plans to double capacity at Brazilian plant"
+      },
+      "summary": {
+        "simplified": "路透社报道，比亚迪正申请许可，将巴西工厂年产能提升至60万辆；当地需求超过当前供给。",
+        "traditional": "路透社報道，比亞迪正申請許可，將巴西工廠年產能提升至60萬輛；當地需求超過當前供給。",
+        "english": "Reuters reported that BYD sought permits to double its Brazilian plant's annual capacity to 600,000 vehicles as demand exceeded supply."
+      },
+      "body": {
+        "simplified": "报道称，比亚迪巴西高管表示，工厂正向本地采购率超过50%的目标推进，并计划在2026年底达到月产2.5万辆。管理层称当前月均需求约3万辆，因此每月少计入约5000至6000辆销量。",
+        "traditional": "報道稱，比亞迪巴西高管表示，工廠正向本地採購率超過50%的目標推進，並計劃在2026年底達到月產2.5萬輛。管理層稱當前月均需求約3萬輛，因此每月少計入約5000至6000輛銷量。",
+        "english": "A BYD Brazil executive said the company was working toward more than 50% local sourcing and planned monthly output of 25,000 vehicles by the end of 2026. Management estimated average demand near 30,000 vehicles a month, leaving thousands of potential sales unfulfilled."
+      },
+      "source": {
+        "name": {
+          "simplified": "路透社",
+          "traditional": "路透社",
+          "english": "Reuters"
+        },
+        "url": "https://www.reuters.com/business/autos-transportation/chinas-byd-plans-double-capacity-brazilian-plant-2026-10-23/"
+      },
+      "date": {
+        "publishedAt": "2026-10-23",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "watchlist",
+        "aShares",
+        "topics"
+      ],
+      "image": null,
+      "relatedWatchlistAssets": [
+        {
+          "symbol": "002594",
+          "role": "primary"
+        }
+      ]
+    },
+    {
+      "body": {
+        "english": "RedCoin builds on Hong Kong's stablecoin licensing framework and broadens HSBC's digital-asset use in retail payments. The bank also plans further products for corporate and institutional use.",
+        "simplified": "RedCoin 基于香港已实施的稳定币牌照制度推出，扩大了汇丰在零售支付中的数字资产应用。报道同时指出，汇丰计划继续扩展企业与机构用途。",
+        "traditional": "RedCoin 基於香港已實施的穩定幣牌照制度推出，擴大了匯豐在零售支付中的數字資產應用。報道同時指出，匯豐計劃繼續擴展企業與機構用途。"
+      },
+      "categories": [
+        "crypto",
+        "live",
+        "headlines"
+      ],
+      "date": {
+        "precision": "day",
+        "publishedAt": "2026-10-23"
+      },
+      "id": "crypto-07",
+      "image": null,
+      "source": {
+        "name": {
+          "english": "The Block",
+          "simplified": "The Block",
+          "traditional": "The Block"
+        },
+        "url": "https://www.theblock.co/news/business/2026-10-23-hsbc-hkd-stablecoin-redcoin-424018"
+      },
+      "summary": {
+        "english": "HSBC launched the Hong Kong dollar stablecoin RedCoin, or RCHKD, through its PayMe app. Users can make peer-to-peer transfers and pay more than 100,000 merchants, with availability beginning on Friday.",
+        "simplified": "汇丰推出港元计价稳定币 RedCoin（RCHKD），用户在 PayMe 中可进行个人间转账，并可在超过 10 万家商户付款。该稳定币从周五起开放使用。",
+        "traditional": "匯豐推出港元計價穩定幣 RedCoin（RCHKD），用戶在 PayMe 中可進行個人間轉賬，並可在超過 10 萬家商戶付款。該穩定幣從週五起開放使用。"
+      },
+      "title": {
+        "english": "HSBC launches Hong Kong dollar stablecoin RedCoin for retail users through PayMe",
+        "simplified": "汇丰通过 PayMe 向香港零售用户推出港元稳定币 RedCoin",
+        "traditional": "匯豐通過 PayMe 向香港零售用戶推出港元穩定幣 RedCoin"
+      }
+    },
+    {
+      "body": {
+        "english": "The proposed changes focus on cross-border payments, anti-money-laundering controls and monitoring of unusual virtual-asset transactions. They are intended to work with the still-developing Digital Asset Basic Act and reduce gaps between regulatory regimes.",
+        "simplified": "修订重点是跨境支付、反洗钱和虚拟资产异常交易监测。它也将与仍在制定的《数字资产基本法》衔接，以减少不同规则之间的监管缺口。",
+        "traditional": "修訂重點是跨境支付、反洗錢和虛擬資產異常交易監測。它也將與仍在制定的《數字資產基本法》銜接，以減少不同規則之間的監管缺口。"
+      },
+      "categories": [
+        "crypto",
+        "headlines"
+      ],
+      "date": {
+        "precision": "day",
+        "publishedAt": "2026-10-23"
+      },
+      "id": "crypto-08",
+      "image": null,
+      "source": {
+        "name": {
+          "english": "The Block",
+          "simplified": "The Block",
+          "traditional": "The Block"
+        },
+        "url": "https://www.theblock.co/news/regulation/2026-10-23-south-korea-stablecoins-payment-instruments-424028"
+      },
+      "summary": {
+        "english": "South Korea's government and central bank plan to propose amendments to the Foreign Exchange Transactions Act this year, treating stablecoins as payment instruments and adding monitoring for cross-border digital-asset flows. The measure remains a proposed law and has not taken effect.",
+        "simplified": "韩国政府与韩国央行计划在今年内共同提出《外汇交易法》修订案，将稳定币作为支付工具监管，并建立数字资产跨境交易的监测框架。该措施仍是拟议中的立法，尚未完成生效。",
+        "traditional": "韓國政府與韓國央行計劃在今年內共同提出《外匯交易法》修訂案，將穩定幣作為支付工具監管，並建立數字資產跨境交易的監測框架。該措施仍是擬議中的立法，尚未完成生效。"
+      },
+      "title": {
+        "english": "South Korea plans to treat stablecoins as payment instruments under its foreign-exchange law",
+        "simplified": "韩国拟修订外汇法，将稳定币纳入支付工具监管",
+        "traditional": "韓國擬修訂外匯法，將穩定幣納入支付工具監管"
+      }
+    },
+    {
+      "body": {
+        "english": "The project was still assessing the scope with security teams, validators and exchanges when the report was published. The figure came from the co-founder's preliminary account, and a full audit and final loss total had not been released.",
+        "simplified": "报道发布时项目仍在与安全团队、验证者和交易所评估损失范围。攻击金额来自联合创始人的初步说明，完整审计结论和最终损失尚未公布。",
+        "traditional": "報道發佈時項目仍在與安全團隊、驗證者和交易所評估損失範圍。攻擊金額來自聯合創始人的初步說明，完整審計結論和最終損失尚未公佈。"
+      },
+      "categories": [
+        "crypto",
+        "live"
+      ],
+      "date": {
+        "precision": "day",
+        "publishedAt": "2026-10-23"
+      },
+      "id": "crypto-25",
+      "image": null,
+      "source": {
+        "name": {
+          "english": "The Block",
+          "simplified": "The Block",
+          "traditional": "The Block"
+        },
+        "url": "https://www.theblock.co/news/defi/2026-10-23-initia-halts-network-after-security-incident-attacker-reportedly-mints-tokens-427755"
+      },
+      "summary": {
+        "english": "Initia paused its Layer 1 and rollups after a security incident. A co-founder said an unknown MoveVM vulnerability allowed the attacker to mint and bridge about $2.7 million of AUSD, ETH and USDC, while native INIT tokens were not affected.",
+        "simplified": "Initia 在发现安全事件后暂停 Layer 1 及相关 rollup。联合创始人称，问题出在 MoveVM 实现的未知漏洞，攻击者铸造并桥出约 270 万美元的 AUSD、ETH 和 USDC，但原生 INIT 不受影响。",
+        "traditional": "Initia 在發現安全事件後暫停 Layer 1 及相關 rollup。聯合創始人稱，問題出在 MoveVM 實現的未知漏洞，攻擊者鑄造並橋出約 270 萬美元的 AUSD、ETH 和 USDC，但原生 INIT 不受影響。"
+      },
+      "title": {
+        "english": "Initia halts its network after an incident in which an attacker reportedly minted and bridged about $2.7 million",
+        "simplified": "Initia 因安全事件暂停网络，攻击者据称铸造并桥出约 270 万美元资产",
+        "traditional": "Initia 因安全事件暫停網絡，攻擊者據稱鑄造並橋出約 270 萬美元資產"
+      }
+    },
+    {
+      "body": {
+        "english": "Despite Thursday's redemptions, bitcoin ETFs remained positive for the week with $442.7 million in net inflows. U.S. spot ether ETFs also lost $110.6 million that day as risk assets broadly weakened.",
+        "simplified": "尽管周四赎回明显，当周比特币 ETF 仍保持 4.427 亿美元净流入。同一天以太坊 ETF 也净流出 1.106 亿美元，显示风险资产整体承压。",
+        "traditional": "儘管週四贖回明顯，當周比特幣 ETF 仍保持 4.427 億美元淨流入。同一天以太坊 ETF 也淨流出 1.106 億美元，顯示風險資產整體承壓。"
+      },
+      "categories": [
+        "crypto",
+        "live",
+        "headlines",
+        "watchlist"
+      ],
+      "date": {
+        "precision": "day",
+        "publishedAt": "2026-10-23"
+      },
+      "id": "crypto-26",
+      "image": null,
+      "source": {
+        "name": {
+          "english": "The Block",
+          "simplified": "The Block",
+          "traditional": "The Block"
+        },
+        "url": "https://www.theblock.co/news/markets/2026-10-23-bitcoin-etfs-swing-back-to-net-outflows-as-withdrawals-erase-previous-day-inflows-426483"
+      },
+      "summary": {
+        "english": "U.S. spot bitcoin ETFs lost $635.6 million on Thursday, erasing the prior day's inflows and marking the largest daily outflow since June. IBIT, FBTC and ARKB led with net outflows of $254.1 million, $217.5 million and $109.4 million.",
+        "simplified": "美国现货比特币 ETF 在周四净流出 6.356 亿美元，抵消了前一日的流入，并成为 6 月以来最大单日流出。IBIT、FBTC 和 ARKB 分别净流出 2.541 亿、2.175 亿和 1.094 亿美元。",
+        "traditional": "美國現貨比特幣 ETF 在週四淨流出 6.356 億美元，抵消了前一日的流入，並成為 6 月以來最大單日流出。IBIT、FBTC 和 ARKB 分別淨流出 2.541 億、2.175 億和 1.094 億美元。"
+      },
+      "title": {
+        "english": "U.S. spot bitcoin ETFs post $635.6 million of net outflows, the most since June",
+        "simplified": "美国现货比特币 ETF 单日净流出 6.356 亿美元，创 6 月以来新高",
+        "traditional": "美國現貨比特幣 ETF 單日淨流出 6.356 億美元，創 6 月以來新高"
+      },
+      "relatedWatchlistAssets": [
+        {
+          "symbol": "BTC/USD",
+          "role": "primary"
+        },
+        {
+          "symbol": "ETH/USD",
+          "role": "secondary"
+        }
+      ]
+    },
+    {
+      "body": {
+        "english": "The collaboration is also intended to support interoperability and external data for tokenized securities and real-world assets. Commercial stablecoin products will still depend on South Korea finalizing its regulatory framework.",
+        "simplified": "合作还计划支持代币化证券和现实世界资产所需的互操作性与外部数据。由于商业稳定币规则尚未最终确定，相关产品仍需等待韩国监管框架进一步明确。",
+        "traditional": "合作還計劃支持代幣化證券和現實世界資產所需的互操作性與外部數據。由於商業穩定幣規則尚未最終確定，相關產品仍需等待韓國監管框架進一步明確。"
+      },
+      "categories": [
+        "crypto",
+        "topics"
+      ],
+      "date": {
+        "precision": "day",
+        "publishedAt": "2026-10-22"
+      },
+      "id": "crypto-09",
+      "image": null,
+      "source": {
+        "name": {
+          "english": "The Block",
+          "simplified": "The Block",
+          "traditional": "The Block"
+        },
+        "url": "https://www.theblock.co/news/business/2026-10-22-chainlink-partners-with-lg-cns-423993"
+      },
+      "summary": {
+        "english": "The companies will work to broaden the use and distribution of Korean won stablecoins, while LG CNS integrates Chainlink's cross-chain, data and orchestration tools into digital-asset platforms for Korean institutions. The partnership comes as South Korea continues to develop clear rules for won stablecoins.",
+        "simplified": "双方将合作扩大韩元稳定币的应用与分发，LG CNS 还会把 Chainlink 的跨链、数据和编排基础设施接入面向韩国机构的数字资产平台。合作发生之际，韩国仍在制定韩元稳定币的明确监管规则。",
+        "traditional": "雙方將合作擴大韓元穩定幣的應用與分發，LG CNS 還會把 Chainlink 的跨鏈、數據和編排基礎設施接入面向韓國機構的數字資產平台。合作發生之際，韓國仍在制定韓元穩定幣的明確監管規則。"
+      },
+      "title": {
+        "english": "Chainlink and LG CNS partner on Korean won stablecoin infrastructure",
+        "simplified": "Chainlink 与 LG CNS 合作扩展韩国韩元稳定币基础设施",
+        "traditional": "Chainlink 與 LG CNS 合作擴展韓國韓元穩定幣基礎設施"
+      }
+    },
+    {
+      "body": {
+        "english": "The regulator said some institutional-client funds were deposited into accounts held by other Coinbase entities and that the company could not consistently calculate its daily safeguarding obligation. Coinbase said it remediated the issues and that no customers lost money or access.",
+        "simplified": "监管指出，部分机构客户资金曾进入 Coinbase 其他实体的账户，且公司一度无法准确计算每日应保护的金额。Coinbase 表示已修复问题，没有客户蒙受资金损失或无法取款。",
+        "traditional": "監管指出，部分機構客戶資金曾進入 Coinbase 其他實體的賬戶，且公司一度無法準確計算每日應保護的金額。Coinbase 表示已修復問題，沒有客戶蒙受資金損失或無法取款。"
+      },
+      "categories": [
+        "crypto",
+        "headlines"
+      ],
+      "date": {
+        "precision": "day",
+        "publishedAt": "2026-10-22"
+      },
+      "id": "crypto-27",
+      "image": null,
+      "source": {
+        "name": {
+          "english": "The Block",
+          "simplified": "The Block",
+          "traditional": "The Block"
+        },
+        "url": "https://www.theblock.co/news/regulation/2026-10-22-coinbase-ireland-fined-3-6-million-over-customer-fund-segregation-oversight-failures-421943"
+      },
+      "summary": {
+        "english": "The Central Bank of Ireland fined Coinbase Ireland €3.25 million and issued a reprimand over serious failures in customer-fund safeguarding and outsourcing oversight. The penalty was reduced from €4.65 million under a 30% settlement discount and still requires High Court confirmation.",
+        "simplified": "爱尔兰央行对 Coinbase Ireland 处以 325 万欧元罚款，并发出谴责，原因是客户资金保护和外包监督存在严重失误。罚款在 30% 和解折扣前为 465 万欧元，仍需高等法院确认。",
+        "traditional": "愛爾蘭央行對 Coinbase Ireland 處以 325 萬歐元罰款，並發出譴責，原因是客戶資金保護和外包監督存在嚴重失誤。罰款在 30% 和解折扣前為 465 萬歐元，仍需高等法院確認。"
+      },
+      "title": {
+        "english": "Ireland's central bank fines Coinbase Ireland €3.25 million over safeguarding and outsourcing failures",
+        "simplified": "爱尔兰央行因客户资金隔离与外包问题对 Coinbase Ireland 罚款 325 万欧元",
+        "traditional": "愛爾蘭央行因客戶資金隔離與外包問題對 Coinbase Ireland 罰款 325 萬歐元"
+      }
+    },
+    {
+      "body": {
+        "english": "Each SOFIE corresponds to $1 on deposit at SoFi Bank and continues earning interest until converted. SoFi described the offering as a national-bank first for individual customers and expected to finish rolling it out to its crypto users in November.",
+        "simplified": "每个 SOFIE 对应 SoFi Bank 中 1 美元存款，转换前会持续计息。报道援引 SoFi 称，这是美国全国性银行首次直接向个人提供此类代币化存款，并预计在 11 月完成向加密用户的推广。",
+        "traditional": "每個 SOFIE 對應 SoFi Bank 中 1 美元存款，轉換前會持續計息。報道援引 SoFi 稱，這是美國全國性銀行首次直接向個人提供此類代幣化存款，並預計在 11 月完成向加密用戶的推廣。"
+      },
+      "categories": [
+        "crypto",
+        "live",
+        "topics",
+        "headlines"
+      ],
+      "date": {
+        "precision": "day",
+        "publishedAt": "2026-10-22"
+      },
+      "id": "crypto-28",
+      "image": null,
+      "source": {
+        "name": {
+          "english": "The Block",
+          "simplified": "The Block",
+          "traditional": "The Block"
+        },
+        "url": "https://www.theblock.co/news/business/2026-10-22-sofi-fdic-insured-tokenized-deposit-421916"
+      },
+      "summary": {
+        "english": "SoFi launched an interest-bearing tokenized deposit for crypto users called SOFIE, paying 4.4% APY with FDIC insurance within applicable limits. Users can convert it one-for-one into SoFiUSD for spending or transfers, although the stablecoin itself is not an insured deposit.",
+        "simplified": "SoFi 面向加密用户推出境内注册银行发行的计息代币化存款 SOFIE，年化收益率为 4.4%，在适用限额内受 FDIC 保险保障。用户可按 1:1 转为 SoFiUSD 稳定币；稳定币本身不受 FDIC 存款保险。",
+        "traditional": "SoFi 面向加密用戶推出境內註冊銀行發行的計息代幣化存款 SOFIE，年化收益率為 4.4%，在適用限額內受 FDIC 保險保障。用戶可按 1:1 轉為 SoFiUSD 穩定幣；穩定幣本身不受 FDIC 存款保險。"
+      },
+      "title": {
+        "english": "SoFi launches SOFIE, an interest-bearing tokenized deposit yielding 4.4%",
+        "simplified": "SoFi 推出年化 4.4% 的计息代币化存款 SOFIE",
+        "traditional": "SoFi 推出年化 4.4% 的計息代幣化存款 SOFIE"
+      }
+    },
+    {
+      "body": {
+        "english": "Starknet currently depends on Ethereum for parts of its security and data availability, limiting how independently it can complete a quantum-safe transition. The team plans a draft whitepaper, and any actual migration would require another vote by STRK holders.",
+        "simplified": "Starknet 目前依赖以太坊提供部分安全和数据可用性，因此无法单独完成整条安全链路的量子升级。团队计划先发布白皮书草案，未来若推进正式迁移仍需 STRK 持有者再次投票。",
+        "traditional": "Starknet 目前依賴以太坊提供部分安全和數據可用性，因此無法單獨完成整條安全鏈路的量子升級。團隊計劃先發佈白皮書草案，未來若推進正式遷移仍需 STRK 持有者再次投票。"
+      },
+      "categories": [
+        "crypto",
+        "topics"
+      ],
+      "date": {
+        "precision": "day",
+        "publishedAt": "2026-10-22"
+      },
+      "id": "crypto-30",
+      "image": null,
+      "source": {
+        "name": {
+          "english": "The Block",
+          "simplified": "The Block",
+          "traditional": "The Block"
+        },
+        "url": "https://www.theblock.co/news/ecosystems/2026-10-22-starknet-community-backs-independent-post-quantum-layer-1-421885"
+      },
+      "summary": {
+        "english": "A Starknet governance poll found that more than 93.5% of voting power backed research into making the network an independent Layer 1 to improve post-quantum security, with about 2,800 wallets participating. The vote authorized research, not an actual transition.",
+        "simplified": "一项 Starknet 治理民调显示，超过 93.5% 的投票权支持研究将网络转为独立 Layer 1，以提高后量子安全能力，约 2,800 个钱包参与。此次投票只授权继续研究，并不代表迁移已经获批。",
+        "traditional": "一項 Starknet 治理民調顯示，超過 93.5% 的投票權支持研究將網絡轉為獨立 Layer 1，以提高後量子安全能力，約 2,800 個錢包參與。此次投票只授權繼續研究，並不代表遷移已經獲批。"
+      },
+      "title": {
+        "english": "Starknet community backs research into an independent post-quantum Layer 1",
+        "simplified": "Starknet 社区高票支持研究转为独立的后量子 Layer 1",
+        "traditional": "Starknet 社區高票支持研究轉為獨立的後量子 Layer 1"
+      }
+    },
+    {
+      "id": "market-021",
+      "title": {
+        "simplified": "奈飞广告业务受挫，市场担忧增长放缓",
+        "traditional": "奈飛廣告業務受挫，市場擔憂增長放緩",
+        "english": "Netflix's ad stumble deepens fears its growth is hitting a wall"
+      },
+      "summary": {
+        "simplified": "路透社报道，奈飞下调广告销售预期，引发市场对其增长动力减弱的担忧，股价当日一度下跌近5%。",
+        "traditional": "路透社報道，奈飛下調廣告銷售預期，引發市場對其增長動力減弱的擔憂，股價當日一度下跌近5%。",
+        "english": "Reuters reported that Netflix's cut to its advertising-sales forecast raised concerns about slowing growth, with the stock down nearly 5% during the session."
+      },
+      "body": {
+        "simplified": "报道称，这是奈飞连续第四个季度出现收入增速放缓预期。市场同时关注原创内容命中率、领导层变化和广告业务执行情况；股价表现仅指报道发布时的盘中变化。",
+        "traditional": "報道稱，這是奈飛連續第四個季度出現收入增速放緩預期。市場同時關注原創內容命中率、領導層變化和廣告業務執行情況；股價表現僅指報道釋出時的盤中變化。",
+        "english": "The report pointed to a fourth consecutive quarter of expected slower revenue growth and focused on hit content, leadership changes and advertising execution. The share move was time-specific rather than a live quote."
+      },
+      "source": {
+        "name": {
+          "simplified": "路透社",
+          "traditional": "路透社",
+          "english": "Reuters"
+        },
+        "url": "https://www.reuters.com/business/media-telecom/netflix-slides-weak-profit-ad-outlook-intensify-investor-anxiety-2026-10-21/"
+      },
+      "date": {
+        "publishedAt": "2026-10-21",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "watchlist",
+        "usStocks",
+        "topics",
+        "priceMovement"
+      ],
+      "image": null,
+      "relatedWatchlistAssets": [
+        {
+          "symbol": "NFLX",
+          "role": "primary"
+        }
+      ]
+    },
+    {
+      "id": "market-040",
+      "title": {
+        "simplified": "Disney+与Hulu宣布重启《欢乐合唱团》",
+        "traditional": "Disney+與Hulu宣佈重啟《歡樂合唱團》",
+        "english": "'Glee' to return in reboot for Disney+ and Hulu"
+      },
+      "summary": {
+        "simplified": "路透社报道，Disney+和Hulu宣布重启音乐剧《欢乐合唱团》，但尚未公布上线时间和具体项目细节。",
+        "traditional": "路透社報道，Disney+和Hulu宣佈重啟音樂劇《歡樂合唱團》，但尚未公佈上線時間和具體專案細節。",
+        "english": "Reuters reported that Disney+ and Hulu announced a reboot of “Glee” without specifying a release date or further project details."
+      },
+      "body": {
+        "simplified": "报道称，两家平台通过联合社交媒体账号确认重启消息，原剧由Ryan Murphy创作，于2009年至2015年播出六季。当前没有公布演员阵容、集数或上线时间，因此不能把重启公告等同于新一季已制作完成。",
+        "traditional": "報道稱，兩家平臺透過聯合社交媒體賬號確認重啟訊息，原劇由Ryan Murphy創作，於2009年至2015年播出六季。當前沒有公佈演員陣容、集數或上線時間，因此不能把重啟公告等同於新一季已製作完成。",
+        "english": "The platforms confirmed the project in a joint social-media post. The original Ryan Murphy series ran for six seasons from 2009 to 2015; no cast, episode count or launch date was disclosed, so the announcement does not mean a new season is already complete."
+      },
+      "source": {
+        "name": {
+          "simplified": "路透社",
+          "traditional": "路透社",
+          "english": "Reuters"
+        },
+        "url": "https://www.reuters.com/business/media-telecom/glee-return-reboot-disney-hulu-2026-10-21/"
+      },
+      "date": {
+        "publishedAt": "2026-10-21",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "watchlist",
+        "usStocks",
+        "topics"
+      ],
+      "image": null,
+      "relatedWatchlistAssets": [
+        {
+          "symbol": "DIS",
+          "role": "primary"
+        }
+      ]
+    },
+    {
+      "body": {
+        "english": "In-kind subscriptions still depend on product-specific terms, intermediaries and minimum investments ranging from roughly $80,300 to $364,800. The structure reduces some self-custody and cash-conversion steps but is not open to every investor without conditions.",
+        "simplified": "实物认购仍需遵守各产品、中介机构和最低投入要求，门槛约为 8.03 万至 36.48 万美元。该安排旨在减少自行保管和现金融资步骤，但并不等于所有投资者都能直接转入链上资产。",
+        "traditional": "實物認購仍需遵守各產品、中介機構和最低投入要求，門檻約為 8.03 萬至 36.48 萬美元。該安排旨在減少自行保管和現金融資步驟，但並不等於所有投資者都能直接轉入鏈上資產。"
+      },
+      "categories": [
+        "crypto",
+        "live",
+        "topics",
+        "watchlist"
+      ],
+      "date": {
+        "precision": "day",
+        "publishedAt": "2026-10-21"
+      },
+      "id": "crypto-11",
+      "image": null,
+      "source": {
+        "name": {
+          "english": "The Block",
+          "simplified": "The Block",
+          "traditional": "The Block"
+        },
+        "url": "https://www.theblock.co/news/markets/2026-10-21-grayscale-expands-in-kind-subscriptions-10-crypto-etfs-421559"
+      },
+      "summary": {
+        "english": "Eligible investors can now contribute tokens directly for shares in 10 Grayscale products without first selling for cash. The list includes Bitcoin and Ethereum products as well as ETFs or trusts tied to AVAX, LINK, DOGE, HYPE, SOL, SUI, XRP and ZEC.",
+        "simplified": "合资格投资者现在可以直接用代币认购灰度产品份额，无需先卖币换成现金。覆盖产品包括比特币、以太坊以及 AVAX、LINK、DOGE、HYPE、SOL、SUI、XRP 和 ZEC 相关 ETF 或信托。",
+        "traditional": "合資格投資者現在可以直接用代幣認購灰度產品份額，無需先賣幣換成現金。覆蓋產品包括比特幣、以太坊以及 AVAX、LINK、DOGE、HYPE、SOL、SUI、XRP 和 ZEC 相關 ETF 或信託。"
+      },
+      "title": {
+        "english": "Grayscale expands in-kind subscriptions to 10 crypto ETFs and trusts",
+        "simplified": "灰度将实物认购扩展至 10 只加密 ETF 和信托产品",
+        "traditional": "灰度將實物認購擴展至 10 隻加密 ETF 和信託產品"
+      },
+      "relatedWatchlistAssets": [
+        {
+          "symbol": "BTC/USD",
+          "role": "primary"
+        },
+        {
+          "symbol": "ETH/USD",
+          "role": "primary"
+        }
+      ]
+    },
+    {
+      "body": {
+        "english": "Zodia has regulated operating entities in Singapore, Hong Kong, Australia, the UAE and Luxembourg, according to the report, but financial terms were not disclosed. The agreement is signed, while closing and timing still depend on regulatory processes.",
+        "simplified": "报道称 Zodia 在新加坡、香港、澳大利亚、阿联酋和卢森堡设有受监管经营实体，但双方没有披露交易金额。协议已经签署，交割时间和最终完成仍待监管程序。",
+        "traditional": "報道稱 Zodia 在新加坡、香港、澳大利亞、阿聯酋和盧森堡設有受監管經營實體，但雙方沒有披露交易金額。協議已經簽署，交割時間和最終完成仍待監管程序。"
+      },
+      "categories": [
+        "crypto",
+        "topics",
+        "headlines"
+      ],
+      "date": {
+        "precision": "day",
+        "publishedAt": "2026-10-21"
+      },
+      "id": "crypto-12",
+      "image": null,
+      "source": {
+        "name": {
+          "english": "The Block",
+          "simplified": "The Block",
+          "traditional": "The Block"
+        },
+        "url": "https://www.theblock.co/news/business/2026-10-21-standard-chartered-signs-definitive-agreements-to-acquire-zodia-custody-421535"
+      },
+      "summary": {
+        "english": "Standard Chartered signed a definitive agreement to acquire 100% of Zodia Custody Limited, subject to regulatory approval and closing conditions. Zodia's custody operations will join the bank's Securities Services unit, while its software business will become a separate Zodia Solutions entity.",
+        "simplified": "渣打集团已签署收购 Zodia Custody Limited 100% 股权的最终协议，交易仍须获得监管批准并满足交割条件。Zodia 的托管业务将并入渣打证券服务部门，软件业务则转入独立的 Zodia Solutions。",
+        "traditional": "渣打集團已簽署收購 Zodia Custody Limited 100% 股權的最終協議，交易仍須獲得監管批准並滿足交割條件。Zodia 的托管業務將併入渣打證券服務部門，軟件業務則轉入獨立的 Zodia Solutions。"
+      },
+      "title": {
+        "english": "Standard Chartered signs definitive agreement to acquire all of Zodia Custody",
+        "simplified": "渣打集团签署收购 Zodia Custody 全部股权的最终协议",
+        "traditional": "渣打集團簽署收購 Zodia Custody 全部股權的最終協議"
+      }
+    },
+    {
+      "body": {
+        "english": "The new protocol condenses the previous two-step confirmation process into one step, aiming to reduce waits for exchange deposits and merchant payments. Rotor and Quantumglow remain later research work without confirmed release dates.",
+        "simplified": "新协议把原有的两步确认压缩为单一步骤，目标是改善交易所入账和商户收款的等待时间。报道同时列出的 Rotor 和 Quantumglow 仍处于后续研究阶段，没有确定上线日期。",
+        "traditional": "新協議把原有的兩步確認壓縮為單一步驟，目標是改善交易所入賬和商戶收款的等待時間。報道同時列出的 Rotor 和 Quantumglow 仍處於後續研究階段，沒有確定上線日期。"
+      },
+      "categories": [
+        "crypto",
+        "live",
+        "topics"
+      ],
+      "date": {
+        "precision": "day",
+        "publishedAt": "2026-10-21"
+      },
+      "id": "crypto-13",
+      "image": null,
+      "source": {
+        "name": {
+          "english": "The Block",
+          "simplified": "The Block",
+          "traditional": "The Block"
+        },
+        "url": "https://www.theblock.co/news/ecosystems/2026-10-21-anzas-alpenglow-goes-live-on-solana-cutting-finality-to-150-milliseconds-421508"
+      },
+      "summary": {
+        "english": "Solana activated the Alpenglow consensus upgrade, reducing transaction finality from about 12.8 seconds to roughly 150 milliseconds. The change replaces TowerBFT, which had been used since the network launched in 2020.",
+        "simplified": "Solana 已激活 Alpenglow 共识升级，将交易最终确认时间从约 12.8 秒降至约 150 毫秒。此次升级取代了网络自 2020 年上线以来使用的 TowerBFT。",
+        "traditional": "Solana 已激活 Alpenglow 共識升級，將交易最終確認時間從約 12.8 秒降至約 150 毫秒。此次升級取代了網絡自 2020 年上線以來使用的 TowerBFT。"
+      },
+      "title": {
+        "english": "Solana activates Alpenglow, reducing finality to about 150 milliseconds",
+        "simplified": "Solana 激活 Alpenglow，交易最终确认时间降至约 150 毫秒",
+        "traditional": "Solana 激活 Alpenglow，交易最終確認時間降至約 150 毫秒"
+      }
+    },
+    {
+      "body": {
+        "english": "The platform combines the two DEXs' liquidity and introduces predictive allocation, cross-network Metaswaps and dynamic fees. Token migration and multi-chain trading will change user asset workflows, with the official documentation controlling the conversion details.",
+        "simplified": "新平台整合两套 DEX 的流动性，并引入预测性分配、跨链 Metaswap 和动态费率等功能。代币迁移与多链交易会影响用户资产的操作路径，具体转换流程以官方公告为准。",
+        "traditional": "新平台整合兩套 DEX 的流動性，並引入預測性分配、跨鏈 Metaswap 和動態費率等功能。代幣遷移與多鏈交易會影響用戶資產的操作路徑，具體轉換流程以官方公告為準。"
+      },
+      "categories": [
+        "crypto",
+        "live",
+        "topics"
+      ],
+      "date": {
+        "precision": "day",
+        "publishedAt": "2026-10-21"
+      },
+      "id": "crypto-29",
+      "image": null,
+      "source": {
+        "name": {
+          "english": "The Block",
+          "simplified": "The Block",
+          "traditional": "The Block"
+        },
+        "url": "https://www.theblock.co/news/defi/2026-10-21-aerodrome-velodrome-merge-aero-421514"
+      },
+      "summary": {
+        "english": "Aerodrome and Velodrome merged to launch Aero, an onchain spot exchange across Ethereum, Base, Robinhood Chain, Ink, OP Mainnet, Arc and Arbitrum. Existing AERO and VELO tokens would migrate to a new AERO token, while locked-token positions would convert to sAERO.",
+        "simplified": "Aerodrome 与 Velodrome 合并推出链上现货交易所 Aero，覆盖以太坊、Base、Robinhood Chain、Ink、OP Mainnet、Arc 和 Arbitrum。原有 AERO 与 VELO 将迁移为新 AERO，锁仓代币则转换为 sAERO。",
+        "traditional": "Aerodrome 與 Velodrome 合併推出鏈上現貨交易所 Aero，覆蓋以太坊、Base、Robinhood Chain、Ink、OP Mainnet、Arc 和 Arbitrum。原有 AERO 與 VELO 將遷移為新 AERO，鎖倉代幣則轉換為 sAERO。"
+      },
+      "title": {
+        "english": "Aerodrome and Velodrome merge into Aero across seven blockchain networks",
+        "simplified": "Aerodrome 与 Velodrome 合并上线跨七条网络的 Aero",
+        "traditional": "Aerodrome 與 Velodrome 合併上線跨七條網絡的 Aero"
+      }
+    },
+    {
+      "id": "market-024",
+      "title": {
+        "simplified": "宁德时代押注重卡换电，计划2027年建成2000座站",
+        "traditional": "寧德時代押注重卡換電，計劃2027年建成2000座站",
+        "english": "CATL bets on battery swapping to speed electrification of heavy trucks"
+      },
+      "summary": {
+        "simplified": "路透社报道，宁德时代推出新一代重卡电池与换电体系，目标到2027年建成2000座重卡换电站。",
+        "traditional": "路透社報道，寧德時代推出新一代重卡電池與換電體系，目標到2027年建成2000座重卡換電站。",
+        "english": "Reuters reported that CATL launched new heavy-truck batteries and aimed for 2,000 battery-swapping stations by 2027."
+      },
+      "body": {
+        "simplified": "报道指出，天行II平台采用更轻、更薄的底盘式电池设计，Qiji换电系统约五分钟即可更换卡车电池。公司计划2026年底建成900座重卡换电站，长期目标为1万座；长续航版电池容量为760千瓦时、续航超过600公里。",
+        "traditional": "報道指出，天行II平臺採用更輕、更薄的底盤式電池設計，Qiji換電系統約五分鐘即可更換卡車電池。公司計劃2026年底建成900座重卡換電站，長期目標為1萬座；長續航版電池容量為760千瓦時、續航超過600公里。",
+        "english": "The Tianxing II platform uses lighter, thinner chassis-mounted batteries, while the Qiji system can replace a truck battery in about five minutes. CATL targeted 900 stations by the end of 2026 and 10,000 longer term; its 760-kWh long-range pack was quoted at more than 600 km."
+      },
+      "source": {
+        "name": {
+          "simplified": "路透社",
+          "traditional": "路透社",
+          "english": "Reuters"
+        },
+        "url": "https://www.reuters.com/world/asia-pacific/catl-bets-battery-swapping-speed-electrification-heavy-trucks-2026-10-20/"
+      },
+      "date": {
+        "publishedAt": "2026-10-20",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "watchlist",
+        "aShares",
+        "topics"
+      ],
+      "image": null,
+      "relatedWatchlistAssets": [
+        {
+          "symbol": "300750",
+          "role": "primary"
+        }
+      ]
+    },
+    {
+      "body": {
+        "english": "Switzerland already had bitcoin exchange-traded products, but they were generally structured as debt securities; BBIT is organized as a fund under Swiss law. FINMA also stressed that approval does not remove bitcoin's volatility risk.",
+        "simplified": "瑞士此前已有比特币交易所交易产品，但这些产品通常属于债务证券；BBIT 则按瑞士基金法设立。FINMA 同时强调，批准产品不会消除比特币的高波动风险。",
+        "traditional": "瑞士此前已有比特幣交易所交易產品，但這些產品通常屬於債務證券；BBIT 則按瑞士基金法設立。FINMA 同時強調，批准產品不會消除比特幣的高波動風險。"
+      },
+      "categories": [
+        "crypto",
+        "live",
+        "headlines",
+        "topics",
+        "watchlist"
+      ],
+      "date": {
+        "precision": "day",
+        "publishedAt": "2026-10-20"
+      },
+      "id": "crypto-10",
+      "image": null,
+      "source": {
+        "name": {
+          "english": "The Block",
+          "simplified": "The Block",
+          "traditional": "The Block"
+        },
+        "url": "https://www.theblock.co/news/regulation/2026-10-20-swiss-regulator-finma-approves-countrys-first-spot-bitcoin-etf-for-retail-investors-421127"
+      },
+      "summary": {
+        "english": "Switzerland's FINMA approved BIT Asset Management's Bitcoin Fund ETF, known as BBIT, which will hold bitcoin directly and is expected to begin trading on the SIX Swiss Exchange in November. The regulator made an exception to diversification rules for the fund.",
+        "simplified": "瑞士金融市场监管局批准 BIT Asset Management 的 Bitcoin Fund ETF（BBIT），该基金将直接持有比特币，预计 11 月在 SIX 瑞士交易所开始交易。FINMA 为此类基金通常要求分散投资的规定作出例外。",
+        "traditional": "瑞士金融市場監管局批准 BIT Asset Management 的 Bitcoin Fund ETF（BBIT），該基金將直接持有比特幣，預計 11 月在 SIX 瑞士交易所開始交易。FINMA 為此類基金通常要求分散投資的規定作出例外。"
+      },
+      "title": {
+        "english": "Swiss regulator FINMA approves the country's first retail spot bitcoin ETF",
+        "simplified": "瑞士 FINMA 批准首只面向散户的直接持有比特币 ETF",
+        "traditional": "瑞士 FINMA 批准首隻面向散戶的直接持有比特幣 ETF"
+      },
+      "relatedWatchlistAssets": [
+        {
+          "symbol": "BTC/USD",
+          "role": "primary"
+        }
+      ]
+    },
+    {
+      "body": {
+        "english": "Bitwise said a larger staking pool spreads rewards across more validators and lowers the return per ETH. It also estimated Solana transaction fees at $76 million in the third quarter versus roughly $41 million on Ethereum.",
+        "simplified": "Bitwise 认为，质押池扩大后收益会摊薄到更多验证者，从而压低单枚 ETH 的回报。报告还估算 Solana 第三季度交易费升至 7,600 万美元，而以太坊约为 4,100 万美元。",
+        "traditional": "Bitwise 認為，質押池擴大後收益會攤薄到更多驗證者，從而壓低單枚 ETH 的回報。報告還估算 Solana 第三季度交易費升至 7,600 萬美元，而以太坊約為 4,100 萬美元。"
+      },
+      "categories": [
+        "crypto",
+        "live",
+        "topics",
+        "watchlist"
+      ],
+      "date": {
+        "precision": "day",
+        "publishedAt": "2026-10-20"
+      },
+      "id": "crypto-14",
+      "image": null,
+      "source": {
+        "name": {
+          "english": "The Block",
+          "simplified": "The Block",
+          "traditional": "The Block"
+        },
+        "url": "https://www.theblock.co/news/ecosystems/2026-10-20-ethereum-solana-staking-record-yields-fall-bitwise-q3-421414"
+      },
+      "summary": {
+        "english": "Bitwise reported 7.96 million ETH of net staking inflows in the first nine months of 2026, with 43.8 million ETH, or nearly 36% of supply, staked at the end of September. The average annualized staking yield fell from 2.81% to 2.63%.",
+        "simplified": "Bitwise 报告显示，2026 年前九个月以太坊质押净流入达到 796 万 ETH，9 月底共有 4,380 万 ETH 处于质押状态，约占供应量的 36%。同期平均年化质押收益率由 2.81% 降至 2.63%。",
+        "traditional": "Bitwise 報告顯示，2026 年前九個月以太坊質押淨流入達到 796 萬 ETH，9 月底共有 4,380 萬 ETH 處於質押狀態，約佔供應量的 36%。同期平均年化質押收益率由 2.81% 降至 2.63%。"
+      },
+      "title": {
+        "english": "Bitwise says Ethereum staking hit a record, with about 36% of supply locked at end-September",
+        "simplified": "Bitwise：以太坊质押量创新高，9 月底约 36% 供应量被锁定",
+        "traditional": "Bitwise：以太坊質押量創新高，9 月底約 36% 供應量被鎖定"
+      },
+      "relatedWatchlistAssets": [
+        {
+          "symbol": "ETH/USD",
+          "role": "primary"
+        }
+      ]
+    },
+    {
+      "body": {
+        "english": "The options are prepaid in USDC, with the purchase amount treated as the maximum possible loss. That limits margin-call risk but also prevents users from selling contracts before expiry as they could in a conventional options account.",
+        "simplified": "期权先用 USDC 预付，买入金额即视为最大潜在损失。这种设计降低了复杂衍生品的追加保证金风险，也意味着用户不能像传统期权账户那样在到期前卖出合约。",
+        "traditional": "期權先用 USDC 預付，買入金額即視為最大潛在損失。這種設計降低了複雜衍生品的追加保證金風險，也意味著用戶不能像傳統期權賬戶那樣在到期前賣出合約。"
+      },
+      "categories": [
+        "crypto",
+        "live"
+      ],
+      "date": {
+        "precision": "day",
+        "publishedAt": "2026-10-20"
+      },
+      "id": "crypto-15",
+      "image": null,
+      "source": {
+        "name": {
+          "english": "The Block",
+          "simplified": "The Block",
+          "traditional": "The Block"
+        },
+        "url": "https://www.theblock.co/news/markets/2026-10-20-blockchain-com-launches-options-trading-bitcoin-ether-sol-421326"
+      },
+      "summary": {
+        "english": "Blockchain.com launched call and put options on BTC, ETH, SOL, HYPE, AVAX, XRP and TRX, with expiries up to one week and a $5 minimum premium. Contracts must be held to expiry, cannot be closed early, and are available only in supported jurisdictions.",
+        "simplified": "Blockchain.com 上线 BTC、ETH、SOL、HYPE、AVAX、XRP 和 TRX 的看涨与看跌期权，期限最长一周，最低权利金为 5 美元。合约必须持有至到期，不能提前平仓，且只在支持地区提供。",
+        "traditional": "Blockchain.com 上線 BTC、ETH、SOL、HYPE、AVAX、XRP 和 TRX 的看漲與看跌期權，期限最長一週，最低權利金為 5 美元。合約必須持有至到期，不能提前平倉，且只在支持地區提供。"
+      },
+      "title": {
+        "english": "Blockchain.com launches crypto options for eligible users",
+        "simplified": "Blockchain.com 面向合格用户推出加密期权",
+        "traditional": "Blockchain.com 面向合格用戶推出加密期權"
+      }
+    },
+    {
+      "body": {
+        "english": "The flow data indicated continued institutional demand while bitcoin traded in a range. Some other bitcoin funds saw redemptions on the same day, leaving total market inflows below IBIT's contribution.",
+        "simplified": "资金流数据显示，机构需求在比特币价格维持区间震荡时仍有明显韧性。同期部分其他比特币基金出现赎回，因此市场总流入低于 IBIT 的单日规模。",
+        "traditional": "資金流數據顯示，機構需求在比特幣價格維持區間震蕩時仍有明顯韌性。同期部分其他比特幣基金出現贖回，因此市場總流入低於 IBIT 的單日規模。"
+      },
+      "categories": [
+        "crypto",
+        "live",
+        "watchlist"
+      ],
+      "date": {
+        "precision": "day",
+        "publishedAt": "2026-10-20"
+      },
+      "id": "crypto-19",
+      "image": null,
+      "source": {
+        "name": {
+          "english": "The Block",
+          "simplified": "The Block",
+          "traditional": "The Block"
+        },
+        "url": "https://www.theblock.co/news/markets/2026-10-20-blackrock-ibit-bitcoin-etf-665-million-421102"
+      },
+      "summary": {
+        "english": "BlackRock's spot bitcoin ETF IBIT recorded $665.16 million in net inflows on Monday, its largest single-day intake since October 2025. U.S. spot bitcoin ETFs took in $526.6 million overall that day, while spot ether ETFs lost $103.3 million.",
+        "simplified": "贝莱德现货比特币 ETF IBIT 在周一录得 6.6516 亿美元净流入，为 2025 年 10 月以来最高的单日水平。美国现货比特币 ETF 当日合计净流入 5.266 亿美元，而以太坊 ETF 净流出 1.033 亿美元。",
+        "traditional": "貝萊德現貨比特幣 ETF IBIT 在週一錄得 6.6516 億美元淨流入，為 2025 年 10 月以來最高的單日水平。美國現貨比特幣 ETF 當日合計淨流入 5.266 億美元，而以太坊 ETF 淨流出 1.033 億美元。"
+      },
+      "title": {
+        "english": "BlackRock's IBIT draws $665.16 million in one day, the most in about a year",
+        "simplified": "贝莱德 IBIT 单日净流入 6.6516 亿美元，创约一年新高",
+        "traditional": "貝萊德 IBIT 單日淨流入 6.6516 億美元，創約一年新高"
+      },
+      "relatedWatchlistAssets": [
+        {
+          "symbol": "BTC/USD",
+          "role": "primary"
+        },
+        {
+          "symbol": "ETH/USD",
+          "role": "secondary"
+        }
+      ]
+    },
+    {
+      "body": {
+        "english": "JPMD was already available on Base, and the expansion gives institutions another public-chain environment for settlement and transfers. It is a programmable representation of a bank liability rather than a reserve-backed permissionless stablecoin.",
+        "simplified": "该代币此前已在 Base 上线，本次扩展让机构能在更多公共链环境中结算和转移存款价值。它并非由储备支持的无许可稳定币，而是银行负债的可编程表示。",
+        "traditional": "該代幣此前已在 Base 上線，本次擴展讓機構能在更多公共鏈環境中結算和轉移存款價值。它並非由儲備支持的無許可穩定幣，而是銀行負債的可編程表示。"
+      },
+      "categories": [
+        "crypto",
+        "topics",
+        "headlines",
+        "watchlist"
+      ],
+      "date": {
+        "precision": "day",
+        "publishedAt": "2026-10-19"
+      },
+      "id": "crypto-16",
+      "image": null,
+      "source": {
+        "name": {
+          "english": "The Block",
+          "simplified": "The Block",
+          "traditional": "The Block"
+        },
+        "url": "https://www.theblock.co/news/business/2026-10-19-jpmorgan-jpm-coin-deposit-token-ethereum-418874"
+      },
+      "summary": {
+        "english": "JPMorgan expanded its USD-denominated JPM Coin deposit token, JPMD, to Ethereum for institutional clients, enabling peer-to-peer transfers across Ethereum, Base and the broader EVM ecosystem. JPMD represents existing bank deposits held at JPMorgan.",
+        "simplified": "摩根大通面向机构客户将美元存款代币 JPM Coin（JPMD）扩展至以太坊，并支持在 Base 与以太坊等 EVM 生态内进行点对点转账。JPMD 代表机构在摩根大通持有的既有银行存款。",
+        "traditional": "摩根大通面向機構客戶將美元存款代幣 JPM Coin（JPMD）擴展至以太坊，並支持在 Base 與以太坊等 EVM 生態內進行點對點轉賬。JPMD 代表機構在摩根大通持有的既有銀行存款。"
+      },
+      "title": {
+        "english": "JPMorgan expands its JPM Coin deposit token to Ethereum",
+        "simplified": "摩根大通将 JPM Coin 存款代币扩展至以太坊",
+        "traditional": "摩根大通將 JPM Coin 存款代幣擴展至以太坊"
+      },
+      "relatedWatchlistAssets": [
+        {
+          "symbol": "JPM",
+          "role": "primary"
+        },
+        {
+          "symbol": "ETH/USD",
+          "role": "secondary"
+        }
+      ]
+    },
+    {
+      "body": {
+        "english": "The product combines payment and blockchain data to assess source, transaction context and risks across the payment lifecycle. It is being prepared for commercial rollout, and the report does not describe it as already available to all financial institutions.",
+        "simplified": "该服务结合支付信息和区块链数据，对资金来源、交易背景和全流程风险打分。它目前是即将推出的产品，报道没有称所有金融机构已经可以使用。",
+        "traditional": "該服務結合支付信息和區塊鏈數據，對資金來源、交易背景和全流程風險打分。它目前是即將推出的產品，報道沒有稱所有金融機構已經可以使用。"
+      },
+      "categories": [
+        "crypto",
+        "topics"
+      ],
+      "date": {
+        "precision": "day",
+        "publishedAt": "2026-10-19"
+      },
+      "id": "crypto-17",
+      "image": null,
+      "source": {
+        "name": {
+          "english": "The Block",
+          "simplified": "The Block",
+          "traditional": "The Block"
+        },
+        "url": "https://www.theblock.co/news/business/2026-10-19-mastercard-unveils-stablecoin-security-tool-to-screen-payments-for-fraud-and-sanctions-risks-420658"
+      },
+      "summary": {
+        "english": "Mastercard introduced Stablecoin Security, a service that checks stablecoin payments for fraud, scams and sanctions risk before funds move and connects to banks' compliance systems through an API. Borderless.xyz and Keyrails are initial partners, with worldwide commercial availability expected in 2027.",
+        "simplified": "万事达卡发布 Stablecoin Security 服务，在资金上链前检查稳定币支付是否涉及欺诈、诈骗或制裁风险，并通过 API 接入银行现有合规系统。首批合作方为 Borderless.xyz 和 Keyrails，预计 2027 年全球商用。",
+        "traditional": "萬事達卡發佈 Stablecoin Security 服務，在資金上鏈前檢查穩定幣支付是否涉及欺詐、詐騙或制裁風險，並通過 API 接入銀行現有合規系統。首批合作方為 Borderless.xyz 和 Keyrails，預計 2027 年全球商用。"
+      },
+      "title": {
+        "english": "Mastercard unveils a security screening service for stablecoin payments",
+        "simplified": "万事达卡推出稳定币支付安全筛查服务",
+        "traditional": "萬事達卡推出穩定幣支付安全篩查服務"
+      }
+    },
+    {
+      "body": {
+        "english": "The filing did not specify the cap, level of protection or fee structure, so the actual downside buffer cannot yet be determined. BlackRock's existing IBIT, with more than $65 billion in assets, would provide the proposed fund's reference exposure.",
+        "simplified": "文件没有给出具体的收益上限、保护水平或成本结构，因此不能据此判断实际损失缓冲幅度。贝莱德现有的 IBIT 规模超过 650 亿美元，是此次拟议产品的参照基础。",
+        "traditional": "文件沒有給出具體的收益上限、保護水平或成本結構，因此不能據此判斷實際損失緩衝幅度。貝萊德現有的 IBIT 規模超過 650 億美元，是此次擬議產品的參照基礎。"
+      },
+      "categories": [
+        "crypto",
+        "live",
+        "topics",
+        "watchlist"
+      ],
+      "date": {
+        "precision": "day",
+        "publishedAt": "2026-10-19"
+      },
+      "id": "crypto-18",
+      "image": null,
+      "source": {
+        "name": {
+          "english": "The Block",
+          "simplified": "The Block",
+          "traditional": "The Block"
+        },
+        "url": "https://www.theblock.co/news/regulation/2026-10-19-blackrock-files-bitcoin-managed-protect-etf-downside-protection-ibit-421087"
+      },
+      "summary": {
+        "english": "BlackRock filed with the U.S. SEC for the iShares Bitcoin Managed Protect ETF, which would seek capped upside exposure to IBIT or similar bitcoin holdings while providing some downside protection. The fund is a filing and has not been approved or launched.",
+        "simplified": "贝莱德已向美国 SEC 提交 iShares Bitcoin Managed Protect ETF 申请，拟在设上限地追踪 IBIT 等比特币敞口的同时提供一定程度的下行保护。该产品目前只是申请，尚未获批或开始交易。",
+        "traditional": "貝萊德已向美國 SEC 提交 iShares Bitcoin Managed Protect ETF 申請，擬在設上限地追蹤 IBIT 等比特幣敞口的同時提供一定程度的下行保護。該產品目前只是申請，尚未獲批或開始交易。"
+      },
+      "title": {
+        "english": "BlackRock files for a bitcoin ETF combining downside protection with IBIT upside",
+        "simplified": "贝莱德申请推出兼顾下行保护和 IBIT 上行敞口的比特币 ETF",
+        "traditional": "貝萊德申請推出兼顧下行保護和 IBIT 上行敞口的比特幣 ETF"
+      },
+      "relatedWatchlistAssets": [
+        {
+          "symbol": "BTC/USD",
+          "role": "primary"
+        }
+      ]
+    },
+    {
+      "body": {
+        "english": "Cysic attributed the incident to unauthorized access to a bridge-service database and a flaw in message processing, saying its mainnet was unaffected and no existing user assets were stolen. The blacklist applied only to CYS on BNB Chain, so it did not automatically recover the ETH already moved to Ethereum.",
+        "simplified": "Cysic 称问题来自桥接服务所用数据库被未授权访问以及处理逻辑漏洞，主网未受影响，已有用户资产未被盗。由于冻结只作用于 BNB Chain 上的 CYS，已转出的 ETH 不会因该黑名单自动追回。",
+        "traditional": "Cysic 稱問題來自橋接服務所用數據庫被未授權訪問以及處理邏輯漏洞，主網未受影響，已有用戶資產未被盜。由於凍結只作用於 BNB Chain 上的 CYS，已轉出的 ETH 不會因該黑名單自動追回。"
+      },
+      "categories": [
+        "crypto",
+        "live"
+      ],
+      "date": {
+        "precision": "day",
+        "publishedAt": "2026-10-18"
+      },
+      "id": "crypto-31",
+      "image": null,
+      "source": {
+        "name": {
+          "english": "The Block",
+          "simplified": "The Block",
+          "traditional": "The Block"
+        },
+        "url": "https://www.theblock.co/news/defi/2026-10-18-cysic-suspends-bridge-after-attacker-mints-tokens-and-moves-727000-to-ethereum-418863"
+      },
+      "summary": {
+        "english": "An attacker used Cysic's bridge to mint 10 million unauthorized CYS on BNB Smart Chain, sold 7.2 million of them and bridged about 306.6 ETH, worth roughly $727,000, to Ethereum. Cysic suspended the bridge and froze the remaining 2.8 million CYS.",
+        "simplified": "攻击者利用 Cysic 跨链桥铸造 1,000 万枚未授权 CYS，在 BNB Smart Chain 卖出其中 720 万枚，并通过多个桥将约 306.6 ETH（约 72.7 万美元）转到以太坊。项目随后暂停桥并冻结剩余 280 万枚 CYS。",
+        "traditional": "攻擊者利用 Cysic 跨鏈橋鑄造 1,000 萬枚未授權 CYS，在 BNB Smart Chain 賣出其中 720 萬枚，並通過多個橋將約 306.6 ETH（約 72.7 萬美元）轉到以太坊。項目隨後暫停橋並凍結剩餘 280 萬枚 CYS。"
+      },
+      "title": {
+        "english": "Cysic bridge exploited after attacker minted 10 million CYS and moved about $727,000",
+        "simplified": "Cysic 跨链桥遭攻击：攻击者铸造 1,000 万 CYS 并转走约 72.7 万美元",
+        "traditional": "Cysic 跨鏈橋遭攻擊：攻擊者鑄造 1,000 萬 CYS 並轉走約 72.7 萬美元"
+      }
+    },
+    {
+      "body": {
+        "english": "The report did not disclose most companies' reasons; Applied Optoelectronics cited uncertainty about price, liquidity and investor confusion. Nasdaq separately said it would opt out of having its shares tokenized under the current framework.",
+        "simplified": "报道没有披露大多数公司的反对理由，Applied Optoelectronics 则担心价格、流动性和市场混淆。纳斯达克另行表示，不会在现行框架下让自己的股票被此类平台代币化。",
+        "traditional": "報道沒有披露大多數公司的反對理由，Applied Optoelectronics 則擔心價格、流動性和市場混淆。納斯達克另行表示，不會在現行框架下讓自己的股票被此類平台代幣化。"
+      },
+      "categories": [
+        "crypto",
+        "topics",
+        "headlines"
+      ],
+      "date": {
+        "precision": "day",
+        "publishedAt": "2026-10-17"
+      },
+      "id": "crypto-32",
+      "image": null,
+      "source": {
+        "name": {
+          "english": "The Block",
+          "simplified": "The Block",
+          "traditional": "The Block"
+        },
+        "url": "https://www.theblock.co/news/markets/2026-10-17-coreweave-broadcom-verizon-among-nine-companies-objecting-to-tokenized-trading-of-their-shares-on-okxice-418859"
+      },
+      "summary": {
+        "english": "An OKXICE notice listed nine companies, including CoreWeave, Broadcom, Verizon and UnitedHealth, that objected to tokenized versions of their shares on the venue. Under the SEC innovation exemption, a timely issuer objection can block that stock from being offered at that venue.",
+        "simplified": "OKXICE 的公告列出 CoreWeave、Broadcom、Verizon、UnitedHealth 等九家公司反对该平台提供其股票代币。按照 SEC 创新豁免的发行人异议机制，及时反对可在该平台阻止对应股票上线。",
+        "traditional": "OKXICE 的公告列出 CoreWeave、Broadcom、Verizon、UnitedHealth 等九家公司反對該平台提供其股票代幣。按照 SEC 創新豁免的發行人異議機制，及時反對可在該平台阻止對應股票上線。"
+      },
+      "title": {
+        "english": "Nine U.S.-listed companies object to OKXICE tokenizing their shares",
+        "simplified": "九家美国上市公司反对 OKXICE 代币化其股票",
+        "traditional": "九家美國上市公司反對 OKXICE 代幣化其股票"
+      }
+    },
+    {
+      "id": "market-026",
+      "title": {
+        "simplified": "腾讯发行约57亿美元美元及点心债",
+        "traditional": "騰訊發行約57億美元美元及點心債",
+        "english": "Tencent raises $5.7 billion in debt sale as demand defies AI scrutiny"
+      },
+      "summary": {
+        "simplified": "路透社报道，腾讯通过美元债和离岸人民币债合计融资约57亿美元，综合订单规模超过230亿美元。",
+        "traditional": "路透社報道，騰訊透過美元債和離岸人民幣債合計融資約57億美元，綜合訂單規模超過230億美元。",
+        "english": "Reuters reported that Tencent raised about $5.7 billion through dollar and offshore-yuan bonds after receiving more than $23 billion in combined orders."
+      },
+      "body": {
+        "simplified": "报道显示，腾讯发行13亿美元10年期和5亿美元20年期美元债，以及200亿元人民币10年期和60亿元人民币30年期点心债。公司称资金将用于一般企业用途，同时正增加AI基础设施和产品投入。",
+        "traditional": "報道顯示，騰訊發行13億美元10年期和5億美元20年期美元債，以及200億元人民幣10年期和60億元人民幣30年期點心債。公司稱資金將用於一般企業用途，同時正增加AI基礎設施和產品投入。",
+        "english": "The financing included 10- and 20-year dollar notes plus 10- and 30-year dim sum bonds. Tencent said proceeds were for general corporate purposes as it increased investment in AI infrastructure and products."
+      },
+      "source": {
+        "name": {
+          "simplified": "路透社",
+          "traditional": "路透社",
+          "english": "Reuters"
+        },
+        "url": "https://www.reuters.com/world/asia-pacific/tencent-markets-us-dollar-dim-sum-bonds-four-tranches-2026-10-13/"
+      },
+      "date": {
+        "publishedAt": "2026-10-13",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "watchlist",
+        "hongKong",
+        "topics"
+      ],
+      "image": null,
+      "relatedWatchlistAssets": [
+        {
+          "symbol": "00700",
+          "role": "primary"
+        }
+      ]
+    },
+    {
+      "id": "market-038",
+      "title": {
+        "simplified": "摩根大通三年来首次季度利润不及预期，交易与投行业务动能减弱",
+        "traditional": "摩根大通三年來首次季度利潤不及預期，交易與投行業務動能減弱",
+        "english": "JPMorgan posts rare profit miss as dealmaking, bond trading lose momentum"
+      },
+      "summary": {
+        "simplified": "路透社报道，摩根大通三季度每股收益为5.57美元，低于分析师预期的5.85美元，为近三年来首次利润预测落空。",
+        "traditional": "路透社報道，摩根大通三季度每股收益為5.57美元，低於分析師預期的5.85美元，為近三年來首次利潤預測落空。",
+        "english": "Reuters reported that JPMorgan Chase missed third-quarter profit estimates for the first time in nearly three years."
+      },
+      "body": {
+        "simplified": "报道说，市场波动和经济前景不明削弱并购交易，并使债券交易活动降温。投行费用同比增长14%，但较二季度下降8%；股票市场收入增长49%，固定收益交易收入下降4%。",
+        "traditional": "報道說，市場波動和經濟前景不明削弱併購交易，並使債券交易活動降溫。投行費用同比增長14%，但較二季度下降8%；股票市場收入增長49%，固定收益交易收入下降4%。",
+        "english": "The bank reported earnings per share of $5.57 versus an analyst consensus of $5.85. Investment-banking fees rose 14% year over year but fell 8% from the second quarter, while equity-market revenue rose 49% and fixed-income trading slipped 4%."
+      },
+      "source": {
+        "name": {
+          "simplified": "路透社",
+          "traditional": "路透社",
+          "english": "Reuters"
+        },
+        "url": "https://www.reuters.com/business/finance/jpmorgans-profit-rises-investment-banking-trading-strength-2026-10-13/"
+      },
+      "date": {
+        "publishedAt": "2026-10-13",
+        "precision": "day"
+      },
+      "categories": [
+        "headlines",
+        "live",
+        "watchlist",
+        "usStocks",
+        "topics",
+        "priceMovement"
+      ],
+      "image": null,
+      "relatedWatchlistAssets": [
+        {
+          "symbol": "JPM",
+          "role": "primary"
+        }
+      ]
+    },
+    {
+      "body": {
+        "english": "The proposal would have tied the burn rate to total staked ETH and reached 100% of validator rewards at about 60.25 million ETH. The authors intend to continue through a separate issuance-policy process before seeking any future upgrade.",
+        "simplified": "原方案拟把销毁比例与质押总量挂钩，并在约 6,025 万 ETH 被质押时销毁全部验证者奖励。作者计划通过独立讨论流程继续评估该提案，再决定是否进入未来升级。",
+        "traditional": "原方案擬把銷毀比例與質押總量掛鈎，並在約 6,025 萬 ETH 被質押時銷毀全部驗證者獎勵。作者計劃通過獨立討論流程繼續評估該提案，再決定是否進入未來升級。"
+      },
+      "categories": [
+        "crypto",
+        "topics",
+        "headlines",
+        "watchlist"
+      ],
+      "date": {
+        "precision": "day",
+        "publishedAt": "2026-10-01"
+      },
+      "id": "crypto-33",
+      "image": null,
+      "source": {
+        "name": {
+          "english": "The Block",
+          "simplified": "The Block",
+          "traditional": "The Block"
+        },
+        "url": "https://www.theblock.co/news/ecosystems/2026-10-01-ethereum-staking-reward-burn-proposal-eip-8363-pulled-hegota-upgrade-417419"
+      },
+      "summary": {
+        "english": "The co-authors of EIP-8363 withdrew it from consideration for Ethereum's Hegota upgrade on October 1, arguing that a fork-scoping process was the wrong venue to decide an issuance-policy change. The proposal is not active.",
+        "simplified": "EIP-8363 的共同作者在 10 月 1 日撤回将该提案纳入以太坊 Hegota 升级的考虑，原因是发行政策变化不应由分叉范围审议流程决定。提案拟随质押比例上升销毁更多验证者奖励，目前没有生效。",
+        "traditional": "EIP-8363 的共同作者在 10 月 1 日撤回將該提案納入以太坊 Hegota 升級的考慮，原因是發行政策變化不應由分叉範圍審議流程決定。提案擬隨質押比例上升銷毀更多驗證者獎勵，目前沒有生效。"
+      },
+      "title": {
+        "english": "Ethereum's EIP-8363 validator-reward burn proposal is withdrawn from the Hegota upgrade",
+        "simplified": "以太坊 EIP-8363 验证者奖励销毁提案被移出 Hegota 升级",
+        "traditional": "以太坊 EIP-8363 驗證者獎勵銷毀提案被移出 Hegota 升級"
+      },
+      "relatedWatchlistAssets": [
+        {
+          "symbol": "ETH/USD",
+          "role": "primary"
+        }
+      ]
+    }
+  ]
+}
