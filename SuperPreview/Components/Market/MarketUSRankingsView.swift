@@ -115,7 +115,6 @@ struct MarketUSRankingsView: View {
     let itemsByTab: [MarketUSRankingTab: [MarketUSRankingItem]]
     let headerTopInset: CGFloat
     let minimumRowsHeight: CGFloat
-    let onTabChange: (() -> Void)?
     let onShowAll: () -> Void
     let onSelect: (MarketUSRankingItem) -> Void
 
@@ -126,7 +125,6 @@ struct MarketUSRankingsView: View {
         itemsByTab: [MarketUSRankingTab: [MarketUSRankingItem]] = MarketUSRankingItem.mockData,
         headerTopInset: CGFloat = 0,
         minimumRowsHeight: CGFloat = 0,
-        onTabChange: (() -> Void)? = nil,
         onShowAll: @escaping () -> Void = { /* TODO: connect the full US rankings destination. */ },
         onSelect: @escaping (MarketUSRankingItem) -> Void = { _ in
             /* TODO: connect the selected stock's destination. */
@@ -135,7 +133,6 @@ struct MarketUSRankingsView: View {
         self.itemsByTab = itemsByTab
         self.headerTopInset = headerTopInset
         self.minimumRowsHeight = minimumRowsHeight
-        self.onTabChange = onTabChange
         self.onShowAll = onShowAll
         self.onSelect = onSelect
     }
@@ -217,7 +214,6 @@ struct MarketUSRankingsView: View {
         return Button {
             guard selectedTab != tab else { return }
             selectedTab = tab
-            onTabChange?()
         } label: {
             Text(language.text(tab.title))
                 .modifier(CustomFontModifier(size: isSelected ? 18 : 14, font: isSelected ? .medium : .regular, lineHeight: 28))

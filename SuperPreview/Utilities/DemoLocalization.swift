@@ -104,6 +104,7 @@ enum DemoCopyKey {
     case marketIndexDowJones, marketIndexNasdaq, marketIndexSP500
     case marketIndexShanghai, marketIndexShenzhen, marketIndexCSI300
     case marketCryptoBitcoin, marketCryptoEthereum, marketCryptoSolana
+    case crypto24hRankings, cryptoMarketCap, cryptoGainers, cryptoLosers, cryptoTurnover
     case marketGlobeAccessibility, exportMarketGlobeParameters, showShaderOnly
     case marketGlobeExportFailedTitle, marketGlobeExportFailedMessage
     case marketBreadthDistribution, marketBreadthUpdatedFormat
@@ -116,6 +117,11 @@ enum DemoCopyKey {
     case marketConceptCybersecurity, marketConceptBigTech
     case marketConceptAccessibilityFormat
     case marketUSPopularStocks, marketUSChinaStocks, marketUSTechStocks, marketUSETFs
+    case connectAShares, connectHKShares, connectNorthOverview, connectSouthOverview
+    case connectUpdated, connectPreviousTurnover, connectTotalValue, connectSegmentValue
+    case connectShanghaiNorth, connectShenzhenNorth, connectShanghaiSouth, connectShenzhenSouth
+    case connectRemainingQuota, connectQuotaSufficient
+    case connectRankingsTab, connectTopTurnover, connectAHShares, connectShanghaiFilter, connectShenzhenFilter
     case marketIndustrySectors, marketHeatmapTitle, marketRankingsTitle, viewAll
     case marketMainBoard, marketGemBoard
     case marketIndustryAccessibilityFormat, marketHeatmapAccessibilityFormat
@@ -368,6 +374,11 @@ private enum DemoCopy {
         .marketCryptoBitcoin: ("比特币", "比特幣", "Bitcoin"),
         .marketCryptoEthereum: ("以太坊", "以太坊", "Ethereum"),
         .marketCryptoSolana: ("索拉纳", "索拉納", "Solana"),
+        .crypto24hRankings: ("24H榜单", "24H榜單", "24H Rankings"),
+        .cryptoMarketCap: ("市值", "市值", "Market Cap"),
+        .cryptoGainers: ("涨幅", "漲幅", "Gainers"),
+        .cryptoLosers: ("跌幅", "跌幅", "Losers"),
+        .cryptoTurnover: ("成交额", "成交額", "Turnover"),
         .marketGlobeAccessibility: ("市场地球仪，可拖动旋转", "市場地球儀，可拖動旋轉", "Market globe, drag to rotate"),
         .exportMarketGlobeParameters: ("导出当前参数", "匯出目前參數", "Export Current Parameters"),
         .showShaderOnly: ("仅显示 Shader", "只顯示 Shader", "Show Shader Only"),
@@ -396,6 +407,25 @@ private enum DemoCopy {
         .marketUSChinaStocks: ("中概股", "中概股", "China Stocks"),
         .marketUSTechStocks: ("科技股", "科技股", "Tech"),
         .marketUSETFs: ("ETF", "ETF", "ETF"),
+        .connectAShares: ("A股通", "A股通", "Northbound"),
+        .connectHKShares: ("港股通", "港股通", "Southbound"),
+        .connectNorthOverview: ("北向资金总览", "北向資金總覽", "Northbound Overview"),
+        .connectSouthOverview: ("南向资金总览", "南向資金總覽", "Southbound Overview"),
+        .connectUpdated: ("更新：10/09 15:00", "更新：10/09 15:00", "Updated: 10/09 15:00"),
+        .connectPreviousTurnover: ("上日成交总额", "上日成交總額", "Previous Day Turnover"),
+        .connectTotalValue: ("3,888.98亿", "3,888.98億", "388.898B"),
+        .connectSegmentValue: ("1345.36亿", "1345.36億", "134.536B"),
+        .connectShanghaiNorth: ("沪港通", "滬港通", "Shanghai Connect"),
+        .connectShenzhenNorth: ("深股通", "深股通", "Shenzhen Connect"),
+        .connectShanghaiSouth: ("港股通(沪)", "港股通(滬)", "HK Connect (SH)"),
+        .connectShenzhenSouth: ("港股通(深)", "港股通(深)", "HK Connect (SZ)"),
+        .connectRemainingQuota: ("当日剩余额度", "當日剩餘額度", "Remaining Quota"),
+        .connectQuotaSufficient: ("充足", "充足", "Available"),
+        .connectRankingsTab: ("沪深港通", "滬深港通", "Stock Connect"),
+        .connectTopTurnover: ("十大成交", "十大成交", "Top Turnover"),
+        .connectAHShares: ("AH股", "AH股", "A/H Shares"),
+        .connectShanghaiFilter: ("沪港通", "滬港通", "Shanghai Connect"),
+        .connectShenzhenFilter: ("深港通", "深港通", "Shenzhen Connect"),
         .marketIndustrySectors: ("行业板块", "行業板塊", "Sectors"),
         .marketHeatmapTitle: ("热力图", "熱力圖", "Heatmap"),
         .marketRankingsTitle: ("港股榜单", "港股榜單", "Stock Rankings"),

@@ -16,6 +16,7 @@ struct MarketView: View {
     private let externalDebugPresentation: Binding<Bool>?
     private let isActive: Bool
     @State private var selectedTab = "港股"
+    @State private var connectDirection: MarketConnectDirection = .north
     @State private var isShowingDebugPanel = false
     @State private var isShaderOnly = false
     @State private var marketGlobeOrientation = MarketGlobeOrientation()
@@ -140,6 +141,7 @@ struct MarketView: View {
                             showsGlobe: hasGlobe(for: tab),
                             orientation: $marketGlobeOrientation,
                             rotation: $globeRotation,
+                            connectDirection: $connectDirection,
                             onGlobeExposureChange: { isExposed in
                                 updateGlobeExposure(for: tab, isExposed: isExposed)
                             }
@@ -184,6 +186,11 @@ struct MarketView: View {
                     MarketHeatmapView(headerSpacing: 20)
                     MarketIndustrySectorsView(sectors: MarketIndustrySector.usReference)
                     MarketConceptSectorsView()
+                } else if tab == "沪深港通" {
+                    MarketHeatmapView(headerSpacing: 20)
+                    MarketConnectOverviewView(selected: $connectDirection)
+                } else if tab == "加密货币" {
+                    MarketCryptoRankingsView()
                 } else {
                     MarketBreadthDistributionView()
                 }
@@ -228,6 +235,7 @@ private struct MarketScrollingPage<Content: View>: View {
     let showsGlobe: Bool
     @Binding var orientation: MarketGlobeOrientation
     @Binding var rotation: MarketGlobeRotation?
+    @Binding var connectDirection: MarketConnectDirection
     let onGlobeExposureChange: (Bool) -> Void
     let content: Content
     @State private var pullDownDistance: CGFloat = 0
@@ -242,6 +250,7 @@ private struct MarketScrollingPage<Content: View>: View {
         showsGlobe: Bool,
         orientation: Binding<MarketGlobeOrientation>,
         rotation: Binding<MarketGlobeRotation?>,
+        connectDirection: Binding<MarketConnectDirection>,
         onGlobeExposureChange: @escaping (Bool) -> Void,
         @ViewBuilder content: () -> Content
     ) {
@@ -252,20 +261,12 @@ private struct MarketScrollingPage<Content: View>: View {
         self.showsGlobe = showsGlobe
         self._orientation = orientation
         self._rotation = rotation
+        self._connectDirection = connectDirection
         self.onGlobeExposureChange = onGlobeExposureChange
         self.content = content()
     }
 
     var body: some View {
-        ScrollViewReader { scrollProxy in
-            scrollContent {
-                let target = tab == "美股" ? "market.usRankings.top" : "market.hkRankings.top"
-                scrollProxy.scrollTo(target, anchor: .top)
-            }
-        }
-    }
-
-    private func scrollContent(onRankingBoardChange: @escaping () -> Void) -> some View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(spacing: 0) {
                 Color.clear
@@ -292,8 +293,7 @@ private struct MarketScrollingPage<Content: View>: View {
                     LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
                         MarketHongKongRankingsView(
                             headerTopInset: 16,
-                            minimumRowsHeight: max(viewportHeight - 104 - bottomContentClearance, 0),
-                            onBoardChange: onRankingBoardChange
+                            minimumRowsHeight: max(viewportHeight - 104 - bottomContentClearance, 0)
                         )
                     }
                     .id("market.hkRankings.top")
@@ -301,11 +301,15 @@ private struct MarketScrollingPage<Content: View>: View {
                     LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
                         MarketUSRankingsView(
                             headerTopInset: 0,
-                            minimumRowsHeight: max(viewportHeight - 52 - bottomContentClearance, 0),
-                            onTabChange: onRankingBoardChange
+                            minimumRowsHeight: max(viewportHeight - 52 - bottomContentClearance, 0)
                         )
                     }
                     .id("market.usRankings.top")
+                } else if tab == "沪深港通" {
+                    LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
+                        MarketConnectRankingsView(direction: $connectDirection, minimumRowsHeight: max(viewportHeight - 92 - bottomContentClearance, 0))
+                    }
+                    .id("market.connectRankings.top")
                 }
 
                 // Match the watchlist: rows scroll behind the floating tab bar,

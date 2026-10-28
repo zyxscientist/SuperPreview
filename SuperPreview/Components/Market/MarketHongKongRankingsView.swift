@@ -83,7 +83,6 @@ struct MarketHongKongRankingsView: View {
     let items: [MarketHongKongRankingItem]
     let headerTopInset: CGFloat
     let minimumRowsHeight: CGFloat
-    let onBoardChange: (() -> Void)?
     let onShowAll: () -> Void
     let onSelect: (MarketHongKongRankingItem) -> Void
     @Environment(\.demoLanguage) private var language
@@ -94,7 +93,6 @@ struct MarketHongKongRankingsView: View {
         items: [MarketHongKongRankingItem] = MarketHongKongRankingItem.mockData,
         headerTopInset: CGFloat = 0,
         minimumRowsHeight: CGFloat = 0,
-        onBoardChange: (() -> Void)? = nil,
         onShowAll: @escaping () -> Void = { /* TODO: connect the full Hong Kong rankings destination. */ },
         onSelect: @escaping (MarketHongKongRankingItem) -> Void = { _ in
             /* TODO: connect the selected stock's destination. */
@@ -103,7 +101,6 @@ struct MarketHongKongRankingsView: View {
         self.items = items
         self.headerTopInset = headerTopInset
         self.minimumRowsHeight = minimumRowsHeight
-        self.onBoardChange = onBoardChange
         self.onShowAll = onShowAll
         self.onSelect = onSelect
     }
@@ -190,7 +187,6 @@ struct MarketHongKongRankingsView: View {
 
         return Button {
             selectedBoard = board
-            onBoardChange?()
         } label: {
             Text(board.title(in: language))
                 .modifier(CustomFontModifier(size: 14, font: isSelected ? .bold : .regular, lineHeight: 20))
