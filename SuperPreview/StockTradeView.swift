@@ -236,26 +236,39 @@ struct StockTradeView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarLeading) {
-                HStack(alignment: .top, spacing:0) {
-                    Image("back-Left")
-                        .onTapGesture {
-                            presentationMode.wrappedValue.dismiss()
-                        }
-                    HStack(alignment: .bottom, spacing:3) {
-                        HStack(spacing:1){
-                            Text("港股融资账户")
-                                .modifier(CustomFontModifier(size: 16, font: .medium))
-                                .foregroundColor(Color("color-text-30"))
-                            Text("(0168)")
-                                .modifier(CustomFontModifier(size: 16, font: .medium))
-                                .foregroundColor(Color("color-text-30"))
-                        }
-                        Image("chevron_down_filled_sm")
+                Button {
+                    presentationMode.wrappedValue.dismiss()
+                } label: {
+                    Image("NewsDemoNavBack36")
+                        .renderingMode(.template)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 36, height: 36)
+                }
+                .modifier(DemoNavigationGlassButtonStyle(shape: .circle))
+                .accessibilityLabel("返回")
+                HStack(alignment: .bottom, spacing: 3) {
+                    HStack(spacing: 1) {
+                        Text("港股融资账户")
+                            .modifier(CustomFontModifier(size: 16, font: .medium))
+                            .foregroundColor(Color("color-text-30"))
+                        Text("(0168)")
+                            .modifier(CustomFontModifier(size: 16, font: .medium))
+                            .foregroundColor(Color("color-text-30"))
                     }
+                    Image("chevron_down_filled_sm")
                 }
             }
             ToolbarItemGroup(placement: .navigationBarTrailing) {
-                Image("refresh-Right")
+                Button(action: {}) {
+                    Image("FigmaNavRefresh36")
+                        .renderingMode(.template)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 36, height: 36)
+                }
+                .modifier(DemoNavigationGlassButtonStyle(shape: .circle))
+                .accessibilityLabel("刷新")
             }
         } // 导航栏元素
         .navigationViewStyle(StackNavigationViewStyle())

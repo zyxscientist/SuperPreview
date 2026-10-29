@@ -184,7 +184,14 @@ private struct MainViewToolbarModifier: ViewModifier {
                         }
                     )
                 } else {
-                    Image("search-Right")
+                    Button(action: {}) {
+                        Image("NewsDemoNavSearch36")
+                            .renderingMode(.template)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 36, height: 36)
+                            .foregroundStyle(Color("color-text-30"))
+                    }
                 }
             }
         }

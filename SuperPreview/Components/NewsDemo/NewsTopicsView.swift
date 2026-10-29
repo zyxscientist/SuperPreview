@@ -313,7 +313,6 @@ private struct NewsTopicArticleListView: View {
                         .frame(width: 36, height: 36)
                         .foregroundStyle(.white)
                 }
-                .buttonStyle(.plain)
                 .accessibilityLabel(language.resolve(NewsDemoCopy.back))
             }
         }

@@ -43,15 +43,20 @@ struct StockOrderNavbar: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            HStack(spacing: StockOrderNavbarLayout.leadingTitleSpacing) {
+            HStack(spacing: DemoNavigationBarLayout.leadingTitleSpacing) {
                 Button(action: onBack) {
-                    Image("back-Left")
+                    Image("NewsDemoNavBack36")
+                        .renderingMode(.template)
                         .resizable()
                         .scaledToFit()
                         .frame(width: StockOrderNavbarLayout.iconSize, height: StockOrderNavbarLayout.iconSize)
+                        .foregroundStyle(Color("color-text-30"))
                 }
-                .buttonStyle(PlainButtonStyle())
-                .frame(width: StockOrderNavbarLayout.iconSize, height: StockOrderNavbarLayout.height)
+                .modifier(DemoNavigationGlassButtonStyle(shape: .circle))
+                .frame(
+                    width: DemoNavigationBarLayout.iconButtonWidth,
+                    height: StockOrderNavbarLayout.height
+                )
                 .contentShape(Rectangle())
                 .accessibilityLabel(language.text(.back))
                 .accessibilityIdentifier("stockOrder.navbar.back")
@@ -67,9 +72,9 @@ struct StockOrderNavbar: View {
                         .modifier(CustomFontModifier(size: 13, font: .medium, lineHeight: 16))
                         .foregroundColor(Color("color-text-30"))
                 }
-                .buttonStyle(PlainButtonStyle())
+                .modifier(DemoNavigationGlassButtonStyle(shape: .capsule))
                 .frame(
-                    minWidth: StockOrderNavbarLayout.iconSize,
+                    minWidth: StockOrderNavbarLayout.height,
                     minHeight: StockOrderNavbarLayout.height,
                     maxHeight: StockOrderNavbarLayout.height
                 )
@@ -162,12 +167,43 @@ struct StockOrderNavbar: View {
 
 private enum StockOrderNavbarLayout {
     static let horizontalPadding: CGFloat = 16
-    static let leadingTitleSpacing: CGFloat = 2
-    static let iconSize: CGFloat = 24
+    static let iconSize: CGFloat = 36
     static let titleWidth: CGFloat = 240
     static let accountTitleHeight: CGFloat = 24
     static let buyingPowerHeight: CGFloat = 16
-    static let height: CGFloat = 44
+    static let height: CGFloat = 56
+}
+
+enum DemoNavigationBarLayout {
+    static let iconButtonWidth: CGFloat = 44
+    static let leadingTitleSpacing: CGFloat = 12
+}
+
+enum DemoNavigationButtonShape {
+    case circle
+    case capsule
+}
+
+struct DemoNavigationGlassButtonStyle: ViewModifier {
+    let shape: DemoNavigationButtonShape
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            switch shape {
+            case .circle:
+                content
+                    .buttonStyle(.glass)
+                    .buttonBorderShape(.circle)
+            case .capsule:
+                content
+                    .buttonStyle(.glass)
+                    .buttonBorderShape(.capsule)
+            }
+        } else {
+            content.buttonStyle(.plain)
+        }
+    }
 }
 
 private struct StockOrderNavbarPreviewHarness: View {

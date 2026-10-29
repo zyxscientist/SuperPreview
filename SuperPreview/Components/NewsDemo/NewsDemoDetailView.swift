@@ -5,9 +5,9 @@
 
 import Foundation
 import SwiftUI
+import UIKit
 
 struct NewsDemoDetailView: View {
-    @Environment(\.dismiss) private var dismiss
     @Environment(\.demoLanguage) private var language
     @State private var isFavorite = false
     private let articleID: String?
@@ -42,26 +42,13 @@ struct NewsDemoDetailView: View {
         }
         .scrollIndicators(.hidden)
         .background(pageBackground)
-        .navigationBarBackButtonHidden(true)
+        .navigationBarBackButtonHidden(false)
+        .toolbarRole(.navigationStack)
+        .tint(primaryText)
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(pageBackground, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button {
-                    dismiss()
-                } label: {
-                    Image("NewsDemoNavBack36")
-                        .renderingMode(.template)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 36, height: 36)
-                        .foregroundStyle(primaryText)
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel(language.resolve(NewsDemoCopy.back))
-            }
-
             ToolbarItem(placement: .principal) {
                 Text(language.resolve(NewsDemoCopy.detail))
                     .font(.custom("PlusJakartaSans-Medium", size: 16, relativeTo: .body))
@@ -83,7 +70,7 @@ struct NewsDemoDetailView: View {
                         .frame(width: 36, height: 36)
                         .foregroundStyle(primaryText)
                 }
-                .buttonStyle(.plain)
+                .modifier(NewsCircularToolbarButton())
                 .accessibilityLabel(
                     isFavorite
                         ? language.resolve(NewsDemoCopy.removeFavorite)
@@ -95,6 +82,13 @@ struct NewsDemoDetailView: View {
                         : language.resolve(NewsDemoCopy.notFavorited)
                 )
             }
+        }
+        .navigationBackSwipe(.system)
+        .background {
+            NewsBackIndicatorInstaller()
+                .frame(width: 0, height: 0)
+                .allowsHitTesting(false)
+                .accessibilityHidden(true)
         }
     }
 
@@ -144,24 +138,17 @@ struct NewsDemoDetailView: View {
     }
 
     private func storyMetadataSection(_ story: NewsStory) -> some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 3) {
             Text(story.date.displayText(for: language))
                 .font(.custom("PlusJakartaSans-Regular", size: 14, relativeTo: .subheadline))
                 .foregroundStyle(tertiaryText)
                 .lineLimit(1)
 
-            Spacer(minLength: 0)
-
             Link(destination: story.source.url) {
-                HStack(spacing: 4) {
-                    Text(language.resolve(story.source.name))
-                        .lineLimit(1)
-
-                    Image(systemName: "arrow.up.right")
-                        .font(.system(size: 11, weight: .semibold))
-                }
-                .font(.custom("PlusJakartaSans-Regular", size: 14, relativeTo: .subheadline))
-                .foregroundStyle(brandBlue)
+                Text(language.resolve(story.source.name))
+                    .lineLimit(1)
+                    .font(.custom("PlusJakartaSans-Regular", size: 14, relativeTo: .subheadline))
+                    .foregroundStyle(brandBlue)
             }
             .buttonStyle(.plain)
             .accessibilityLabel(language.resolve(story.source.name))
@@ -611,6 +598,108 @@ private struct NewsDemoRelatedStockRow: View {
             .foregroundStyle(movementColor)
             .lineLimit(1)
             .frame(width: 80, height: 16, alignment: .trailing)
+    }
+}
+
+private struct NewsCircularToolbarButton: ViewModifier {
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content.buttonBorderShape(.circle)
+        } else {
+            content
+        }
+    }
+}
+
+/// Updates the native back indicator; UIKit still owns the button and swipe.
+private struct NewsBackIndicatorInstaller: UIViewControllerRepresentable {
+    func makeUIViewController(context: Context) -> NewsBackIndicatorViewController {
+        NewsBackIndicatorViewController()
+    }
+
+    func updateUIViewController(
+        _ uiViewController: NewsBackIndicatorViewController,
+        context: Context
+    ) {
+        uiViewController.applyBackIndicator()
+    }
+}
+
+private final class NewsBackIndicatorViewController: UIViewController {
+    private let backImage = UIImage(named: "NewsDemoNavBack36")?
+        .withRenderingMode(.alwaysTemplate)
+    private weak var customizedBackItem: UINavigationItem?
+    private var previousBackButtonDisplayMode: UINavigationItem.BackButtonDisplayMode?
+
+    override func loadView() {
+        view = UIView()
+        view.backgroundColor = .clear
+    }
+
+    override func didMove(toParent parent: UIViewController?) {
+        super.didMove(toParent: parent)
+        applyBackIndicator()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        applyBackIndicator()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        applyBackIndicator()
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        restoreBackButtonDisplayMode()
+    }
+
+    func applyBackIndicator() {
+        guard let backImage else { return }
+        var ancestor: UIViewController = self
+        while let parent = ancestor.parent, !(parent is UINavigationController) {
+            ancestor = parent
+        }
+        guard let navigationController = ancestor.parent as? UINavigationController else {
+            return
+        }
+
+        if let index = navigationController.viewControllers.firstIndex(where: { $0 === ancestor }),
+           index > 0 {
+            let backItem = navigationController.viewControllers[index - 1].navigationItem
+            if customizedBackItem !== backItem {
+                restoreBackButtonDisplayMode()
+                customizedBackItem = backItem
+                previousBackButtonDisplayMode = backItem.backButtonDisplayMode
+            }
+            backItem.backButtonDisplayMode = .minimal
+        }
+
+        let item = ancestor.navigationItem
+        let bar = navigationController.navigationBar
+        // Customize this destination's appearances, rather than the shared bar.
+        func appearance(_ existing: UINavigationBarAppearance?) -> UINavigationBarAppearance {
+            let result = (existing ?? bar.standardAppearance).copy() as! UINavigationBarAppearance
+            result.setBackIndicatorImage(backImage, transitionMaskImage: backImage)
+            return result
+        }
+        item.standardAppearance = appearance(item.standardAppearance ?? bar.standardAppearance)
+        item.compactAppearance = appearance(item.compactAppearance ?? bar.compactAppearance)
+        item.scrollEdgeAppearance = appearance(item.scrollEdgeAppearance ?? bar.scrollEdgeAppearance)
+        item.compactScrollEdgeAppearance = appearance(
+            item.compactScrollEdgeAppearance ?? bar.compactScrollEdgeAppearance
+        )
+    }
+
+    private func restoreBackButtonDisplayMode() {
+        if let customizedBackItem, let previousBackButtonDisplayMode {
+            customizedBackItem.backButtonDisplayMode = previousBackButtonDisplayMode
+        }
+        customizedBackItem = nil
+        previousBackButtonDisplayMode = nil
     }
 }
 

@@ -73,11 +73,14 @@ struct NewsDetailView: View {
                 }
                 .toolbar {
                     ToolbarItemGroup(placement: .navigationBarLeading) {
-                        HStack(alignment: .top, spacing:0) {
-                            Image("back-Left")
-                                .onTapGesture {
-                                    presentationMode.wrappedValue.dismiss()
-                                }
+                        Button {
+                            presentationMode.wrappedValue.dismiss()
+                        } label: {
+                            Image("NewsDemoNavBack36")
+                                .renderingMode(.template)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 36, height: 36)
                         }
                     }
                 }

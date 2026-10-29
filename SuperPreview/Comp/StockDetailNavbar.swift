@@ -156,13 +156,13 @@ struct StockDetailNavbar: View {
             if presentation == .scroll {
                 scrollTitleContent
             } else {
-                HStack(spacing: StockDetailNavbarLayout.leadingTitleSpacing) {
+                HStack(spacing: DemoNavigationBarLayout.leadingTitleSpacing) {
                     Button(action: onBack) {
-                        glyph("back-Left")
+                        glyph("NewsDemoNavBack36")
                     }
-                    .buttonStyle(PlainButtonStyle())
+                    .modifier(DemoNavigationGlassButtonStyle(shape: .circle))
                     .frame(
-                        width: StockDetailNavbarLayout.iconSize,
+                        width: DemoNavigationBarLayout.iconButtonWidth,
                         height: StockDetailNavbarLayout.height
                     )
                     .contentShape(Rectangle())
@@ -178,8 +178,12 @@ struct StockDetailNavbar: View {
                     Button(action: onShare) {
                         trailingActionContent
                     }
-                    .buttonStyle(PlainButtonStyle())
-                    .frame(minWidth: StockDetailNavbarLayout.iconSize)
+                    .modifier(
+                        DemoNavigationGlassButtonStyle(
+                            shape: trailingAction == .share ? .circle : .capsule
+                        )
+                    )
+                    .frame(minWidth: StockDetailNavbarLayout.height)
                     .frame(height: StockDetailNavbarLayout.height)
                     .contentShape(Rectangle())
                     .accessibilityLabel(shareAccessibilityLabel ?? trailingActionAccessibilityLabel)
@@ -300,8 +304,10 @@ struct StockDetailNavbar: View {
 
     private func glyph(_ assetName: String) -> some View {
         Image(assetName)
+            .renderingMode(.template)
             .resizable()
             .scaledToFit()
+            .foregroundStyle(Color("color-text-30"))
             .frame(
                 width: StockDetailNavbarLayout.iconSize,
                 height: StockDetailNavbarLayout.iconSize
@@ -314,7 +320,7 @@ struct StockDetailNavbar: View {
         case .none:
             EmptyView()
         case .share:
-            glyph("share-Right")
+            glyph("FigmaNavShare36")
         case .debug:
             Text(language.text(.debug))
                 .modifier(
@@ -385,16 +391,16 @@ struct StockDetailNavbar: View {
 
 private enum StockDetailNavbarLayout {
     static let horizontalPadding: CGFloat = 16
-    static let leadingTitleSpacing: CGFloat = 2
-    static let iconSize: CGFloat = 24
+    static let iconSize: CGFloat = 36
     static let titleWidth: CGFloat = 240
     static let titleHeight: CGFloat = 24
     static let quoteHeight: CGFloat = 16
-    static let height: CGFloat = 44
-    static let titleRestingOffset: CGFloat = 10
-    static let quoteRestingOffset: CGFloat = 42
-    static let titleLift: CGFloat = 8
-    static let quoteLift: CGFloat = 16
+    static let height: CGFloat = 56
+    // Keep the title centered on its own and the two rows centered as a group.
+    static let titleRestingOffset: CGFloat = (height - titleHeight) / 2
+    static let quoteRestingOffset: CGFloat = (height + titleHeight + quoteHeight) / 2
+    static let titleLift: CGFloat = quoteHeight / 2
+    static let quoteLift: CGFloat = quoteHeight
     static let scrollHeight: CGFloat = 52
     static let scrollTitleSpacing: CGFloat = 4
     static let scrollTitleFontSize: CGFloat = 20
