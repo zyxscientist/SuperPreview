@@ -51,6 +51,10 @@ struct StockOrderNavbar: View {
                         .scaledToFit()
                         .frame(width: StockOrderNavbarLayout.iconSize, height: StockOrderNavbarLayout.iconSize)
                         .foregroundStyle(Color("color-text-30"))
+                        .frame(
+                            width: DemoNavigationBarLayout.backLabelSize,
+                            height: DemoNavigationBarLayout.backLabelSize
+                        )
                 }
                 .modifier(DemoNavigationGlassButtonStyle(shape: .circle))
                 .frame(
@@ -92,6 +96,8 @@ struct StockOrderNavbar: View {
         .background(Color("color-base-1"))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockOrder.navbar")
+        // Let the pressed glass extend over the content below the navbar.
+        .zIndex(1)
     }
 
     @ViewBuilder
@@ -177,6 +183,9 @@ private enum StockOrderNavbarLayout {
 enum DemoNavigationBarLayout {
     static let iconButtonWidth: CGFloat = 44
     static let leadingTitleSpacing: CGFloat = 12
+    // The 36pt artwork remains unchanged; the smaller label lets the native
+    // glass button style produce a circle close to the system back button.
+    static let backLabelSize: CGFloat = 30
 }
 
 enum DemoNavigationButtonShape {

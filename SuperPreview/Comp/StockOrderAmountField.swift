@@ -22,6 +22,7 @@ struct StockOrderAmountField: View {
     let orderType: StockOrderOrderType
     let fractionDigits: Int
     let usesMargin: Bool
+    let hasSymbol: Bool
 
     @Environment(\.demoLanguage) private var language
 
@@ -31,7 +32,8 @@ struct StockOrderAmountField: View {
         currencyCode: String,
         orderType: StockOrderOrderType,
         fractionDigits: Int = 2,
-        usesMargin: Bool = false
+        usesMargin: Bool = false,
+        hasSymbol: Bool = true
     ) {
         self.price = price
         self.quantity = quantity
@@ -39,6 +41,7 @@ struct StockOrderAmountField: View {
         self.orderType = orderType
         self.fractionDigits = fractionDigits
         self.usesMargin = usesMargin
+        self.hasSymbol = hasSymbol
     }
 
     var body: some View {
@@ -94,7 +97,7 @@ struct StockOrderAmountField: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.65)
 
-            if usesMargin {
+            if usesMargin && hasSymbol {
                 Text(language.text(.buyingUsesMargin))
                     .modifier(
                         CustomFontModifier(
@@ -117,6 +120,8 @@ struct StockOrderAmountField: View {
     }
 
     private var displayAmount: String {
+        guard hasSymbol else { return "--" }
+
         guard orderType != .market else {
             return language.text(.atMarketPrice)
         }

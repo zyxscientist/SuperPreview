@@ -554,7 +554,8 @@ struct StockOrderDemoView: View {
                 currencyCode: viewModel.profile.currencyCode,
                 orderType: viewModel.orderType,
                 fractionDigits: viewModel.profile.isCrypto ? 2 : 2,
-                usesMargin: viewModel.profile.usesMargin && viewModel.orderType != .market
+                usesMargin: viewModel.profile.usesMargin && viewModel.orderType != .market,
+                hasSymbol: viewModel.selection != nil
             )
             .simultaneousGesture(TapGesture().onEnded { dismissInput() })
 

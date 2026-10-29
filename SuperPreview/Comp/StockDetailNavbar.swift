@@ -159,6 +159,10 @@ struct StockDetailNavbar: View {
                 HStack(spacing: DemoNavigationBarLayout.leadingTitleSpacing) {
                     Button(action: onBack) {
                         glyph("NewsDemoNavBack36")
+                            .frame(
+                                width: DemoNavigationBarLayout.backLabelSize,
+                                height: DemoNavigationBarLayout.backLabelSize
+                            )
                     }
                     .modifier(DemoNavigationGlassButtonStyle(shape: .circle))
                     .frame(
@@ -204,6 +208,8 @@ struct StockDetailNavbar: View {
         .background(Color("color-base-1"))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockDetail.navbar")
+        // Let the pressed glass extend over the content below the navbar.
+        .zIndex(1)
     }
 
     private var scrollTitleContent: some View {
