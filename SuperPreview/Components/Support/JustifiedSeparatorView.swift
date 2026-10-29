@@ -9,13 +9,15 @@
 import SwiftUI
 
 struct JustifiedSeparatorView: View  {
+    var horizontalPadding: CGFloat = 15
+
     var body: some View {
-        VStack() {
-            Spacer()
+        VStack(spacing: 0) {
+            Spacer(minLength: 0)
             Rectangle()
                 .frame(minHeight: 0.5, maxHeight:0.5)
                 .foregroundColor(Color("color-separator-10"))
-                .padding(.horizontal, 15)
+                .padding(.horizontal, horizontalPadding)
         }
     }
 }

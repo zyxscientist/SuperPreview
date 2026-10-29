@@ -245,6 +245,12 @@ private struct NewsStoryRow: View {
         .frame(maxWidth: .infinity, minHeight: 104, maxHeight: 104, alignment: .topLeading)
         .contentShape(Rectangle())
         .background(Color("color-base-1"))
+        .overlay(alignment: .bottom) {
+            JustifiedSeparatorView(horizontalPadding: 16)
+                .frame(height: 0.5)
+                .allowsHitTesting(false)
+                .accessibilityHidden(true)
+        }
     }
 
     private var textContent: some View {

@@ -44,15 +44,16 @@ struct NewsHeadlineView: View {
                             )
                         }
                         .buttonStyle(.plain)
+                        .overlay(alignment: .bottom) {
+                            JustifiedSeparatorView(horizontalPadding: 16)
+                                .frame(height: 0.5)
+                                .allowsHitTesting(false)
+                                .accessibilityHidden(true)
+                        }
                         .accessibilityElement(children: .combine)
                         .accessibilityLabel(accessibilityLabel(for: row.story))
                         .accessibilityHint(language.resolve(NewsDemoCopy.openArticleDetailsHint))
                         .accessibilityIdentifier("news.headline.article.\(row.story.id)")
-
-                        if row.id != articleRows.last?.id {
-                            FullWidthSeparatorView()
-                                .frame(height: 0.5)
-                        }
                     }
                 } else {
                     emptyState

@@ -83,6 +83,12 @@ private struct NewsFeedList: View {
                             NewsArticleRow(story: story, style: rowStyle)
                         }
                         .buttonStyle(.plain)
+                        .overlay(alignment: .bottom) {
+                            JustifiedSeparatorView(horizontalPadding: 16)
+                                .frame(height: 0.5)
+                                .allowsHitTesting(false)
+                                .accessibilityHidden(true)
+                        }
                         .accessibilityElement(children: .combine)
                         .accessibilityLabel(accessibilityLabel(for: story))
                         .accessibilityHint(language.resolve(NewsDemoCopy.openArticleDetailsHint))
