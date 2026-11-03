@@ -174,6 +174,17 @@ struct CompareTab5View: View {
         
         List{
             // 组件列表单元
+            NavigationLink(destination: ModalDemoView()) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("新弹窗组件")
+                        .font(.system(size: 16, weight: .semibold))
+                    Text("Modal · 居中弹窗")
+                        .foregroundColor(.gray)
+                        .font(.system(size: 13, design: .monospaced))
+                }
+            }
+            .accessibilityIdentifier("compare.modalDemo")
+
             NavigationLink(
                 destination: SystemSegmentedControlDemoView(),
                 label: {

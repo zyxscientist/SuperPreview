@@ -1,0 +1,13 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Glyph/Sharing/03_Function/checkbox_selected_sm">
+<g id="base" opacity="0.01">
+</g>
+<rect id="Combined Shape" x="1" y="1" width="14" height="14" rx="2" fill="#196EFF"/>
+<mask id="mask0_0_23554" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="1" y="1" width="14" height="14">
+<rect id="Combined Shape_2" x="1" y="1" width="14" height="14" rx="2" fill="white"/>
+</mask>
+<g mask="url(#mask0_0_23554)">
+<path id="path" d="M11.1585 4.94262C11.472 4.63127 11.979 4.63304 12.2904 4.94652C12.6014 5.25997 12.5997 5.76609 12.2864 6.07738L7.41535 10.9153C7.10882 11.2197 6.616 11.2257 6.30207 10.9289L4.1302 8.87621C3.80924 8.57265 3.79542 8.06637 4.09895 7.74535C4.40246 7.42444 4.90878 7.40974 5.2298 7.71312L6.83723 9.23363L11.1585 4.94262Z" fill="white"/>
+</g>
+</g>
+</svg>

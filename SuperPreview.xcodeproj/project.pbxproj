@@ -99,6 +99,7 @@
 		84F500012F82000000ABC001 /* LiquidGlassResearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F500002F82000000ABC001 /* LiquidGlassResearchView.swift */; };
 		84F600012F83000000ABC001 /* DemoLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F600002F83000000ABC001 /* DemoLocalization.swift */; };
 		84F700022F84000000ABC001 /* logo.icon in Resources */ = {isa = PBXBuildFile; fileRef = 84F700012F84000000ABC001 /* logo.icon */; };
+		84FC00012F99000000ABC001 /* ModalDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FC00002F99000000ABC001 /* ModalDemoView.swift */; };
 		84F800012F85000000ABC001 /* SystemSegmentedControlDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F800002F85000000ABC001 /* SystemSegmentedControlDemoView.swift */; };
 		84F900012F90000000ABC001 /* MarketView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F900002F90000000ABC001 /* MarketView.swift */; };
 		84FA00012F88000000ABC001 /* RotateBeamDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FA00002F88000000ABC001 /* RotateBeamDemoView.swift */; };
@@ -335,6 +336,7 @@
 		84F500002F82000000ABC001 /* LiquidGlassResearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassResearchView.swift; sourceTree = "<group>"; };
 		84F600002F83000000ABC001 /* DemoLocalization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoLocalization.swift; sourceTree = "<group>"; };
 		84F700012F84000000ABC001 /* logo.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = logo.icon; sourceTree = "<group>"; };
+		84FC00002F99000000ABC001 /* ModalDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalDemoView.swift; sourceTree = "<group>"; };
 		84F800002F85000000ABC001 /* SystemSegmentedControlDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemSegmentedControlDemoView.swift; sourceTree = "<group>"; };
 		84F900002F90000000ABC001 /* MarketView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketView.swift; sourceTree = "<group>"; };
 		84FA00002F88000000ABC001 /* RotateBeamDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RotateBeamDemoView.swift; sourceTree = "<group>"; };
@@ -633,6 +635,7 @@
 				84F400002F81000000ABC001 /* JakartaMonospacedComparisonView.swift */,
 				84FA00002F88000000ABC001 /* RotateBeamDemoView.swift */,
 				84F500002F82000000ABC001 /* LiquidGlassResearchView.swift */,
+				84FC00002F99000000ABC001 /* ModalDemoView.swift */,
 				84F800002F85000000ABC001 /* SystemSegmentedControlDemoView.swift */,
 			);
 			path = UXDemo;
@@ -1183,6 +1186,7 @@
 				84F400012F81000000ABC001 /* JakartaMonospacedComparisonView.swift in Sources */,
 				84FA00012F88000000ABC001 /* RotateBeamDemoView.swift in Sources */,
 				84F500012F82000000ABC001 /* LiquidGlassResearchView.swift in Sources */,
+				84FC00012F99000000ABC001 /* ModalDemoView.swift in Sources */,
 				84F800012F85000000ABC001 /* SystemSegmentedControlDemoView.swift in Sources */,
 				C2330E512851DA7A00382AE1 /* CustomFontModifier.swift in Sources */,
 				847B7CAE263C03DC003E5A40 /* NewsTextItemView.swift in Sources */,
