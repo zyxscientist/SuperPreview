@@ -220,6 +220,8 @@ private struct JakartaFontDebugView: View {
             Form {
                 DemoTouchToggle()
 
+                DemoMarketColorToggle()
+
                 Section {
                     ForEach(JakartaFontWeight.allCases) { weight in
                         Button {
@@ -347,6 +349,7 @@ private struct JakartaQuoteSample {
 }
 
 private struct JakartaNumberSampleCard: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     let title: String
     let subtitle: String
     let isMonospaced: Bool
@@ -408,7 +411,7 @@ private struct JakartaNumberSampleCard: View {
     private var quoteRows: some View {
         VStack(spacing: 10) {
             JakartaQuoteRow(label: "现价", value: quote.price, isMonospaced: isMonospaced, fontWeight: fontWeight)
-            JakartaQuoteRow(label: "涨跌幅", value: quote.change, isMonospaced: isMonospaced, fontWeight: fontWeight, valueColor: Color("color-futu-red"))
+            JakartaQuoteRow(label: "涨跌幅", value: quote.change, isMonospaced: isMonospaced, fontWeight: fontWeight, valueColor: MarketColor.resolve("color-futu-red", reversed: marketColorReversed))
             JakartaQuoteRow(label: "成交量", value: quote.volume, isMonospaced: isMonospaced, fontWeight: fontWeight)
             JakartaQuoteRow(label: "更新时间", value: quote.time, isMonospaced: isMonospaced, fontWeight: fontWeight)
         }

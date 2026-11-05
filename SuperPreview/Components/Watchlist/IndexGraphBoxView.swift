@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct IndexGraphBoxView: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     
     var direction : String
     var indexName : String
@@ -30,15 +31,15 @@ struct IndexGraphBoxView: View {
                 .padding(.bottom, 5)
             Text(indexPrice)
                 .font(.system(size: 18, weight: .bold))
-                .foregroundColor(red ? Color("color-utility-red"):Color("color-utility-green"))
+                .foregroundColor(red ? MarketColor.resolve("color-utility-red", reversed: marketColorReversed):MarketColor.resolve("color-utility-green", reversed: marketColorReversed))
             HStack {
                 Text(indexChangeOrderAmountView)
                     .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(red ? Color("color-utility-red"):Color("color-utility-green"))
+                    .foregroundColor(red ? MarketColor.resolve("color-utility-red", reversed: marketColorReversed):MarketColor.resolve("color-utility-green", reversed: marketColorReversed))
                 
                 Text(indexQuoteChange)
                     .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(red ? Color("color-utility-red"):Color("color-utility-green"))
+                    .foregroundColor(red ? MarketColor.resolve("color-utility-red", reversed: marketColorReversed):MarketColor.resolve("color-utility-green", reversed: marketColorReversed))
             }
         }.background(Color("color-transparent"))
     }

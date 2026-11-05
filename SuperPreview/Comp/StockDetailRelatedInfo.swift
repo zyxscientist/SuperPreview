@@ -15,16 +15,16 @@ enum StockDetailRelatedInfoTone: Hashable {
     case positive
     case negative
 
-    fileprivate var color: Color {
+    fileprivate func color(reversed: Bool) -> Color {
         switch self {
         case .primary:
             Color("color-text-30")
         case .secondary:
             Color("color-text-60")
         case .positive:
-            Color("color-utility3-red")
+            MarketColor.resolve("color-utility3-red", reversed: reversed)
         case .negative:
-            Color("color-utility3-green")
+            MarketColor.resolve("color-utility3-green", reversed: reversed)
         }
     }
 }
@@ -343,6 +343,7 @@ struct StockDetailRelatedInfoInteractionState: Hashable {
 /// It deliberately has the final page insets defined by the Figma assembly
 /// frame so it can be dropped into the future detail page unchanged.
 struct StockDetailRelatedInfo: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     let items: [StockDetailRelatedInfoItem]
     @Binding var interactionState: StockDetailRelatedInfoInteractionState
     let onInteraction: (() -> Void)?
@@ -579,7 +580,7 @@ struct StockDetailRelatedInfo: View {
                                     lineHeight: StockDetailRelatedInfoLayout.lineHeight
                                 )
                             )
-                            .foregroundColor(StockDetailRelatedInfoTone.primary.color)
+                            .foregroundColor(StockDetailRelatedInfoTone.primary.color(reversed: marketColorReversed))
                             .lineLimit(isExpanded && canExpand ? nil : 1)
                             .fixedSize(horizontal: false, vertical: isExpanded && canExpand)
                     }
@@ -792,7 +793,7 @@ struct StockDetailRelatedInfo: View {
                     lineHeight: StockDetailRelatedInfoLayout.lineHeight
                 )
             )
-            .foregroundColor(tone.color)
+            .foregroundColor(tone.color(reversed: marketColorReversed))
     }
 
     private func rowShape(at index: Int) -> UnevenRoundedRectangle {

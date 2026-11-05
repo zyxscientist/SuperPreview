@@ -37,9 +37,6 @@ struct MarketIndexQuote: Identifiable {
         }
     }
 
-    var changeColor: Color {
-        Color(change.hasPrefix("-") ? "color-utility3-green" : "color-utility3-red")
-    }
 
 }
 
@@ -92,6 +89,11 @@ struct MarketIndexCards: View {
 }
 
 private struct MarketIndexCard: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
+
+    private var changeColor: Color {
+        MarketColor.resolve(quote.change.hasPrefix("-") ? "color-utility3-green" : "color-utility3-red", reversed: marketColorReversed)
+    }
     let quote: MarketIndexQuote
     @Environment(\.demoLanguage) private var language
 
@@ -114,12 +116,12 @@ private struct MarketIndexCard: View {
             .frame(height: 12)
             .padding(.top, 2)
 
-            MarketIndexSparkline(color: quote.changeColor)
+            MarketIndexSparkline(color: changeColor)
             .frame(height: 40)
             .padding(.top, 13)
             .accessibilityHidden(true)
         }
-        .foregroundStyle(quote.changeColor)
+        .foregroundStyle(changeColor)
         .lineLimit(1)
         .minimumScaleFactor(0.7)
         .frame(maxWidth: .infinity, alignment: .leading)

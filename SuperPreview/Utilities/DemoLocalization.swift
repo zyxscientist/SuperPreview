@@ -81,15 +81,43 @@ private struct DemoLanguageKey: EnvironmentKey {
     static let defaultValue = DemoLanguage.simplifiedChinese
 }
 
+private struct MarketColorReversedKey: EnvironmentKey {
+    static let defaultValue = false
+}
+
 extension EnvironmentValues {
     var demoLanguage: DemoLanguage {
         get { self[DemoLanguageKey.self] }
         set { self[DemoLanguageKey.self] = newValue }
     }
+
+    var marketColorReversed: Bool {
+        get { self[MarketColorReversedKey.self] }
+        set { self[MarketColorReversedKey.self] = newValue }
+    }
+}
+
+enum MarketColor {
+    static let storageKey = "demo.marketColorReversed"
+
+    static func resolve(_ assetName: String, reversed: Bool) -> Color {
+        let pairs = [
+            "color-utility-red": "color-utility-green",
+            "color-utility-green": "color-utility-red",
+            "color-utility2-red": "color-utility2-green",
+            "color-utility2-green": "color-utility2-red",
+            "color-utility3-red": "color-utility3-green",
+            "color-utility3-green": "color-utility3-red",
+            "color-futu-red": "color-futu-green",
+            "color-futu-green": "color-futu-red"
+        ]
+        return Color(reversed ? (pairs[assetName] ?? assetName) : assetName)
+    }
 }
 
 enum DemoCopyKey {
     case newWatchlist, newTrade, stockOrderPage, debug, done, interfaceLanguage
+    case reverseMarketColors
     case reduceLiquidGlassUsage, reduceLiquidGlassUsageDetails
     case reduceLiquidGlassUsageUnavailableDetails
     case liquidGlassUsageEnabled
@@ -335,6 +363,7 @@ private enum DemoCopy {
         .debug: ("调试", "除錯", "Debug"),
         .done: ("完成", "完成", "Done"),
         .interfaceLanguage: ("界面语言", "介面語言", "Interface Language"),
+        .reverseMarketColors: ("涨跌颜色反转", "漲跌顏色反轉", "Reverse Market Colors"),
         .reduceLiquidGlassUsage: ("减少液态玻璃使用", "減少液態玻璃使用", "Reduce Liquid Glass"),
         .reduceLiquidGlassUsageDetails: ("开启后，选中态恢复为实心 Capsule 样式", "開啟後，選中態恢復為實心 Capsule 樣式", "Selected states use the original solid Capsule style when enabled."),
         .reduceLiquidGlassUsageUnavailableDetails: ("当前系统已自动启用减少液态玻璃使用", "目前系統已自動啟用減少液態玻璃使用", "Reduced Liquid Glass is automatically enabled on this system."),
@@ -963,6 +992,18 @@ private enum DemoCopy {
         .positionIncomeHeader: "Position Income",
         .recurringInvestmentTag: "Automatic Investment Plan"
     ]
+}
+
+struct DemoMarketColorToggle: View {
+    @AppStorage(MarketColor.storageKey) private var isReversed = false
+    @Environment(\.demoLanguage) private var language
+
+    var body: some View {
+        Toggle(language.text(.reverseMarketColors), isOn: $isReversed)
+            .font(.system(size: 16, weight: .medium))
+            .foregroundColor(Color("color-text-30"))
+            .accessibilityIdentifier("debug.marketColorReversed")
+    }
 }
 
 struct DemoLanguagePicker: View {

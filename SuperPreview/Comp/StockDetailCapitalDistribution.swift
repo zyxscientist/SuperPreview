@@ -137,6 +137,7 @@ enum StockDetailCapitalDistributionOrderSize: Hashable {
 /// The question-mark glyph is informational only in this prototype and does
 /// not attach a tap action.
 struct StockDetailCapitalDistribution: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     let data: StockDetailCapitalDistributionData
 
     @Environment(\.demoLanguage) private var language
@@ -230,7 +231,7 @@ struct StockDetailCapitalDistribution: View {
 
     private var flowRing: some View {
         ZStack {
-            Image("stock_detail_capital_distribution_ring")
+            Image(marketColorReversed ? "stock_detail_capital_distribution_ring_reversed" : "stock_detail_capital_distribution_ring")
                 .resizable()
                 .frame(
                     width: StockDetailCapitalDistributionLayout.ringSize,
@@ -253,7 +254,7 @@ struct StockDetailCapitalDistribution: View {
                             lineHeight: StockDetailCapitalDistributionLayout.netFlowLineHeight
                         )
                     )
-                    .foregroundColor(Color("color-stock-detail-capital-inflow-regular"))
+                    .foregroundColor(StockDetailCapitalDistributionOrderSize.medium.inflowColor(reversed: marketColorReversed))
 
                 Text(data.displayNetFlowTitle(for: language))
                     .modifier(
@@ -272,13 +273,14 @@ struct StockDetailCapitalDistribution: View {
         )
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(data.displayNetFlowTitle(for: language)) \(data.netFlow)")
+        .accessibilityIdentifier("stockDetail.capitalDistribution.ring")
     }
 
     private var totals: some View {
         HStack(spacing: StockDetailCapitalDistributionLayout.totalsSpacing) {
             HStack(spacing: 0) {
                 Text(data.inflowTotal)
-                    .foregroundColor(Color("color-stock-detail-capital-inflow-regular"))
+                    .foregroundColor(StockDetailCapitalDistributionOrderSize.medium.inflowColor(reversed: marketColorReversed))
                 Text(":\(data.displayInflowTitle(for: language))")
                     .foregroundColor(Color("color-text-30"))
             }
@@ -287,7 +289,7 @@ struct StockDetailCapitalDistribution: View {
                 Text("\(data.displayOutflowTitle(for: language)):")
                     .foregroundColor(Color("color-text-30"))
                 Text(data.outflowTotal)
-                    .foregroundColor(Color("color-stock-detail-capital-outflow-regular"))
+                    .foregroundColor(StockDetailCapitalDistributionOrderSize.medium.outflowColor(reversed: marketColorReversed))
             }
         }
         .modifier(
@@ -299,6 +301,7 @@ struct StockDetailCapitalDistribution: View {
         )
         .frame(maxWidth: .infinity)
         .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("stockDetail.capitalDistribution.totals")
     }
 
     private var flowBars: some View {
@@ -328,7 +331,7 @@ struct StockDetailCapitalDistribution: View {
     ) -> some View {
         if direction == .inflow {
             HStack(spacing: StockDetailCapitalDistributionLayout.legendItemSpacing) {
-                legendMarker(color: breakdown.orderSize.inflowColor)
+                legendMarker(color: breakdown.orderSize.inflowColor(reversed: marketColorReversed))
                 legendLabel(breakdown.displayCategory(for: language))
                 Spacer(minLength: StockDetailCapitalDistributionLayout.legendMinimumSpacer)
                 legendShare(breakdown.inflowShare)
@@ -338,7 +341,7 @@ struct StockDetailCapitalDistribution: View {
                 legendShare(breakdown.outflowShare)
                 Spacer(minLength: StockDetailCapitalDistributionLayout.legendMinimumSpacer)
                 legendLabel(breakdown.displayCategory(for: language))
-                legendMarker(color: breakdown.orderSize.outflowColor)
+                legendMarker(color: breakdown.orderSize.outflowColor(reversed: marketColorReversed))
             }
         }
     }
@@ -393,14 +396,14 @@ struct StockDetailCapitalDistribution: View {
                         lineHeight: StockDetailCapitalDistributionLayout.barLineHeight
                     )
                 )
-                .foregroundColor(breakdown.orderSize.inflowColor)
+                .foregroundColor(breakdown.orderSize.inflowColor(reversed: marketColorReversed))
                 .frame(
                     width: StockDetailCapitalDistributionLayout.barAmountWidth,
                     alignment: .leading
                 )
 
             flowBar(
-                color: breakdown.orderSize.inflowColor,
+                color: breakdown.orderSize.inflowColor(reversed: marketColorReversed),
                 fraction: breakdown.inflowBarFraction,
                 alignment: .trailing
             )
@@ -420,7 +423,7 @@ struct StockDetailCapitalDistribution: View {
                 )
 
             flowBar(
-                color: breakdown.orderSize.outflowColor,
+                color: breakdown.orderSize.outflowColor(reversed: marketColorReversed),
                 fraction: breakdown.outflowBarFraction,
                 alignment: .leading
             )
@@ -433,7 +436,7 @@ struct StockDetailCapitalDistribution: View {
                         lineHeight: StockDetailCapitalDistributionLayout.barLineHeight
                     )
                 )
-                .foregroundColor(breakdown.orderSize.outflowColor)
+                .foregroundColor(breakdown.orderSize.outflowColor(reversed: marketColorReversed))
                 .frame(
                     width: StockDetailCapitalDistributionLayout.barAmountWidth,
                     alignment: .trailing
@@ -471,25 +474,22 @@ private enum StockDetailCapitalDistributionDirection {
 }
 
 private extension StockDetailCapitalDistributionOrderSize {
-    var inflowColor: Color {
-        switch self {
-        case .large:
-            Color("color-stock-detail-capital-inflow-strong")
-        case .medium:
-            Color("color-stock-detail-capital-inflow-regular")
-        case .small:
-            Color("color-stock-detail-capital-inflow-weak")
-        }
+    func inflowColor(reversed: Bool) -> Color {
+        color(direction: reversed ? .outflow : .inflow)
     }
 
-    var outflowColor: Color {
-        switch self {
-        case .large:
-            Color("color-stock-detail-capital-outflow-strong")
-        case .medium:
-            Color("color-stock-detail-capital-outflow-regular")
-        case .small:
-            Color("color-stock-detail-capital-outflow-weak")
+    func outflowColor(reversed: Bool) -> Color {
+        color(direction: reversed ? .inflow : .outflow)
+    }
+
+    private func color(direction: StockDetailCapitalDistributionDirection) -> Color {
+        switch (self, direction) {
+        case (.large, .inflow): Color("color-stock-detail-capital-inflow-strong")
+        case (.medium, .inflow): Color("color-stock-detail-capital-inflow-regular")
+        case (.small, .inflow): Color("color-stock-detail-capital-inflow-weak")
+        case (.large, .outflow): Color("color-stock-detail-capital-outflow-strong")
+        case (.medium, .outflow): Color("color-stock-detail-capital-outflow-regular")
+        case (.small, .outflow): Color("color-stock-detail-capital-outflow-weak")
         }
     }
 }

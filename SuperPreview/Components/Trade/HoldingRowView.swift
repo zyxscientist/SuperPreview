@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct HoldingRowView: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     
     var name : String
     var symbol : String
@@ -48,10 +49,10 @@ struct HoldingRowView: View {
             VStack(alignment: .trailing, spacing: 5.0) {
                 Text("+11,275.00")
                     .font(.system(size: fontsize, weight: .semibold))
-                    .foregroundColor(Color("color-utility-red"))
+                    .foregroundColor(MarketColor.resolve("color-utility-red", reversed: marketColorReversed))
                 Text("+41.83%")
                     .font(.system(size: fontsize, weight: .semibold))
-                    .foregroundColor(Color("color-utility-red"))
+                    .foregroundColor(MarketColor.resolve("color-utility-red", reversed: marketColorReversed))
                 
             }.padding(.leading, 0)
         }

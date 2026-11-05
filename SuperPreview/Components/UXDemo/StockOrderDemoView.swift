@@ -682,6 +682,8 @@ private struct StockOrderDebugPanel: View {
 
             DemoTouchToggle()
 
+            DemoMarketColorToggle()
+
             Toggle(
                 interfaceLanguage.text(.highFrequencyTradingTools),
                 isOn: $isHighFrequencyTradingEnabled

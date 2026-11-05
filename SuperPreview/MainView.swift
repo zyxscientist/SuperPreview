@@ -14,6 +14,7 @@ struct MainView: View {
     @State var marketOpen = true
     @StateObject private var demoLanguageStore = DemoLanguageStore()
     @StateObject private var demoAppearanceStore = DemoAppearanceStore()
+    @AppStorage(MarketColor.storageKey) private var marketColorReversed = false
     @State private var isShowingWatchlistDebugPanel = false
     @State private var isShowingTradeDebugPanel = false
     @State private var isShowingMarketDebugPanel = false
@@ -108,6 +109,7 @@ struct MainView: View {
         .environmentObject(demoLanguageStore)
         .environmentObject(demoAppearanceStore)
         .environment(\.demoLanguage, demoLanguageStore.language)
+        .environment(\.marketColorReversed, marketColorReversed)
         .overlay {
             if !isPreview {
                 LaunchScreen()

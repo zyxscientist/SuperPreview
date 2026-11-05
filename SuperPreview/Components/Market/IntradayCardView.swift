@@ -11,9 +11,10 @@ import SwiftUI
 
 // 分时走势图卡片
 struct IntradayCardView: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     
     var index_name = "恒生指数"
-    var utility_color = Color(.colorUtilityRed)
+    var utility_color = "color-utility-red"
     
     // 点击后缩小
     @GestureState private var isPressed = false
@@ -29,29 +30,29 @@ struct IntradayCardView: View {
             Text("23308.99")
                 .minimumScaleFactor(0.5)
                 .modifier(CustomFontModifier(size: 16, font: .medium))
-                .foregroundColor(Color(utility_color))
+                .foregroundColor(MarketColor.resolve(utility_color, reversed: marketColorReversed))
                 .padding(.bottom, 4)
             
             HStack(spacing: 10){
                 Text("+195.77")
                     .minimumScaleFactor(0.5) 
                     .modifier(CustomFontModifier(size: 12, font: .medium))
-                    .foregroundColor(Color(utility_color))
+                    .foregroundColor(MarketColor.resolve(utility_color, reversed: marketColorReversed))
                 
                 Text("+1.99%")
                     .minimumScaleFactor(0.5)
                     .modifier(CustomFontModifier(size: 12, font: .medium))
-                    .foregroundColor(Color(utility_color))
+                    .foregroundColor(MarketColor.resolve(utility_color, reversed: marketColorReversed))
             }
             .padding(.bottom, 10)
             
             ZStack{
                 FilledMiniLineGraph(dataPoints: ChartMockData.miniChart_50_point.normalized, bottomBuffer: 0)
-                    .fill(LinearGradient(gradient: Gradient(colors: [Color(utility_color).opacity(0.2), Color(utility_color).opacity(0.0)]), startPoint: .top, endPoint: .bottom))
+                    .fill(LinearGradient(gradient: Gradient(colors: [MarketColor.resolve(utility_color, reversed: marketColorReversed).opacity(0.2), MarketColor.resolve(utility_color, reversed: marketColorReversed).opacity(0.0)]), startPoint: .top, endPoint: .bottom))
                     .frame(width: 88, height: 44)
                 
                 MiniLineGraph(dataPoints: ChartMockData.miniChart_50_point.normalized)
-                    .stroke(Color(utility_color), style: StrokeStyle(lineWidth: 1, lineCap: .round, lineJoin: .round))
+                    .stroke(MarketColor.resolve(utility_color, reversed: marketColorReversed), style: StrokeStyle(lineWidth: 1, lineCap: .round, lineJoin: .round))
                     .frame(width: 88, height: 44)
                 
             }
@@ -76,5 +77,5 @@ struct IntradayCardView: View {
 
 
 #Preview {
-    IntradayCardView(index_name: "指数名", utility_color: Color(.colorUtilityRed))
+    IntradayCardView(index_name: "指数名", utility_color: "color-utility-red")
 }

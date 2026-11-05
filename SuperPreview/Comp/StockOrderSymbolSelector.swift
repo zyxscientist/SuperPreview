@@ -338,6 +338,7 @@ private enum StockOrderQuoteAlignment {
 }
 
 private struct StockOrderExtendedHoursGrid: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     let symbol: StockOrderSymbol
     let nameWidth: CGFloat
 
@@ -462,7 +463,7 @@ private struct StockOrderExtendedHoursGrid: View {
     private var mainChange: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 8)
-                .fill(symbol.quote.trend.tileColor.opacity(0.15))
+                .fill(symbol.quote.trend.tileColor(reversed: marketColorReversed).opacity(0.15))
                 .frame(width: 82, height: 26)
                 .offset(y: -1)
 
@@ -473,7 +474,7 @@ private struct StockOrderExtendedHoursGrid: View {
                 Text(symbol.quote.changePercent.stockOrderUnsignedChange)
                     .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
                     .monospacedDigit()
-                    .foregroundColor(symbol.quote.trend.tileColor)
+                    .foregroundColor(symbol.quote.trend.tileColor(reversed: marketColorReversed))
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
             }
@@ -601,6 +602,7 @@ private struct StockOrderPriceView: View {
 }
 
 private struct StockOrderChangeTile: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     let quote: StockOrderQuote
 
     @Environment(\.demoLanguage) private var language
@@ -627,7 +629,7 @@ private struct StockOrderChangeTile: View {
                 .minimumScaleFactor(0.8)
         }
         .frame(width: 82, height: 28)
-        .background(quote.trend.tileColor)
+        .background(quote.trend.tileColor(reversed: marketColorReversed))
         .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
         .padding(.trailing, 8)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .trailing)
@@ -642,12 +644,12 @@ private struct StockOrderChangeTile: View {
                 Text(quote.changePercent.stockOrderUnsignedChange)
                     .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 20))
                     .monospacedDigit()
-                    .foregroundColor(quote.trend.tileColor)
+                    .foregroundColor(quote.trend.tileColor(reversed: marketColorReversed))
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
             }
             .frame(width: 82, height: 26)
-            .background(quote.trend.tileColor.opacity(0.15))
+            .background(quote.trend.tileColor(reversed: marketColorReversed).opacity(0.15))
             .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
 
             HStack(spacing: 4) {
@@ -691,6 +693,7 @@ private enum StockOrderChangeIconContrast {
 }
 
 private struct StockOrderChangeDirectionIcon: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     let trend: StockOrderQuoteTrend
     let contrast: StockOrderChangeIconContrast
 
@@ -706,11 +709,15 @@ private struct StockOrderChangeDirectionIcon: View {
                 .scaledToFit()
         case (.up, .tinted):
             Image("watchlistItem_up_red")
+                .renderingMode(.template)
                 .resizable()
+                .foregroundColor(trend.tileColor(reversed: marketColorReversed))
                 .scaledToFit()
         case (.down, .tinted):
             Image("watchlistItem_down_green")
+                .renderingMode(.template)
                 .resizable()
+                .foregroundColor(trend.tileColor(reversed: marketColorReversed))
                 .scaledToFit()
         case (.flat, .white):
             Circle()
@@ -725,6 +732,7 @@ private struct StockOrderChangeDirectionIcon: View {
 }
 
 private struct StockOrderMiniKLine: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     let points: [CGFloat]
     let trend: StockOrderQuoteTrend
 
@@ -739,7 +747,7 @@ private struct StockOrderMiniKLine: View {
 
             MiniLineGraph(dataPoints: points)
                 .stroke(
-                    trend.lineColor,
+                    trend.lineColor(reversed: marketColorReversed),
                     style: StrokeStyle(lineWidth: 1.5, lineCap: .round, lineJoin: .round)
                 )
         }
@@ -800,8 +808,7 @@ private struct StockOrderMarketNoticeView: View {
 
 private struct StockOrderChartSnapshot: View {
     var body: some View {
-        Image("stock_order_chart_snapshot")
-            .resizable()
+        MarketChartSnapshot()
             .aspectRatio(402.0 / 409.0, contentMode: .fit)
             .frame(maxWidth: .infinity)
             .accessibilityLabel("Stock chart preview")

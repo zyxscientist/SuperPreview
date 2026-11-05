@@ -42,14 +42,14 @@ enum StockDetailQuoteDetailTone: Hashable {
     case positive
     case negative
 
-    fileprivate var color: Color {
+    fileprivate func color(reversed: Bool) -> Color {
         switch self {
         case .primary:
             Color("color-text-30")
         case .positive:
-            Color("color-utility3-red")
+            MarketColor.resolve("color-utility3-red", reversed: reversed)
         case .negative:
-            Color("color-utility3-green")
+            MarketColor.resolve("color-utility3-green", reversed: reversed)
         }
     }
 }
@@ -119,6 +119,7 @@ struct StockDetailQuoteDetailsData: Hashable {
 /// cell, matching the component variants in the design instead of merely
 /// translating the Chinese layout.
 struct StockDetailQuoteDetails: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     let data: StockDetailQuoteDetailsData
 
     @Environment(\.demoLanguage) private var language
@@ -221,7 +222,7 @@ struct StockDetailQuoteDetails: View {
                     lineHeight: StockDetailQuoteDetailsLayout.lineHeight
                 )
             )
-            .foregroundColor(item.tone.color)
+            .foregroundColor(item.tone.color(reversed: marketColorReversed))
             .lineLimit(1)
             .minimumScaleFactor(0.65)
     }

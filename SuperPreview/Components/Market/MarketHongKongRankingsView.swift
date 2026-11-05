@@ -211,8 +211,15 @@ struct MarketHongKongRankingsView: View {
 }
 
 private struct MarketHongKongRankingRow: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     let item: MarketHongKongRankingItem
     let name: String
+
+    private var changeColor: Color {
+        if item.percentChange > 0 { return MarketColor.resolve("color-utility3-red", reversed: marketColorReversed) }
+        if item.percentChange < 0 { return MarketColor.resolve("color-utility3-green", reversed: marketColorReversed) }
+        return Color("color-text-60")
+    }
 
     var body: some View {
         GeometryReader { geometry in
@@ -251,7 +258,7 @@ private struct MarketHongKongRankingRow: View {
                         .frame(maxWidth: .infinity, alignment: .trailing)
 
                     Text(item.formattedChange)
-                        .foregroundStyle(item.changeColor)
+                        .foregroundStyle(changeColor)
                         .frame(maxWidth: .infinity, alignment: .trailing)
                 }
                 .modifier(CustomFontModifier(size: 16, font: .regular, lineHeight: 24))
@@ -275,11 +282,6 @@ private extension MarketHongKongRankingItem {
         ) + "%"
     }
 
-    var changeColor: Color {
-        if percentChange > 0 { return Color("color-utility3-red") }
-        if percentChange < 0 { return Color("color-utility3-green") }
-        return Color("color-text-60")
-    }
 }
 
 #Preview("港股榜单 · 设计稿") {

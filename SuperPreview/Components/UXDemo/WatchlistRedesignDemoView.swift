@@ -358,6 +358,8 @@ struct WatchlistRedesignDebugPanel: View {
 
             DemoTouchToggle()
 
+            DemoMarketColorToggle()
+
             DemoLiquidGlassUsageToggle(
                 isReducedLiquidGlassUsageEnabled: $isReducedLiquidGlassUsageEnabled
             )
@@ -692,6 +694,7 @@ struct WatchlistRedesignTableHeader: View {
 }
 
 struct WatchlistRedesignRow: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     let item: WatchlistRedesignItem
     let isMiniKVisible: Bool
 
@@ -767,7 +770,7 @@ struct WatchlistRedesignRow: View {
         guard oldValue != newValue else { return }
 
         flashWorkItem?.cancel()
-        flashColor = oldValue < newValue ? Color("color-utility3-red") : Color("color-utility3-green")
+        flashColor = oldValue < newValue ? MarketColor.resolve("color-utility3-red", reversed: marketColorReversed) : MarketColor.resolve("color-utility3-green", reversed: marketColorReversed)
         isFlashVisible = true
 
         let workItem = DispatchWorkItem {
@@ -780,6 +783,7 @@ struct WatchlistRedesignRow: View {
 }
 
 private struct WatchlistRedesignExtendedHoursGrid: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     let item: WatchlistRedesignItem
     let nameWidth: CGFloat
 
@@ -944,9 +948,9 @@ private struct WatchlistRedesignExtendedHoursGrid: View {
     private var tileColor: Color {
         switch item.trend {
         case .up:
-            return Color("color-utility3-red")
+            return MarketColor.resolve("color-utility3-red", reversed: marketColorReversed)
         case .down:
-            return Color("color-utility3-green")
+            return MarketColor.resolve("color-utility3-green", reversed: marketColorReversed)
         case .flat:
             return Color("color-text-90")
         }
@@ -1007,6 +1011,7 @@ private struct WatchlistRedesignMarketBadge: View {
 }
 
 private struct WatchlistRedesignChangeIcon: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     let trend: WatchlistRedesignTrend
     let contrast: WatchlistRedesignIconContrast
 
@@ -1021,9 +1026,15 @@ private struct WatchlistRedesignChangeIcon: View {
                 .fill(.white)
                 .frame(width: 5, height: 5)
         case (.up, .tinted):
-            Image("watchlistItem_up_red").resizable()
+            Image("watchlistItem_up_red")
+                .renderingMode(.template)
+                .resizable()
+                .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
         case (.down, .tinted):
-            Image("watchlistItem_down_green").resizable()
+            Image("watchlistItem_down_green")
+                .renderingMode(.template)
+                .resizable()
+                .foregroundColor(MarketColor.resolve("color-utility3-green", reversed: marketColorReversed))
         case (.flat, .tinted):
             Circle()
                 .fill(Color("color-text-90"))
@@ -1099,6 +1110,7 @@ struct WatchlistRedesignPriceCell: View {
 }
 
 struct WatchlistRedesignChangeCell: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     let item: WatchlistRedesignItem
     @Environment(\.demoLanguage) private var language
 
@@ -1196,9 +1208,9 @@ struct WatchlistRedesignChangeCell: View {
     private var tileColor: Color {
         switch item.trend {
         case .up:
-            return Color("color-utility3-red")
+            return MarketColor.resolve("color-utility3-red", reversed: marketColorReversed)
         case .down:
-            return Color("color-utility3-green")
+            return MarketColor.resolve("color-utility3-green", reversed: marketColorReversed)
         case .flat:
             return Color("color-text-90")
         }
@@ -1211,6 +1223,7 @@ enum WatchlistRedesignIconContrast {
 }
 
 struct WatchlistRedesignMiniKLine: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     let points: [CGFloat]
     let trend: WatchlistRedesignTrend
 
@@ -1229,9 +1242,9 @@ struct WatchlistRedesignMiniKLine: View {
     private var lineColor: Color {
         switch trend {
         case .up:
-            return Color("color-utility3-red")
+            return MarketColor.resolve("color-utility3-red", reversed: marketColorReversed)
         case .down:
-            return Color("color-utility3-green")
+            return MarketColor.resolve("color-utility3-green", reversed: marketColorReversed)
         case .flat:
             return Color("color-text-90")
         }

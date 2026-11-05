@@ -14,12 +14,12 @@ private enum StockDetailHistoryPerformanceTone {
     case negative
     case neutral
 
-    var color: Color {
+    func color(reversed: Bool) -> Color {
         switch self {
         case .positive:
-            Color("color-utility3-red")
+            MarketColor.resolve("color-utility3-red", reversed: reversed)
         case .negative:
-            Color("color-utility3-green")
+            MarketColor.resolve("color-utility3-green", reversed: reversed)
         case .neutral:
             Color("color-text-60")
         }
@@ -73,6 +73,7 @@ private struct StockDetailHistoryPerformanceItem: Identifiable {
 }
 
 struct StockDetailHistoryPerformance: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     @Environment(\.demoLanguage) private var language
 
     var body: some View {
@@ -98,7 +99,7 @@ struct StockDetailHistoryPerformance: View {
                                 lineHeight: StockDetailHistoryPerformanceLayout.lineHeight
                             )
                         )
-                        .foregroundColor(item.tone.color)
+                        .foregroundColor(item.tone.color(reversed: marketColorReversed))
                         .frame(height: StockDetailHistoryPerformanceLayout.lineHeight, alignment: .leading)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)

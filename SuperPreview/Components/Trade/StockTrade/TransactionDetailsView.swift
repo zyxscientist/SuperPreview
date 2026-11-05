@@ -251,6 +251,7 @@ struct TransactionDetailsView: View {
 
 // 成交明细单元视图
 struct TransactionDetailsCell: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
 
     static let rowHeight: CGFloat = 20
 
@@ -275,7 +276,7 @@ struct TransactionDetailsCell: View {
                 Text(transactionDetailsCellData.price)
                     .lineLimit(1)
                     .minimumScaleFactor(0.5)
-                    .foregroundStyle(Color(.colorUtility3Red))
+                    .foregroundStyle(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
                     .modifier(CustomFontModifier(size: 11, font: .medium))
             }
 

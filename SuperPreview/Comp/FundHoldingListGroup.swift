@@ -44,12 +44,12 @@ enum FundHoldingValueTone {
     case loss
     case neutral
 
-    var color: Color {
+    func color(reversed: Bool) -> Color {
         switch self {
         case .gain:
-            return Color("color-utility2-red")
+            return MarketColor.resolve("color-utility2-red", reversed: reversed)
         case .loss:
-            return Color("color-utility3-green")
+            return MarketColor.resolve("color-utility3-green", reversed: reversed)
         case .neutral:
             return Color("color-text-30")
         }
@@ -598,6 +598,7 @@ private struct FundHoldingAIPTag: View {
 }
 
 private struct FundHoldingMetricsRow: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     let holding: FundHoldingItem
     let isNumberHidden: Bool
 
@@ -640,7 +641,7 @@ private struct FundHoldingMetricsRow: View {
     }
 
     private func valueColor(_ tone: FundHoldingValueTone) -> Color {
-        isNumberHidden ? Color("color-text-30") : tone.color
+        isNumberHidden ? Color("color-text-30") : tone.color(reversed: marketColorReversed)
     }
 }
 

@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct AssetRatioView: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     var body: some View {
             VStack {
                 VStack {
@@ -43,10 +44,10 @@ struct AssetRatioView: View {
                             VStack(alignment: .trailing) {
                                 Text("+123,200.11")
                                         .font(.system(size: 12, weight: .semibold))
-                                    .foregroundColor(Color("color-utility-red"))
+                                    .foregroundColor(MarketColor.resolve("color-utility-red", reversed: marketColorReversed))
                                 Text("+29.21%")
                                     .font(.system(size: 12, weight: .semibold))
-                                    .foregroundColor(Color("color-utility-red"))
+                                    .foregroundColor(MarketColor.resolve("color-utility-red", reversed: marketColorReversed))
                                 }
                             }
                         

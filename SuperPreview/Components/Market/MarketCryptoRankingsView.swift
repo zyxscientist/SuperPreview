@@ -41,6 +41,7 @@ private struct CryptoRankingItem: Identifiable {
 
 /// Five-row illustrative 24-hour market ranking.
 struct MarketCryptoRankingsView: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     var onShowAll: () -> Void = { /* Connect the full ranking when available. */ }
     var onSelect: (String) -> Void = { _ in /* Connect the asset destination when available. */ }
     @Environment(\.demoLanguage) private var language
@@ -145,10 +146,10 @@ struct MarketCryptoRankingsView: View {
 
                 HStack(spacing: 8) {
                     Text(item.price)
-                        .foregroundStyle(Color(item.change >= 0 ? "color-utility3-red" : "color-utility3-green"))
+                        .foregroundStyle(MarketColor.resolve(item.change >= 0 ? "color-utility3-red" : "color-utility3-green", reversed: marketColorReversed))
                         .frame(maxWidth: .infinity, alignment: .trailing)
                     Text(metricValue(item))
-                        .foregroundStyle(Color(selectedMetric == .gainers || selectedMetric == .losers ? (item.change >= 0 ? "color-utility3-red" : "color-utility3-green") : "color-text-30"))
+                        .foregroundStyle(MarketColor.resolve(selectedMetric == .gainers || selectedMetric == .losers ? (item.change >= 0 ? "color-utility3-red" : "color-utility3-green") : "color-text-30", reversed: marketColorReversed))
                         .frame(maxWidth: .infinity, alignment: .trailing)
                 }
                 .modifier(CustomFontModifier(size: 16, font: .regular, lineHeight: 24))

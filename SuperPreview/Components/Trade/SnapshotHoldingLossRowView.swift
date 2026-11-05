@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct SnapshotHoldingLossRowView: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     
     var name : String
     var symbol : String
@@ -54,11 +55,11 @@ struct SnapshotHoldingLossRowView: View {
                 VStack(alignment: .trailing, spacing: 0.0) {
                     Text("-1,111.88")
                         .modifier(CustomFontModifier(size: 14, font: .medium))
-                        .foregroundColor(Color("color-utility-green"))
+                        .foregroundColor(MarketColor.resolve("color-utility-green", reversed: marketColorReversed))
                         .frame(width: 84, height: 20, alignment: .trailing)
                     Text("-11.83%")
                         .modifier(CustomFontModifier(size: 14, font: .medium))
-                        .foregroundColor(Color("color-utility-green"))
+                        .foregroundColor(MarketColor.resolve("color-utility-green", reversed: marketColorReversed))
                         .frame(width: 84, height: 20, alignment: .trailing)
                 }
                 
@@ -66,12 +67,12 @@ struct SnapshotHoldingLossRowView: View {
                     Text("-1,000.88")
                         .padding(.trailing, 10)
                         .modifier(CustomFontModifier(size: 14, font: .medium))
-                        .foregroundColor(Color("color-utility-green"))
+                        .foregroundColor(MarketColor.resolve("color-utility-green", reversed: marketColorReversed))
                         .frame(width: 96, height: 20, alignment: .trailing)
                     Text("-5.83%")
                         .padding(.trailing, 10)
                         .modifier(CustomFontModifier(size: 14, font: .medium))
-                        .foregroundColor(Color("color-utility-green"))
+                        .foregroundColor(MarketColor.resolve("color-utility-green", reversed: marketColorReversed))
                         .frame(width: 95, height: 20, alignment: .trailing)
                     }
                 }

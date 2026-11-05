@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct SymbolQuoteView: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     
     @Binding var openGraphView: Bool
     
@@ -22,13 +23,13 @@ struct SymbolQuoteView: View {
                 
                 HStack(spacing: 5) {
                     Text("16.990")
-                        .foregroundColor(Color("color-utility3-red"))
+                        .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
                         .modifier(CustomFontModifier(size: 12, font: .medium))
                     Text("+1.210")
-                        .foregroundColor(Color("color-utility3-red"))
+                        .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
                         .modifier(CustomFontModifier(size: 12, font: .medium))
                     Text("+8.41%")
-                        .foregroundColor(Color("color-utility3-red"))
+                        .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
                         .modifier(CustomFontModifier(size: 12, font: .medium))
                 }.padding(.leading, 49)
                 

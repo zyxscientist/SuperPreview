@@ -859,6 +859,10 @@ private struct StockDetailDebugSheet: View {
                 .padding(.horizontal, 20)
                 .padding(.bottom, 12)
 
+            DemoMarketColorToggle()
+                .padding(.horizontal, 20)
+                .padding(.bottom, 12)
+
             DemoLiquidGlassUsageToggle(
                 isReducedLiquidGlassUsageEnabled: $isReducedLiquidGlassUsageEnabled
             )

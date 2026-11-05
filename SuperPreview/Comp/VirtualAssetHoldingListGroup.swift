@@ -34,12 +34,12 @@ enum VirtualAssetHoldingValueTone {
     case green
     case neutral
 
-    var color: Color {
+    func color(reversed: Bool) -> Color {
         switch self {
         case .red:
-            return Color("color-utility2-red")
+            return MarketColor.resolve("color-utility2-red", reversed: reversed)
         case .green:
-            return Color("color-utility3-green")
+            return MarketColor.resolve("color-utility3-green", reversed: reversed)
         case .neutral:
             return Color("color-text-30")
         }
@@ -927,6 +927,7 @@ private struct VirtualAssetHoldingNameCell: View {
 }
 
 private struct VirtualAssetHoldingMetricsRow: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     let category: VirtualAssetHoldingCategory
     let holding: VirtualAssetHoldingItem
     let isNumberHidden: Bool
@@ -951,16 +952,16 @@ private struct VirtualAssetHoldingMetricsRow: View {
                 valuePair(
                     primary: holding.todayProfitLoss,
                     secondary: nil,
-                    primaryColor: holding.todayTone.color,
-                    secondaryColor: holding.todayTone.color
+                    primaryColor: holding.todayTone.color(reversed: marketColorReversed),
+                    secondaryColor: holding.todayTone.color(reversed: marketColorReversed)
                 )
             }
 
             valuePair(
                 primary: holding.holdingProfitLoss,
                 secondary: holding.holdingProfitLossRate,
-                primaryColor: holding.holdingTone.color,
-                secondaryColor: holding.holdingTone.color
+                primaryColor: holding.holdingTone.color(reversed: marketColorReversed),
+                secondaryColor: holding.holdingTone.color(reversed: marketColorReversed)
             )
 
             valuePair(

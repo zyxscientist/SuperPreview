@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct WatchlistItemView: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     var stock: WatchlistStock = watchlistStocks[1]
     var normal_text_size = 15
     var nameLength: Int {
@@ -57,11 +58,11 @@ struct WatchlistItemView: View {
                     
                     ZStack{
                         FilledMiniLineGraph(dataPoints: ChartMockData.miniChart_50_point.normalized, bottomBuffer: 0)
-                            .fill(LinearGradient(gradient: Gradient(colors: [Color(stock.direction).opacity(0.2), Color(stock.direction).opacity(0.0)]), startPoint: .top, endPoint: .bottom))
+                            .fill(LinearGradient(gradient: Gradient(colors: [MarketColor.resolve(stock.direction, reversed: marketColorReversed).opacity(0.2), MarketColor.resolve(stock.direction, reversed: marketColorReversed).opacity(0.0)]), startPoint: .top, endPoint: .bottom))
                             .frame(width: 55, height: 40)
                         
                         MiniLineGraph(dataPoints: ChartMockData.miniChart_50_point.normalized)
-                            .stroke(Color(stock.direction), style: StrokeStyle(lineWidth: 1, lineCap: .round, lineJoin: .round))
+                            .stroke(MarketColor.resolve(stock.direction, reversed: marketColorReversed), style: StrokeStyle(lineWidth: 1, lineCap: .round, lineJoin: .round))
                             .frame(width: 55, height: 40)
                         
                     }
@@ -70,13 +71,13 @@ struct WatchlistItemView: View {
                     Text(stock.price)
                         .multilineTextAlignment(.trailing)
                         .modifier(CustomFontModifier(size: 15, font: .medium))
-    //                    .foregroundColor(Color(stock.direction))
+    //                    .foregroundColor(MarketColor.resolve(stock.direction, reversed: marketColorReversed))
                         .foregroundColor(Color("color-text-30"))
                         .frame(width: 76, alignment: .trailing)
                 }
                     
                     Rectangle()
-                        .foregroundColor(Color(stock.direction))
+                        .foregroundColor(MarketColor.resolve(stock.direction, reversed: marketColorReversed))
                         .frame(width:80, height: 24)
                         .cornerRadius(4)
                         .overlay(

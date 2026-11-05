@@ -121,6 +121,7 @@ extension View {
 }
 
 struct SubAssetCardHeader: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     let currency: String
     let netAsset: String
     let profitLossTitle: String?
@@ -152,7 +153,7 @@ struct SubAssetCardHeader: View {
 
                         Text(SubAssetCardValue.display(profitLoss, isNumberHidden: isNumberHidden))
                             .font(.custom("PlusJakartaSans-Medium", size: 14, relativeTo: .subheadline))
-                            .foregroundColor(Color(isNumberHidden ? "color-text-30" : "color-utility2-red"))
+                            .foregroundColor(isNumberHidden ? Color("color-text-30") : MarketColor.resolve("color-utility2-red", reversed: marketColorReversed))
                     }
                     .frame(height: 20)
                     .lineLimit(1)
@@ -231,6 +232,7 @@ struct SubAssetMetricItem: Identifiable {
 }
 
 struct SubAssetMetricRow: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     let items: [SubAssetMetricItem]
     let isNumberHidden: Bool
 
@@ -272,7 +274,7 @@ struct SubAssetMetricRow: View {
 
     private func valueColor(for item: SubAssetMetricItem) -> Color {
         if item.isGain && !isNumberHidden {
-            return Color("color-utility2-red")
+            return MarketColor.resolve("color-utility2-red", reversed: marketColorReversed)
         }
         return Color("color-text-30")
     }

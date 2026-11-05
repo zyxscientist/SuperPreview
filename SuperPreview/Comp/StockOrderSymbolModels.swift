@@ -39,19 +39,19 @@ enum StockOrderQuoteTrend: Equatable {
 }
 
 extension StockOrderQuoteTrend {
-    var tileColor: Color {
+    func tileColor(reversed: Bool) -> Color {
         switch self {
         case .up:
-            return Color("color-utility3-red")
+            return MarketColor.resolve("color-utility3-red", reversed: reversed)
         case .down:
-            return Color("color-utility3-green")
+            return MarketColor.resolve("color-utility3-green", reversed: reversed)
         case .flat:
             return Color("color-text-90")
         }
     }
 
-    var lineColor: Color {
-        tileColor
+    func lineColor(reversed: Bool) -> Color {
+        tileColor(reversed: reversed)
     }
 }
 

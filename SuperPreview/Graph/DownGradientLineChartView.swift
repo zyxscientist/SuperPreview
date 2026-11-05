@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct DownGradientLineChartView: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     var body: some View {
         ZStack {
             Path() { path in
@@ -24,7 +25,7 @@ struct DownGradientLineChartView: View {
                 path.addLine(to: CGPoint(x: 100, y: 24))
                 path.addLine(to: CGPoint(x: 0, y: 24))
                 path.closeSubpath()
-                }.fill(LinearGradient(gradient: Gradient(colors: [Color("color-utility-green").opacity(0.8), Color("color-utility-green").opacity(0.01)]), startPoint: .top, endPoint: .bottom)).frame(width: 100, height: 24)
+                }.fill(LinearGradient(gradient: Gradient(colors: [MarketColor.resolve("color-utility-green", reversed: marketColorReversed).opacity(0.8), MarketColor.resolve("color-utility-green", reversed: marketColorReversed).opacity(0.01)]), startPoint: .top, endPoint: .bottom)).frame(width: 100, height: 24)
             
             Path() { path in
                 path.move(to: CGPoint(x: 0, y: 1))
@@ -36,7 +37,7 @@ struct DownGradientLineChartView: View {
                 path.addLine(to: CGPoint(x: 85, y: 9))
                 path.addLine(to: CGPoint(x: 90, y: 12))
                 path.addLine(to: CGPoint(x: 100, y: 24))
-                }.stroke(Color("color-utility-green"), lineWidth: 2).frame(width: 100, height: 24)
+                }.stroke(MarketColor.resolve("color-utility-green", reversed: marketColorReversed), lineWidth: 2).frame(width: 100, height: 24)
         }
     }
 }

@@ -69,16 +69,17 @@ struct FilledMiniLineGraph: Shape{
 }
 
 struct MiniChartView: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     
     var body: some View {
         VStack(spacing: 100.0) {
             ZStack{
                 FilledMiniLineGraph(dataPoints: ChartMockData.miniChart_100_point.normalized, bottomBuffer: 0)
-                    .fill(LinearGradient(gradient: Gradient(colors: [.red.opacity(0.2), .red.opacity(0.0)]), startPoint: .top, endPoint: .bottom))
+                    .fill(LinearGradient(gradient: Gradient(colors: [(marketColorReversed ? Color.green : Color.red).opacity(0.2), (marketColorReversed ? Color.green : Color.red).opacity(0.0)]), startPoint: .top, endPoint: .bottom))
                     .frame(width: 55, height: 40)
                 
                 MiniLineGraph(dataPoints: ChartMockData.miniChart_100_point.normalized)
-                    .stroke(Color("color-utility-red"), style: StrokeStyle(lineWidth: 1, lineCap: .round, lineJoin: .round))
+                    .stroke(MarketColor.resolve("color-utility-red", reversed: marketColorReversed), style: StrokeStyle(lineWidth: 1, lineCap: .round, lineJoin: .round))
                     .frame(width: 55, height: 40)
                 
                 Text("采样数据总数量：\(ChartMockData.miniChart_100_point.normalized.count)")
@@ -89,11 +90,11 @@ struct MiniChartView: View {
             
             ZStack{
                 FilledMiniLineGraph(dataPoints: ChartMockData.miniChart_50_point.normalized, bottomBuffer: 0)
-                    .fill(LinearGradient(gradient: Gradient(colors: [.red.opacity(0.2), .red.opacity(0.0)]), startPoint: .top, endPoint: .bottom))
+                    .fill(LinearGradient(gradient: Gradient(colors: [(marketColorReversed ? Color.green : Color.red).opacity(0.2), (marketColorReversed ? Color.green : Color.red).opacity(0.0)]), startPoint: .top, endPoint: .bottom))
                     .frame(width: 55, height: 40)
                 
                 MiniLineGraph(dataPoints: ChartMockData.miniChart_50_point.normalized)
-                    .stroke(Color("color-utility-red"), style: StrokeStyle(lineWidth: 1, lineCap: .round, lineJoin: .round))
+                    .stroke(MarketColor.resolve("color-utility-red", reversed: marketColorReversed), style: StrokeStyle(lineWidth: 1, lineCap: .round, lineJoin: .round))
                     .frame(width: 55, height: 40)
                 
                 Text("采样数据总数量：\(ChartMockData.miniChart_50_point.normalized.count)")
@@ -105,11 +106,11 @@ struct MiniChartView: View {
             
             ZStack{
                 FilledMiniLineGraph(dataPoints: ChartMockData.miniChart_30_point.normalized, bottomBuffer: 0)
-                    .fill(LinearGradient(gradient: Gradient(colors: [.red.opacity(0.2), .red.opacity(0.0)]), startPoint: .top, endPoint: .bottom))
+                    .fill(LinearGradient(gradient: Gradient(colors: [(marketColorReversed ? Color.green : Color.red).opacity(0.2), (marketColorReversed ? Color.green : Color.red).opacity(0.0)]), startPoint: .top, endPoint: .bottom))
                     .frame(width: 55, height: 40)
                 
                 MiniLineGraph(dataPoints: ChartMockData.miniChart_30_point.normalized)
-                    .stroke(Color("color-utility-red"), style: StrokeStyle(lineWidth: 1, lineCap: .round, lineJoin: .round))
+                    .stroke(MarketColor.resolve("color-utility-red", reversed: marketColorReversed), style: StrokeStyle(lineWidth: 1, lineCap: .round, lineJoin: .round))
                     .frame(width: 55, height: 40)
                 
                 Text("采样数据总数量：\(ChartMockData.miniChart_30_point.normalized.count)")

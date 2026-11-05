@@ -13,9 +13,9 @@ struct IntradayCardsView: View {
         ScrollView{
             
             HStack{
-                IntradayCardView(index_name: "道琼斯", utility_color:Color(.colorUtilityRed))
-                IntradayCardView(index_name: "纳斯达克", utility_color:Color(.colorUtilityRed))
-                IntradayCardView(index_name: "标普500", utility_color:Color(.colorUtilityRed))
+                IntradayCardView(index_name: "道琼斯", utility_color: "color-utility-red")
+                IntradayCardView(index_name: "纳斯达克", utility_color: "color-utility-red")
+                IntradayCardView(index_name: "标普500", utility_color: "color-utility-red")
             }
             .padding(.top, 10)
             .padding(.horizontal, 15)

@@ -538,11 +538,12 @@ private struct NewsDemoRelatedStock: Identifiable {
 }
 
 private struct NewsDemoRelatedStockRow: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     @Environment(\.demoLanguage) private var language
     let stock: NewsDemoRelatedStock
 
     private var movementColor: Color {
-        Color(stock.movement.colorName)
+        MarketColor.resolve(stock.movement.colorName, reversed: marketColorReversed)
     }
 
     private var tertiaryText: Color {

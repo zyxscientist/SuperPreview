@@ -146,12 +146,12 @@ enum StockDetailQuoteTrend: Hashable {
     case down
     case flat
 
-    fileprivate var color: Color {
+    fileprivate func color(reversed: Bool) -> Color {
         switch self {
         case .up:
-            Color("color-utility3-red")
+            MarketColor.resolve("color-utility3-red", reversed: reversed)
         case .down:
-            Color("color-utility3-green")
+            MarketColor.resolve("color-utility3-green", reversed: reversed)
         case .flat:
             Color("color-text-30")
         }
@@ -175,14 +175,14 @@ struct StockDetailQuoteSummaryItem: Hashable, Identifiable {
         case positive
         case negative
 
-        fileprivate var color: Color {
+        fileprivate func color(reversed: Bool) -> Color {
             switch self {
             case .primary:
                 Color("color-text-30")
             case .positive:
-                Color("color-utility3-red")
+                MarketColor.resolve("color-utility3-red", reversed: reversed)
             case .negative:
-                Color("color-utility3-green")
+                MarketColor.resolve("color-utility3-green", reversed: reversed)
             }
         }
     }
@@ -265,6 +265,7 @@ struct StockDetailQuoteDataModel: Hashable {
 /// The caller owns `isExpanded`; instrument-specific details are supplied by
 /// `StockDetailQuoteDetailsData`.
 struct StockDetailQuoteData: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     let data: StockDetailQuoteDataModel
     @Binding var isExpanded: Bool
     let onBadgesTap: (() -> Void)?
@@ -416,7 +417,7 @@ struct StockDetailQuoteData: View {
             HStack(alignment: .center, spacing: StockDetailQuoteDataLayout.priceTrendSpacing) {
                 Text(data.price)
                     .modifier(CustomFontModifier(size: 30, font: .bold, lineHeight: 40))
-                    .foregroundColor(data.trend.color)
+                    .foregroundColor(data.trend.color(reversed: marketColorReversed))
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
 
@@ -438,7 +439,7 @@ struct StockDetailQuoteData: View {
                 Text(data.changePercent)
             }
             .modifier(CustomFontModifier(size: 16, font: .bold, lineHeight: 24))
-            .foregroundColor(data.trend.color)
+            .foregroundColor(data.trend.color(reversed: marketColorReversed))
             .lineLimit(1)
             .minimumScaleFactor(0.7)
         }
@@ -471,7 +472,7 @@ struct StockDetailQuoteData: View {
                                 lineHeight: 16
                             )
                         )
-                        .foregroundColor(item.tone.color)
+                        .foregroundColor(item.tone.color(reversed: marketColorReversed))
                 }
                 .lineLimit(1)
                 .frame(maxWidth: .infinity, alignment: .leading)

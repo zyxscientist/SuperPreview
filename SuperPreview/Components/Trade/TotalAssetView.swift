@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct TotalAssetView: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     
     var body: some View {
         VStack(spacing: 0.0) {
@@ -81,7 +82,7 @@ struct TotalAssetView: View {
                         .foregroundColor(Color("color-text-60"))
                     Text("+123,200.11")
                         .modifier(CustomFontModifier(size: 13, font: .semibold))
-                        .foregroundColor(Color("color-utility-red"))
+                        .foregroundColor(MarketColor.resolve("color-utility-red", reversed: marketColorReversed))
                         .padding(.top, 5)
                 }
             }

@@ -19,12 +19,12 @@ struct StockDetailNavbarQuote: Equatable {
         case down
         case flat
 
-        fileprivate var color: Color {
+        fileprivate func color(reversed: Bool) -> Color {
             switch self {
             case .up:
-                Color("color-utility3-red")
+                MarketColor.resolve("color-utility3-red", reversed: reversed)
             case .down:
-                Color("color-utility3-green")
+                MarketColor.resolve("color-utility3-green", reversed: reversed)
             case .flat:
                 Color("color-text-30")
             }
@@ -114,6 +114,7 @@ enum StockDetailNavbarPresentation: Hashable {
 /// derives it from its real scroll offset and threshold, so the title and quote
 /// move together without this component needing to own a `ScrollView`.
 struct StockDetailNavbar: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     let symbol: String
     let name: String
     let quote: StockDetailNavbarQuote?
@@ -296,7 +297,7 @@ struct StockDetailNavbar: View {
                 Text(quote.change)
                 Text(quote.changePercent)
             }
-            .foregroundColor(quote.trend.color)
+            .foregroundColor(quote.trend.color(reversed: marketColorReversed))
         }
         .modifier(CustomFontModifier(size: 12, font: .regular, lineHeight: 16))
         .lineLimit(1)

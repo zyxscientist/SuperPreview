@@ -24,6 +24,7 @@ struct MarketBreadthDistributionData: Hashable {
 
 /// A standalone market-breadth summary matching the Figma "涨跌分布" component.
 struct MarketBreadthDistributionView: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     let data: MarketBreadthDistributionData
     @Environment(\.demoLanguage) private var language
 
@@ -72,7 +73,7 @@ struct MarketBreadthDistributionView: View {
 
             HStack(spacing: 4) {
                 Capsule()
-                    .fill(Color("color-utility3-green"))
+                    .fill(MarketColor.resolve("color-utility3-green", reversed: marketColorReversed))
                     .frame(width: 178 * scale)
 
                 Capsule()
@@ -80,7 +81,7 @@ struct MarketBreadthDistributionView: View {
                     .frame(width: 39 * scale)
 
                 Capsule()
-                    .fill(Color("color-utility3-red"))
+                    .fill(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
                     .frame(width: 145 * scale)
             }
         }
@@ -108,12 +109,12 @@ struct MarketBreadthDistributionView: View {
                 .frame(width: 10, height: 8)
                 .rotationEffect(.degrees(90))
                 .frame(width: 8, height: 10)
-                .foregroundColor(Color("color-utility3-green"))
+                .foregroundColor(MarketColor.resolve("color-utility3-green", reversed: marketColorReversed))
                 .accessibilityHidden(true)
 
             Text(formatted(data.downCount))
                 .modifier(CustomFontModifier(size: 14, font: .bold, lineHeight: 20))
-                .foregroundColor(Color("color-utility3-green"))
+                .foregroundColor(MarketColor.resolve("color-utility3-green", reversed: marketColorReversed))
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel(String(format: language.text(.marketBreadthDownAccessibilityFormat), formatted(data.downCount)))
@@ -123,7 +124,7 @@ struct MarketBreadthDistributionView: View {
         HStack(spacing: 4) {
             Text(formatted(data.upCount))
                 .modifier(CustomFontModifier(size: 14, font: .bold, lineHeight: 20))
-                .foregroundColor(Color("color-utility3-red"))
+                .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
 
             Image("market_breadth_distribution_up")
                 .renderingMode(.template)
@@ -131,7 +132,7 @@ struct MarketBreadthDistributionView: View {
                 .frame(width: 10, height: 8)
                 .rotationEffect(.degrees(-90))
                 .frame(width: 8, height: 10)
-                .foregroundColor(Color("color-utility3-red"))
+                .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
                 .accessibilityHidden(true)
         }
         .accessibilityElement(children: .combine)

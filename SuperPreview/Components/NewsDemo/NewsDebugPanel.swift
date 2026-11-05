@@ -29,6 +29,9 @@ struct NewsDebugPanel: View {
                 .environment(\.demoLanguage, language)
                 .accessibilityIdentifier("news.debug.language")
 
+            DemoMarketColorToggle()
+                .environment(\.demoLanguage, language)
+
             Spacer(minLength: 0)
         }
         .padding(.horizontal, 20)

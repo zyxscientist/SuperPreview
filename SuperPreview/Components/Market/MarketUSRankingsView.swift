@@ -242,8 +242,15 @@ struct MarketUSRankingsView: View {
 }
 
 private struct MarketUSRankingRow: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     let item: MarketUSRankingItem
     let name: String
+
+    private var changeColor: Color {
+        if item.percentChange > 0 { return MarketColor.resolve("color-utility3-red", reversed: marketColorReversed) }
+        if item.percentChange < 0 { return MarketColor.resolve("color-utility3-green", reversed: marketColorReversed) }
+        return Color("color-text-60")
+    }
 
     var body: some View {
         GeometryReader { geometry in
@@ -284,7 +291,7 @@ private struct MarketUSRankingRow: View {
 
                     Text(item.formattedChange)
                         .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
-                        .foregroundStyle(item.changeColor)
+                        .foregroundStyle(changeColor)
                         .frame(maxWidth: .infinity, alignment: .trailing)
                 }
                 .lineLimit(1)
@@ -307,11 +314,6 @@ private extension MarketUSRankingItem {
         ) + "%"
     }
 
-    var changeColor: Color {
-        if percentChange > 0 { return Color("color-utility3-red") }
-        if percentChange < 0 { return Color("color-utility3-green") }
-        return Color("color-text-60")
-    }
 }
 
 #Preview("美股榜单") {

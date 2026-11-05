@@ -90,6 +90,7 @@ struct StockPriceStatView: View {
 }
 
 struct StockPriceBlockView: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     var body: some View {
         
         HStack(alignment:.lastTextBaseline, spacing:5){
@@ -100,7 +101,7 @@ struct StockPriceBlockView: View {
                     .renderingMode(.template)
                     .resizable()
                     .frame(width:9, height: 11)
-                    .foregroundColor(Color(.colorUtility3Red))
+                    .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
                 
                 
                 // 现价
@@ -108,7 +109,7 @@ struct StockPriceBlockView: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.5)
                     .multilineTextAlignment(.leading)
-                    .foregroundColor(Color(.colorUtility3Red))
+                    .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
                     .modifier(CustomFontModifier(size: 33, font: .bold))
             }
             
@@ -119,7 +120,7 @@ struct StockPriceBlockView: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.5)
                     .multilineTextAlignment(.leading)
-                    .foregroundColor(Color(.colorUtility3Red))
+                    .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
                     .modifier(CustomFontModifier(size: 13, font: .bold))
                 
                 // 涨跌幅
@@ -127,7 +128,7 @@ struct StockPriceBlockView: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.5)
                     .multilineTextAlignment(.leading)
-                    .foregroundColor(Color(.colorUtility3Red))
+                    .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
                     .modifier(CustomFontModifier(size: 13, font: .bold))
                 
             }
@@ -161,6 +162,7 @@ struct StockPriceBlockView: View {
 }
 
 struct StockStatView: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     
     let data: StockStatData
     
@@ -199,7 +201,7 @@ struct StockStatView: View {
                     .minimumScaleFactor(0.5)
                     .multilineTextAlignment(.trailing)
                     // 有可能有红绿黑三种字色
-                    .foregroundColor(Color(data.valueColor))
+                    .foregroundColor(MarketColor.resolve(data.valueColor, reversed: marketColorReversed))
                     .modifier(CustomFontModifier(size: 13, font: .medium))
                 
                 //单位

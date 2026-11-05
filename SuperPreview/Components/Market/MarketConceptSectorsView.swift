@@ -37,6 +37,7 @@ struct MarketConceptSector: Identifiable {
 }
 
 struct MarketConceptSectorsView: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     let rows: [[MarketConceptSector]]
     let onShowAll: () -> Void
     let onSelect: (MarketConceptSector) -> Void
@@ -162,7 +163,7 @@ struct MarketConceptSectorsView: View {
     }
 
     private func changeColor(_ change: Double) -> Color {
-        Color(change >= 0 ? "color-utility3-red" : "color-utility3-green")
+        MarketColor.resolve(change >= 0 ? "color-utility3-red" : "color-utility3-green", reversed: marketColorReversed)
     }
 
     private func formattedChange(_ change: Double) -> String {

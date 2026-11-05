@@ -1,4 +1,5 @@
 import XCTest
+import UIKit
 
 final class TradeLayoutAdaptationUITests: XCTestCase {
     private var app: XCUIApplication!
@@ -1164,6 +1165,295 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
             "A new simulated message should replace the currently displayed banner"
         )
         assertInAppNotificationFrame(replacementBanner)
+    }
+
+    func testMarketColorPreferenceIsSharedAndPersistsAcrossLaunches() throws {
+        let toggle = app.switches["debug.marketColorReversed"].firstMatch
+        enterWatchlist()
+        waitFor("watchlist.debug.open").tap()
+        XCTAssertTrue(toggle.waitForExistence(timeout: 8))
+        guard let original = toggle.value as? String, ["0", "1"].contains(original) else {
+            XCTFail("Market color switch did not expose a boolean value")
+            return
+        }
+        let changed = original == "0" ? "1" : "0"
+        // Restore the existing preference, including when a later assertion fails.
+        addTeardownBlock { [app] in
+            guard let app else { return }
+            if app.state != .runningForeground { app.launch() }
+            let control = app.switches["debug.marketColorReversed"].firstMatch
+            if !control.exists {
+                let tab = app.descendants(matching: .any)["mainTab.tab1"].firstMatch
+                if tab.waitForExistence(timeout: 5) { tab.tap() }
+                let open = app.descendants(matching: .any)["watchlist.debug.open"].firstMatch
+                if open.waitForExistence(timeout: 5) { open.tap() }
+            }
+            if control.waitForExistence(timeout: 5),
+               let value = control.value as? String, value != original {
+                control.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+            }
+        }
+
+        dismissWatchlistDebugPanel()
+        waitFor("watchlist.tab.港股").tap()
+        assertWatchlistMarketColors(reversed: original == "1")
+        waitFor("watchlist.debug.open").tap()
+        XCTAssertTrue(toggle.waitForExistence(timeout: 8))
+        toggle.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+        waitForSwitchValue(toggle, expected: changed)
+        dismissWatchlistDebugPanel()
+        assertWatchlistMarketColors(reversed: changed == "1")
+
+        enterTrade()
+        waitFor("trade.debug.open").tap()
+        XCTAssertTrue(toggle.waitForExistence(timeout: 8))
+        waitForSwitchValue(toggle, expected: changed)
+        toggle.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+        waitForSwitchValue(toggle, expected: original)
+        waitFor("trade.debug.close").tap()
+
+        selectMainTab("mainTab.tab3")
+        waitFor("market.debug.open").tap()
+        XCTAssertTrue(toggle.waitForExistence(timeout: 8))
+        waitForSwitchValue(toggle, expected: original)
+        toggle.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+        waitForSwitchValue(toggle, expected: changed)
+        waitFor("market.debug.close").tap()
+
+        selectMainTab("mainTab.tab5")
+        waitFor("news.debug.open").tap()
+        XCTAssertTrue(toggle.waitForExistence(timeout: 8))
+        waitForSwitchValue(toggle, expected: changed)
+        waitFor("news.debug.close").tap()
+
+        app.terminate()
+        app.launch()
+        enterWatchlist()
+        waitFor("watchlist.debug.open").tap()
+        XCTAssertTrue(toggle.waitForExistence(timeout: 8))
+        waitForSwitchValue(toggle, expected: changed)
+    }
+
+    private func dismissWatchlistDebugPanel() {
+        let panel = waitFor("watchlist.debug.panel")
+        let start = panel.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.02))
+        let end = panel.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.65))
+        start.press(forDuration: 0.1, thenDragTo: end)
+        let dismissed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: panel)
+        XCTAssertEqual(XCTWaiter.wait(for: [dismissed], timeout: 5), .completed, "Watchlist debug sheet did not dismiss")
+    }
+
+    func testModalDestructiveColorDoesNotFollowMarketPreference() throws {
+        enterWatchlist()
+        waitFor("watchlist.debug.open").tap()
+        let toggle = app.switches["debug.marketColorReversed"].firstMatch
+        XCTAssertTrue(toggle.waitForExistence(timeout: 8))
+        guard let original = toggle.value as? String, ["0", "1"].contains(original) else {
+            XCTFail("Market color switch did not expose a boolean value")
+            return
+        }
+        addTeardownBlock { [app] in
+            guard let app else { return }
+            let presented = app.descendants(matching: .any)["modal.presented"].firstMatch
+            if presented.exists {
+                let cancel = app.buttons.matching(identifier: "modal.presented")
+                    .matching(NSPredicate(format: "label == %@", "取消")).firstMatch
+                if cancel.exists { cancel.tap() }
+            }
+            if app.navigationBars["新弹窗组件"].exists {
+                let back = app.navigationBars.buttons.firstMatch
+                if back.exists && back.isHittable { back.tap() }
+            }
+            let control = app.switches["debug.marketColorReversed"].firstMatch
+            if !control.exists {
+                let tab = app.descendants(matching: .any)["mainTab.tab1"].firstMatch
+                if tab.waitForExistence(timeout: 5) { tab.tap() }
+                let open = app.descendants(matching: .any)["watchlist.debug.open"].firstMatch
+                if open.waitForExistence(timeout: 5) { open.tap() }
+            }
+            if control.waitForExistence(timeout: 5), let value = control.value as? String, value != original {
+                control.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+            }
+        }
+        dismissWatchlistDebugPanel()
+        assertModalDestructiveIsRed()
+        returnFromModalDemo()
+
+        enterWatchlist()
+        waitFor("watchlist.debug.open").tap()
+        XCTAssertTrue(toggle.waitForExistence(timeout: 8))
+        toggle.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+        waitForSwitchValue(toggle, expected: original == "0" ? "1" : "0")
+        dismissWatchlistDebugPanel()
+        assertModalDestructiveIsRed()
+    }
+
+    private func assertModalDestructiveIsRed() {
+        enterComponentLibrary()
+        waitFor("compare.modalDemo").tap()
+        let entry = app.buttons["modal.show.button-12-danger"].firstMatch
+        let scroll = app.scrollViews.firstMatch
+        for _ in 0..<30 where !entry.isHittable { scroll.swipeUp() }
+        XCTAssertTrue(entry.isHittable, "Destructive modal example was not reachable")
+        entry.tap()
+        _ = waitFor("modal.presented")
+        let button = app.buttons.matching(identifier: "modal.presented")
+            .matching(NSPredicate(format: "label == %@", "删除")).firstMatch
+        XCTAssertTrue(button.waitForExistence(timeout: 8))
+        assertSolidColorPixels(button, colors: [(255, 90, 80)], minimum: 5)
+    }
+
+    private func returnFromModalDemo() {
+        let modal = waitFor("modal.presented")
+        app.buttons.matching(identifier: "modal.presented")
+            .matching(NSPredicate(format: "label == %@", "取消")).firstMatch.tap()
+        waitForDisappearance(modal)
+        app.navigationBars.buttons.firstMatch.tap()
+        XCTAssertTrue(waitFor("compare.componentLibrary").exists)
+    }
+
+    func testCapitalDistributionReversesRingAndFlowLabels() throws {
+        enterWatchlist()
+        waitFor("watchlist.tab.港股").tap()
+        tapWatchlistRow("watchlist.row.hk:09988")
+        waitFor("stockDetail.navbar.debug").tap()
+        let toggle = app.switches["debug.marketColorReversed"].firstMatch
+        XCTAssertTrue(toggle.waitForExistence(timeout: 8))
+        guard let original = toggle.value as? String, ["0", "1"].contains(original) else {
+            XCTFail("Market color switch did not expose a boolean value")
+            return
+        }
+        addTeardownBlock { [app] in
+            guard let app else { return }
+            let control = app.switches["debug.marketColorReversed"].firstMatch
+            if !control.exists {
+                let debug = app.descendants(matching: .any)["stockDetail.navbar.debug"].firstMatch
+                let scroll = app.scrollViews["stockDetail.page.quotePage"].firstMatch
+                if scroll.exists {
+                    for _ in 0..<10 where !debug.isHittable { scroll.swipeDown() }
+                }
+                if debug.waitForExistence(timeout: 5), debug.isHittable { debug.tap() }
+            }
+            if control.waitForExistence(timeout: 5), let value = control.value as? String, value != original {
+                control.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+            }
+        }
+        dismissStockDetailDebugPanel()
+        showCapitalDistribution()
+        assertCapitalDistributionColors(reversed: original == "1")
+
+        let scroll = app.scrollViews["stockDetail.page.quotePage"].firstMatch
+        for _ in 0..<10 { scroll.swipeDown() }
+        waitFor("stockDetail.navbar.debug").tap()
+        XCTAssertTrue(toggle.waitForExistence(timeout: 8))
+        toggle.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+        waitForSwitchValue(toggle, expected: original == "0" ? "1" : "0")
+        dismissStockDetailDebugPanel()
+        showCapitalDistribution()
+        assertCapitalDistributionColors(reversed: original != "1")
+    }
+
+    private func showCapitalDistribution() {
+        let scroll = app.scrollViews["stockDetail.page.quotePage"].firstMatch
+        XCTAssertTrue(scroll.waitForExistence(timeout: 8))
+        let ring = app.descendants(matching: .any)["stockDetail.capitalDistribution.ring"].firstMatch
+        let totals = app.descendants(matching: .any)["stockDetail.capitalDistribution.totals"].firstMatch
+        for _ in 0..<12 where !ring.isHittable || !totals.isHittable { scroll.swipeUp() }
+        XCTAssertTrue(ring.isHittable, "Capital distribution ring is not visible")
+        XCTAssertTrue(totals.isHittable, "Capital distribution totals are not visible")
+    }
+
+    private func assertCapitalDistributionColors(reversed: Bool) {
+        let ring = waitFor("stockDetail.capitalDistribution.ring")
+        let totals = waitFor("stockDetail.capitalDistribution.totals")
+        // The ring's inflow occupies the top half; outflow occupies the bottom.
+        assertRedGreenPixels(ring, firstRegion: .top, firstIsRed: !reversed, minimum: 100)
+        // Totals show inflow on the left and outflow on the right.
+        assertRedGreenPixels(totals, firstRegion: .left, firstIsRed: !reversed, minimum: 5)
+    }
+
+    private enum ColorRegion { case top, left }
+
+    private func assertRedGreenPixels(_ element: XCUIElement, firstRegion: ColorRegion, firstIsRed: Bool, minimum: Int) {
+        guard let image = element.screenshot().image.cgImage else {
+            XCTFail("Could not decode screenshot for \(element.identifier)")
+            return
+        }
+        let width = image.width, height = image.height
+        var pixels = [UInt8](repeating: 0, count: width * height * 4)
+        let rendered = pixels.withUnsafeMutableBytes { bytes -> Bool in
+            guard let context = CGContext(
+                data: bytes.baseAddress, width: width, height: height,
+                bitsPerComponent: 8, bytesPerRow: width * 4,
+                space: CGColorSpace(name: CGColorSpace.sRGB)!,
+                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.byteOrder32Big.rawValue
+            ) else { return false }
+            context.draw(image, in: CGRect(x: 0, y: 0, width: width, height: height))
+            return true
+        }
+        XCTAssertTrue(rendered)
+        var counts = [0, 0]
+        for y in 0..<height {
+            for x in 0..<width {
+                let i = (y * width + x) * 4
+                let r = Int(pixels[i]), g = Int(pixels[i + 1]), b = Int(pixels[i + 2])
+                let first = firstRegion == .top ? y < height / 2 : x < width / 2
+                let isRed = first ? firstIsRed : !firstIsRed
+                if isRed ? (r > g + 40 && r > b + 40) : (g > r + 40 && g > b + 10) {
+                    counts[first ? 0 : 1] += 1
+                }
+            }
+        }
+        XCTAssertGreaterThan(counts[0], minimum, "Missing expected first-region color in \(element.identifier)")
+        XCTAssertGreaterThan(counts[1], minimum, "Missing expected second-region color in \(element.identifier)")
+    }
+
+    private func assertWatchlistMarketColors(reversed: Bool) {
+        // The HK fixtures are regular-session tiles, so their solid backgrounds
+        // provide many pixels in the actual asset color (not antialiased text).
+        let up = waitFor("watchlist.row.hk:09988")
+        let down = waitFor("watchlist.row.hk:00700")
+        XCTAssertTrue(up.isHittable)
+        XCTAssertTrue(down.isHittable)
+        assertTileColor(up, red: !reversed)
+        assertTileColor(down, red: reversed)
+    }
+
+    private func assertTileColor(_ element: XCUIElement, red: Bool) {
+        // Asset catalog variants for light and dark appearance, in sRGB.
+        let expected: [(Int, Int, Int)] = red
+            ? [(254, 74, 74), (245, 61, 61)]
+            : [(0, 186, 138), (5, 167, 125)]
+        assertSolidColorPixels(element, colors: expected, minimum: 100)
+    }
+
+    private func assertSolidColorPixels(_ element: XCUIElement, colors: [(Int, Int, Int)], minimum: Int) {
+        let image = element.screenshot().image
+        guard let cgImage = image.cgImage else {
+            XCTFail("Could not decode screenshot for \(element.identifier)")
+            return
+        }
+        let width = cgImage.width, height = cgImage.height
+        var pixels = [UInt8](repeating: 0, count: width * height * 4)
+        let colorSpace = CGColorSpace(name: CGColorSpace.sRGB)!
+        let rendered = pixels.withUnsafeMutableBytes { bytes -> Bool in
+            guard let context = CGContext(
+                data: bytes.baseAddress, width: width, height: height,
+                bitsPerComponent: 8, bytesPerRow: width * 4, space: colorSpace,
+                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.byteOrder32Big.rawValue
+            ) else { return false }
+            context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
+            return true
+        }
+        XCTAssertTrue(rendered)
+        var matches = 0
+        for offset in stride(from: 0, to: pixels.count, by: 4) {
+            let rgb = (Int(pixels[offset]), Int(pixels[offset + 1]), Int(pixels[offset + 2]))
+            if colors.contains(where: { abs(rgb.0 - $0.0) <= 8 && abs(rgb.1 - $0.1) <= 8 && abs(rgb.2 - $0.2) <= 8 }) {
+                matches += 1
+            }
+        }
+        XCTAssertGreaterThan(matches, minimum, "Expected color pixels in \(element.identifier); found \(matches)")
     }
 
     private func enterWatchlist() {

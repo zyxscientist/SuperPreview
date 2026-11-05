@@ -11,6 +11,7 @@ import SwiftUI
 
 
 struct AssetSnapshotHeaderView: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     
     var market : String
     
@@ -33,10 +34,10 @@ struct AssetSnapshotHeaderView: View {
                     HStack(spacing: 10.0) {
                         Text("+1,600,000.00")
                             .modifier(CustomFontModifier(size: 12, font: .semibold))
-                            .foregroundColor(Color("color-utility-red"))
+                            .foregroundColor(MarketColor.resolve("color-utility-red", reversed: marketColorReversed))
                         Text("+41.83%")
                             .modifier(CustomFontModifier(size: 12, font: .semibold))
-                            .foregroundColor(Color("color-utility-red"))
+                            .foregroundColor(MarketColor.resolve("color-utility-red", reversed: marketColorReversed))
                         }
                     
                 }

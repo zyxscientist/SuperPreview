@@ -33,6 +33,7 @@ struct MarketHeatmapSector: Identifiable, Hashable {
 
 /// A reusable two-row market heatmap using fixed visual sample data by default.
 struct MarketHeatmapView: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     let rows: [[MarketHeatmapSector]]
     let headerSpacing: CGFloat
     let onShowAll: () -> Void
@@ -154,7 +155,7 @@ struct MarketHeatmapView: View {
     }
 
     private func changeColor(for sector: MarketHeatmapSector) -> Color {
-        Color(sector.percentChange >= 0 ? "color-utility3-red" : "color-utility3-green")
+        MarketColor.resolve(sector.percentChange >= 0 ? "color-utility3-red" : "color-utility3-green", reversed: marketColorReversed)
     }
 
     private func formattedChange(_ change: Double) -> String {

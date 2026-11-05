@@ -66,6 +66,7 @@ struct StockDetailTransactionPositionData: Equatable {
 /// The containing transaction module owns tab selection; this view is focused
 /// solely on the selected symbol's position state and remains passive.
 struct StockDetailTransactionPosition: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     let state: StockDetailTransactionPositionState
 
     @Environment(\.demoLanguage) private var language
@@ -154,7 +155,9 @@ struct StockDetailTransactionPosition: View {
 
                     if let arrowAssetName = arrowAssetName(for: data.positionProfitLossTone) {
                         Image(arrowAssetName)
+                            .renderingMode(.template)
                             .resizable()
+                            .foregroundColor(color(for: data.positionProfitLossTone))
                             .scaledToFit()
                             .frame(
                                 width: StockDetailTransactionPositionLayout.arrowSize,
@@ -298,9 +301,9 @@ struct StockDetailTransactionPosition: View {
     private func color(for tone: StockDetailTransactionPositionProfitLossTone) -> Color {
         switch tone {
         case .gain:
-            Color("color-utility3-red")
+            MarketColor.resolve("color-utility3-red", reversed: marketColorReversed)
         case .loss:
-            Color("color-utility3-green")
+            MarketColor.resolve("color-utility3-green", reversed: marketColorReversed)
         case .flat:
             Color("color-text-30")
         }

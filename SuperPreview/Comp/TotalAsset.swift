@@ -10,6 +10,7 @@
 import SwiftUI
 
 struct TotalAsset: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     let currency: String
     let totalAmount: String
     let totalProfitLoss: String
@@ -133,8 +134,8 @@ struct TotalAsset: View {
         guard isDataAvailable else { return Color("color-text-30") }
         guard !numberIsHidden else { return Color("color-text-30") }
         return totalProfitLoss.hasPrefix("-")
-            ? Color("color-utility3-green")
-            : Color("color-utility2-red")
+            ? MarketColor.resolve("color-utility3-green", reversed: marketColorReversed)
+            : MarketColor.resolve("color-utility2-red", reversed: marketColorReversed)
     }
 
     private func toggleNumberVisibility() {

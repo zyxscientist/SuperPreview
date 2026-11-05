@@ -101,6 +101,7 @@ private struct ConnectStock: Identifiable {
 
 /// The host provides the vertical scroll view and pins this section's header.
 struct MarketConnectRankingsView: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     @Binding var direction: MarketConnectDirection
     let minimumRowsHeight: CGFloat
     var onShowAll: () -> Void = { /* Connect the destination when available. */ }
@@ -246,7 +247,7 @@ struct MarketConnectRankingsView: View {
                     Text(stock.price).modifier(CustomFontModifier(size: 16, font: .regular, lineHeight: 24))
                         .foregroundStyle(Color("color-text-30")).frame(maxWidth: .infinity, alignment: .trailing)
                     Text(stock.formattedChange).modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
-                        .foregroundStyle(Color(stock.change >= 0 ? "color-utility3-red" : "color-utility3-green"))
+                        .foregroundStyle(MarketColor.resolve(stock.change >= 0 ? "color-utility3-red" : "color-utility3-green", reversed: marketColorReversed))
                         .frame(maxWidth: .infinity, alignment: .trailing)
                 }
                 .lineLimit(1).minimumScaleFactor(0.8)

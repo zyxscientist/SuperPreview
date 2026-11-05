@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct NewsRelatedStocksLossView: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     
     var name : String
     
@@ -19,10 +20,10 @@ struct NewsRelatedStocksLossView: View {
                 .foregroundColor(Color("color-brand-blue"))
             Spacer()
             Text("150.600")
-                .foregroundColor(Color("color-utility-green"))
+                .foregroundColor(MarketColor.resolve("color-utility-green", reversed: marketColorReversed))
                 .padding(.trailing,20)
             Text("-5.20%")
-                .foregroundColor(Color("color-utility-green"))
+                .foregroundColor(MarketColor.resolve("color-utility-green", reversed: marketColorReversed))
                 .padding(.leading,20)
         }
         .modifier(CustomFontModifier(size: 12, font: .medium))
