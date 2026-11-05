@@ -255,6 +255,7 @@ struct StockDetailTape: View {
     let data: StockDetailTapeData
 
     @Environment(\.demoLanguage) private var language
+    @Environment(\.marketColorReversed) private var marketColorReversed
 
     init(data: StockDetailTapeData) {
         self.data = data
@@ -282,7 +283,7 @@ struct StockDetailTape: View {
                         .foregroundColor(Color("color-text-30"))
 
                     Text(data.distribution.bidPercentage)
-                        .foregroundColor(Color("color-utility3-red"))
+                        .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
                         .modifier(
                             CustomFontModifier(
                                 size: StockDetailTapeLayout.percentageFontSize,
@@ -307,7 +308,7 @@ struct StockDetailTape: View {
                         .foregroundColor(Color("color-text-30"))
 
                     Text(data.distribution.askPercentage)
-                        .foregroundColor(Color("color-utility3-green"))
+                        .foregroundColor(MarketColor.resolve("color-utility3-green", reversed: marketColorReversed))
                         .modifier(
                             CustomFontModifier(
                                 size: StockDetailTapeLayout.percentageFontSize,
@@ -329,10 +330,10 @@ struct StockDetailTape: View {
 
             GeometryReader { proxy in
                 HStack(spacing: 0) {
-                    Color("color-utility3-red")
+                    MarketColor.resolve("color-utility3-red", reversed: marketColorReversed)
                         .frame(width: proxy.size.width * data.distribution.bidFraction)
 
-                    Color("color-utility3-green")
+                    MarketColor.resolve("color-utility3-green", reversed: marketColorReversed)
                 }
                 .clipShape(Capsule())
             }
@@ -373,7 +374,7 @@ struct StockDetailTape: View {
                         lineHeight: StockDetailTapeLayout.levelLineHeight
                     )
                 )
-                .foregroundColor(side.color)
+                .foregroundColor(side.color(reversed: marketColorReversed))
                 .monospacedDigit()
                 .lineLimit(1)
 
@@ -393,7 +394,7 @@ struct StockDetailTape: View {
         }
         .padding(.horizontal, StockDetailTapeLayout.levelHorizontalPadding)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(side.color.opacity(StockDetailTapeLayout.levelBackgroundOpacity))
+        .background(side.color(reversed: marketColorReversed).opacity(StockDetailTapeLayout.levelBackgroundOpacity))
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(level.price), \(level.quantity)")
         .accessibilityIdentifier("stockDetail.tape.\(side.accessibilityIdentifier)")
@@ -404,12 +405,12 @@ private enum StockDetailTapeSide {
     case bid
     case ask
 
-    var color: Color {
+    func color(reversed: Bool) -> Color {
         switch self {
         case .bid:
-            Color("color-utility3-red")
+            MarketColor.resolve("color-utility3-red", reversed: reversed)
         case .ask:
-            Color("color-utility3-green")
+            MarketColor.resolve("color-utility3-green", reversed: reversed)
         }
     }
 

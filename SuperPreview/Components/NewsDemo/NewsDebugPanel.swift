@@ -29,7 +29,7 @@ struct NewsDebugPanel: View {
                 .environment(\.demoLanguage, language)
                 .accessibilityIdentifier("news.debug.language")
 
-            DemoMarketColorToggle()
+            DemoMarketColorPicker()
                 .environment(\.demoLanguage, language)
 
             Spacer(minLength: 0)

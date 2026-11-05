@@ -347,18 +347,28 @@ struct WatchlistRedesignDebugPanel: View {
     @Binding var isMultipleInAppNotificationSimulationEnabled: Bool
     @Binding var isReducedLiquidGlassUsageEnabled: Bool
     @Environment(\.demoLanguage) private var interfaceLanguage
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text(interfaceLanguage.text(.debug))
-                .modifier(CustomFontModifier(size: 20, font: .bold, lineHeight: 28))
-                .foregroundColor(Color("color-text-30"))
+            HStack {
+                Text(interfaceLanguage.text(.debug))
+                    .modifier(CustomFontModifier(size: 20, font: .bold, lineHeight: 28))
+                    .foregroundColor(Color("color-text-30"))
+
+                Spacer()
+
+                Button(interfaceLanguage.text(.done)) {
+                    dismiss()
+                }
+                .accessibilityIdentifier("watchlist.debug.close")
+            }
 
             DemoLanguagePicker(language: $language)
 
             DemoTouchToggle()
 
-            DemoMarketColorToggle()
+            DemoMarketColorPicker()
 
             DemoLiquidGlassUsageToggle(
                 isReducedLiquidGlassUsageEnabled: $isReducedLiquidGlassUsageEnabled

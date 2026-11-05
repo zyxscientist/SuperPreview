@@ -157,12 +157,12 @@ enum StockDetailQuoteTrend: Hashable {
         }
     }
 
-    fileprivate var glyphAssetName: String? {
+    fileprivate func glyphAssetName(reversed: Bool) -> String? {
         switch self {
         case .up:
-            "watchlistItem_up_red"
+            reversed ? "watchlistItem_up_green" : "watchlistItem_up_red"
         case .down:
-            "watchlistItem_down_green"
+            reversed ? "watchlistItem_down_red" : "watchlistItem_down_green"
         case .flat:
             nil
         }
@@ -413,6 +413,18 @@ struct StockDetailQuoteData: View {
     }
 
     private var priceChange: some View {
+        Group {
+            if PreviewRuntime.isUITesting {
+                priceChangeContent.accessibilityElement(children: .contain)
+            } else {
+                priceChangeContent
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel(priceAccessibilityLabel)
+            }
+        }
+    }
+
+    private var priceChangeContent: some View {
         VStack(alignment: .leading, spacing: StockDetailQuoteDataLayout.priceChangeSpacing) {
             HStack(alignment: .center, spacing: StockDetailQuoteDataLayout.priceTrendSpacing) {
                 Text(data.price)
@@ -420,16 +432,20 @@ struct StockDetailQuoteData: View {
                     .foregroundColor(data.trend.color(reversed: marketColorReversed))
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
+                    .accessibilityIdentifier("stockDetail.price.value")
 
-                if let glyphAssetName = data.trend.glyphAssetName {
+                if let glyphAssetName = data.trend.glyphAssetName(reversed: marketColorReversed) {
                     Image(glyphAssetName)
+                        .renderingMode(marketColorReversed ? .template : .original)
                         .resizable()
+                        .foregroundColor(data.trend.color(reversed: marketColorReversed))
                         .scaledToFit()
                         .frame(
                             width: StockDetailQuoteDataLayout.trendGlyphSize,
                             height: StockDetailQuoteDataLayout.trendGlyphSize
                         )
-                        .accessibilityHidden(true)
+                        .accessibilityHidden(!PreviewRuntime.isUITesting)
+                        .accessibilityIdentifier("stockDetail.price.arrow")
                 }
             }
             .frame(height: StockDetailQuoteDataLayout.priceLineHeight, alignment: .center)
@@ -444,8 +460,6 @@ struct StockDetailQuoteData: View {
             .minimumScaleFactor(0.7)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(priceAccessibilityLabel)
     }
 
     private var summary: some View {

@@ -682,7 +682,7 @@ private struct StockOrderDebugPanel: View {
 
             DemoTouchToggle()
 
-            DemoMarketColorToggle()
+            DemoMarketColorPicker()
 
             Toggle(
                 interfaceLanguage.text(.highFrequencyTradingTools),

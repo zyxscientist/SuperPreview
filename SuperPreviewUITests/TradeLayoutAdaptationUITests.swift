@@ -1168,77 +1168,104 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
     }
 
     func testMarketColorPreferenceIsSharedAndPersistsAcrossLaunches() throws {
-        let toggle = app.switches["debug.marketColorReversed"].firstMatch
+        let control = app.descendants(matching: .any)["debug.marketColors"].firstMatch
         enterWatchlist()
         waitFor("watchlist.debug.open").tap()
-        XCTAssertTrue(toggle.waitForExistence(timeout: 8))
-        guard let original = toggle.value as? String, ["0", "1"].contains(original) else {
-            XCTFail("Market color switch did not expose a boolean value")
-            return
-        }
-        let changed = original == "0" ? "1" : "0"
+        XCTAssertTrue(control.waitForExistence(timeout: 8))
+        guard let original = selectedMarketColor() else { return }
+        let changed = !original
         // Restore the existing preference, including when a later assertion fails.
         addTeardownBlock { [app] in
             guard let app else { return }
             if app.state != .runningForeground { app.launch() }
-            let control = app.switches["debug.marketColorReversed"].firstMatch
+            let control = app.descendants(matching: .any)["debug.marketColors"].firstMatch
             if !control.exists {
+                let back = app.descendants(matching: .any)["stockDetail.navbar.back"].firstMatch
+                if back.exists && back.isHittable { back.tap() }
                 let tab = app.descendants(matching: .any)["mainTab.tab1"].firstMatch
                 if tab.waitForExistence(timeout: 5) { tab.tap() }
                 let open = app.descendants(matching: .any)["watchlist.debug.open"].firstMatch
                 if open.waitForExistence(timeout: 5) { open.tap() }
             }
-            if control.waitForExistence(timeout: 5),
-               let value = control.value as? String, value != original {
-                control.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+            if control.waitForExistence(timeout: 5) {
+                let option = app.buttons[original ? "debug.marketColors.greenUp" : "debug.marketColors.redUp"].firstMatch
+                if option.exists && !option.isSelected { option.tap() }
             }
         }
 
         dismissWatchlistDebugPanel()
         waitFor("watchlist.tab.港股").tap()
-        assertWatchlistMarketColors(reversed: original == "1")
+        assertWatchlistMarketColors(reversed: original)
         waitFor("watchlist.debug.open").tap()
-        XCTAssertTrue(toggle.waitForExistence(timeout: 8))
-        toggle.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
-        waitForSwitchValue(toggle, expected: changed)
+        XCTAssertTrue(control.waitForExistence(timeout: 8))
+        selectMarketColor(reversed: changed)
         dismissWatchlistDebugPanel()
-        assertWatchlistMarketColors(reversed: changed == "1")
+        assertWatchlistMarketColors(reversed: changed)
 
         enterTrade()
         waitFor("trade.debug.open").tap()
-        XCTAssertTrue(toggle.waitForExistence(timeout: 8))
-        waitForSwitchValue(toggle, expected: changed)
-        toggle.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
-        waitForSwitchValue(toggle, expected: original)
+        XCTAssertTrue(control.waitForExistence(timeout: 8))
+        assertMarketColorSelected(reversed: changed)
+        selectMarketColor(reversed: original)
         waitFor("trade.debug.close").tap()
 
         selectMainTab("mainTab.tab3")
         waitFor("market.debug.open").tap()
-        XCTAssertTrue(toggle.waitForExistence(timeout: 8))
-        waitForSwitchValue(toggle, expected: original)
-        toggle.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
-        waitForSwitchValue(toggle, expected: changed)
+        XCTAssertTrue(control.waitForExistence(timeout: 8))
+        assertMarketColorSelected(reversed: original)
+        selectMarketColor(reversed: changed)
         waitFor("market.debug.close").tap()
 
         selectMainTab("mainTab.tab5")
         waitFor("news.debug.open").tap()
-        XCTAssertTrue(toggle.waitForExistence(timeout: 8))
-        waitForSwitchValue(toggle, expected: changed)
+        XCTAssertTrue(control.waitForExistence(timeout: 8))
+        assertMarketColorSelected(reversed: changed)
         waitFor("news.debug.close").tap()
 
         app.terminate()
         app.launch()
         enterWatchlist()
         waitFor("watchlist.debug.open").tap()
-        XCTAssertTrue(toggle.waitForExistence(timeout: 8))
-        waitForSwitchValue(toggle, expected: changed)
+        XCTAssertTrue(control.waitForExistence(timeout: 8))
+        assertMarketColorSelected(reversed: changed)
+    }
+
+    private func selectedMarketColor() -> Bool? {
+        let redUp = app.buttons["debug.marketColors.redUp"].firstMatch
+        let greenUp = app.buttons["debug.marketColors.greenUp"].firstMatch
+        guard redUp.waitForExistence(timeout: 8), greenUp.waitForExistence(timeout: 8) else {
+            XCTFail("Market color options are missing")
+            return nil
+        }
+        XCTAssertTrue(app.staticTexts["涨跌色"].exists)
+        XCTAssertEqual(redUp.label, "红涨绿跌")
+        XCTAssertEqual(greenUp.label, "绿涨红跌")
+        guard redUp.isSelected != greenUp.isSelected else {
+            XCTFail("Exactly one market color option should be selected")
+            return nil
+        }
+        return greenUp.isSelected
+    }
+
+    private func assertMarketColorSelected(reversed: Bool) {
+        let selected = app.buttons[reversed ? "debug.marketColors.greenUp" : "debug.marketColors.redUp"].firstMatch
+        let other = app.buttons[reversed ? "debug.marketColors.redUp" : "debug.marketColors.greenUp"].firstMatch
+        XCTAssertTrue(selected.waitForExistence(timeout: 8))
+        let expectation = XCTNSPredicateExpectation(predicate: NSPredicate(format: "selected == true"), object: selected)
+        XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: 5), .completed)
+        XCTAssertFalse(other.isSelected, "Only one market color option should be selected")
+    }
+
+    private func selectMarketColor(reversed: Bool) {
+        let option = app.buttons[reversed ? "debug.marketColors.greenUp" : "debug.marketColors.redUp"].firstMatch
+        XCTAssertTrue(option.waitForExistence(timeout: 8))
+        option.tap()
+        assertMarketColorSelected(reversed: reversed)
     }
 
     private func dismissWatchlistDebugPanel() {
         let panel = waitFor("watchlist.debug.panel")
-        let start = panel.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.02))
-        let end = panel.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.65))
-        start.press(forDuration: 0.1, thenDragTo: end)
+        waitFor("watchlist.debug.close").tap()
         let dismissed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: panel)
         XCTAssertEqual(XCTWaiter.wait(for: [dismissed], timeout: 5), .completed, "Watchlist debug sheet did not dismiss")
     }
@@ -1246,12 +1273,9 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
     func testModalDestructiveColorDoesNotFollowMarketPreference() throws {
         enterWatchlist()
         waitFor("watchlist.debug.open").tap()
-        let toggle = app.switches["debug.marketColorReversed"].firstMatch
-        XCTAssertTrue(toggle.waitForExistence(timeout: 8))
-        guard let original = toggle.value as? String, ["0", "1"].contains(original) else {
-            XCTFail("Market color switch did not expose a boolean value")
-            return
-        }
+        let control = app.descendants(matching: .any)["debug.marketColors"].firstMatch
+        XCTAssertTrue(control.waitForExistence(timeout: 8))
+        guard let original = selectedMarketColor() else { return }
         addTeardownBlock { [app] in
             guard let app else { return }
             let presented = app.descendants(matching: .any)["modal.presented"].firstMatch
@@ -1264,15 +1288,18 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
                 let back = app.navigationBars.buttons.firstMatch
                 if back.exists && back.isHittable { back.tap() }
             }
-            let control = app.switches["debug.marketColorReversed"].firstMatch
+            let control = app.descendants(matching: .any)["debug.marketColors"].firstMatch
             if !control.exists {
+                let back = app.descendants(matching: .any)["stockDetail.navbar.back"].firstMatch
+                if back.exists && back.isHittable { back.tap() }
                 let tab = app.descendants(matching: .any)["mainTab.tab1"].firstMatch
                 if tab.waitForExistence(timeout: 5) { tab.tap() }
                 let open = app.descendants(matching: .any)["watchlist.debug.open"].firstMatch
                 if open.waitForExistence(timeout: 5) { open.tap() }
             }
-            if control.waitForExistence(timeout: 5), let value = control.value as? String, value != original {
-                control.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+            if control.waitForExistence(timeout: 5) {
+                let option = app.buttons[original ? "debug.marketColors.greenUp" : "debug.marketColors.redUp"].firstMatch
+                if option.exists && !option.isSelected { option.tap() }
             }
         }
         dismissWatchlistDebugPanel()
@@ -1281,9 +1308,8 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
 
         enterWatchlist()
         waitFor("watchlist.debug.open").tap()
-        XCTAssertTrue(toggle.waitForExistence(timeout: 8))
-        toggle.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
-        waitForSwitchValue(toggle, expected: original == "0" ? "1" : "0")
+        XCTAssertTrue(control.waitForExistence(timeout: 8))
+        selectMarketColor(reversed: !original)
         dismissWatchlistDebugPanel()
         assertModalDestructiveIsRed()
     }
@@ -1312,20 +1338,72 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         XCTAssertTrue(waitFor("compare.componentLibrary").exists)
     }
 
-    func testCapitalDistributionReversesRingAndFlowLabels() throws {
+    func testStockDetailPriceArrowFollowsMarketColors() throws {
+        assertStockDetailPriceArrowFollowsMarketColors(symbol: "AAPL", rises: true)
+    }
+
+    func testStockDetailFallingPriceArrowFollowsMarketColors() throws {
+        assertStockDetailPriceArrowFollowsMarketColors(symbol: "TSLA", rises: false)
+    }
+
+    private func assertStockDetailPriceArrowFollowsMarketColors(symbol: String, rises: Bool) {
+        enterWatchlist()
+        tapWatchlistRow("watchlist.row.us:NVDA")
+        waitFor("stockDetail.bottomActionBar.scroll").tap()
+        let scrollRoot = waitFor("stockDetail.scroll.root")
+        waitFor("stockDetail.scroll.symbol.us:AAPL").tap()
+        waitForCommittedInstrument("us:AAPL")
+        waitForParentCommittedInstrument("us:AAPL")
+        if symbol == "TSLA" {
+            scrollRoot.swipeUp()
+            waitForCommittedInstrument("us:TSLA")
+            waitForParentCommittedInstrument("us:TSLA")
+        }
+        waitFor("stockDetail.scroll.card.current").tap()
+        waitForDisappearance(scrollRoot)
+        XCTAssertTrue(waitFor("stockDetail.navbar.title").label.contains(symbol))
+
+        waitFor("stockDetail.navbar.debug").tap()
+        guard let original = selectedMarketColor() else { return }
+        addTeardownBlock { [app] in
+            guard let app else { return }
+            let control = app.descendants(matching: .any)["debug.marketColors"].firstMatch
+            if !control.exists {
+                let debug = app.descendants(matching: .any)["stockDetail.navbar.debug"].firstMatch
+                if debug.waitForExistence(timeout: 5), debug.isHittable { debug.tap() }
+            }
+            if control.waitForExistence(timeout: 5) {
+                let option = app.buttons[original ? "debug.marketColors.greenUp" : "debug.marketColors.redUp"].firstMatch
+                if option.exists && !option.isSelected { option.tap() }
+            }
+        }
+
+        for reversed in [false, true] {
+            selectMarketColor(reversed: reversed)
+            dismissStockDetailDebugPanel()
+            let expected: [(Int, Int, Int)] = rises != reversed
+                ? [(254, 74, 74), (245, 61, 61)]
+                : [(0, 186, 138), (5, 167, 125)]
+            let arrow = waitFor("stockDetail.price.arrow")
+            let price = waitFor("stockDetail.price.value")
+            XCTAssertTrue(arrow.isHittable)
+            XCTAssertTrue(price.isHittable)
+            // Separate screenshots prevent the adjacent price from masking an incorrectly tinted arrow.
+            assertSolidColorPixels(arrow, colors: expected, minimum: 2)
+            assertSolidColorPixels(price, colors: expected, minimum: 5)
+            waitFor("stockDetail.navbar.debug").tap()
+        }
+    }
+
+    func testHongKongOrderBooksFollowMarketColors() throws {
         enterWatchlist()
         waitFor("watchlist.tab.港股").tap()
         tapWatchlistRow("watchlist.row.hk:09988")
         waitFor("stockDetail.navbar.debug").tap()
-        let toggle = app.switches["debug.marketColorReversed"].firstMatch
-        XCTAssertTrue(toggle.waitForExistence(timeout: 8))
-        guard let original = toggle.value as? String, ["0", "1"].contains(original) else {
-            XCTFail("Market color switch did not expose a boolean value")
-            return
-        }
+        guard let original = selectedMarketColor() else { return }
         addTeardownBlock { [app] in
             guard let app else { return }
-            let control = app.switches["debug.marketColorReversed"].firstMatch
+            let control = app.descendants(matching: .any)["debug.marketColors"].firstMatch
             if !control.exists {
                 let debug = app.descendants(matching: .any)["stockDetail.navbar.debug"].firstMatch
                 let scroll = app.scrollViews["stockDetail.page.quotePage"].firstMatch
@@ -1334,23 +1412,64 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
                 }
                 if debug.waitForExistence(timeout: 5), debug.isHittable { debug.tap() }
             }
-            if control.waitForExistence(timeout: 5), let value = control.value as? String, value != original {
-                control.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+            if control.waitForExistence(timeout: 5) {
+                let option = app.buttons[original ? "debug.marketColors.greenUp" : "debug.marketColors.redUp"].firstMatch
+                if option.exists && !option.isSelected { option.tap() }
+            }
+        }
+
+        for reversed in [false, true] {
+            selectMarketColor(reversed: reversed)
+            dismissStockDetailDebugPanel()
+            let scroll = app.scrollViews["stockDetail.page.quotePage"].firstMatch
+            XCTAssertTrue(scroll.waitForExistence(timeout: 8))
+            for identifier in ["stockDetail.orderBook.distribution", "stockDetail.orderBook.levels", "stockDetail.brokerOrderBook.levels"] {
+                let element = app.descendants(matching: .any)[identifier].firstMatch
+                for _ in 0..<12 where !element.isHittable { scroll.swipeUp() }
+                XCTAssertTrue(element.isHittable, "Order book section is not visible: \(identifier)")
+                assertRedGreenPixels(element, firstRegion: .left, firstIsRed: !reversed, minimum: 5)
+            }
+            for _ in 0..<10 { scroll.swipeDown() }
+            waitFor("stockDetail.navbar.debug").tap()
+        }
+    }
+
+    func testCapitalDistributionReversesRingAndFlowLabels() throws {
+        enterWatchlist()
+        waitFor("watchlist.tab.港股").tap()
+        tapWatchlistRow("watchlist.row.hk:09988")
+        waitFor("stockDetail.navbar.debug").tap()
+        let control = app.descendants(matching: .any)["debug.marketColors"].firstMatch
+        XCTAssertTrue(control.waitForExistence(timeout: 8))
+        guard let original = selectedMarketColor() else { return }
+        addTeardownBlock { [app] in
+            guard let app else { return }
+            let control = app.descendants(matching: .any)["debug.marketColors"].firstMatch
+            if !control.exists {
+                let debug = app.descendants(matching: .any)["stockDetail.navbar.debug"].firstMatch
+                let scroll = app.scrollViews["stockDetail.page.quotePage"].firstMatch
+                if scroll.exists {
+                    for _ in 0..<10 where !debug.isHittable { scroll.swipeDown() }
+                }
+                if debug.waitForExistence(timeout: 5), debug.isHittable { debug.tap() }
+            }
+            if control.waitForExistence(timeout: 5) {
+                let option = app.buttons[original ? "debug.marketColors.greenUp" : "debug.marketColors.redUp"].firstMatch
+                if option.exists && !option.isSelected { option.tap() }
             }
         }
         dismissStockDetailDebugPanel()
         showCapitalDistribution()
-        assertCapitalDistributionColors(reversed: original == "1")
+        assertCapitalDistributionColors(reversed: original)
 
         let scroll = app.scrollViews["stockDetail.page.quotePage"].firstMatch
         for _ in 0..<10 { scroll.swipeDown() }
         waitFor("stockDetail.navbar.debug").tap()
-        XCTAssertTrue(toggle.waitForExistence(timeout: 8))
-        toggle.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
-        waitForSwitchValue(toggle, expected: original == "0" ? "1" : "0")
+        XCTAssertTrue(control.waitForExistence(timeout: 8))
+        selectMarketColor(reversed: !original)
         dismissStockDetailDebugPanel()
         showCapitalDistribution()
-        assertCapitalDistributionColors(reversed: original != "1")
+        assertCapitalDistributionColors(reversed: !original)
     }
 
     private func showCapitalDistribution() {

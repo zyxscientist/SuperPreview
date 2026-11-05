@@ -11,16 +11,17 @@ import SwiftUI
 struct StockTradeTapeView: View {
     
     @Binding var openTapeView: Bool
+    @Environment(\.marketColorReversed) private var marketColorReversed
     
     var body: some View {
         VStack(spacing:10){
             HStack(spacing:0){
                 Rectangle()
-                    .foregroundColor(Color("color-utility3-green"))
+                    .foregroundColor(MarketColor.resolve("color-utility3-green", reversed: marketColorReversed))
                     .frame(height: 5)
                 
                 Rectangle()
-                    .foregroundColor(Color("color-utility3-red"))
+                    .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
                     .frame(height: 5)
             }
             .cornerRadius(100)
@@ -30,12 +31,12 @@ struct StockTradeTapeView: View {
                 ZStack {
                     HStack(spacing: 0.0){
                         Rectangle()
-                            .foregroundColor(Color("color-utility3-red").opacity(0.15))
+                            .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed).opacity(0.15))
                             .frame(height: 27)
                             .overlay(
                                 HStack{
                                     Text("16.980")
-                                        .foregroundColor(Color("color-utility3-red"))
+                                        .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
                                         .modifier(CustomFontModifier(size: 12, font: .medium))
                                         .padding(.leading, 10)
                                     
@@ -49,12 +50,12 @@ struct StockTradeTapeView: View {
                             )
                         
                         Rectangle()
-                            .foregroundColor(Color("color-utility3-green").opacity(0.15))
+                            .foregroundColor(MarketColor.resolve("color-utility3-green", reversed: marketColorReversed).opacity(0.15))
                             .frame(height: 27)
                             .overlay(
                                 HStack{
                                     Text("15.910")
-                                        .foregroundColor(Color("color-utility3-green"))
+                                        .foregroundColor(MarketColor.resolve("color-utility3-green", reversed: marketColorReversed))
                                         .modifier(CustomFontModifier(size: 12, font: .medium))
                                         .padding(.leading, 10)
                                     
@@ -98,17 +99,18 @@ struct StockTradeTapeViewPreviews: PreviewProvider {
 }
 
 struct OtherTapeView: View {
+    @Environment(\.marketColorReversed) private var marketColorReversed
     var body: some View {
         ZStack {
             
             HStack(spacing: 0.0){
                 Rectangle()
-                    .foregroundColor(Color("color-utility3-red").opacity(0.05))
+                    .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed).opacity(0.05))
                     .frame(height: 27)
                     .overlay(
                         HStack{
                             Text("799.980")
-                                .foregroundColor(Color("color-utility3-red"))
+                                .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
                                 .modifier(CustomFontModifier(size: 12, font: .medium))
                                 .padding(.leading, 10)
                             
@@ -122,12 +124,12 @@ struct OtherTapeView: View {
                     )
                 
                 Rectangle()
-                    .foregroundColor(Color("color-utility3-green").opacity(0.05))
+                    .foregroundColor(MarketColor.resolve("color-utility3-green", reversed: marketColorReversed).opacity(0.05))
                     .frame(height: 27)
                     .overlay(
                         HStack{
                             Text("799.980")
-                                .foregroundColor(Color("color-utility3-green"))
+                                .foregroundColor(MarketColor.resolve("color-utility3-green", reversed: marketColorReversed))
                                 .modifier(CustomFontModifier(size: 12, font: .medium))
                                 .padding(.leading, 10)
                             

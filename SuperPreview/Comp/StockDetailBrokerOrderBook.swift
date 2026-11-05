@@ -81,6 +81,7 @@ struct StockDetailBrokerOrderBook: View {
     let data: StockDetailBrokerOrderBookData
 
     @Environment(\.demoLanguage) private var language
+    @Environment(\.marketColorReversed) private var marketColorReversed
 
     init(data: StockDetailBrokerOrderBookData = .mock) {
         self.data = data
@@ -147,6 +148,8 @@ struct StockDetailBrokerOrderBook: View {
                 style: .continuous
             )
         )
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("stockDetail.brokerOrderBook.levels")
     }
 
     private var displayedRowCount: Int {
@@ -167,7 +170,7 @@ struct StockDetailBrokerOrderBook: View {
         case let .seat(seat):
             StockDetailBrokerOrderBookSeatCell(seat: seat, side: side)
         case nil:
-            side.tint.opacity(StockDetailBrokerOrderBookLayout.seatBackgroundOpacity)
+            side.tint(reversed: marketColorReversed).opacity(StockDetailBrokerOrderBookLayout.seatBackgroundOpacity)
         }
     }
 
@@ -213,12 +216,12 @@ private enum StockDetailBrokerOrderBookSide {
     case bid
     case ask
 
-    var tint: Color {
+    func tint(reversed: Bool) -> Color {
         switch self {
         case .bid:
-            Color("color-utility3-red")
+            MarketColor.resolve("color-utility3-red", reversed: reversed)
         case .ask:
-            Color("color-utility3-green")
+            MarketColor.resolve("color-utility3-green", reversed: reversed)
         }
     }
 
@@ -246,10 +249,11 @@ private struct StockDetailBrokerOrderBookLevelCell: View {
     let side: StockDetailBrokerOrderBookSide
 
     @Environment(\.demoLanguage) private var language
+    @Environment(\.marketColorReversed) private var marketColorReversed
 
     var body: some View {
         ZStack {
-            side.tint.opacity(
+            side.tint(reversed: marketColorReversed).opacity(
                 level.rank == 1
                     ? StockDetailBrokerOrderBookLayout.bestLevelBackgroundOpacity
                     : StockDetailBrokerOrderBookLayout.seatBackgroundOpacity
@@ -257,7 +261,7 @@ private struct StockDetailBrokerOrderBookLevelCell: View {
 
             if level.showsVolumeFill {
                 GeometryReader { proxy in
-                    side.tint.opacity(StockDetailBrokerOrderBookLayout.volumeFillOpacity)
+                    side.tint(reversed: marketColorReversed).opacity(StockDetailBrokerOrderBookLayout.volumeFillOpacity)
                         .frame(width: proxy.size.width * level.volumeFraction)
                         .frame(maxWidth: .infinity, alignment: side.fillAlignment)
                 }
@@ -265,12 +269,12 @@ private struct StockDetailBrokerOrderBookLevelCell: View {
             }
 
             HStack(spacing: StockDetailBrokerOrderBookLayout.rowContentSpacing) {
-                StockDetailBrokerOrderBookRankBadge(rank: level.rank, color: side.tint)
+                StockDetailBrokerOrderBookRankBadge(rank: level.rank, color: side.tint(reversed: marketColorReversed))
 
                 Text(level.price)
                     .modifier(rowTextFont)
                     .monospacedDigit()
-                    .foregroundColor(side.tint)
+                    .foregroundColor(side.tint(reversed: marketColorReversed))
 
                 Spacer(minLength: 0)
 
@@ -328,6 +332,7 @@ private struct StockDetailBrokerOrderBookSeatCell: View {
     let side: StockDetailBrokerOrderBookSide
 
     @Environment(\.demoLanguage) private var language
+    @Environment(\.marketColorReversed) private var marketColorReversed
 
     var body: some View {
         HStack(spacing: StockDetailBrokerOrderBookLayout.rowContentSpacing) {
@@ -352,7 +357,7 @@ private struct StockDetailBrokerOrderBookSeatCell: View {
         .foregroundColor(Color("color-text-30"))
         .padding(.horizontal, StockDetailBrokerOrderBookLayout.rowHorizontalPadding)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-        .background(side.tint.opacity(StockDetailBrokerOrderBookLayout.seatBackgroundOpacity))
+        .background(side.tint(reversed: marketColorReversed).opacity(StockDetailBrokerOrderBookLayout.seatBackgroundOpacity))
         .accessibilityElement(children: .combine)
         .accessibilityLabel(seatAccessibilityLabel)
     }

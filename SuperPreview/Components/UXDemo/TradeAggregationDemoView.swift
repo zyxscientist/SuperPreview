@@ -644,7 +644,7 @@ private struct TradeAggregationDebugPanel: View {
 
             DemoTouchToggle()
 
-            DemoMarketColorToggle()
+            DemoMarketColorPicker()
 
             DemoLiquidGlassUsageToggle(
                 isReducedLiquidGlassUsageEnabled: $isReducedLiquidGlassUsageEnabled

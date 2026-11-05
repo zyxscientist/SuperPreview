@@ -859,7 +859,7 @@ private struct StockDetailDebugSheet: View {
                 .padding(.horizontal, 20)
                 .padding(.bottom, 12)
 
-            DemoMarketColorToggle()
+            DemoMarketColorPicker()
                 .padding(.horizontal, 20)
                 .padding(.bottom, 12)
 

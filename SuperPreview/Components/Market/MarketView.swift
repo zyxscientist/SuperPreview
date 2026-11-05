@@ -406,7 +406,7 @@ private struct MarketDebugPanel: View {
 
                 DemoTouchToggle()
 
-                DemoMarketColorToggle()
+                DemoMarketColorPicker()
 
                 DemoLiquidGlassUsageToggle(
                     isReducedLiquidGlassUsageEnabled: $isReducedLiquidGlassUsageEnabled

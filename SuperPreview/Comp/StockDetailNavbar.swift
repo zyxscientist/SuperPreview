@@ -30,12 +30,12 @@ struct StockDetailNavbarQuote: Equatable {
             }
         }
 
-        fileprivate var glyphAssetName: String? {
+        fileprivate func glyphAssetName(reversed: Bool) -> String? {
             switch self {
             case .up:
-                "watchlistItem_up_red"
+                reversed ? "watchlistItem_up_green" : "watchlistItem_up_red"
             case .down:
-                "watchlistItem_down_green"
+                reversed ? "watchlistItem_down_red" : "watchlistItem_down_green"
             case .flat:
                 nil
             }
@@ -283,8 +283,9 @@ struct StockDetailNavbar: View {
             HStack(spacing: StockDetailNavbarLayout.quoteValueSpacing) {
                 Text(quote.price)
 
-                if let glyphAssetName = quote.trend.glyphAssetName {
+                if let glyphAssetName = quote.trend.glyphAssetName(reversed: marketColorReversed) {
                     Image(glyphAssetName)
+                        .renderingMode(marketColorReversed ? .template : .original)
                         .resizable()
                         .scaledToFit()
                         .frame(

@@ -103,6 +103,7 @@ struct StockOrderBook: View {
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.demoLanguage) private var language
+    @Environment(\.marketColorReversed) private var marketColorReversed
 
     init(
         depth: StockOrderBookDepth,
@@ -188,12 +189,16 @@ struct StockOrderBook: View {
         VStack(alignment: .leading, spacing: StockOrderBookLayout.sectionSpacing) {
             summary
 
-            if depth.supportsExpansion {
-                expandedLevels
-                    .accessibilityHidden(!isShowingExpandedLevels)
-            } else {
-                compactLevel
+            Group {
+                if depth.supportsExpansion {
+                    expandedLevels
+                        .accessibilityHidden(!isShowingExpandedLevels)
+                } else {
+                    compactLevel
+                }
             }
+            .accessibilityElement(children: .contain)
+            .accessibilityIdentifier(presentation == .fixedDepth ? "stockDetail.orderBook.levels" : "stockOrder.orderBook.levels")
         }
         .padding(.horizontal, StockOrderBookLayout.horizontalPadding)
         .padding(.top, StockOrderBookLayout.topPadding)
@@ -208,7 +213,7 @@ struct StockOrderBook: View {
                         .foregroundColor(Color("color-text-30"))
 
                     Text(distribution.bidPercentage)
-                        .foregroundColor(Color("color-utility3-red"))
+                        .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
                         .modifier(CustomFontModifier(size: 12, font: .regular, lineHeight: 16))
                         .monospacedDigit()
                 }
@@ -220,7 +225,7 @@ struct StockOrderBook: View {
                         .foregroundColor(Color("color-text-30"))
 
                     Text(distribution.askPercentage)
-                        .foregroundColor(Color("color-utility3-green"))
+                        .foregroundColor(MarketColor.resolve("color-utility3-green", reversed: marketColorReversed))
                         .modifier(CustomFontModifier(size: 12, font: .regular, lineHeight: 16))
                         .monospacedDigit()
                 }
@@ -232,19 +237,21 @@ struct StockOrderBook: View {
             GeometryReader { proxy in
                 HStack(spacing: 0) {
                     Rectangle()
-                        .fill(Color("color-utility3-red"))
+                        .fill(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
                         .frame(width: proxy.size.width * distribution.bidFraction)
 
                     Rectangle()
-                        .fill(Color("color-utility3-green"))
+                        .fill(MarketColor.resolve("color-utility3-green", reversed: marketColorReversed))
                         .frame(width: proxy.size.width * distribution.askFraction)
                 }
                 .clipShape(Capsule())
             }
             .frame(height: StockOrderBookLayout.distributionBarHeight)
+            .accessibilityElement(children: .ignore)
+            .accessibilityIdentifier(presentation == .fixedDepth ? "stockDetail.orderBook.distribution" : "stockOrder.orderBook.distribution")
         }
         .frame(height: StockOrderBookLayout.summaryHeight)
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: .contain)
         .accessibilityLabel(
             "\(language.text(.buyOrderBook)) \(distribution.bidPercentage), \(language.text(.sellOrderBook)) \(distribution.askPercentage)"
         )
@@ -401,12 +408,12 @@ private enum StockOrderBookSide {
     case bid
     case ask
 
-    var color: Color {
+    func color(reversed: Bool) -> Color {
         switch self {
         case .bid:
-            return Color("color-utility3-red")
+            return MarketColor.resolve("color-utility3-red", reversed: reversed)
         case .ask:
-            return Color("color-utility3-green")
+            return MarketColor.resolve("color-utility3-green", reversed: reversed)
         }
     }
 
@@ -433,13 +440,15 @@ private struct StockOrderBookCompactCell: View {
     let level: StockOrderBookLevel?
     let side: StockOrderBookSide
 
+    @Environment(\.marketColorReversed) private var marketColorReversed
+
     var body: some View {
         ZStack {
-            side.color.opacity(0.05)
+            side.color(reversed: marketColorReversed).opacity(0.05)
 
             HStack(spacing: 4) {
                 Text(level?.price ?? "")
-                    .foregroundColor(side.color)
+                    .foregroundColor(side.color(reversed: marketColorReversed))
                     .modifier(CustomFontModifier(size: 16, font: .regular, lineHeight: 24))
                     .monospacedDigit()
                     .lineLimit(1)
@@ -475,21 +484,23 @@ private struct StockOrderBookExpandedCell: View {
     let leadingPadding: CGFloat
     let trailingPadding: CGFloat
 
+    @Environment(\.marketColorReversed) private var marketColorReversed
+
     var body: some View {
         ZStack {
-            side.color.opacity(isBestLevel ? 0.10 : 0.05)
+            side.color(reversed: marketColorReversed).opacity(isBestLevel ? 0.10 : 0.05)
 
             GeometryReader { proxy in
-                side.color.opacity(0.15)
+                side.color(reversed: marketColorReversed).opacity(0.15)
                     .frame(width: proxy.size.width * (level?.volumeFraction ?? 0))
                     .frame(maxWidth: .infinity, alignment: side.fillAlignment)
             }
 
             HStack(spacing: 4) {
-                StockOrderBookRankBadge(rank: rank, color: side.color)
+                StockOrderBookRankBadge(rank: rank, color: side.color(reversed: marketColorReversed))
 
                 Text(level?.price ?? "")
-                    .foregroundColor(side.color)
+                    .foregroundColor(side.color(reversed: marketColorReversed))
                     .modifier(CustomFontModifier(size: 12, font: .regular, lineHeight: 16))
                     .monospacedDigit()
                     .lineLimit(1)

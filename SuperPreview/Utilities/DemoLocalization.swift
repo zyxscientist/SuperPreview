@@ -117,7 +117,7 @@ enum MarketColor {
 
 enum DemoCopyKey {
     case newWatchlist, newTrade, stockOrderPage, debug, done, interfaceLanguage
-    case reverseMarketColors
+    case marketColors, redUpGreenDown, greenUpRedDown
     case reduceLiquidGlassUsage, reduceLiquidGlassUsageDetails
     case reduceLiquidGlassUsageUnavailableDetails
     case liquidGlassUsageEnabled
@@ -363,7 +363,9 @@ private enum DemoCopy {
         .debug: ("调试", "除錯", "Debug"),
         .done: ("完成", "完成", "Done"),
         .interfaceLanguage: ("界面语言", "介面語言", "Interface Language"),
-        .reverseMarketColors: ("涨跌颜色反转", "漲跌顏色反轉", "Reverse Market Colors"),
+        .marketColors: ("涨跌色", "漲跌色", "Market Colors"),
+        .redUpGreenDown: ("红涨绿跌", "紅漲綠跌", "Red Up, Green Down"),
+        .greenUpRedDown: ("绿涨红跌", "綠漲紅跌", "Green Up, Red Down"),
         .reduceLiquidGlassUsage: ("减少液态玻璃使用", "減少液態玻璃使用", "Reduce Liquid Glass"),
         .reduceLiquidGlassUsageDetails: ("开启后，选中态恢复为实心 Capsule 样式", "開啟後，選中態恢復為實心 Capsule 樣式", "Selected states use the original solid Capsule style when enabled."),
         .reduceLiquidGlassUsageUnavailableDetails: ("当前系统已自动启用减少液态玻璃使用", "目前系統已自動啟用減少液態玻璃使用", "Reduced Liquid Glass is automatically enabled on this system."),
@@ -994,15 +996,27 @@ private enum DemoCopy {
     ]
 }
 
-struct DemoMarketColorToggle: View {
+struct DemoMarketColorPicker: View {
     @AppStorage(MarketColor.storageKey) private var isReversed = false
     @Environment(\.demoLanguage) private var language
 
     var body: some View {
-        Toggle(language.text(.reverseMarketColors), isOn: $isReversed)
-            .font(.system(size: 16, weight: .medium))
-            .foregroundColor(Color("color-text-30"))
-            .accessibilityIdentifier("debug.marketColorReversed")
+        VStack(alignment: .leading, spacing: 8) {
+            Text(language.text(.marketColors))
+                .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
+                .foregroundColor(Color("color-text-30"))
+
+            Picker(language.text(.marketColors), selection: $isReversed) {
+                Text(language.text(.redUpGreenDown))
+                    .tag(false)
+                    .accessibilityIdentifier("debug.marketColors.redUp")
+                Text(language.text(.greenUpRedDown))
+                    .tag(true)
+                    .accessibilityIdentifier("debug.marketColors.greenUp")
+            }
+            .pickerStyle(.segmented)
+            .accessibilityIdentifier("debug.marketColors")
+        }
     }
 }
 

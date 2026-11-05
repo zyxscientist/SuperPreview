@@ -11,6 +11,7 @@ import SwiftUI
 struct OrderBookTapeView: View {
     
     @StateObject private var viewModel = TapeViewModel()
+    @Environment(\.marketColorReversed) private var marketColorReversed
     
     var itemCount: Int = 10
     
@@ -22,8 +23,8 @@ struct OrderBookTapeView: View {
                     
                     HStack(spacing: 0){
                         // 分买卖两侧构建
-                        BuySideTapeCellView(index: index, orderDirectionColor: Color("color-utility3-red"), data: viewModel.leftData.count > index ? viewModel.leftData[index] : nil, viewModel: viewModel) // 比较数据总量的大小，如果大过index就为nil，确保不大过 index 数量，让视图保持10档
-                        SellSideTapeCellView(index: index, orderDirectionColor: Color("color-utility3-green"), data: viewModel.rightData.count > index ? viewModel.rightData[index] : nil, viewModel: viewModel)
+                        BuySideTapeCellView(index: index, orderDirectionColor: MarketColor.resolve("color-utility3-red", reversed: marketColorReversed), data: viewModel.leftData.count > index ? viewModel.leftData[index] : nil, viewModel: viewModel) // 比较数据总量的大小，如果大过index就为nil，确保不大过 index 数量，让视图保持10档
+                        SellSideTapeCellView(index: index, orderDirectionColor: MarketColor.resolve("color-utility3-green", reversed: marketColorReversed), data: viewModel.rightData.count > index ? viewModel.rightData[index] : nil, viewModel: viewModel)
                     }
                 }
             }

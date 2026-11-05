@@ -220,7 +220,7 @@ private struct JakartaFontDebugView: View {
             Form {
                 DemoTouchToggle()
 
-                DemoMarketColorToggle()
+                DemoMarketColorPicker()
 
                 Section {
                     ForEach(JakartaFontWeight.allCases) { weight in
