@@ -89,8 +89,8 @@ enum StockChartMock {
     private static var adjustmentCache: [StockChartPeriod: [StockChartAdjustment: StockChartDataset]] = [:]
     static func dataset(for period: StockChartPeriod) -> StockChartDataset { cache[period]! }
 
-    /// Synthetic 2:1 split on a Monday that is also the first of the month.
-    /// The original continuous history represents forward-adjusted prices.
+    /// Split-only adjustment of synthetic prices: AAPL traded 4-for-1 on 2020-08-31.
+    /// Dividend adjustment is intentionally not modeled.
     static func adjustedDataset(for period: StockChartPeriod, adjustment: StockChartAdjustment) -> StockChartDataset {
         let original = dataset(for: period)
         guard [.day, .week, .month].contains(period), adjustment != .forward else { return original }
@@ -101,9 +101,9 @@ enum StockChartMock {
         calendar.timeZone = TimeZone(identifier: "America/New_York")!
         calendar.firstWeekday = 2
         calendar.minimumDaysInFirstWeek = 4
-        let splitDate = calendar.date(from: DateComponents(year: 2025, month: 12, day: 1))!
+        let splitDate = calendar.date(from: DateComponents(year: 2020, month: 8, day: 31))!
         let daily = dataset(for: .day).candles.map { candle -> StockChartCandle in
-            let scale: Double = adjustment == .backward || candle.date < splitDate ? 2 : 1
+            let scale: Double = adjustment == .backward || candle.date < splitDate ? 4 : 1
             return StockChartCandle(date: candle.date, open: candle.open * scale, high: candle.high * scale,
                                     low: candle.low * scale, close: candle.close * scale, volume: candle.volume / scale)
         }
@@ -122,7 +122,7 @@ enum StockChartMock {
             }
             adjusted = groups.compactMap { aggregate($0, date: $0.last!.date) }
         }
-        let reference = adjustment == .backward ? original.referenceClose * 2 : original.referenceClose
+        let reference = adjustment == .backward ? original.referenceClose * 4 : original.referenceClose
         // No mockID: the existing indicator cache is keyed only by period.
         let result = StockChartDataset(candles: adjusted, referenceClose: reference)
         adjustmentCache[period, default: [:]][adjustment] = result
@@ -134,26 +134,57 @@ enum StockChartMock {
         calendar.timeZone = TimeZone(identifier: "America/New_York")!
         calendar.firstWeekday = 2
         calendar.minimumDaysInFirstWeek = 4
-        let end = calendar.date(from: DateComponents(year: 2026, month: 11, day: 6, hour: 12))!
+        // This is a fixed historical demo, not a live quote. All bars are synthetic.
+        let end = calendar.date(from: DateComponents(year: 2026, month: 11, day: 5, hour: 12))!
+        let start = calendar.date(from: DateComponents(year: 2019, month: 12, day: 2, hour: 12))!
         var dates: [Date] = []
-        var cursor = end
-        while dates.count < 1300 {
-            let weekday = calendar.component(.weekday, from: cursor)
-            if weekday != 1 && weekday != 7 { dates.append(cursor) }
-            cursor = calendar.date(byAdding: .day, value: -1, to: cursor)!
+        var cursor = start
+        while cursor <= end {
+            if isTradingDay(cursor, calendar: calendar) { dates.append(cursor) }
+            cursor = calendar.date(byAdding: .day, value: 1, to: cursor)!
         }
-        dates.reverse()
+        // Coarse split-adjusted price-region anchors, chosen from publicly reported
+        // historical trends. These are illustrative rounded levels, not copied bars.
+        let anchors: [(Int, Double)] = [
+            (201912, 70), (202003, 63), (202006, 90), (202009, 115), (202012, 130),
+            (202103, 120), (202106, 135), (202109, 145), (202112, 175),
+            (202203, 170), (202206, 135), (202209, 140), (202212, 130),
+            (202303, 160), (202306, 190), (202309, 175), (202312, 190),
+            (202403, 170), (202406, 210), (202409, 230), (202412, 250),
+            (202503, 220), (202506, 205), (202509, 250), (202512, 270),
+            (202603, 250), (202606, 280), (202609, 310), (202611, 340)
+        ]
+        func monthIndex(_ key: Int) -> Double { Double((key / 100) * 12 + key % 100) }
+        func trend(_ date: Date) -> Double {
+            let c = calendar.dateComponents([.year, .month, .day], from: date)
+            let x = Double(c.year! * 12 + c.month!) + Double(c.day! - 1) / 31
+            let upper = anchors.firstIndex { monthIndex($0.0) >= x } ?? anchors.count - 1
+            guard upper > 0 else { return anchors[0].1 }
+            let a = anchors[upper - 1], b = anchors[upper]
+            let t = min(1, max(0, (x - monthIndex(a.0)) / (monthIndex(b.0) - monthIndex(a.0))))
+            return a.1 + (b.1 - a.1) * t
+        }
+        func noise(_ i: Int, _ salt: Int) -> Double {
+            let x = sin(Double(i * 131 + salt * 977) * 12.9898) * 43758.5453
+            return (x - floor(x)) * 2 - 1
+        }
         func close(_ i: Int) -> Double {
-            let x = Double(i - 1299)
-            return 212.45 + x * 0.055 + 6 * sin(x / 67) + 2.3 * sin(x / 17) + 0.7 * sin(x / 4.2)
+            let base = trend(dates[i])
+            // Multi-day movement plus irregular daily shocks around the coarse trend.
+            return base * (1 + 0.018 * sin(Double(i) * 0.14) + 0.013 * sin(Double(i) * 0.037)
+                           + 0.008 * noise(i, 1))
         }
         var daily: [StockChartCandle] = dates.indices.map { i in
-            let open = i == 0 ? close(i) - 0.3 : close(i - 1)
+            let prior = i == 0 ? close(i) : close(i - 1)
             let last = close(i)
+            let gap = 0.005 * noise(i, 2) + (i % 83 == 0 ? 0.022 * noise(i, 8) : 0)
+            let open = prior * (1 + gap)
+            let volatility = 0.003 + 0.009 * abs(noise(i, 3))
+            let volume = (52_000_000 * (0.65 + abs(noise(i, 4))) * (i % 83 == 0 ? 1.8 : 1)).rounded()
             return StockChartCandle(date: dates[i], open: open,
-                high: max(open, last) + 0.55 + 0.55 * abs(sin(Double(i) * 0.73)),
-                low: min(open, last) - 0.5 - 0.45 * abs(cos(Double(i) * 0.51)),
-                close: last, volume: 7_000_000 + 4_000_000 * abs(sin(Double(i) * 0.19)))
+                high: max(open, last) * (1 + volatility),
+                low: min(open, last) * (1 - volatility * (0.7 + 0.3 * abs(noise(i, 5)))),
+                close: last, volume: volume)
         }
         var sessions: [[StockChartCandle]] = []
         for i in (dates.count - 30)..<dates.count {
@@ -173,8 +204,9 @@ enum StockChartMock {
             var path: [Double] = []
             var displacement = 0.0
             var momentum = 0.0
-            for minute in 0..<390 {
-                let progress = Double(minute) / 389
+            let minuteCount = isEarlyClose(dates[i], calendar: calendar) ? 210 : 390
+            for minute in 0..<minuteCount {
+                let progress = Double(minute) / Double(minuteCount - 1)
                 let activity = 1 + 1.1 * exp(-progress * 14) + 0.65 * exp(-(1 - progress) * 12)
                 let shock = (random() + random() + random() - 1.5) * 0.075 * activity
                 momentum = 0.25 * momentum + shock
@@ -183,15 +215,15 @@ enum StockChartMock {
             }
             var previous = open
             var candles: [StockChartCandle] = []
-            for minute in 0..<390 {
-                let progress = Double(minute + 1) / 390
-                let value = open + (target - open) * progress + path[minute] - path[389] * progress
+            for minute in 0..<minuteCount {
+                let progress = Double(minute + 1) / Double(minuteCount)
+                let value = open + (target - open) * progress + path[minute] - path[minuteCount - 1] * progress
                 let spread = 0.008 + random() * 0.025
                 // Trading activity is normally heavier near the open and close,
                 // with irregular minute volume and occasional bursts.
                 let activity = 1 + 2.4 * exp(-progress * 14) + 1.6 * exp(-(1 - progress) * 12)
                 let burst = random() < 0.025 ? 1.8 + random() : 1.0
-                let volume = (15_000 * activity * (0.45 + random() * 1.1) * burst).rounded()
+                let volume = (daily[i].volume / Double(minuteCount) * activity * (0.45 + random() * 1.1) * burst / 1.35).rounded()
                 candles.append(StockChartCandle(date: start.addingTimeInterval(Double(minute) * 60), open: previous,
                     high: max(previous, value) + spread, low: min(previous, value) - spread,
                     close: value, volume: volume))
@@ -234,6 +266,54 @@ enum StockChartMock {
         return Dictionary(uniqueKeysWithValues: result.map { period, dataset in
             (period, StockChartDataset(candles: dataset.candles, referenceClose: dataset.referenceClose, mockID: period))
         })
+    }
+
+    // NYSE full-day closures for the bounded 2019–2026 fixture period.
+    static func isTradingDay(_ date: Date, calendar: Calendar) -> Bool {
+        let weekday = calendar.component(.weekday, from: date)
+        guard weekday != 1 && weekday != 7 else { return false }
+        let year = calendar.component(.year, from: date)
+        func day(_ month: Int, _ day: Int) -> Date {
+            calendar.date(from: DateComponents(year: year, month: month, day: day, hour: 12))!
+        }
+        func observed(_ month: Int, _ dayNumber: Int, saturdayFriday: Bool = true) -> Date {
+            let d = day(month, dayNumber)
+            let w = calendar.component(.weekday, from: d)
+            return calendar.date(byAdding: .day, value: w == 1 ? 1 : (w == 7 && saturdayFriday ? -1 : 0), to: d)!
+        }
+        func nthWeekday(_ month: Int, _ weekday: Int, _ n: Int) -> Date {
+            let first = day(month, 1)
+            let offset = (weekday - calendar.component(.weekday, from: first) + 7) % 7
+            return calendar.date(byAdding: .day, value: offset + 7 * (n - 1), to: first)!
+        }
+        func lastWeekday(_ month: Int, _ weekday: Int) -> Date {
+            let firstNext = month == 12 ? calendar.date(from: DateComponents(year: year + 1, month: 1, day: 1, hour: 12))! : day(month + 1, 1)
+            let last = calendar.date(byAdding: .day, value: -1, to: firstNext)!
+            return calendar.date(byAdding: .day, value: -((calendar.component(.weekday, from: last) - weekday + 7) % 7), to: last)!
+        }
+        // Gregorian Easter, then Good Friday.
+        let a = year % 19, b = year / 100, c = year % 100, d = b / 4, e = b % 4
+        let f = (b + 8) / 25, g = (b - f + 1) / 3
+        let h = (19 * a + b - d - g + 15) % 30, j = c / 4, k = c % 4
+        let l = (32 + 2 * e + 2 * j - h - k) % 7, m = (a + 11 * h + 22 * l) / 451
+        let easterMonth = (h + l - 7 * m + 114) / 31
+        let easterDay = (h + l - 7 * m + 114) % 31 + 1
+        let goodFriday = calendar.date(byAdding: .day, value: -2, to: day(easterMonth, easterDay))!
+        var holidays = [observed(1, 1, saturdayFriday: false), nthWeekday(1, 2, 3), nthWeekday(2, 2, 3),
+                        goodFriday, lastWeekday(5, 2), observed(7, 4), nthWeekday(9, 2, 1),
+                        nthWeekday(11, 5, 4), observed(12, 25)]
+        if year >= 2022 { holidays.append(observed(6, 19)) }
+        if year == 2025 { holidays.append(day(1, 9)) } // President Carter national day of mourning.
+        return !holidays.contains { calendar.isDate($0, inSameDayAs: date) }
+    }
+
+    static func isEarlyClose(_ date: Date, calendar: Calendar) -> Bool {
+        let parts = calendar.dateComponents([.year, .month, .day, .weekday], from: date)
+        // Friday after Thanksgiving, weekday July 3, and weekday Christmas Eve.
+        if parts.month == 11 && parts.weekday == 6 && (23...29).contains(parts.day!) { return true }
+        if parts.month == 7 && parts.day == 3 { return true }
+        if parts.month == 12 && parts.day == 24 { return true }
+        return false
     }
 
     private static func aggregate(_ candles: [StockChartCandle], date: Date) -> StockChartCandle? {
@@ -497,5 +577,17 @@ enum StockChartSeriesCache {
         if cached.count >= 24 { cached.removeAll() }
         cached[key] = result
         return result
+    }
+}
+
+/// Asset names used for corporate earnings markers. Nil means that the
+/// upstream color type is unknown; it does not imply an unchanged result.
+enum StockChartCorporateAppearance {
+    static func imageName(colorType: Int?, reversed: Bool) -> String {
+        switch colorType {
+        case 1: return reversed ? "chart_mark_finance_green_up" : "chart_mark_finance_red_up"
+        case -1: return reversed ? "chart_mark_finance_red_down" : "chart_mark_finance_green_down"
+        default: return "chart_mark_finance_gray"
+        }
     }
 }

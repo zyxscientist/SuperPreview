@@ -12,8 +12,19 @@ struct StockChartDataTests {
     }
     static func main() {
         let daily = StockChartMock.dataset(for: .day).candles
-        precondition(daily.count == 1300)
-        near(daily.last!.close, 212.45, "last close")
+        precondition(daily.count > 1700)
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        dateFormatter.timeZone = TimeZone(identifier: "America/New_York")!
+        let tradingDates = Set(daily.map { dateFormatter.string(from: $0.date) })
+        precondition(dateFormatter.string(from: daily.first!.date) == "2019-12-02")
+        precondition(dateFormatter.string(from: daily.last!.date) == "2026-11-05")
+        for closed in ["2020-04-10", "2021-12-24", "2022-06-20", "2024-07-04", "2025-01-09", "2026-11-26"] {
+            precondition(!tradingDates.contains(closed), "closed market date \(closed)")
+        }
+        precondition(tradingDates.contains("2021-12-31"), "Saturday New Year is not observed on prior Friday")
+        precondition(zip(daily.dropFirst(), daily).contains { abs($0.open - $1.close) > 0.1 }, "sessions have opening gaps")
+        precondition(daily.map(\.close).max()! > 300 && daily.map(\.close).min()! < 100)
         for period in StockChartPeriod.allCases {
             let first = StockChartMock.dataset(for: period)
             let second = StockChartMock.dataset(for: period)
@@ -55,6 +66,13 @@ struct StockChartDataTests {
         near(intradaySeries.volumeMA[0][4], (volumeSeed / 5).rounded(.toNearestOrAwayFromZero), "whole-unit volume MA")
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = TimeZone(identifier: "America/New_York")!
+        func exchangeDate(_ text: String) -> Date { dateFormatter.date(from: text)! }
+        for early in ["2020-11-27", "2024-07-03", "2025-11-28", "2025-12-24"] {
+            let date = exchangeDate(early)
+            precondition(StockChartMock.isTradingDay(date, calendar: calendar))
+            precondition(StockChartMock.isEarlyClose(date, calendar: calendar))
+        }
+        precondition(!StockChartMock.isEarlyClose(exchangeDate("2026-11-05"), calendar: calendar))
         precondition(calendar.component(.hour, from: oneDay.candles.first!.date) == 9)
         precondition(calendar.component(.minute, from: oneDay.candles.first!.date) == 30)
         precondition(calendar.component(.hour, from: oneDay.candles.last!.date) == 15)
@@ -93,6 +111,32 @@ struct StockChartDataTests {
         near(fives[0].high, minutes.prefix(5).map(\.high).max()!, "minute high")
         near(fives[0].volume, minutes.prefix(5).reduce(0) { $0 + $1.volume }, "minute volume")
         precondition(StockChartMock.dataset(for: .minute60).candles.count == 210)
+        // Every aggregated bucket stays inside its own exchange session, including
+        // the final partial hour. Intraday and daily bars derive from the same path.
+        let sessions = Dictionary(grouping: minutes) { dateFormatter.string(from: $0.date) }
+        precondition(sessions.count == 30)
+        for dailyBar in daily.suffix(30) {
+            let session = sessions[dateFormatter.string(from: dailyBar.date)]!
+            near(session.first!.open, dailyBar.open, "daily minute open")
+            near(session.last!.close, dailyBar.close, "daily minute close")
+            near(session.map(\.high).max(), dailyBar.high, "daily minute high")
+            near(session.map(\.low).min(), dailyBar.low, "daily minute low")
+        }
+        for (period, size) in [(StockChartPeriod.minute5, 5), (.minute15, 15), (.minute30, 30), (.minute60, 60)] {
+            let grouped = Dictionary(grouping: StockChartMock.dataset(for: period).candles) { dateFormatter.string(from: $0.date) }
+            for (day, bars) in grouped {
+                let source = sessions[day]!
+                precondition(bars.count == (source.count + size - 1) / size)
+                for (index, bar) in bars.enumerated() {
+                    let bucket = source[(index * size)..<min((index + 1) * size, source.count)]
+                    precondition(bar.date == bucket.first!.date)
+                    near(bar.open, bucket.first!.open, "bucket open")
+                    near(bar.close, bucket.last!.close, "bucket close")
+                    near(bar.volume, bucket.reduce(0) { $0 + $1.volume }, "bucket volume", tolerance: 1e-5)
+                }
+            }
+        }
+
         for period in [StockChartPeriod.week, .month] {
             let aggregate = StockChartMock.dataset(for: period).candles
             let last = aggregate.last!
@@ -110,29 +154,38 @@ struct StockChartDataTests {
             near(last.low, matching.map(\.low).min()!, "aggregated low")
             near(last.volume, matching.reduce(0) { $0 + $1.volume }, "aggregated volume", tolerance: 1e-5)
         }
-        let split = calendar.date(from: DateComponents(year: 2025, month: 12, day: 1))!
+        let split = calendar.date(from: DateComponents(year: 2020, month: 8, day: 31))!
         let unadjusted = StockChartMock.adjustedDataset(for: .day, adjustment: .none)
         let backward = StockChartMock.adjustedDataset(for: .day, adjustment: .backward)
         precondition(unadjusted.mockID == nil && backward.mockID == nil)
         for (index, original) in daily.enumerated() {
-            let scale = original.date < split ? 2.0 : 1.0
+            let scale = original.date < split ? 4.0 : 1.0
             near(unadjusted.candles[index].close, original.close * scale, "unadjusted close")
             near(unadjusted.candles[index].volume, original.volume / scale, "unadjusted volume")
-            near(backward.candles[index].close, original.close * 2, "backward close")
+            near(backward.candles[index].close, original.close * 4, "backward close")
         }
+        calendar.firstWeekday = 2
+        calendar.minimumDaysInFirstWeek = 4
         for period in [StockChartPeriod.week, .month] {
-            let original = StockChartMock.dataset(for: period)
             let unadjustedPeriod = StockChartMock.adjustedDataset(for: period, adjustment: .none)
             let backwardPeriod = StockChartMock.adjustedDataset(for: period, adjustment: .backward)
             precondition(unadjustedPeriod.mockID == nil && backwardPeriod.mockID == nil)
-            precondition(original.candles.count == unadjustedPeriod.candles.count && original.candles.count == backwardPeriod.candles.count)
-            for (index, bar) in original.candles.enumerated() {
-                let scale = bar.date < split ? 2.0 : 1.0
-                near(unadjustedPeriod.candles[index].open, bar.open * scale, "unadjusted aggregated open")
-                near(unadjustedPeriod.candles[index].high, bar.high * scale, "unadjusted aggregated high")
-                near(unadjustedPeriod.candles[index].low, bar.low * scale, "unadjusted aggregated low")
-                near(unadjustedPeriod.candles[index].close, bar.close * scale, "unadjusted aggregated close")
-                near(backwardPeriod.candles[index].close, bar.close * 2, "backward aggregated close")
+            for bar in unadjustedPeriod.candles {
+                let matching = unadjusted.candles.filter { day in
+                    period == .week
+                        ? calendar.component(.weekOfYear, from: day.date) == calendar.component(.weekOfYear, from: bar.date)
+                          && calendar.component(.yearForWeekOfYear, from: day.date) == calendar.component(.yearForWeekOfYear, from: bar.date)
+                        : calendar.component(.month, from: day.date) == calendar.component(.month, from: bar.date)
+                          && calendar.component(.year, from: day.date) == calendar.component(.year, from: bar.date)
+                }
+                near(bar.open, matching.first!.open, "unadjusted aggregate open")
+                near(bar.high, matching.map(\.high).max()!, "unadjusted aggregate high")
+                near(bar.low, matching.map(\.low).min()!, "unadjusted aggregate low")
+                near(bar.close, matching.last!.close, "unadjusted aggregate close")
+                near(bar.volume, matching.reduce(0) { $0 + $1.volume }, "unadjusted aggregate volume", tolerance: 1e-5)
+            }
+            for (actual, original) in zip(backwardPeriod.candles, StockChartMock.dataset(for: period).candles) {
+                near(actual.close, original.close * 4, "backward aggregate")
             }
         }
         for period in [StockChartPeriod.intraday, .fiveDays, .minute1, .minute5, .minute15, .minute30, .minute60] {
@@ -226,6 +279,22 @@ struct StockChartDataTests {
         precondition(StockChartCalculations.rsi([1, 2], period: 3).allSatisfy { $0 == nil })
         precondition(StockChartCalculations.sar([]).isEmpty)
         precondition(StockChartCalculations.ema([], period: 3).isEmpty)
+        let corporateColors: [(Int?, Bool, String)] = [
+            (1, false, "chart_mark_finance_red_up"),
+            (1, true, "chart_mark_finance_green_up"),
+            (-1, false, "chart_mark_finance_green_down"),
+            (-1, true, "chart_mark_finance_red_down"),
+            (0, false, "chart_mark_finance_gray"),
+            (0, true, "chart_mark_finance_gray"),
+            (nil, false, "chart_mark_finance_gray"),
+            (nil, true, "chart_mark_finance_gray"),
+            (42, false, "chart_mark_finance_gray"),
+            (42, true, "chart_mark_finance_gray")
+        ]
+        for (type, reversed, asset) in corporateColors {
+            precondition(StockChartCorporateAppearance.imageName(colorType: type, reversed: reversed) == asset,
+                         "Corporate marker color type \(String(describing: type)), reversed \(reversed)")
+        }
         print("StockChartDataTests passed")
     }
 }

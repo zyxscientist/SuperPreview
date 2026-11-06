@@ -35,6 +35,7 @@ struct StockChartPanel: View {
     @AppStorage("stockChart.annotation.priceAlert", store: StockChartSettingsStorage.defaults) private var annotationAlert = true
     @AppStorage("stockChart.annotation.corporate", store: StockChartSettingsStorage.defaults) private var annotationCorporate = true
     @State private var selection: StockChartCandle?
+    @State private var selectedMockOrders: [MockChartOrder] = []
     @State private var pagePresentation: Presentation?
     @State private var expandedPresentation: Presentation?
     @State private var isExpanded = false
@@ -76,9 +77,17 @@ struct StockChartPanel: View {
         nonmutating set { adjustmentStorage = newValue.rawValue }
     }
 
-    private enum Presentation: String, Identifiable {
-        case settings, trades
-        var id: Self { self }
+    private enum Presentation: Identifiable {
+        case settings, trades, mockOrders
+        case corporate(StockChartCorporateMarker)
+        var id: String {
+            switch self {
+            case .settings: return "settings"
+            case .trades: return "trades"
+            case .mockOrders: return "mockOrders"
+            case .corporate(let marker): return "corporate-\(marker.id)"
+            }
+        }
     }
 
     var body: some View {
@@ -153,6 +162,10 @@ struct StockChartPanel: View {
                         }
                     }
                 )
+            case .corporate(let marker):
+                StockChartCorporateSheet(marker: marker, language: language, reversed: reversed)
+                    .presentationDragIndicator(.visible)
+                    .presentationDetents([.height(marker.preferredHeight), .large])
             case .trades:
                 NavigationStack {
                     StockChartTrades(showsDetails: false)
@@ -165,6 +178,8 @@ struct StockChartPanel: View {
                 .presentationDetents([.large])
                 .accessibilityElement(children: .contain)
                 .accessibilityIdentifier("stockDetail.chart.trades.sheet")
+            case .mockOrders:
+                mockOrdersSheet
             }
         }
         .background(StockChartModalRegion(scope: touchScope))
@@ -196,6 +211,9 @@ struct StockChartPanel: View {
                                     cost: annotationCost, priceAlert: annotationAlert, corporate: annotationCorporate), reversed: reversed,
                                 language: language, colorScheme: colorScheme,
                                 onSelection: { selection = $0 },
+                                onCorporateTap: { marker in
+                                    show(.corporate(marker), expanded: expanded)
+                                },
                                 onExpand: {
                                     guard !expanded, pagePresentation == nil else { return }
                                     selection = nil
@@ -204,8 +222,7 @@ struct StockChartPanel: View {
                             )
                             .frame(height: StockChartCanvasView.height(subchartCount: subIndicators.filter { visibleSubIndicators.contains($0) }.count))
                             if let selection {
-                                selectionInfo(selection)
-                                    .allowsHitTesting(false)
+                                selectionInfo(selection, expanded: expanded)
                             }
                         }
                         if period == .intraday { Color.clear.frame(width: 130) }
@@ -333,7 +350,7 @@ struct StockChartPanel: View {
             .accessibilityIdentifier("stockDetail.chart.settings.done")
     }
 
-    private func selectionInfo(_ candle: StockChartCandle) -> some View {
+    private func selectionInfo(_ candle: StockChartCandle, expanded: Bool) -> some View {
         let data = StockChartMock.adjustedDataset(for: period, adjustment: adjustment)
         let index = data.candles.firstIndex { $0.date == candle.date } ?? 0
         let reference: Double
@@ -356,6 +373,7 @@ struct StockChartPanel: View {
         let fields: [(StockChartText, String)] = period.isIntraday
             ? [(.price, price(candle.close)), (.changePercent, String(format: "%+.2f%%", percent)), (.turnover, String(format: "%.0f", candle.close * candle.volume)), (.averagePrice, price(average)), (.change, String(format: "%+.3f", delta)), (.volume, String(format: "%.0f", candle.volume))]
             : [(.open, price(candle.open)), (.high, price(candle.high)), (.changePercent, String(format: "%+.2f%%", percent)), (.close, price(candle.close)), (.low, price(candle.low)), (.change, String(format: "%+.3f", delta))]
+        let orders = mockOrders(for: index, candle: candle, count: data.candles.count)
         return VStack(alignment: .leading, spacing: 3) {
             Text(selectionDate(candle.date)).foregroundStyle(Color("color-text-90"))
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3), spacing: 3) {
@@ -370,13 +388,104 @@ struct StockChartPanel: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
+            if !orders.isEmpty {
+                Divider().padding(.vertical, 3)
+                HStack {
+                    Text(mockText("成交均价@数量", "成交均價@數量", "AVG Price@QTY"))
+                        .foregroundStyle(Color("color-text-60"))
+                    Spacer(minLength: 4)
+                    Button {
+                        selectedMockOrders = orders
+                        show(.mockOrders, expanded: expanded)
+                    } label: {
+                        HStack(spacing: 2) {
+                            Text("\(mockText("查看订单", "查看訂單", "Details")) (\(orders.count))")
+                            Image(systemName: "chevron.right")
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("stockDetail.chart.selection.orders")
+                }
+                HStack(spacing: 20) {
+                    ForEach(orders) { order in
+                        HStack(spacing: 3) {
+                            Image(order.imageName(reversed: reversed)).resizable().frame(width: 10, height: 13)
+                            Text("\(price(order.price))@\(String(format: "%.2f", order.quantity))")
+                        }
+                    }
+                }
+                .accessibilityIdentifier("stockDetail.chart.selection.tradeMarks")
+            }
         }
         .font(.custom("PlusJakartaSans-Regular", size: 10))
         .padding(6)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color("color-base-1").opacity(0.96))
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockDetail.chart.selection")
+    }
+
+    private struct MockChartOrder: Identifiable {
+        let id: Int
+        let isBuy: Bool
+        let price: Double
+        let quantity: Double
+        let date: Date
+
+        func imageName(reversed: Bool) -> String {
+            if isBuy { return reversed ? "icon_green_buy_point" : "icon_red_buy_point" }
+            return reversed ? "icon_red_sell_point" : "icon_green_sell_point"
+        }
+    }
+
+    private func mockOrders(for index: Int, candle: StockChartCandle, count: Int) -> [MockChartOrder] {
+        guard annotationTrades else { return [] }
+        let indices = period.isIntraday
+            ? [max(0, count - 300), max(0, count - 180), max(0, count - 100)]
+            : [max(0, count - 18), max(0, count - 12), max(0, count - 4)]
+        guard let marker = indices.firstIndex(of: index) else { return [] }
+        let buy = MockChartOrder(id: 0, isBuy: true, price: candle.close * 0.997, quantity: 100, date: candle.date)
+        let sell = MockChartOrder(id: 1, isBuy: false, price: candle.close * 1.003, quantity: 50, date: candle.date)
+        switch marker {
+        case 0: return [buy]
+        case 1: return [buy, sell]
+        default: return [sell]
+        }
+    }
+
+    private var mockOrdersSheet: some View {
+        NavigationStack {
+            List(selectedMockOrders) { order in
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Image(order.imageName(reversed: reversed)).resizable().frame(width: 10, height: 13)
+                        Text(order.isBuy ? mockText("买入", "買入", "Buy") : mockText("卖出", "賣出", "Sell"))
+                        Spacer()
+                        Text(selectionDate(order.date)).foregroundStyle(Color("color-text-60"))
+                    }
+                    HStack {
+                        Text(stockChartText(.price, language: language) + " " + price(order.price))
+                        Spacer()
+                        Text(mockText("数量", "數量", "Quantity") + " " + String(format: "%.2f", order.quantity))
+                    }
+                    .font(.system(size: 13))
+                }
+                .accessibilityIdentifier("stockDetail.chart.mockOrder.\(order.id)")
+            }
+            .navigationTitle(mockText("模拟订单", "模擬訂單", "Sample Orders"))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar { ToolbarItem(placement: .confirmationAction) { doneButton } }
+        }
+        .presentationDetents([.large])
+        .accessibilityIdentifier("stockDetail.chart.mockOrders.sheet")
+    }
+
+    private func mockText(_ simplified: String, _ traditional: String, _ english: String) -> String {
+        switch language {
+        case .simplifiedChinese: return simplified
+        case .traditionalChinese: return traditional
+        case .english: return english
+        }
     }
 
     private func price(_ value: Double) -> String { String(format: "%.3f", value) }
@@ -399,6 +508,7 @@ private struct StockChartCanvas: UIViewRepresentable {
     let language: DemoLanguage
     let colorScheme: ColorScheme
     let onSelection: (StockChartCandle?) -> Void
+    let onCorporateTap: (StockChartCorporateMarker) -> Void
     let onExpand: () -> Void
 
     func makeUIView(context: Context) -> StockChartCanvasView { StockChartCanvasView() }
@@ -407,6 +517,7 @@ private struct StockChartCanvas: UIViewRepresentable {
         // clears that state on period changes; do not mutate it inside update.
         view.onSelection = nil
         view.onExpand = onExpand
+        view.onCorporateTap = onCorporateTap
         view.overrideUserInterfaceStyle = colorScheme == .dark ? .dark : .light
         view.configure(dataset: StockChartMock.adjustedDataset(for: period, adjustment: adjustment), period: period,
                        mainIndicators: mainIndicators, subIndicators: subIndicators,
@@ -875,5 +986,276 @@ private struct StockChartAnnotationsPage: View {
         .background(Color("color-scale-1"), in: RoundedRectangle(cornerRadius: 8))
         .padding(.horizontal, 16)
         .accessibilityIdentifier("stockDetail.chart.labels.\(id)")
+    }
+}
+
+// Offline AAPL events, sourced from Apple earnings releases and dividend history.
+// Ex-dividend dates are cross-checked against published market dividend histories.
+struct StockChartCorporateEarning: Identifiable {
+    let id: String
+    let date: Date
+    let period: String
+    // nil means the public reference did not provide the app's server colorType.
+    let colorType: Int?
+    let defaultCurrency: String
+    let values: [String: StockChartCorporateEarningValues]
+}
+
+struct StockChartCorporateEarningValues {
+    let eps: String?
+    let epsYoY: Double?
+    let revenue: String?
+    let revenueYoY: Double?
+}
+
+struct StockChartCorporateDividend: Identifiable {
+    let id: String
+    let date: Date
+    let amount: String
+    let recordDate: Date
+    let payDate: Date
+}
+
+struct StockChartCorporateMarker: Identifiable {
+    let candleIndex: Int
+    let earnings: [StockChartCorporateEarning]
+    let dividends: [StockChartCorporateDividend]
+    var id: Int { candleIndex }
+    var colorType: Int? { earnings.first?.colorType }
+    var preferredHeight: CGFloat {
+        let header: CGFloat = earnings.isEmpty || dividends.isEmpty ? 92 : 134
+        return min(UIScreen.main.bounds.height - 120,
+                   header + max(CGFloat(earnings.count) * 188, CGFloat(dividends.count) * 180) + 16)
+    }
+}
+
+enum StockChartCorporateMock {
+    private static let events: (earnings: [StockChartCorporateEarning], dividends: [StockChartCorporateDividend]) = {
+        // Revenue is the one-decimal-billion figure in Apple's press releases.
+        // The return uses only the matching quarter present in this fixture.
+        let earningsData: [(date: String, year: Int, quarter: Int, eps: Double?, revenue: Double?)] = [
+            ("2024-10-31", 2024, 4, 0.97, 94.9),
+            ("2025-01-30", 2025, 1, 2.40, 124.3),
+            ("2025-05-01", 2025, 2, 1.65, 95.4),
+            ("2025-07-31", 2025, 3, 1.57, 94.0),
+            ("2025-10-30", 2025, 4, 1.85, 102.5),
+            ("2026-01-29", 2026, 1, 2.84, 143.8),
+            ("2026-04-30", 2026, 2, 2.01, 111.2),
+            ("2026-07-30", 2026, 3, 2.02, 109.4),
+            ("2026-11-02", 2026, 4, 2.10, 114.5)
+        ]
+        let dividendData: [(ex: String, record: String, pay: String, amount: Double)] = [
+            ("2024-11-08", "2024-11-11", "2024-11-14", 0.25),
+            ("2025-02-10", "2025-02-10", "2025-02-13", 0.25),
+            ("2025-05-12", "2025-05-12", "2025-05-15", 0.26),
+            ("2025-08-11", "2025-08-11", "2025-08-14", 0.26),
+            ("2025-11-10", "2025-11-10", "2025-11-13", 0.26),
+            ("2026-02-09", "2026-02-09", "2026-02-12", 0.26),
+            ("2026-05-11", "2026-05-11", "2026-05-14", 0.27),
+            ("2026-08-10", "2026-08-10", "2026-08-13", 0.27),
+            ("2026-11-12", "2026-11-12", "2026-11-16", 0.27)
+        ]
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.timeZone = TimeZone(identifier: "America/New_York")!
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy-MM-dd"
+        func date(_ string: String) -> Date { formatter.date(from: string)! }
+        func change(_ value: Double?, _ previous: Double?) -> Double? {
+            guard let value, let previous, previous != 0 else { return nil }
+            return (value / previous - 1) * 100
+        }
+        let earnings = earningsData.map { item in
+            let prior = earningsData.first { $0.year == item.year - 1 && $0.quarter == item.quarter }
+            let values = StockChartCorporateEarningValues(
+                eps: item.eps.map { String(format: "%.2f", $0) },
+                epsYoY: change(item.eps, prior?.eps),
+                revenue: item.revenue.map { String(format: "%.1fB", $0) },
+                revenueYoY: change(item.revenue, prior?.revenue))
+            // No analyst estimate is available to support an earnings-surprise color.
+            return StockChartCorporateEarning(id: "earning-\(item.date)", date: date(item.date),
+                period: "\(item.year)/Q\(item.quarter)", colorType: nil, defaultCurrency: "USD",
+                values: ["USD": values])
+        }
+        let dividends = dividendData.map { item in
+            StockChartCorporateDividend(id: "dividend-\(item.ex)", date: date(item.ex),
+                amount: String(format: "%.2f USD", item.amount),
+                recordDate: date(item.record), payDate: date(item.pay))
+        }
+        return (earnings, dividends)
+    }()
+
+    static func markers(for period: StockChartPeriod, candles: [StockChartCandle]) -> [StockChartCorporateMarker] {
+        guard [.day, .week, .month].contains(period) else { return [] }
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "America/New_York")!
+        calendar.firstWeekday = 2
+        calendar.minimumDaysInFirstWeek = 4
+        let component: Calendar.Component = period == .day ? .day : (period == .week ? .weekOfYear : .month)
+        guard let lastCandle = candles.last,
+              let lastDay = calendar.dateInterval(of: .day, for: lastCandle.date) else { return [] }
+        return candles.enumerated().compactMap { index, candle in
+            guard let interval = calendar.dateInterval(of: component, for: candle.date) else { return nil }
+            let earnings = events.earnings.filter { interval.contains($0.date) && $0.date < lastDay.end }.sorted { $0.date > $1.date }
+            let dividends = events.dividends.filter { interval.contains($0.date) && $0.date < lastDay.end }.sorted { $0.date > $1.date }
+            guard !earnings.isEmpty || !dividends.isEmpty else { return nil }
+            return StockChartCorporateMarker(candleIndex: index, earnings: earnings, dividends: dividends)
+        }
+    }
+}
+
+private struct StockChartCorporateSheet: View {
+    let marker: StockChartCorporateMarker
+    let language: DemoLanguage
+    let reversed: Bool
+    @State private var showsEarnings: Bool
+    @State private var currency: String
+
+    init(marker: StockChartCorporateMarker, language: DemoLanguage, reversed: Bool) {
+        self.marker = marker
+        self.language = language
+        self.reversed = reversed
+        _showsEarnings = State(initialValue: !marker.earnings.isEmpty)
+        _currency = State(initialValue: marker.earnings.first?.defaultCurrency ?? "USD")
+    }
+
+    private func text(_ simplified: String, _ traditional: String, _ english: String) -> String {
+        switch language {
+        case .simplifiedChinese: return simplified
+        case .traditionalChinese: return traditional
+        case .english: return english
+        }
+    }
+
+    private var earningsTitle: String { text("业绩公布", "業績公布", "Earnings Release") }
+    private var dividendsTitle: String { text("分红派息", "分紅派息", "Dividend") }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            if !marker.earnings.isEmpty && !marker.dividends.isEmpty {
+                HStack(spacing: 24) {
+                    tab(earningsTitle, selected: showsEarnings) { showsEarnings = true }
+                    tab(dividendsTitle, selected: !showsEarnings) { showsEarnings = false }
+                    Spacer()
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 28)
+            }
+            HStack {
+                Text(showsEarnings ? earningsTitle : dividendsTitle)
+                    .font(.custom("PlusJakartaSans-Medium", size: 18))
+                Spacer()
+                if showsEarnings {
+                    Menu {
+                        ForEach(["HKD", "USD", "CNY"], id: \.self) { value in
+                            Button(value) { currency = value }
+                        }
+                    } label: {
+                        HStack(spacing: 3) {
+                            Text((currency == marker.earnings.first?.defaultCurrency
+                                  ? text("财报币种：", "財報幣種：", "Currency: ")
+                                  : text("币种：", "幣種：", "Currency: ")) + currency)
+                            Image(systemName: "chevron.down").font(.system(size: 9))
+                        }
+                        .font(.custom("PlusJakartaSans-Regular", size: 14))
+                        .foregroundStyle(Color("color-text-60"))
+                    }
+                    .accessibilityIdentifier("stockDetail.chart.corporate.currency")
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, marker.earnings.isEmpty || marker.dividends.isEmpty ? 32 : 18)
+            .padding(.bottom, 16)
+            ScrollView {
+                VStack(spacing: 16) {
+                    if showsEarnings {
+                        ForEach(marker.earnings) { earning in earningsCard(earning) }
+                    } else {
+                        ForEach(marker.dividends) { dividend in dividendCard(dividend) }
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.bottom, 16)
+            }
+        }
+        .foregroundStyle(Color("color-text-30"))
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .background(Color("color-base-1"))
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("stockDetail.chart.corporate.sheet")
+    }
+
+    private func tab(_ label: String, selected: Bool, action: @escaping () -> Void) -> some View {
+        Button { UIImpactFeedbackGenerator(style: .medium).impactOccurred(); action() } label: {
+            Text(label).font(.custom(selected ? "PlusJakartaSans-Medium" : "PlusJakartaSans-Regular", size: 14))
+                .foregroundStyle(Color(selected ? "color-brand-blue" : "color-text-60"))
+                .padding(.bottom, 8)
+                .overlay(alignment: .bottom) { if selected { Color("color-brand-blue").frame(height: 2) } }
+        }.buttonStyle(.plain)
+    }
+
+    private func earningsCard(_ earning: StockChartCorporateEarning) -> some View {
+        let values = earning.values[currency]
+        return VStack(alignment: .leading, spacing: 12) {
+            Text(earning.period).font(.custom("PlusJakartaSans-Medium", size: 16))
+            VStack(spacing: 0) {
+                metricRow(text("项目", "項目", "Item"), text("本期", "本期", "Current Period"), text("同比", "同比", "YoY"), header: true)
+                VStack(spacing: 12) {
+                    metricRow(text("每股收益", "每股收益", "EPS"), values?.eps ?? "--", percent(values?.epsYoY), change: values?.epsYoY)
+                    metricRow(text("总营收", "總營收", "Total Revenue"), values?.revenue ?? "--", percent(values?.revenueYoY, approximate: true), change: values?.revenueYoY)
+                }.padding(.vertical, 16)
+            }
+            .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color("color-separator-10"), lineWidth: 1))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+    }
+
+    private func metricRow(_ title: String, _ current: String, _ yoy: String, header: Bool = false, change: Double? = nil) -> some View {
+        HStack(spacing: 4) {
+            Text(title).frame(maxWidth: .infinity, alignment: .leading)
+            Text(current).frame(maxWidth: .infinity, alignment: .trailing)
+            Text(yoy).foregroundStyle(changeColor(change)).frame(maxWidth: .infinity, alignment: .trailing)
+        }
+        .font(.custom(header ? "PlusJakartaSans-Regular" : "PlusJakartaSans-Medium", size: header ? 14 : 16))
+        .foregroundStyle(Color(header ? "color-text-60" : "color-text-30"))
+        .padding(.horizontal, 12)
+        .frame(height: header ? 44 : 24)
+        .background(header ? Color("color-scale-1") : .clear)
+    }
+
+    private func dividendCard(_ dividend: StockChartCorporateDividend) -> some View {
+        VStack(spacing: 0) {
+            Text(dividend.amount).font(.custom("PlusJakartaSans-Medium", size: 16))
+                .frame(maxWidth: .infinity, alignment: .leading).padding(12).background(Color("color-scale-1"))
+            VStack(spacing: 12) {
+                dividendRow(text("除权除息日", "除權除息日", "Ex-Date"), dividend.date)
+                dividendRow(text("股权登记日", "股權登記日", "Record Date"), dividend.recordDate)
+                dividendRow(text("派息日", "派息日", "Payment Date"), dividend.payDate)
+            }.padding(16)
+        }
+        .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color("color-separator-10"), lineWidth: 1))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
+    private func dividendRow(_ label: String, _ date: Date) -> some View {
+        HStack { Text(label); Spacer(); Text(Self.dateFormatter.string(from: date)) }
+            .font(.custom("PlusJakartaSans-Regular", size: 14))
+    }
+
+    private static let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.timeZone = TimeZone(identifier: "America/New_York")
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy/MM/dd"
+        return formatter
+    }()
+
+    private func percent(_ value: Double?, approximate: Bool = false) -> String {
+        value.map { (approximate ? "≈" : "") + String(format: "%+.2f%%", $0) } ?? "--"
+    }
+    private func changeColor(_ value: Double?) -> Color {
+        guard let value, value != 0 else { return Color("color-text-30") }
+        return MarketColor.resolve(value > 0 ? "color-utility3-red" : "color-utility3-green", reversed: reversed)
     }
 }

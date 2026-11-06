@@ -604,6 +604,349 @@ final class StockDetailChartUITests: XCTestCase {
         XCTAssertTrue(element("stockOrder.demo").exists, "A horizontal swipe outside the chart should still open the order page")
     }
 
+    func testOverlaySwitchesAndColors() {
+        openDetail()
+        element("stockDetail.navbar.debug").tap()
+        elementByLabel("简体中文").tap()
+        let originalReversed = element("debug.marketColors.greenUp").isSelected
+        addTeardownBlock { [weak self] in self?.restoreMarketColor(originalReversed) }
+        element("debug.marketColors.redUp").tap()
+        element("stockDetail.debug.done").tap()
+        showChart()
+        let canvas = element("stockDetail.chart.canvas")
+        element("stockDetail.chart.period.day").tap()
+        waitForState(canvas, key: "period", value: "day")
+        // On narrower screens the MA legend wraps to a second translucent
+        // band over the plot. Fold it so the overlay pixels are not obscured
+        // by a separate, independently tested layer.
+        let legend = element("stockDetail.chart.indicatorFold")
+        if legend.label == "收起指标" { legend.tap() }
+        let folded = XCTNSPredicateExpectation(predicate: NSPredicate(format: "label == %@", "展开指标"), object: legend)
+        XCTAssertEqual(XCTWaiter.wait(for: [folded], timeout: 5), .completed, "Indicator legend should fold before overlay pixel checks")
+
+        // Isolate the overlays so that each screenshot comparison tests only
+        // the corresponding switch, even when other chart content shares colors.
+        setChartAnnotations(["buySellPoint": false, "currentPrice": false, "cost": false,
+                             "priceAlert": false, "corporate": false])
+        waitForState(canvas, key: "annotations", value: "00000")
+        let baseline = canvas.screenshot().image
+        XCTAssertEqual(corporateButtons().count, 0)
+
+        setChartAnnotations(["cost": true])
+        waitForState(canvas, key: "annotations", value: "00100")
+        let cost = canvas.screenshot().image
+        assertOverlayPixels(baseline, cost, colors: [(255, 166, 80)], subject: "Cost", canvasWidth: canvas.frame.width)
+
+        setChartAnnotations(["cost": false, "priceAlert": true])
+        waitForState(canvas, key: "annotations", value: "00010")
+        let alerts = canvas.screenshot().image
+        assertOverlayPixels(baseline, alerts, colors: [(255, 51, 102), (80, 213, 227)], subject: "Alerts", canvasWidth: canvas.frame.width)
+
+        setChartAnnotations(["priceAlert": false, "currentPrice": true])
+        waitForState(canvas, key: "annotations", value: "01000")
+        assertOverlayPixels(baseline, canvas.screenshot().image, colors: [(25, 110, 255)], subject: "Current price", canvasWidth: canvas.frame.width, expectsIcon: false)
+
+        showDebug()
+        element("debug.marketColors.greenUp").tap()
+        element("stockDetail.debug.done").tap()
+        showChart()
+        waitForState(canvas, key: "reversed", value: "true")
+        setChartAnnotations(["currentPrice": false])
+        let reversedBaseline = canvas.screenshot().image
+        setChartAnnotations(["cost": true])
+        assertOverlayPixels(reversedBaseline, canvas.screenshot().image, colors: [(255, 166, 80)], subject: "Cost reversed", canvasWidth: canvas.frame.width)
+        setChartAnnotations(["cost": false, "priceAlert": true])
+        assertOverlayPixels(reversedBaseline, canvas.screenshot().image, colors: [(255, 51, 102), (80, 213, 227)], subject: "Alerts reversed", canvasWidth: canvas.frame.width)
+
+    }
+
+    func testIntradayHasNoPersistentPriceLegendAndRetainsSelection() {
+        openDetail()
+        element("stockDetail.navbar.debug").tap()
+        elementByLabel("简体中文").tap()
+        element("stockDetail.debug.done").tap()
+        showChart()
+        let canvas = element("stockDetail.chart.canvas")
+        for period in ["intraday", "fiveDays"] {
+            element("stockDetail.chart.period.\(period)").tap()
+            waitForState(canvas, key: "period", value: period)
+            let screenshot = canvas.screenshot().image
+            guard let pixels = rgba(screenshot) else { XCTFail("Could not read \(period) chart screenshot"); return }
+            let scale = CGFloat(pixels.width) / canvas.frame.width
+            var legendColoredPixels = 0
+            // Ignore the left and right axis labels and the grid at the top.
+            // A 20% price-range margin keeps the plotted lines below this band;
+            // saturated blue/orange pixels here would be the old legend text.
+            let minX = Int(24 * scale), maxX = pixels.width - Int(28 * scale)
+            for y in Int(3 * scale)..<Int(16 * scale) {
+                for x in minX..<maxX {
+                    let i = (y * pixels.width + x) * 4
+                    let r = Int(pixels.pixels[i]), g = Int(pixels.pixels[i + 1]), b = Int(pixels.pixels[i + 2])
+                    if (b > r + 50 && b > g + 30) || (r > g + 25 && g > b + 40) { legendColoredPixels += 1 }
+                }
+            }
+            XCTAssertLessThan(legendColoredPixels, 10, "\(period) must not show a persistent price/average legend")
+            attachImage(screenshot, name: "chart-\(period)-without-price-legend")
+            canvas.coordinate(withNormalizedOffset: CGVector(dx: 0.55, dy: 0.4)).press(forDuration: 0.7)
+            let selection = element("stockDetail.chart.selection")
+            XCTAssertTrue(selection.staticTexts["价格"].firstMatch.exists)
+            XCTAssertTrue(selection.staticTexts["均价"].firstMatch.exists)
+        }
+    }
+
+    func testCorporateActionsAndTabs() {
+        openDetail()
+        element("stockDetail.navbar.debug").tap()
+        elementByLabel("简体中文").tap()
+        element("stockDetail.debug.done").tap()
+        showChart()
+        let canvas = element("stockDetail.chart.canvas")
+        element("stockDetail.chart.period.day").tap()
+        waitForState(canvas, key: "period", value: "day")
+        setChartAnnotations(["corporate": true])
+        let dayMarkers = corporateButtons().allElementsBoundByIndex
+        guard let earning = dayMarkers.first(where: { $0.label.contains("业绩公布") }) else {
+            XCTFail("The daily chart should expose an earnings marker"); return
+        }
+        let hierarchy = XCTAttachment(string: "marker=\(earning.frame), hittable=\(earning.isHittable), canvas=\(canvas.frame), window=\(app.windows.firstMatch.frame)\n\(app.debugDescription)")
+        hierarchy.name = "corporate-marker-accessibility"
+        hierarchy.lifetime = .keepAlways
+        add(hierarchy)
+        let markerHittable = earning.isHittable
+        if markerHittable {
+            earning.tap()
+        } else {
+            let offset = CGVector(dx: earning.frame.midX - canvas.frame.minX, dy: earning.frame.midY - canvas.frame.minY)
+            canvas.coordinate(withNormalizedOffset: .zero).withOffset(offset).tap()
+        }
+        let daySheet = app.descendants(matching: .any)["stockDetail.chart.corporate.sheet"].firstMatch
+        if !daySheet.waitForExistence(timeout: 8) {
+            let afterTap = XCTAttachment(string: app.debugDescription)
+            afterTap.name = "corporate-after-tap-accessibility"
+            afterTap.lifetime = .keepAlways
+            add(afterTap)
+            XCTFail("Company action sheet must appear after tapping the marker")
+            return
+        }
+        XCTAssertTrue(markerHittable, "Daily earnings marker must also be directly hittable through accessibility")
+        XCTAssertTrue(element("stockDetail.chart.corporate.currency").exists)
+        for value in ["2026/Q4", "2.10", "114.5B"] {
+            XCTAssertTrue(daySheet.staticTexts[value].firstMatch.exists, "Missing daily earnings value \(value)")
+        }
+        dismissSheet(daySheet)
+
+        // The real AAPL fixture has earnings and ex-dividend events in May 2025.
+        // They share a monthly marker and should open two selectable tabs.
+        element("stockDetail.chart.period.month").tap()
+        waitForState(canvas, key: "period", value: "month")
+        let monthMarkers = corporateButtons().allElementsBoundByIndex
+        guard let combined = monthMarkers.first(where: { $0.label.contains("业绩公布") && $0.label.contains("分红派息") }) else {
+            XCTFail("Monthly chart should expose a combined earnings/dividend marker"); return
+        }
+        XCTAssertTrue(combined.isHittable, "Combined marker must be tappable")
+        combined.tap()
+        let sheet = element("stockDetail.chart.corporate.sheet")
+        XCTAssertTrue(sheet.buttons["业绩公布"].firstMatch.exists)
+        XCTAssertTrue(element("stockDetail.chart.corporate.currency").exists)
+        XCTAssertTrue(sheet.staticTexts["2025/Q2"].firstMatch.exists)
+        sheet.buttons["分红派息"].firstMatch.tap()
+        XCTAssertFalse(app.descendants(matching: .any)["stockDetail.chart.corporate.currency"].exists)
+        XCTAssertTrue(sheet.staticTexts["0.26 USD"].firstMatch.exists)
+        XCTAssertTrue(sheet.staticTexts["2025/05/12"].firstMatch.exists)
+        sheet.buttons["业绩公布"].firstMatch.tap()
+        XCTAssertTrue(element("stockDetail.chart.corporate.currency").exists)
+        dismissSheet(sheet)
+        setChartAnnotations(["corporate": false])
+        XCTAssertEqual(corporateButtons().count, 0)
+    }
+
+    func testTradeMarkerDetailsAndOrders() {
+        openDetail()
+        showChart()
+        let canvas = element("stockDetail.chart.canvas")
+        element("stockDetail.chart.period.day").tap()
+        waitForState(canvas, key: "period", value: "day")
+        setChartAnnotations(["buySellPoint": true, "corporate": false])
+        let start = integerState(canvas, "start"), count = integerState(canvas, "count")
+        // Last 18th, 12th, and 4th candles carry B, T, and S mock markers.
+        let end = start + count
+        for (index, rows) in [(end - 18, 1), (end - 12, 2), (end - 4, 1)] {
+            let fraction = (Double(index - start) + 0.5) / Double(count)
+            canvas.coordinate(withNormalizedOffset: CGVector(dx: fraction, dy: 0.35)).press(forDuration: 0.7)
+            waitForState(canvas, key: "selected", value: String(index))
+            XCTAssertTrue(element("stockDetail.chart.selection.tradeMarks").exists)
+            let button = element("stockDetail.chart.selection.orders")
+            XCTAssertTrue(button.label.contains("(\(rows))"))
+            button.tap()
+            let sheet = element("stockDetail.chart.mockOrders.sheet")
+            XCTAssertTrue(element("stockDetail.chart.mockOrder.\(index == end - 4 ? 1 : 0)").exists)
+            if rows == 2 { XCTAssertTrue(element("stockDetail.chart.mockOrder.1").exists) }
+            element("stockDetail.chart.settings.done").tap()
+            let absent = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: sheet)
+            XCTAssertEqual(XCTWaiter.wait(for: [absent], timeout: 5), .completed)
+        }
+        setChartAnnotations(["buySellPoint": false])
+        let fraction = (Double(end - 12 - start) + 0.5) / Double(count)
+        canvas.coordinate(withNormalizedOffset: CGVector(dx: fraction, dy: 0.35)).press(forDuration: 0.7)
+        waitForState(canvas, key: "selected", value: String(end - 12))
+        XCTAssertFalse(app.descendants(matching: .any)["stockDetail.chart.selection.orders"].exists)
+    }
+
+    func testIntradayTradeMarkerDetailsInEnglish() {
+        openDetail()
+        element("stockDetail.navbar.debug").tap()
+        elementByLabel("English").tap()
+        element("stockDetail.debug.done").tap()
+        showChart()
+        let canvas = element("stockDetail.chart.canvas")
+        waitForState(canvas, key: "period", value: "intraday")
+        setChartAnnotations(["buySellPoint": true])
+        let start = integerState(canvas, "start"), count = integerState(canvas, "count")
+        let end = start + count
+        for (index, rows) in [(end - 300, 1), (end - 180, 2), (end - 100, 1)] {
+            let fraction = (Double(index - start) + 0.5) / Double(count)
+            canvas.coordinate(withNormalizedOffset: CGVector(dx: fraction, dy: 0.35)).press(forDuration: 0.7)
+            waitForState(canvas, key: "selected", value: String(index))
+            let button = element("stockDetail.chart.selection.orders")
+            XCTAssertTrue(button.label.contains("Details"))
+            XCTAssertTrue(button.label.contains("(\(rows))"))
+            if rows == 2 {
+                button.tap()
+                _ = element("stockDetail.chart.mockOrders.sheet")
+                XCTAssertTrue(app.staticTexts["Sample Orders"].exists)
+                XCTAssertTrue(element("stockDetail.chart.mockOrder.0").exists)
+                XCTAssertTrue(element("stockDetail.chart.mockOrder.1").exists)
+                element("stockDetail.chart.settings.done").tap()
+            }
+        }
+        let noMarker = end - 250
+        let fraction = (Double(noMarker - start) + 0.5) / Double(count)
+        canvas.coordinate(withNormalizedOffset: CGVector(dx: fraction, dy: 0.35)).press(forDuration: 0.7)
+        waitForState(canvas, key: "selected", value: String(noMarker))
+        XCTAssertFalse(app.descendants(matching: .any)["stockDetail.chart.selection.orders"].exists)
+        showDebug()
+        elementByLabel("简体中文").tap()
+        element("stockDetail.debug.done").tap()
+    }
+
+    func testTradeMarkerAssetsFollowMarketColors() {
+        openDetail()
+        element("stockDetail.navbar.debug").tap()
+        let reversed = element("debug.marketColors.greenUp").isSelected
+        addTeardownBlock { [weak self] in self?.restoreMarketColor(reversed) }
+        element("debug.marketColors.redUp").tap()
+        element("stockDetail.debug.done").tap()
+        showChart()
+        let canvas = element("stockDetail.chart.canvas")
+        element("stockDetail.chart.period.day").tap()
+        waitForState(canvas, key: "period", value: "day")
+        setChartAnnotations(["buySellPoint": false, "corporate": false])
+        let redWithout = canvas.screenshot().image
+        setChartAnnotations(["buySellPoint": true])
+        let redWith = canvas.screenshot().image
+        showDebug()
+        element("debug.marketColors.greenUp").tap()
+        element("stockDetail.debug.done").tap()
+        showChart()
+        waitForState(canvas, key: "reversed", value: "true")
+        let greenWith = canvas.screenshot().image
+        setChartAnnotations(["buySellPoint": false])
+        let greenWithout = canvas.screenshot().image
+        assertMarkerColorsSwap(redWithout, redWith, greenWithout, greenWith)
+    }
+
+    private func assertMarkerColorsSwap(_ redOff: UIImage, _ redOn: UIImage, _ greenOff: UIImage, _ greenOn: UIImage) {
+        guard let a = rgba(redOff), let b = rgba(redOn), let c = rgba(greenOff), let d = rgba(greenOn),
+              a.width == b.width, b.width == c.width, c.width == d.width,
+              a.height == b.height, b.height == c.height, c.height == d.height else {
+            XCTFail("Unable to compare trade marker images"); return
+        }
+        var redToGreen = 0, greenToRed = 0
+        for i in stride(from: 0, to: a.pixels.count, by: 4) {
+            let changedRed = (0..<3).contains { abs(Int(a.pixels[i + $0]) - Int(b.pixels[i + $0])) > 20 }
+            let changedGreen = (0..<3).contains { abs(Int(c.pixels[i + $0]) - Int(d.pixels[i + $0])) > 20 }
+            guard changedRed && changedGreen else { continue }
+            let br = Int(b.pixels[i]), bg = Int(b.pixels[i + 1]), bb = Int(b.pixels[i + 2])
+            let dr = Int(d.pixels[i]), dg = Int(d.pixels[i + 1]), db = Int(d.pixels[i + 2])
+            if br > bg + 35 && br > bb + 35 && dg > dr + 35 && dg > db + 10 { redToGreen += 1 }
+            if bg > br + 35 && bg > bb + 10 && dr > dg + 35 && dr > db + 35 { greenToRed += 1 }
+        }
+        XCTAssertGreaterThan(redToGreen, 5, "Buy marker should change from red to green")
+        XCTAssertGreaterThan(greenToRed, 5, "Sell marker should change from green to red")
+        attachImage(redOn, name: "chart-markers-red-up")
+        attachImage(greenOn, name: "chart-markers-green-up")
+    }
+
+    private func corporateButtons() -> XCUIElementQuery {
+        app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "stockDetail.chart.corporate."))
+    }
+
+    private func setChartAnnotations(_ values: [String: Bool]) {
+        element("stockDetail.chart.settings").tap()
+        element("stockDetail.chart.settings.labels").tap()
+        for (name, enabled) in values.sorted(by: { $0.key < $1.key }) {
+            let control = element("stockDetail.chart.labels.\(name)")
+            let expected = enabled ? "1" : "0"
+            if control.value as? String != expected { control.tap() }
+            XCTAssertEqual(control.value as? String, expected, "Unexpected annotation setting \(name)")
+        }
+        element("stockDetail.chart.labels.back").tap()
+    }
+
+    private func assertOverlayPixels(_ before: UIImage, _ after: UIImage, colors: [(Int, Int, Int)], subject: String, canvasWidth: CGFloat, expectsIcon: Bool = true) {
+        guard let a = rgba(before), let b = rgba(after), a.width == b.width, a.height == b.height else {
+            XCTFail("Unable to compare \(subject) images"); return
+        }
+        let scale = CGFloat(b.width) / canvasWidth
+        for (red, green, blue) in colors {
+            var line = 0
+            var rowCounts = [Int](repeating: 0, count: b.height)
+            for y in 0..<b.height {
+                for x in 0..<b.width {
+                    let i = (y * b.width + x) * 4
+                    let changed = (0..<3).contains { abs(Int(a.pixels[i + $0]) - Int(b.pixels[i + $0])) > 20 }
+                    let near = abs(Int(b.pixels[i]) - red) < 45 && abs(Int(b.pixels[i + 1]) - green) < 45 && abs(Int(b.pixels[i + 2]) - blue) < 45
+                    guard changed && near else { continue }
+                    let pt = CGFloat(x) / scale
+                    if pt >= 55 && pt < canvasWidth - 10 { line += 1; rowCounts[y] += 1 }
+                }
+            }
+            XCTAssertGreaterThan(line, 20, "\(subject) should render its colored line")
+            let lineY = rowCounts.indices.max(by: { rowCounts[$0] < rowCounts[$1] }) ?? 0
+            let plotStart = Int(55 * scale), plotEnd = min(b.width, Int((canvasWidth - 10) * scale))
+            let substantialRows = rowCounts.filter { $0 > (plotEnd - plotStart) / 5 }.count
+            XCTAssertLessThanOrEqual(substantialRows, Int((2 * scale).rounded(.up)) + 1,
+                                     "\(subject) line should remain approximately 1pt thick")
+            var runs: [(on: Bool, length: Int)] = []
+            for x in plotStart..<plotEnd {
+                let i = (lineY * b.width + x) * 4
+                let changed = (0..<3).contains { abs(Int(a.pixels[i + $0]) - Int(b.pixels[i + $0])) > 20 }
+                let near = abs(Int(b.pixels[i]) - red) < 45 && abs(Int(b.pixels[i + 1]) - green) < 45 && abs(Int(b.pixels[i + 2]) - blue) < 45
+                let on = changed && near
+                if let last = runs.last, last.on == on { runs[runs.count - 1].length += 1 }
+                else { runs.append((on, 1)) }
+            }
+            let typical = runs.filter { CGFloat($0.length) >= 2.5 * scale && CGFloat($0.length) <= 5.5 * scale }
+            XCTAssertGreaterThanOrEqual(typical.filter(\.on).count, 3, "\(subject) should have repeated 4pt dashes")
+            XCTAssertGreaterThanOrEqual(typical.filter { !$0.on }.count, 3, "\(subject) should have repeated 4pt gaps")
+            var iconOffLine = 0
+            for y in 0..<b.height where abs(y - lineY) > Int(scale.rounded(.up)) {
+                for x in Int(35 * scale)..<min(b.width, Int(47 * scale)) {
+                    let i = (y * b.width + x) * 4
+                    let changed = (0..<3).contains { abs(Int(a.pixels[i + $0]) - Int(b.pixels[i + $0])) > 20 }
+                    let near = abs(Int(b.pixels[i]) - red) < 45 && abs(Int(b.pixels[i + 1]) - green) < 45 && abs(Int(b.pixels[i + 2]) - blue) < 45
+                    if changed && near { iconOffLine += 1 }
+                }
+            }
+            if expectsIcon {
+                XCTAssertGreaterThan(iconOffLine, 10, "\(subject) should render its 12pt icon at 35pt")
+            } else {
+                XCTAssertEqual(iconOffLine, 0, "\(subject) must not render an icon")
+            }
+        }
+        attachImage(after, name: "chart-overlay-\(subject)")
+    }
+
     private func openDetail() {
         let watchlist = app.descendants(matching: .any)["watchlist.root"].firstMatch
         let tab = app.descendants(matching: .any)["mainTab.tab1"].firstMatch
@@ -619,6 +962,13 @@ final class StockDetailChartUITests: XCTestCase {
         }
         XCTAssertTrue(watchlist.waitForExistence(timeout: 8), "Watchlist did not appear after selecting its tab")
         let row = element("watchlist.row.us:NVDA")
+        // A restored detail can appear after the tab and watchlist have already
+        // entered the accessibility tree. Dismiss it before scrolling the list.
+        for _ in 0..<3 where !row.isHittable {
+            let back = app.buttons.matching(identifier: "stockDetail.navbar.back").allElementsBoundByIndex.first(where: { $0.isHittable })
+            guard let back else { break }
+            back.tap()
+        }
         for _ in 0..<6 where !row.isHittable { app.scrollViews.firstMatch.swipeUp() }
         XCTAssertTrue(row.isHittable)
         row.tap()

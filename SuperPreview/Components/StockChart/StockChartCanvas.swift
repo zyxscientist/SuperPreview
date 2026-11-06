@@ -8,6 +8,7 @@ final class StockChartCanvasView: UIView, UIGestureRecognizerDelegate {
     var onInteraction: (() -> Void)?
     var onSelection: ((StockChartCandle?) -> Void)?
     var onExpand: (() -> Void)?
+    var onCorporateTap: ((StockChartCorporateMarker) -> Void)?
 
     private var dataset: StockChartDataset?
     private var period: StockChartPeriod = .day
@@ -41,6 +42,9 @@ final class StockChartCanvasView: UIView, UIGestureRecognizerDelegate {
     private var rsiLines: [[Double?]] = []
     private var volumeMA: [[Double?]] = []
     private var averagePrices: [Double] = []
+    private var corporateButtons: [UIButton] = []
+    private var buttonMarkers: [StockChartCorporateMarker] = []
+    private var corporateMarkers: [StockChartCorporateMarker] = []
 
     // CommonColorConfig.plist chartMA1...chartMA5, independent of market direction.
     private let lineColors: [UIColor] = [
@@ -59,7 +63,7 @@ final class StockChartCanvasView: UIView, UIGestureRecognizerDelegate {
     private var mainRect: CGRect {
         // CSGBaseConverter reserves one 20pt title band whenever any main
         // indicator is selected. Wrapped/stacked legend rows float over it.
-        let top: CGFloat = period.isIntraday || !mainIndicators.isEmpty ? 20 : 0
+        let top: CGFloat = !period.isIntraday && !mainIndicators.isEmpty ? 20 : 0
         return CGRect(x: 0, y: top, width: bounds.width, height: 209 - top)
     }
     private var pointCount: Int { dataset?.candles.count ?? 0 }
@@ -122,6 +126,7 @@ final class StockChartCanvasView: UIView, UIGestureRecognizerDelegate {
         self.language = language
         refreshLegendButton()
         if dataChanged {
+            corporateMarkers = StockChartCorporateMock.markers(for: period, candles: dataset.candles)
             calculateIndicators(dataset, period: period)
             visibleCount = period.isIntraday ? CGFloat(max(1, dataset.candles.count)) : CGFloat(max(1, min(60, dataset.candles.count)))
             resetToLatest()
@@ -198,7 +203,7 @@ final class StockChartCanvasView: UIView, UIGestureRecognizerDelegate {
         chartAccessibility.accessibilityLabel = stockChartText(.mainIndicator, language: language)
         chartAccessibility.accessibilityValue = "period=\(period.rawValue),start=\(Int(start.rounded())),count=\(Int(visibleCount.rounded())),selected=\(selectedIndex.map(String.init) ?? "none"),reversed=\(reversed),main=\(mainIndicators.map(\.rawValue).joined(separator: "+")),sub=\(subIndicators.map(\.rawValue).joined(separator: "+")),adjustment=\(adjustment.rawValue),annotations=\([annotations.buySellPoint, annotations.currentPrice, annotations.cost, annotations.priceAlert, annotations.corporate].map { $0 ? "1" : "0" }.joined())"
         chartAccessibility.accessibilityFrameInContainerSpace = bounds
-        accessibilityElements = legendButton.isHidden ? [chartAccessibility] : [chartAccessibility, legendButton]
+        updateCorporateButtons()
     }
 
     override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
@@ -297,6 +302,7 @@ final class StockChartCanvasView: UIView, UIGestureRecognizerDelegate {
     override func layoutSubviews() {
         super.layoutSubviews()
         chartAccessibility.accessibilityFrameInContainerSpace = bounds
+        updateCorporateButtons()
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -397,54 +403,84 @@ final class StockChartCanvasView: UIView, UIGestureRecognizerDelegate {
 
     private func drawAnnotations(_ ctx: CGContext, candles: [StockChartCandle], visible: Range<Int>, x: (Int) -> CGFloat, priceY: (Double) -> CGFloat, yLow: Double, yHigh: Double) {
         guard let latest = candles.last else { return }
-        func line(_ price: Double, color: UIColor, clamp: Bool = false, label: String? = nil) {
+        func line(_ price: Double, color: UIColor, clamp: Bool = false, icon: String? = nil) {
             guard clamp || (price >= yLow && price <= yHigh) else { return }
             let y = min(mainRect.maxY, max(mainRect.minY, priceY(price)))
             ctx.setStrokeColor(color.resolvedColor(with: traitCollection).cgColor)
-            ctx.setLineWidth(0.7); ctx.setLineDash(phase: 0, lengths: [4, 4])
-            ctx.move(to: CGPoint(x: 0, y: y)); ctx.addLine(to: CGPoint(x: bounds.width, y: y)); ctx.strokePath()
+            ctx.setLineWidth(1); ctx.setLineDash(phase: 0, lengths: [4, 4])
+            ctx.move(to: CGPoint(x: 1, y: y)); ctx.addLine(to: CGPoint(x: bounds.width - 1, y: y)); ctx.strokePath()
             ctx.setLineDash(phase: 0, lengths: [])
-            if let label {
-                let width = (label as NSString).size(withAttributes: [.font: chartFont(9)]).width + 8
-                let rect = CGRect(x: 0, y: min(mainRect.maxY - 14, max(mainRect.minY, y - 7)), width: width, height: 14)
-                color.resolvedColor(with: traitCollection).setFill()
-                UIBezierPath(roundedRect: rect, cornerRadius: 2).fill()
-                drawText(label, at: CGPoint(x: rect.minX + 4, y: rect.minY + 1), color: .white, fontSize: 9)
+            if let icon, let image = UIImage(named: icon, in: .main, compatibleWith: traitCollection) {
+                image.draw(in: CGRect(x: 35, y: y - 6, width: 12, height: 12))
             }
         }
-        if annotations.currentPrice { line(latest.close, color: UIColor(red: 25/255, green: 110/255, blue: 1, alpha: 1), clamp: true) }
+        let currentPrice = period.isIntraday ? latest.close : candles[visible.upperBound - 1].close
+        if annotations.currentPrice { line(currentPrice, color: UIColor(red: 25/255, green: 110/255, blue: 1, alpha: 1), clamp: true) }
         // Fixed synthetic position and alert prices; no account or order data is read.
-        if annotations.cost { line(latest.close * 0.995, color: lineColors[0], label: localized("成本", "成本", "Cost")) }
+        if annotations.cost { line(latest.close * 0.995, color: lineColors[0], icon: "line_holdings") }
         if annotations.priceAlert {
-            line(latest.close * 1.008, color: upColor, label: localized("涨提醒", "漲提醒", "Up"))
-            line(latest.close * 0.992, color: downColor, label: localized("跌提醒", "跌提醒", "Down"))
+            line(latest.close * 1.008, color: lineColors[5], icon: "line_alert_up")
+            line(latest.close * 0.992, color: lineColors[4], icon: "line_alert_down")
         }
         if annotations.buySellPoint {
-            let indices = period.isIntraday ? [max(0, candles.count - 300), max(0, candles.count - 100)] : [max(0, candles.count - 12), max(0, candles.count - 4)]
+            let indices = period.isIntraday ? [max(0, candles.count - 300), max(0, candles.count - 180), max(0, candles.count - 100)] : [max(0, candles.count - 18), max(0, candles.count - 12), max(0, candles.count - 4)]
             for (side, index) in indices.enumerated() where visible.contains(index) {
-                let color = side == 0 ? upColor : downColor
-                let point = CGPoint(x: x(index), y: min(mainRect.maxY - 7, max(mainRect.minY + 7, priceY(candles[index].close))))
-                color.resolvedColor(with: traitCollection).setFill()
-                let path = UIBezierPath()
-                path.move(to: CGPoint(x: point.x, y: point.y + (side == 0 ? -5 : 5)))
-                path.addLine(to: CGPoint(x: point.x - 4, y: point.y + (side == 0 ? 3 : -3)))
-                path.addLine(to: CGPoint(x: point.x + 4, y: point.y + (side == 0 ? 3 : -3)))
-                path.close(); path.fill()
-                let mark = side == 0 ? "B" : "S"
-                drawText(mark, at: CGPoint(x: point.x + 4, y: point.y - 6), color: color, fontSize: 9)
+                let imageName: String
+                switch side {
+                case 0: imageName = reversed ? "icon_green_buy_point" : "icon_red_buy_point"
+                case 1: imageName = "icon_trade_point"
+                default: imageName = reversed ? "icon_red_sell_point" : "icon_green_sell_point"
+                }
+                let value = period.isIntraday ? candles[index].close : candles[index].high
+                let top = max(mainRect.minY, priceY(value) - 13)
+                UIImage(named: imageName, in: .main, compatibleWith: traitCollection)?
+                    .draw(in: CGRect(x: x(index) - 5, y: top, width: 10, height: 13))
             }
         }
         if annotations.corporate && [.day, .week, .month].contains(period) {
-            let daily = StockChartMock.dataset(for: .day).candles
-            for (label, offset) in [("E", 9), ("D", 25)] where daily.count > offset {
-                let date = daily[daily.count - offset].date
-                guard let index = candles.firstIndex(where: { $0.date >= date }), visible.contains(index) else { continue }
-                let rect = CGRect(x: x(index) - 7, y: mainRect.maxY - 15, width: 14, height: 14)
-                UIColor(red: 25/255, green: 110/255, blue: 1, alpha: 1).setFill()
-                UIBezierPath(ovalIn: rect).fill()
-                drawText(label, at: CGPoint(x: rect.minX + 4, y: rect.minY + 1), color: .white, fontSize: 9)
+            for marker in corporateMarkers where visible.contains(marker.candleIndex) {
+                let index = marker.candleIndex
+                let rect = CGRect(x: x(index) - 6, y: mainRect.maxY - 13.5, width: 12, height: 12)
+                if !marker.dividends.isEmpty { UIImage(named: "chart_mark_dividen", in: .main, compatibleWith: traitCollection)?.draw(in: rect) }
+                if !marker.earnings.isEmpty { UIImage(named: corporateImageName(marker), in: .main, compatibleWith: traitCollection)?.draw(in: rect) }
             }
         }
+    }
+
+    private func corporateImageName(_ marker: StockChartCorporateMarker) -> String {
+        StockChartCorporateAppearance.imageName(colorType: marker.colorType, reversed: reversed)
+    }
+
+    private func updateCorporateButtons() {
+        var visibleMarkers: [StockChartCorporateMarker] = []
+        if annotations.corporate, [.day, .week, .month].contains(period), bounds.width > 0, visibleCount > 0 {
+            visibleMarkers = corporateMarkers.filter { range.contains($0.candleIndex) }
+        }
+        while corporateButtons.count > visibleMarkers.count { corporateButtons.removeLast().removeFromSuperview() }
+        while corporateButtons.count < visibleMarkers.count {
+            let button = UIButton(type: .custom)
+            button.addTarget(self, action: #selector(corporateButtonTapped(_:)), for: .touchUpInside)
+            addSubview(button); corporateButtons.append(button)
+        }
+        buttonMarkers = visibleMarkers
+        for (index, marker) in visibleMarkers.enumerated() {
+            let button = corporateButtons[index]
+            let x = (CGFloat(marker.candleIndex) - start + 0.5) * bounds.width / visibleCount
+            let frame = CGRect(x: x - 10, y: mainRect.maxY - 17.5, width: 20, height: 20)
+            if button.frame != frame { button.frame = frame }
+            button.tag = index
+            button.accessibilityIdentifier = "stockDetail.chart.corporate.\(marker.candleIndex)"
+            button.accessibilityLabel = marker.earnings.isEmpty ? localized("分红派息", "分紅派息", "Dividends") : marker.dividends.isEmpty ? localized("业绩公布", "業績公布", "Earnings") : localized("业绩公布、分红派息", "業績公布、分紅派息", "Earnings and dividends")
+        }
+        // Interactive markers precede the plot's full-frame accessibility
+        // element so the plot does not obscure their accessibility hit target.
+        accessibilityElements = corporateButtons.map { $0 as Any } + (legendButton.isHidden ? [] : [legendButton as Any]) + [chartAccessibility]
+    }
+
+    @objc private func corporateButtonTapped(_ sender: UIButton) {
+        guard buttonMarkers.indices.contains(sender.tag) else { return }
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        onCorporateTap?(buttonMarkers[sender.tag])
     }
 
     private func drawGrid(_ ctx: CGContext, rect: CGRect, rows: Int) {
@@ -474,12 +510,7 @@ final class StockChartCanvasView: UIView, UIGestureRecognizerDelegate {
     }
 
     private func drawMainLegend(candles: [StockChartCandle], index: Int) {
-        guard index >= 0 && index < candles.count else { return }
-        if period.isIntraday {
-            let trendColor = UIColor(red: 0.098, green: 0.431, blue: 1, alpha: 1)
-            drawSegments([(stockChartText(.price, language: language), trendColor), (formatPrice(candles[index].close), trendColor), (stockChartText(.averagePrice, language: language), lineColors[0]), (formatPrice(averagePrices[index]), lineColors[0])], y: 3)
-            return
-        }
+        guard !period.isIntraday, index >= 0 && index < candles.count else { return }
         guard legendExpanded else { return }
         var rowY: CGFloat = 0
         for indicator in mainIndicators {
