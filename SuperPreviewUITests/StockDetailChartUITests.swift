@@ -50,6 +50,115 @@ final class StockDetailChartUITests: XCTestCase {
         screenshot("chart-selected-candle")
     }
 
+    func testDetailPageScrollsVerticallyFromChart() {
+        openDetail()
+        showChart()
+        let canvas = element("stockDetail.chart.canvas")
+        let scroll = app.scrollViews["stockDetail.page.quotePage"].firstMatch
+        for period in ["intraday", "fiveDays", "day"] {
+            element("stockDetail.chart.period.\(period)").tap()
+            waitForState(canvas, key: "period", value: period)
+            assertVerticalScrollFromChart(canvas, in: scroll)
+        }
+    }
+
+    func testQuoteInfoSpacingAndTimeframeLayout() {
+        openDetail()
+        let header = element("stockDetail.quoteData.header")
+        let firstRow = element("stockDetail.relatedInfo.us-financial-report")
+        let dividend = element("stockDetail.relatedInfo.cash-dividend")
+        let extendedHours = app.descendants(matching: .any)["stockDetail.relatedInfo.NVDA-extended-hours"].firstMatch
+        let lastRow = extendedHours.exists ? extendedHours : dividend
+        let bar = element("stockDetail.chart.periodBar")
+        let intraday = element("stockDetail.chart.period.intraday")
+        let fiveDays = element("stockDetail.chart.period.fiveDays")
+        let settings = element("stockDetail.chart.settings")
+
+        // Figma 11903:110282: 116pt collapsed quote; related-info rows
+        // start 8pt down, have 2pt gaps and finish 16pt above the tab bar.
+        // Measure visible children: SwiftUI's quote accessibility container
+        // may include the clipped, collapsed detail view in its reported frame.
+        XCTAssertEqual(firstRow.frame.minY - header.frame.minY, 116, accuracy: 1)
+        XCTAssertEqual(dividend.frame.minY - firstRow.frame.maxY, 2, accuracy: 1)
+        if extendedHours.exists { XCTAssertEqual(extendedHours.frame.minY - dividend.frame.minY, 28 + 2, accuracy: 1) }
+        // A collapsed row's AX frame can include clipped detail content. Its
+        // visible header is 28pt high in this fixture.
+        XCTAssertEqual(bar.frame.minY - lastRow.frame.minY, 28 + 16, accuracy: 1)
+        XCTAssertEqual(bar.frame.height, 32, accuracy: 1)
+        XCTAssertEqual(intraday.frame.minX - bar.frame.minX, 15, accuracy: 2)
+        XCTAssertEqual(settings.frame.width, 40, accuracy: 1)
+        XCTAssertTrue(intraday.isSelected)
+        XCTAssertFalse(fiveDays.isSelected)
+        if abs(bar.frame.width - 402) < 1, intraday.label == "分时" {
+            for (period, expectedX) in [("intraday", 15.0), ("fiveDays", 77.0), ("day", 139.0),
+                                        ("week", 197.0), ("month", 255.0), ("minutes", 313.0)] {
+                let tab = element("stockDetail.chart.period.\(period)")
+                XCTAssertEqual(tab.frame.minX - bar.frame.minX, expectedX, accuracy: 3, "Unexpected position for \(period)")
+            }
+        }
+        let image = bar.screenshot().image
+        guard let pixels = rgba(image) else { XCTFail("Could not inspect timeframe bar screenshot"); return }
+        let scale = CGFloat(pixels.width) / bar.frame.width
+        var blueXs: [Int] = []
+        for y in max(0, pixels.height - Int(3 * scale))..<pixels.height {
+            for x in 0..<pixels.width {
+                let i = (y * pixels.width + x) * 4
+                let red = Int(pixels.pixels[i]), green = Int(pixels.pixels[i + 1]), blue = Int(pixels.pixels[i + 2])
+                if blue > 175, blue > red + 80, blue > green + 45 { blueXs.append(x) }
+            }
+        }
+        guard let left = blueXs.min(), let right = blueXs.max() else { XCTFail("The selected timeframe should have a blue underline"); return }
+        XCTAssertEqual(CGFloat(right - left + 1) / scale, intraday.frame.width, accuracy: 2,
+                       "The selected underline should span its text, not the whole tab")
+        attachImage(image, name: "timeframe-bar")
+
+        let expand = element("stockDetail.quoteData.expand")
+        expand.tap()
+        let expanded = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in firstRow.frame.minY - header.frame.minY > 116 + 20 }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [expanded], timeout: 5), .completed)
+        expand.tap()
+        let collapsed = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in abs(firstRow.frame.minY - header.frame.minY - 116) < 1 }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [collapsed], timeout: 5), .completed)
+        XCTAssertEqual(bar.frame.minY - lastRow.frame.minY, 28 + 16, accuracy: 1)
+    }
+
+    func testOrderPageScrollsVerticallyFromChart() {
+        openDetail()
+        element("stockDetail.bottomActionBar.trade").tap()
+        element("stockOrder.symbolInput.expandChart").tap()
+        let canvas = element("stockDetail.chart.canvas")
+        let scroll = app.scrollViews.firstMatch
+        for _ in 0..<6 where !canvas.isHittable { scroll.swipeUp() }
+        XCTAssertTrue(canvas.isHittable)
+        for period in ["intraday", "day"] {
+            let tab = element("stockDetail.chart.period.\(period)")
+            for _ in 0..<6 where !tab.isHittable { scroll.swipeDown() }
+            tab.tap()
+            waitForState(canvas, key: "period", value: period)
+            assertVerticalScrollFromChart(canvas, in: scroll)
+        }
+    }
+
+    func testScrollModePagesVerticallyFromChart() {
+        openDetail()
+        element("stockDetail.bottomActionBar.scroll").tap()
+        let status = element("stockDetail.scroll.committedInstrument")
+        XCTAssertEqual(status.label, "us:NVDA")
+        let current = element("stockDetail.scroll.card.current")
+        let canvas = scopedElement("stockDetail.chart.canvas", in: current)
+        scopedElement("stockDetail.chart.period.day", in: current).tap()
+        waitForState(canvas, key: "period", value: "day")
+
+        dragVerticallyFromChart(canvas, in: app.windows.firstMatch, distance: -200)
+        let next = XCTNSPredicateExpectation(predicate: NSPredicate(format: "label == %@", "us:AAPL"), object: status)
+        XCTAssertEqual(XCTWaiter.wait(for: [next], timeout: 5), .completed, "An upward drag starting in the chart should show the next stock")
+
+        let nextCanvas = scopedElement("stockDetail.chart.canvas", in: element("stockDetail.scroll.card.current"))
+        dragVerticallyFromChart(nextCanvas, in: app.windows.firstMatch, distance: 200)
+        let previous = XCTNSPredicateExpectation(predicate: NSPredicate(format: "label == %@", "us:NVDA"), object: status)
+        XCTAssertEqual(XCTWaiter.wait(for: [previous], timeout: 5), .completed, "A downward drag starting in the chart should show the previous stock")
+    }
+
     func testIntradayTradesLayoutAndDetails() {
         openDetail()
         element("stockDetail.navbar.debug").tap()
@@ -1123,6 +1232,33 @@ final class StockDetailChartUITests: XCTestCase {
         let predicate = NSPredicate { _, _ in condition() }
         let expectation = XCTNSPredicateExpectation(predicate: predicate, object: nil)
         XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: 5), .completed, "Canvas state did not update: \(String(describing: canvas.value))")
+    }
+
+    private func assertVerticalScrollFromChart(_ canvas: XCUIElement, in scroll: XCUIElement) {
+        let initialY = canvas.frame.minY
+        dragVerticallyFromChart(canvas, in: scroll, distance: -90)
+        let movedUp = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            canvas.frame.minY < initialY - 20
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [movedUp], timeout: 5), .completed, "Dragging upward from the chart should scroll the page")
+
+        let scrolledY = canvas.frame.minY
+        dragVerticallyFromChart(canvas, in: scroll, distance: 90)
+        let movedDown = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            canvas.frame.minY > scrolledY + 20
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [movedDown], timeout: 5), .completed, "Dragging downward from the chart should scroll the page")
+    }
+
+    private func dragVerticallyFromChart(_ canvas: XCUIElement, in viewport: XCUIElement, distance: CGFloat) {
+        let window = app.windows.firstMatch
+        let usable = viewport.frame.intersection(window.frame.insetBy(dx: 0, dy: 55))
+        let visible = canvas.frame.intersection(usable)
+        XCTAssertGreaterThan(visible.height, 40, "Chart must have a visible area for the drag")
+        let origin = window.coordinate(withNormalizedOffset: .zero).withOffset(
+            CGVector(dx: visible.midX - window.frame.minX, dy: visible.midY - window.frame.minY)
+        )
+        origin.press(forDuration: 0.05, thenDragTo: origin.withOffset(CGVector(dx: 0, dy: distance)))
     }
 
     private func drag(_ element: XCUIElement, from: CGVector, to: CGVector) {

@@ -289,25 +289,31 @@ struct StockChartPanel: View {
 
     private func periodBar(expanded: Bool) -> some View {
         HStack(spacing: 0) {
-            ForEach([StockChartPeriod.intraday, .fiveDays, .day, .week, .month], id: \.rawValue) { item in
-                Button { period = item } label: {
-                    periodLabel(stockChartText(item.text, language: language), selected: period == item)
-                }
-                .buttonStyle(.plain)
-                .accessibilityIdentifier("stockDetail.chart.period.\(item.rawValue)")
-                .accessibilityAddTraits(period == item ? .isSelected : [])
-            }
-            Menu {
-                ForEach([StockChartPeriod.minute1, .minute5, .minute15, .minute30, .minute60], id: \.rawValue) { item in
+            HStack(spacing: 0) {
+                ForEach([StockChartPeriod.intraday, .fiveDays, .day, .week, .month], id: \.rawValue) { item in
                     Button { period = item } label: {
-                        Label(stockChartText(item.text, language: language), systemImage: period == item ? "checkmark" : "")
+                        periodLabel(stockChartText(item.text, language: language), selected: period == item)
                     }
+                    .buttonStyle(.plain)
                     .accessibilityIdentifier("stockDetail.chart.period.\(item.rawValue)")
+                    .accessibilityAddTraits(period == item ? .isSelected : [])
+                    Spacer(minLength: 3)
                 }
-            } label: {
-                periodLabel(stockChartText(period.isMinuteCandle ? period.text : .minute, language: language), selected: period.isMinuteCandle, showsArrow: true)
+                Menu {
+                    ForEach([StockChartPeriod.minute1, .minute5, .minute15, .minute30, .minute60], id: \.rawValue) { item in
+                        Button { period = item } label: {
+                            Label(stockChartText(item.text, language: language), systemImage: period == item ? "checkmark" : "")
+                        }
+                        .accessibilityIdentifier("stockDetail.chart.period.\(item.rawValue)")
+                    }
+                } label: {
+                    periodLabel(stockChartText(period.isMinuteCandle ? period.text : .minute, language: language), selected: period.isMinuteCandle, showsArrow: true)
+                }
+                .accessibilityIdentifier("stockDetail.chart.period.minutes")
+                .accessibilityAddTraits(period.isMinuteCandle ? .isSelected : [])
             }
-            .accessibilityIdentifier("stockDetail.chart.period.minutes")
+            .padding(.leading, 15)
+            .padding(.trailing, 10)
             Button { show(.settings, expanded: expanded) } label: {
                 Image("stock_chart_setting").resizable().frame(width: 20, height: 20)
                     .frame(width: 40, height: 32)
@@ -317,29 +323,34 @@ struct StockChartPanel: View {
             .accessibilityLabel(stockChartText(.indicatorSettings, language: language))
             .accessibilityIdentifier("stockDetail.chart.settings")
         }
-        .padding(.leading, 10)
-        .padding(.trailing, 12)
         .frame(height: 32)
         .overlay(alignment: .bottom) { Color("color-separator-10").frame(height: 0.5) }
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("stockDetail.chart.periodBar")
     }
 
     private func periodLabel(_ title: String, selected: Bool, showsArrow: Bool = false) -> some View {
-        HStack(spacing: 2) {
+        HStack(spacing: 1) {
             Text(title)
                 .font(.custom(selected ? "PlusJakartaSans-Medium" : "PlusJakartaSans-Regular", size: 14))
                 .lineLimit(1)
-                .minimumScaleFactor(0.75)
+                .fixedSize(horizontal: true, vertical: false)
+                .frame(height: 20)
+                .overlay(alignment: .bottom) {
+                    if selected {
+                        RoundedRectangle(cornerRadius: 1)
+                            .fill(Color("color-brand-blue"))
+                            .frame(height: 2)
+                            .offset(y: 6)
+                    }
+                }
             if showsArrow {
-                Image(systemName: "chevron.down").font(.system(size: 7, weight: .semibold))
+                Image("chart_timeframe_more").resizable().frame(width: 10, height: 16)
             }
         }
-        .foregroundStyle(Color(selected ? "color-brand-blue" : "color-text-90"))
-        .frame(maxWidth: .infinity)
+        .foregroundStyle(Color(selected ? "color-text-30" : "color-text-60"))
         .frame(height: 32)
         .contentShape(Rectangle())
-        .overlay(alignment: .bottom) {
-            if selected { Color("color-brand-blue").frame(width: 16, height: 2) }
-        }
     }
 
     private var doneButton: some View {

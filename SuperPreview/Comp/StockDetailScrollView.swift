@@ -1117,6 +1117,7 @@ private struct StockDetailScrollPagerPanGesture: UIViewRepresentable {
         var chartTouchScope: UUID
         var canBegin: () -> Bool
         var onPan: (UIGestureRecognizer.State, CGSize, CGSize) -> Void
+        private var startsInChart = false
         private lazy var pan: StockDetailScrollPagePanRecognizer = {
             let recognizer = StockDetailScrollPagePanRecognizer(target: self, action: #selector(drag(_:)))
             recognizer.maximumNumberOfTouches = 1
@@ -1143,14 +1144,18 @@ private struct StockDetailScrollPagerPanGesture: UIViewRepresentable {
         func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
             guard canBegin(), let region, region.window != nil else { return false }
             guard !StockChartTouchRegions.hasActiveModal(scope: chartTouchScope) else { return false }
-            // The interactive chart owns its touches. The remainder of the
-            // card retains the existing vertical paging / order-entry pan.
-            guard !StockChartTouchRegions.contains(touch, scope: chartTouchScope) else { return false }
-            return region.bounds.contains(touch.location(in: region))
+            guard region.bounds.contains(touch.location(in: region)) else { return false }
+            // Defer the decision until the finger moves: the chart owns its
+            // horizontal gestures, while vertical drags can page the stocks.
+            startsInChart = StockChartTouchRegions.contains(touch, scope: chartTouchScope)
+            return true
         }
 
         func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-            return canBegin()
+            guard canBegin() else { return false }
+            guard startsInChart, let pan = gestureRecognizer as? StockDetailScrollPagePanRecognizer else { return true }
+            let direction = pan.translationFromTouchDown
+            return abs(direction.y) > abs(direction.x)
         }
 
         func gestureRecognizer(

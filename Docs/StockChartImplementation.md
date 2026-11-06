@@ -53,6 +53,8 @@
 - 买卖点、持仓成本及到价提醒为固定模拟标注，不读取真实账户；财报与分红使用 AAPL 公开披露的事件及数据。复权仅处理 AAPL 2020-08-31 的 4:1 拆股，从日线调整后聚合周/月；不包含分红复权或再投资，不等同于服务端完整复权数据。
 - 正式美股分时为 390 个一分钟点，五日为 1,950 点；模拟价格采用固定种子逐分钟波动，成交量有开收盘活动、随机变化及偶发放量。分时/五日成交量不画 K 线的量均线，按正式实现分别使用 1pt 和单点间距宽度。
 - 按正式分时布局，分时和五日主图顶部不显示常驻的价格、均价图例，也不预留图例高度；长按时仍在选中点的信息浮层中显示价格和均价。
+- 周期栏按 [Time frame tabbar 设计](https://www.figma.com/design/sSOb11JOfSPoLLKQmRshYu/YFF-%E5%85%A8%E4%B8%9A%E5%8A%A1-UI-%E9%9C%80%E6%B1%82%E7%A8%BF?node-id=2704-239202) 使用文字同宽的选中线和正式分钟选项图标。报价详情收起时不为隐藏内容额外保留间距；关联信息保持顶部 8pt、行间 2pt、底部 16pt。
+- 图表仅对自身横向平移做方向过滤；详情和下单页可从画布纵向滚动。Scroll 模式从图表纵向翻股，横向拖动和双指缩放仍由图表处理。
 - 美股常规交易时间参考 [NYSE 交易时间](https://www.nyse.com/trade/trading-information)；分钟量能的开收盘活跃模式参考 [日内成交量研究](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0165057)。
 - 本次验证：数据与指标脚本通过；模拟器构建及运行通过；五项既有明细、涨跌色/语言、下单、手势及弹层回归通过（`/tmp/stock-chart-settings-regression.xcresult`）。三项设置可见性/参数与复权标注/跨页面及重启保存测试通过（`/tmp/superpreview-chart-ui-agent-final.xcresult`）；最终渲染版参数和现价线的像素差测试通过（`/tmp/superpreview-chart-ui-pixels.xcresult`）。这些结果为分批运行，并非全部矩阵一次全量执行。
 

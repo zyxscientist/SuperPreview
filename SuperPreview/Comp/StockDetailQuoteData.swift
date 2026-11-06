@@ -286,16 +286,19 @@ struct StockDetailQuoteData: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: StockDetailQuoteDataLayout.sectionSpacing) {
+        VStack(alignment: .leading, spacing: 0) {
             header
+                .padding(.bottom, StockDetailQuoteDataLayout.sectionSpacing)
             priceSection
 
             if let details = data.details {
                 switch details.presentation {
                 case .alwaysVisible:
                     StockDetailQuoteDetails(data: details)
+                        .padding(.top, StockDetailQuoteDataLayout.sectionSpacing)
                 case .disclosure:
                     StockDetailQuoteDetails(data: details)
+                        .padding(.top, StockDetailQuoteDataLayout.sectionSpacing)
                         .stockDetailQuoteExpansion(isExpanded: isExpanded)
                 }
             }

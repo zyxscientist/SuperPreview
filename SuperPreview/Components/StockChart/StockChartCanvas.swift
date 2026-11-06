@@ -207,6 +207,10 @@ final class StockChartCanvasView: UIView, UIGestureRecognizerDelegate {
     }
 
     override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        // UIKit also asks hit-tested descendants about ancestor recognizers.
+        // Restrict directional filtering to the recognizers this view owns;
+        // otherwise a vertical pan on the enclosing page is rejected too.
+        guard gestureRecognizer.view === self else { return super.gestureRecognizerShouldBegin(gestureRecognizer) }
         if let pan = gestureRecognizer as? UIPanGestureRecognizer {
             let v = pan.velocity(in: self)
             return !period.isIntraday && abs(v.x) > abs(v.y)
