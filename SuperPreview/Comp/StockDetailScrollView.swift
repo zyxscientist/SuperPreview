@@ -50,6 +50,7 @@ struct StockDetailScrollView: View {
     @AppStorage(StockDetailScrollStorageKey.quoteDataIsExpanded)
     private var isQuoteDataExpanded = true
     @State private var symbolSelectionRequest: Int?
+    @State private var chartTouchScope = UUID()
     @StateObject private var orderTransitionController: StockDetailScrollOrderTransitionController
 
     @EnvironmentObject private var demoLanguageStore: DemoLanguageStore
@@ -86,6 +87,7 @@ struct StockDetailScrollView: View {
                     instruments: instruments,
                     currentIndex: selectedIndex,
                     totalWidth: max(canvasSize.width - ScrollLayout.symbolBarHorizontalInset * 2, 0),
+                    chartTouchScope: chartTouchScope,
                     onClose: exitToCurrentInstrument,
                     onSelect: { targetIndex in
                         symbolSelectionRequest = targetIndex
@@ -191,6 +193,7 @@ struct StockDetailScrollView: View {
             symbolSelectionRequest: $symbolSelectionRequest,
             quoteDataIsExpanded: $isQuoteDataExpanded,
             canvasSize: canvasSize,
+            chartTouchScope: chartTouchScope,
             onExit: onExit,
             canBeginDrag: { orderTransitionController.canBeginPagerDrag },
             onOrderSwipe: { instrument, translation, velocity, ended in
@@ -323,6 +326,7 @@ private struct StockDetailScrollPager: View {
     @Binding var symbolSelectionRequest: Int?
     @Binding var quoteDataIsExpanded: Bool
     let canvasSize: CGSize
+    let chartTouchScope: UUID
     let onExit: (StockDetailInstrument) -> Void
     let canBeginDrag: () -> Bool
     let onOrderSwipe: (StockDetailInstrument, CGFloat, CGFloat, Bool) -> Void
@@ -344,6 +348,7 @@ private struct StockDetailScrollPager: View {
         symbolSelectionRequest: Binding<Int?>,
         quoteDataIsExpanded: Binding<Bool>,
         canvasSize: CGSize,
+        chartTouchScope: UUID,
         onExit: @escaping (StockDetailInstrument) -> Void,
         canBeginDrag: @escaping () -> Bool,
         onOrderSwipe: @escaping (StockDetailInstrument, CGFloat, CGFloat, Bool) -> Void
@@ -353,6 +358,7 @@ private struct StockDetailScrollPager: View {
         self._symbolSelectionRequest = symbolSelectionRequest
         self._quoteDataIsExpanded = quoteDataIsExpanded
         self.canvasSize = canvasSize
+        self.chartTouchScope = chartTouchScope
         self.onExit = onExit
         self.canBeginDrag = canBeginDrag
         self.onOrderSwipe = onOrderSwipe
@@ -377,6 +383,7 @@ private struct StockDetailScrollPager: View {
             stride: stride,
             language: language,
             configurationCache: configurationCache,
+            chartTouchScope: chartTouchScope,
             onExit: onExit
         )
         .equatable()
@@ -405,7 +412,7 @@ private struct StockDetailScrollPager: View {
     }
 
     private func pagerGesture(cardHeight: CGFloat, stride: CGFloat) -> StockDetailScrollPagerPanGesture {
-        StockDetailScrollPagerPanGesture(canBegin: canBeginDrag) { state, translation, velocity in
+        StockDetailScrollPagerPanGesture(chartTouchScope: chartTouchScope, canBegin: canBeginDrag) { state, translation, velocity in
             switch state {
             case .began, .changed:
                 guard !isSettling else { return }
@@ -676,6 +683,7 @@ private struct StockDetailScrollCardDeck: View, Equatable {
     let stride: CGFloat
     let language: DemoLanguage
     let configurationCache: StockDetailPageConfigurationCache
+    let chartTouchScope: UUID
     let onExit: (StockDetailInstrument) -> Void
 
     static func == (lhs: StockDetailScrollCardDeck, rhs: StockDetailScrollCardDeck) -> Bool {
@@ -690,6 +698,7 @@ private struct StockDetailScrollCardDeck: View, Equatable {
             && lhs.scale == rhs.scale
             && lhs.stride == rhs.stride
             && lhs.language.rawValue == rhs.language.rawValue
+            && lhs.chartTouchScope == rhs.chartTouchScope
     }
 
     var body: some View {
@@ -749,6 +758,7 @@ private struct StockDetailScrollCardDeck: View, Equatable {
                 quoteDetailsExpansion: $quoteDataIsExpanded,
                 onScrollCardInteraction: { onExit(instrument) }
             )
+            .environment(\.stockChartTouchScope, relativePosition == 0 ? chartTouchScope : nil)
             .id(instrument.id)
             .frame(width: canvasSize.width, height: canvasSize.height)
             .scaleEffect(scale, anchor: .topLeading)
@@ -817,6 +827,7 @@ private struct StockDetailScrollSymbolBar: View {
     let instruments: [StockDetailInstrument]
     let currentIndex: Int
     let totalWidth: CGFloat
+    let chartTouchScope: UUID
     let onClose: () -> Void
     let onSelect: (Int) -> Void
 
@@ -826,8 +837,10 @@ private struct StockDetailScrollSymbolBar: View {
     var body: some View {
         HStack(spacing: ScrollLayout.symbolBarGap) {
             closeButton
+                .background(StockChartTouchRegion(scope: chartTouchScope, allowsPager: true))
 
             symbolCapsule
+                .background(StockChartTouchRegion(scope: chartTouchScope, allowsPager: true))
         }
         .frame(width: totalWidth, height: ScrollLayout.symbolBarHeight, alignment: .leading)
     }
@@ -1069,11 +1082,12 @@ private struct StockDetailScrollPreviewHost: View {
 /// The recognizer sees touches before nested SwiftUI/UIScrollView gesture
 /// arbitration. Its hit region and lifecycle remain owned by Scroll.
 private struct StockDetailScrollPagerPanGesture: UIViewRepresentable {
+    let chartTouchScope: UUID
     let canBegin: () -> Bool
     let onPan: (UIGestureRecognizer.State, CGSize, CGSize) -> Void
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(canBegin: canBegin, onPan: onPan)
+        Coordinator(chartTouchScope: chartTouchScope, canBegin: canBegin, onPan: onPan)
     }
 
     func makeUIView(context: Context) -> StockDetailScrollPanRegion {
@@ -1087,6 +1101,7 @@ private struct StockDetailScrollPagerPanGesture: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: StockDetailScrollPanRegion, context: Context) {
+        context.coordinator.chartTouchScope = chartTouchScope
         context.coordinator.canBegin = canBegin
         context.coordinator.onPan = onPan
         context.coordinator.attach(to: uiView.window)
@@ -1099,6 +1114,7 @@ private struct StockDetailScrollPagerPanGesture: UIViewRepresentable {
 
     final class Coordinator: NSObject, UIGestureRecognizerDelegate {
         weak var region: StockDetailScrollPanRegion?
+        var chartTouchScope: UUID
         var canBegin: () -> Bool
         var onPan: (UIGestureRecognizer.State, CGSize, CGSize) -> Void
         private lazy var pan: StockDetailScrollPagePanRecognizer = {
@@ -1109,9 +1125,11 @@ private struct StockDetailScrollPagerPanGesture: UIViewRepresentable {
         }()
 
         init(
+            chartTouchScope: UUID,
             canBegin: @escaping () -> Bool,
             onPan: @escaping (UIGestureRecognizer.State, CGSize, CGSize) -> Void
         ) {
+            self.chartTouchScope = chartTouchScope
             self.canBegin = canBegin
             self.onPan = onPan
         }
@@ -1124,6 +1142,10 @@ private struct StockDetailScrollPagerPanGesture: UIViewRepresentable {
 
         func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
             guard canBegin(), let region, region.window != nil else { return false }
+            guard !StockChartTouchRegions.hasActiveModal(scope: chartTouchScope) else { return false }
+            // The interactive chart owns its touches. The remainder of the
+            // card retains the existing vertical paging / order-entry pan.
+            guard !StockChartTouchRegions.contains(touch, scope: chartTouchScope) else { return false }
             return region.bounds.contains(touch.location(in: region))
         }
 
@@ -1770,6 +1792,7 @@ private final class StockDetailScrollOrderPageController:
 }
 
 private struct StockDetailScrollOrderHostView: View {
+    @AppStorage(MarketColor.storageKey) private var marketColorReversed = false
     let symbol: StockOrderSymbol
     var language: DemoLanguage
     let languageStore: DemoLanguageStore
@@ -1784,6 +1807,7 @@ private struct StockDetailScrollOrderHostView: View {
         )
         .environmentObject(languageStore)
         .environment(\.demoLanguage, language)
+        .environment(\.marketColorReversed, marketColorReversed)
         .overlay(alignment: .topLeading) {
             if PreviewRuntime.isUITesting {
                 StockDetailScrollOrderRouteDiagnostics(route: route)

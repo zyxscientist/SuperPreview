@@ -418,8 +418,6 @@ struct StockDetailPage: View {
         configuration: StockDetailPageConfiguration,
         viewportWidth: CGFloat
     ) -> some View {
-        let chartHeight = viewportWidth / StockDetailChart.snapshotAspectRatio
-
         return VStack(spacing: 0) {
             StockDetailQuoteData(
                 data: configuration.quoteData,
@@ -440,15 +438,8 @@ struct StockDetailPage: View {
             }
 
             StockDetailChart()
-                // Keep the chart at its source aspect ratio. When the
-                // expanded quote content is taller than the Scroll card,
-                // the page clips the overflow instead of offering the chart
-                // a smaller vertical proposal.
-                .frame(
-                    width: viewportWidth,
-                    height: chartHeight,
-                    alignment: .topLeading
-                )
+                .frame(width: viewportWidth, alignment: .topLeading)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .frame(width: viewportWidth, alignment: .topLeading)
         // Scroll omits everything below the chart. Keep the remaining page

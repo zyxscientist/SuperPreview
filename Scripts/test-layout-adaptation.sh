@@ -59,6 +59,7 @@ run_case() {
 }
 
 mkdir -p "$RESULTS_DIR"
+"$ROOT_DIR/Scripts/test-stock-chart-data.sh"
 failed=0
 
 run_case "iPhone 17 Pro" light 402 || failed=1

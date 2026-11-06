@@ -242,6 +242,12 @@
 		D1A4C6E0F2174A3B9C8D0051 /* StockDetailHistoryPerformance.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A4C6E0F2174A3B9C8D0050 /* StockDetailHistoryPerformance.swift */; };
 		DA7000010000000000000001 /* DemoTouchSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA7000020000000000000001 /* DemoTouchSettings.swift */; };
 		DA7000010000000000000002 /* DemoTouchWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA7000020000000000000002 /* DemoTouchWindow.swift */; };
+		BC2600020000000000000001 /* StockChartData.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC2600010000000000000001 /* StockChartData.swift */; };
+		BC2600020000000000000002 /* StockChartCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC2600010000000000000002 /* StockChartCanvas.swift */; };
+		BC2600020000000000000003 /* StockChartLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC2600010000000000000003 /* StockChartLocalization.swift */; };
+		BC2600020000000000000004 /* StockChartPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC2600010000000000000004 /* StockChartPanel.swift */; };
+		BC2600020000000000000010 /* StockDetailChartUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC2600010000000000000010 /* StockDetailChartUITests.swift */; };
+		BC2600020000000000000005 /* StockChartTrades.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC2600010000000000000005 /* StockChartTrades.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -482,6 +488,12 @@
 		D1A4C6E0F2174A3B9C8D0050 /* StockDetailHistoryPerformance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailHistoryPerformance.swift; sourceTree = "<group>"; };
 		DA7000020000000000000001 /* DemoTouchSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoTouchSettings.swift; sourceTree = "<group>"; };
 		DA7000020000000000000002 /* DemoTouchWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoTouchWindow.swift; sourceTree = "<group>"; };
+		BC2600010000000000000001 /* StockChartData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuperPreview/Components/StockChart/StockChartData.swift; sourceTree = SOURCE_ROOT; };
+		BC2600010000000000000002 /* StockChartCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuperPreview/Components/StockChart/StockChartCanvas.swift; sourceTree = SOURCE_ROOT; };
+		BC2600010000000000000003 /* StockChartLocalization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuperPreview/Components/StockChart/StockChartLocalization.swift; sourceTree = SOURCE_ROOT; };
+		BC2600010000000000000004 /* StockChartPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuperPreview/Components/StockChart/StockChartPanel.swift; sourceTree = SOURCE_ROOT; };
+		BC2600010000000000000010 /* StockDetailChartUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailChartUITests.swift; sourceTree = "<group>"; };
+		BC2600010000000000000005 /* StockChartTrades.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuperPreview/Components/StockChart/StockChartTrades.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -740,6 +752,11 @@
 				D1A4C6E0F2174A3B9C8D0024 /* StockDetailCapitalDistribution.swift */,
 				D1A4C6E0F2174A3B9C8D0022 /* StockDetailBadgeInfoSheet.swift */,
 				D1A4C6E0F2174A3B9C8D0020 /* StockDetailChart.swift */,
+				BC2600010000000000000005 /* StockChartTrades.swift */,
+				BC2600010000000000000004 /* StockChartPanel.swift */,
+				BC2600010000000000000003 /* StockChartLocalization.swift */,
+				BC2600010000000000000002 /* StockChartCanvas.swift */,
+				BC2600010000000000000001 /* StockChartData.swift */,
 				D1A4C6E0F2174A3B9C8D0018 /* StockDetailRelatedInfo.swift */,
 				D1A4C6E0F2174A3B9C8D0016 /* StockDetailQuoteDetails.swift */,
 				D1A4C6E0F2174A3B9C8D0014 /* StockDetailQuoteData.swift */,
@@ -820,6 +837,7 @@
 				AA17000E0000000000000001 /* TodayOrdersPageUITests.swift */,
 				AA1700100000000000000001 /* StockOrderAdvancedTradingUITests.swift */,
 				AA1700200000000000000001 /* MarketLifecycleStressUITests.swift */,
+				BC2600010000000000000010 /* StockDetailChartUITests.swift */,
 			);
 			path = SuperPreviewUITests;
 			sourceTree = "<group>";
@@ -1097,6 +1115,7 @@
 				AA17000F0000000000000001 /* TodayOrdersPageUITests.swift in Sources */,
 				AA1700110000000000000001 /* StockOrderAdvancedTradingUITests.swift in Sources */,
 				AA1700210000000000000001 /* MarketLifecycleStressUITests.swift in Sources */,
+				BC2600020000000000000010 /* StockDetailChartUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1147,6 +1166,11 @@
 				D1A4C6E0F2174A3B9C8D0017 /* StockDetailQuoteDetails.swift in Sources */,
 				D1A4C6E0F2174A3B9C8D0019 /* StockDetailRelatedInfo.swift in Sources */,
 				D1A4C6E0F2174A3B9C8D0021 /* StockDetailChart.swift in Sources */,
+				BC2600020000000000000005 /* StockChartTrades.swift in Sources */,
+				BC2600020000000000000004 /* StockChartPanel.swift in Sources */,
+				BC2600020000000000000003 /* StockChartLocalization.swift in Sources */,
+				BC2600020000000000000002 /* StockChartCanvas.swift in Sources */,
+				BC2600020000000000000001 /* StockChartData.swift in Sources */,
 				D1A4C6E0F2174A3B9C8D0023 /* StockDetailBadgeInfoSheet.swift in Sources */,
 				D1A4C6E0F2174A3B9C8D0025 /* StockDetailCapitalDistribution.swift in Sources */,
 				D1A4C6E0F2174A3B9C8D0027 /* StockDetailMoneyFlowTrend.swift in Sources */,

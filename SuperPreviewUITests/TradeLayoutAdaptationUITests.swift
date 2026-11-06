@@ -421,7 +421,7 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         waitForCommittedInstrument("us:AAPL")
         waitForParentCommittedInstrument("us:AAPL")
 
-        waitFor("stockDetail.scroll.card.current").tap()
+        tapCurrentScrollCardNavbar(app)
         waitForDisappearance(scrollRoot)
         XCTAssertTrue(waitFor("stockDetail.page").exists)
         XCTAssertTrue(waitFor("stockDetail.navbar.title").label.contains("AAPL"))
@@ -557,7 +557,7 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
 
         waitFor("stockDetail.bottomActionBar.scroll").tap()
         scroll = waitFor("stockDetail.scroll.root")
-        scroll.swipeUp()
+        swipeCurrentScrollCardUp(app)
         waitForCommittedInstrument("us:TSLA")
         waitForParentCommittedInstrument("us:TSLA")
         waitFor("stockDetail.scroll.close").tap()
@@ -707,7 +707,7 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         waitForParentCommittedInstrument("us:AAPL")
 
         let thirdSymbol = waitFor("stockDetail.scroll.symbol.us:TSLA")
-        scrollRoot.swipeUp()
+        swipeCurrentScrollCardUp(app)
         let swipeExpectation = XCTNSPredicateExpectation(
             predicate: NSPredicate(format: "selected == true"),
             object: thirdSymbol
@@ -745,7 +745,7 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         waitForCommittedInstrument("us:AAPL")
         waitForParentCommittedInstrument("us:AAPL")
 
-        waitFor("stockDetail.scroll.card.current").tap()
+        tapCurrentScrollCardNavbar(app)
         waitForDisappearance(scrollRoot)
         XCTAssertTrue(waitFor("stockDetail.page").exists)
         XCTAssertTrue(
@@ -769,7 +769,7 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
 
         // A partial left drag should finish from its current position; there
         // is no distance-to-commit threshold.
-        performHorizontalDrag(fromX: 0.86, toX: 0.50)
+        swipeCurrentScrollCardToOrder(app, fromX: 0.86, toX: 0.50)
 
         let transitionProgress = app.staticTexts["stockDetail.scroll.orderTransition.progress"].firstMatch
         XCTAssertTrue(
@@ -804,7 +804,7 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         XCTAssertTrue(waitFor("stockDetail.scroll.root").exists)
         waitForCommittedInstrument("us:NVDA")
         // Re-entering also verifies the underlying deck remains on-screen.
-        performHorizontalDrag(fromX: 0.86, toX: 0.14)
+        swipeCurrentScrollCardToOrder(app, fromX: 0.86, toX: 0.14)
         assertStockOrderPrefill(symbol: "NVDA", name: "英伟达", price: "142.61")
         waitFor("stockOrder.navbar.back").tap()
         waitForCommittedInstrument("us:NVDA")
@@ -816,18 +816,17 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         waitFor("stockDetail.bottomActionBar.scroll").tap()
         waitForCommittedInstrument("us:NVDA")
 
-        // Include card content, its left half, header and the overlaid symbol
-        // bar. None of these drags starts at the right screen edge.
-        let origins: [(String, CGFloat, CGFloat, CGFloat)] = [
-            ("center", 0.60, 0.20, 0.50),
-            ("left content", 0.28, 0.04, 0.42),
-            ("header", 0.62, 0.20, 0.18),
-            ("bottom symbol bar", 0.62, 0.20, 0.90)
+        // The chart owns its own gestures; StockDetailChartUITests covers
+        // that exception. Test multiple non-chart card positions here.
+        let origins: [(String, CGFloat, CGFloat, ScrollCardTestArea)] = [
+            ("center quote", 0.60, 0.20, .quote),
+            ("left quote", 0.28, 0.04, .quote),
+            ("header", 0.62, 0.20, .navbar),
+            ("right quote", 0.72, 0.30, .quote)
         ]
-        for (region, startX, endX, y) in origins {
-            let window = app.windows.firstMatch
-            let start = window.coordinate(withNormalizedOffset: CGVector(dx: startX, dy: y))
-            let end = window.coordinate(withNormalizedOffset: CGVector(dx: endX, dy: y))
+        for (region, startX, endX, area) in origins {
+            let start = currentScrollCardPoint(app, windowX: startX, area: area)
+            let end = start.withOffset(CGVector(dx: (endX - startX) * app.windows.firstMatch.frame.width, dy: 0))
             start.press(forDuration: 0.01, thenDragTo: end, withVelocity: 160, thenHoldForDuration: 0.1)
             XCTAssertTrue(waitFor("stockOrder.demo").exists, "Entry failed from \(region)")
             XCTAssertEqual(waitFor("stockOrder.debug.status.symbol").label, "NVDA")
@@ -851,7 +850,7 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         // The drag is intentionally only a few percent of the viewport. The
         // gesture still needs enough movement to lock to the horizontal axis,
         // but entry itself must not require a commit-distance threshold.
-        performHorizontalDrag(fromX: 0.86, toX: 0.82)
+        swipeCurrentScrollCardToOrder(app, fromX: 0.86, toX: 0.82)
 
         assertStockOrderPrefill(
             symbol: "NVDA",
@@ -872,7 +871,7 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
 
         waitFor("stockDetail.bottomActionBar.scroll").tap()
         _ = waitFor("stockDetail.scroll.root")
-        performHorizontalDrag(fromX: 0.86, toX: 0.50)
+        swipeCurrentScrollCardToOrder(app, fromX: 0.86, toX: 0.50)
         assertStockOrderPrefill(
             symbol: "NVDA",
             name: "英伟达",
@@ -1355,11 +1354,11 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         waitForCommittedInstrument("us:AAPL")
         waitForParentCommittedInstrument("us:AAPL")
         if symbol == "TSLA" {
-            scrollRoot.swipeUp()
+            swipeCurrentScrollCardUp(app)
             waitForCommittedInstrument("us:TSLA")
             waitForParentCommittedInstrument("us:TSLA")
         }
-        waitFor("stockDetail.scroll.card.current").tap()
+        tapCurrentScrollCardNavbar(app)
         waitForDisappearance(scrollRoot)
         XCTAssertTrue(waitFor("stockDetail.navbar.title").label.contains(symbol))
 
@@ -2104,4 +2103,41 @@ final class NavigationBackSwipeHarnessUITests: XCTestCase {
         XCTAssertTrue(element.waitForExistence(timeout: timeout), "Missing element: \(identifier)")
         return element
     }
+}
+
+// Scroll cards and the presenting page expose repeated IDs. Scope every
+// gesture to the current card and keep its start above the chart's period bar.
+enum ScrollCardTestArea { case navbar, quote }
+
+func currentScrollCardPoint(_ app: XCUIApplication, windowX: CGFloat, area: ScrollCardTestArea) -> XCUICoordinate {
+    let card = app.descendants(matching: .any)["stockDetail.scroll.card.current"].firstMatch
+    XCTAssertTrue(card.waitForExistence(timeout: 8), "Missing current Scroll card")
+    let identifier = area == .navbar ? "stockDetail.navbar" : "stockDetail.quoteData.header"
+    let region = card.descendants(matching: .any)[identifier].firstMatch
+    let period = card.descendants(matching: .any)["stockDetail.chart.period.intraday"].firstMatch
+    XCTAssertTrue(region.waitForExistence(timeout: 8), "Missing current card region: \(identifier)")
+    XCTAssertTrue(period.waitForExistence(timeout: 8), "Missing current card chart period bar")
+    let window = app.windows.firstMatch
+    XCTAssertTrue(window.waitForExistence(timeout: 3))
+    let point = CGPoint(x: window.frame.minX + window.frame.width * windowX, y: region.frame.midY)
+    XCTAssertTrue(card.frame.contains(point), "Gesture must begin inside the current card")
+    XCTAssertLessThan(point.y, period.frame.minY, "Gesture must begin above the chart")
+    return window.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0)).withOffset(
+        CGVector(dx: point.x - window.frame.minX, dy: point.y - window.frame.minY)
+    )
+}
+
+func tapCurrentScrollCardNavbar(_ app: XCUIApplication) {
+    currentScrollCardPoint(app, windowX: 0.5, area: .navbar).tap()
+}
+
+func swipeCurrentScrollCardUp(_ app: XCUIApplication) {
+    let start = currentScrollCardPoint(app, windowX: 0.5, area: .quote)
+    start.press(forDuration: 0.05, thenDragTo: start.withOffset(CGVector(dx: 0, dy: -200)))
+}
+
+func swipeCurrentScrollCardToOrder(_ app: XCUIApplication, fromX: CGFloat, toX: CGFloat) {
+    let start = currentScrollCardPoint(app, windowX: fromX, area: .navbar)
+    let end = start.withOffset(CGVector(dx: (toX - fromX) * app.windows.firstMatch.frame.width, dy: 0))
+    start.press(forDuration: 0.01, thenDragTo: end, withVelocity: .default, thenHoldForDuration: 0)
 }

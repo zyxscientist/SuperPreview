@@ -247,7 +247,11 @@ final class StockOrderAdvancedTradingUITests: XCTestCase {
             waitFor("stockDetail.bottomActionBar.scroll").tap()
             XCTAssertTrue(waitFor("stockDetail.scroll.root").exists)
             XCTAssertTrue(waitFor("stockDetail.scroll.committedInstrument").label.contains("09988"))
-            waitFor(exit).tap()
+            if exit == "stockDetail.scroll.card.current" {
+                tapCurrentScrollCardNavbar(app)
+            } else {
+                waitFor(exit).tap()
+            }
             assertGone("stockDetail.scroll.root")
             XCTAssertTrue(waitFor("stockOrder.advancedTrading.section.market").isSelected)
             XCTAssertTrue(waitFor("stockDetail.bottomActionBar.scroll").isHittable)

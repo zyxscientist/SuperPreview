@@ -177,9 +177,15 @@ struct StockOrderSymbolInput: View {
     private func selectedContent(_ symbol: StockOrderSymbol) -> some View {
         VStack(spacing: 0) {
             selectedSummary(symbol)
+                .highPriorityGesture(
+                    TapGesture(count: 2)
+                        .onEnded {
+                            onClearSelection()
+                        }
+                )
 
             if isChartExpanded {
-                StockOrderChartSnapshot()
+                StockOrderChartPanel()
                     .padding(.top, 6)
                     .transition(
                         .opacity.combined(
@@ -191,12 +197,6 @@ struct StockOrderSymbolInput: View {
         .animation(
             StockOrderMotion.expansion(reduceMotion: accessibilityReduceMotion),
             value: isChartExpanded
-        )
-        .highPriorityGesture(
-            TapGesture(count: 2)
-                .onEnded {
-                    onClearSelection()
-                }
         )
     }
 
@@ -806,12 +806,11 @@ private struct StockOrderMarketNoticeView: View {
     }
 }
 
-private struct StockOrderChartSnapshot: View {
+private struct StockOrderChartPanel: View {
     var body: some View {
-        MarketChartSnapshot()
-            .aspectRatio(402.0 / 409.0, contentMode: .fit)
+        StockChartPanel()
             .frame(maxWidth: .infinity)
-            .accessibilityLabel("Stock chart preview")
+            .accessibilityElement(children: .contain)
             .accessibilityIdentifier("stockOrder.symbolInput.chartSnapshot")
     }
 }
