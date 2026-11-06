@@ -8,6 +8,10 @@ enum StockChartText: String {
     case preMarket = "盘前", regularMarket = "盘中", afterHours = "盘后", allDay = "全天"
     case adjustedForward = "前复权", unadjusted = "不复权", adjustedBackward = "后复权"
     case indicatorSettings = "指标设置", mainIndicator = "主图指标", subIndicator = "副图指标", priceAdjustment = "除复权设置", landscapeMode = "横屏模式"
+    case chartAnnotations = "图表标注", tradeMarks = "买卖打点", currentPriceLine = "现价线", positionCostLine = "持仓成本线", priceAlertLine = "到价提醒线", corporateAction = "公司行动"
+    case parameterSettings = "参数设置", save = "保存", movingAveragePeriod = "移动平均周期", parameterPeriod = "周期", standardDeviation = "标准差倍数"
+    case fastPeriod = "快线周期", slowPeriod = "慢线周期", signalPeriod = "信号线周期", calculationPeriod = "计算周期", smoothing1 = "移动平均周期1", smoothing2 = "移动平均周期2"
+    case resetParameters = "恢复默认参数", confirmReset = "确定恢复为默认参数？", cancel = "取消", confirm = "确定"
     case time = "时间", price = "价格", averagePrice = "均价", open = "开盘", high = "最高", low = "最低", close = "收盘"
     case transactionDetails = "逐笔明细", latestTrades = "回到最新↓"
     case volume = "成交量", turnover = "成交额", changePercent = "涨跌幅", change = "涨跌额"
@@ -42,6 +46,27 @@ func stockChartText(_ key: StockChartText, language: DemoLanguage) -> String {
     case .subIndicator: translated = ("副圖指標", "Sub Chart")
     case .priceAdjustment: translated = ("除復權設定", "Price adjustment")
     case .landscapeMode: translated = ("橫屏模式", "Landscape mode")
+    case .chartAnnotations: translated = ("圖表標註", "Chart Annotations")
+    case .tradeMarks: translated = ("買賣打點", "Trade Marks")
+    case .currentPriceLine: translated = ("現價線", "Current Price Line")
+    case .positionCostLine: translated = ("持倉成本線", "Position Cost Line")
+    case .priceAlertLine: translated = ("到價提醒線", "Price Alert Line")
+    case .corporateAction: translated = ("公司行動", "Corporate Action")
+    case .parameterSettings: translated = ("參數設定", "Setting")
+    case .save: translated = ("保存", "Save")
+    case .movingAveragePeriod: translated = ("移動平均週期", "Moving average period")
+    case .parameterPeriod: translated = ("週期", "Period")
+    case .standardDeviation: translated = ("標准差倍數", "StdDev")
+    case .fastPeriod: translated = ("快線週期", "Fast length")
+    case .slowPeriod: translated = ("慢線週期", "Slow length")
+    case .signalPeriod: translated = ("信號線週期", "Signal length")
+    case .calculationPeriod: translated = ("計算週期", "%K period")
+    case .smoothing1: translated = ("移動平均週期1", "%K smoothing")
+    case .smoothing2: translated = ("移動平均週期2", "%D smoothing")
+    case .resetParameters: translated = ("恢覆默認參數", "Reset to Default")
+    case .confirmReset: translated = ("確定恢覆默認參數？", "Reset parameters to default?")
+    case .cancel: translated = ("取消", "Cancel")
+    case .confirm: translated = ("確定", "Confirm")
     case .time: translated = ("時間", "Date")
     case .price: translated = ("價格", "Price")
     case .averagePrice: translated = ("均價", "Avg Price")

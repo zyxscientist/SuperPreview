@@ -16,6 +16,9 @@ final class StockChartCanvasView: UIView, UIGestureRecognizerDelegate {
     private let legendButton = UIButton(type: .custom)
     private lazy var chartAccessibility = UIAccessibilityElement(accessibilityContainer: self)
     private var subIndicators: [StockChartSubIndicator] = []
+    private var indicatorSettings = ChartIndicatorSettings()
+    private var annotations = StockChartAnnotations(buySellPoint: true, currentPrice: true, cost: true, priceAlert: true, corporate: true)
+    private var adjustment: StockChartAdjustment = .forward
     private var reversed = false
     private var language: DemoLanguage = .simplifiedChinese
     private var start: CGFloat = 0
@@ -45,7 +48,9 @@ final class StockChartCanvasView: UIView, UIGestureRecognizerDelegate {
         UIColor(red: 55 / 255, green: 155 / 255, blue: 255 / 255, alpha: 1),
         UIColor(red: 214 / 255, green: 103 / 255, blue: 205 / 255, alpha: 1),
         UIColor(red: 233 / 255, green: 208 / 255, blue: 80 / 255, alpha: 1),
-        UIColor(red: 80 / 255, green: 213 / 255, blue: 227 / 255, alpha: 1)
+        UIColor(red: 80 / 255, green: 213 / 255, blue: 227 / 255, alpha: 1),
+        UIColor(red: 255 / 255, green: 51 / 255, blue: 102 / 255, alpha: 1),
+        UIColor(red: 33 / 255, green: 206 / 255, blue: 153 / 255, alpha: 1)
     ]
     private var upColor: UIColor { UIColor(MarketColor.resolve("color-utility3-red", reversed: reversed)) }
     private var downColor: UIColor { UIColor(MarketColor.resolve("color-utility3-green", reversed: reversed)) }
@@ -102,8 +107,13 @@ final class StockChartCanvasView: UIView, UIGestureRecognizerDelegate {
 
     required init?(coder: NSCoder) { super.init(coder: coder) }
 
-    func configure(dataset: StockChartDataset, period: StockChartPeriod, mainIndicators: [StockChartMainIndicator], subIndicators: [StockChartSubIndicator], reversed: Bool, language: DemoLanguage) {
+    func configure(dataset: StockChartDataset, period: StockChartPeriod, mainIndicators: [StockChartMainIndicator], subIndicators: [StockChartSubIndicator], reversed: Bool, language: DemoLanguage, indicatorSettings: ChartIndicatorSettings = .init(), annotations: StockChartAnnotations, adjustment: StockChartAdjustment) {
         let dataChanged = !sameData(self.dataset, dataset) || self.period != period
+        let normalizedSettings = indicatorSettings.normalized
+        let settingsChanged = self.indicatorSettings != normalizedSettings
+        self.indicatorSettings = normalizedSettings
+        self.annotations = annotations
+        self.adjustment = adjustment
         self.dataset = dataset
         self.period = period
         self.mainIndicators = mainIndicators.filter { $0 != .none }
@@ -116,6 +126,7 @@ final class StockChartCanvasView: UIView, UIGestureRecognizerDelegate {
             visibleCount = period.isIntraday ? CGFloat(max(1, dataset.candles.count)) : CGFloat(max(1, min(60, dataset.candles.count)))
             resetToLatest()
         } else {
+            if settingsChanged { calculateIndicators(dataset, period: period) }
             setNeedsDisplay()
             updateAccessibility()
         }
@@ -130,7 +141,7 @@ final class StockChartCanvasView: UIView, UIGestureRecognizerDelegate {
     }
 
     private func calculateIndicators(_ dataset: StockChartDataset, period: StockChartPeriod) {
-        let series = StockChartSeriesCache.series(for: dataset, period: period)
+        let series = StockChartSeriesCache.series(for: dataset, period: period, settings: indicatorSettings)
         maLines = series.ma
         emaLines = series.ema
         bollLines = series.boll
@@ -185,7 +196,7 @@ final class StockChartCanvasView: UIView, UIGestureRecognizerDelegate {
     private func changed() { updateAccessibility(); setNeedsDisplay(); onInteraction?() }
     private func updateAccessibility() {
         chartAccessibility.accessibilityLabel = stockChartText(.mainIndicator, language: language)
-        chartAccessibility.accessibilityValue = "period=\(period.rawValue),start=\(Int(start.rounded())),count=\(Int(visibleCount.rounded())),selected=\(selectedIndex.map(String.init) ?? "none"),reversed=\(reversed),main=\(mainIndicators.map(\.rawValue).joined(separator: "+")),sub=\(subIndicators.map(\.rawValue).joined(separator: "+"))"
+        chartAccessibility.accessibilityValue = "period=\(period.rawValue),start=\(Int(start.rounded())),count=\(Int(visibleCount.rounded())),selected=\(selectedIndex.map(String.init) ?? "none"),reversed=\(reversed),main=\(mainIndicators.map(\.rawValue).joined(separator: "+")),sub=\(subIndicators.map(\.rawValue).joined(separator: "+")),adjustment=\(adjustment.rawValue),annotations=\([annotations.buySellPoint, annotations.currentPrice, annotations.cost, annotations.priceAlert, annotations.corporate].map { $0 ? "1" : "0" }.joined())"
         chartAccessibility.accessibilityFrameInContainerSpace = bounds
         accessibilityElements = legendButton.isHidden ? [chartAccessibility] : [chartAccessibility, legendButton]
     }
@@ -344,7 +355,10 @@ final class StockChartCanvasView: UIView, UIGestureRecognizerDelegate {
                     ctx.setFillColor(lineColors[0].cgColor)
                     for i in visible where i < sarValues.count { if let value = sarValues[i], value.isFinite { ctx.fillEllipse(in: CGRect(x: x(i) - 1.5, y: priceY(value) - 1.5, width: 3, height: 3)) } }
                 } else {
-                    for (i, line) in linesForMainIndicator(indicator).enumerated() { drawLine(ctx, values: line, range: visible, x: x, y: priceY, color: lineColors[i % lineColors.count], width: 0.7) }
+                    for (i, line) in linesForMainIndicator(indicator).enumerated() {
+                        let slot = mainIndicatorColorSlots(indicator)[i]
+                        drawLine(ctx, values: line, range: visible, x: x, y: priceY, color: lineColors[slot % lineColors.count], width: 0.7)
+                    }
                 }
             }
         }
@@ -352,11 +366,7 @@ final class StockChartCanvasView: UIView, UIGestureRecognizerDelegate {
             ctx.setStrokeColor(gridColor.resolvedColor(with: traitCollection).cgColor)
             ctx.setLineWidth(1); ctx.setLineDash(phase: 0, lengths: [4, 4]); ctx.move(to: CGPoint(x: 0, y: priceY(dataset.referenceClose))); ctx.addLine(to: CGPoint(x: bounds.width, y: priceY(dataset.referenceClose))); ctx.strokePath(); ctx.setLineDash(phase: 0, lengths: [])
         }
-        let last = candles[visible.upperBound - 1].close
-        if last >= yLow && last <= yHigh {
-            ctx.setStrokeColor(UIColor(red: 0.098, green: 0.431, blue: 1, alpha: 1).cgColor)
-            ctx.setLineWidth(1); ctx.setLineDash(phase: 0, lengths: [4, 4]); ctx.move(to: CGPoint(x: 0, y: priceY(last))); ctx.addLine(to: CGPoint(x: bounds.width, y: priceY(last))); ctx.strokePath(); ctx.setLineDash(phase: 0, lengths: [])
-        }
+        drawAnnotations(ctx, candles: candles, visible: visible, x: x, priceY: priceY, yLow: yLow, yHigh: yHigh)
         ctx.restoreGState()
         // Match production layer order: plots first, then unobscured axis text.
         for row in 0...4 {
@@ -382,6 +392,58 @@ final class StockChartCanvasView: UIView, UIGestureRecognizerDelegate {
             let box = CGRect(x: max(0, bounds.width - 58), y: min(mainRect.maxY - 15, max(mainRect.minY, sy - 7)), width: 58, height: 15)
             textColor.setFill(); UIBezierPath(roundedRect: box, cornerRadius: 2).fill()
             drawText(label, at: CGPoint(x: box.minX + 3, y: box.minY + 1), color: .white, fontSize: 10)
+        }
+    }
+
+    private func drawAnnotations(_ ctx: CGContext, candles: [StockChartCandle], visible: Range<Int>, x: (Int) -> CGFloat, priceY: (Double) -> CGFloat, yLow: Double, yHigh: Double) {
+        guard let latest = candles.last else { return }
+        func line(_ price: Double, color: UIColor, clamp: Bool = false, label: String? = nil) {
+            guard clamp || (price >= yLow && price <= yHigh) else { return }
+            let y = min(mainRect.maxY, max(mainRect.minY, priceY(price)))
+            ctx.setStrokeColor(color.resolvedColor(with: traitCollection).cgColor)
+            ctx.setLineWidth(0.7); ctx.setLineDash(phase: 0, lengths: [4, 4])
+            ctx.move(to: CGPoint(x: 0, y: y)); ctx.addLine(to: CGPoint(x: bounds.width, y: y)); ctx.strokePath()
+            ctx.setLineDash(phase: 0, lengths: [])
+            if let label {
+                let width = (label as NSString).size(withAttributes: [.font: chartFont(9)]).width + 8
+                let rect = CGRect(x: 0, y: min(mainRect.maxY - 14, max(mainRect.minY, y - 7)), width: width, height: 14)
+                color.resolvedColor(with: traitCollection).setFill()
+                UIBezierPath(roundedRect: rect, cornerRadius: 2).fill()
+                drawText(label, at: CGPoint(x: rect.minX + 4, y: rect.minY + 1), color: .white, fontSize: 9)
+            }
+        }
+        if annotations.currentPrice { line(latest.close, color: UIColor(red: 25/255, green: 110/255, blue: 1, alpha: 1), clamp: true) }
+        // Fixed synthetic position and alert prices; no account or order data is read.
+        if annotations.cost { line(latest.close * 0.995, color: lineColors[0], label: localized("成本", "成本", "Cost")) }
+        if annotations.priceAlert {
+            line(latest.close * 1.008, color: upColor, label: localized("涨提醒", "漲提醒", "Up"))
+            line(latest.close * 0.992, color: downColor, label: localized("跌提醒", "跌提醒", "Down"))
+        }
+        if annotations.buySellPoint {
+            let indices = period.isIntraday ? [max(0, candles.count - 300), max(0, candles.count - 100)] : [max(0, candles.count - 12), max(0, candles.count - 4)]
+            for (side, index) in indices.enumerated() where visible.contains(index) {
+                let color = side == 0 ? upColor : downColor
+                let point = CGPoint(x: x(index), y: min(mainRect.maxY - 7, max(mainRect.minY + 7, priceY(candles[index].close))))
+                color.resolvedColor(with: traitCollection).setFill()
+                let path = UIBezierPath()
+                path.move(to: CGPoint(x: point.x, y: point.y + (side == 0 ? -5 : 5)))
+                path.addLine(to: CGPoint(x: point.x - 4, y: point.y + (side == 0 ? 3 : -3)))
+                path.addLine(to: CGPoint(x: point.x + 4, y: point.y + (side == 0 ? 3 : -3)))
+                path.close(); path.fill()
+                let mark = side == 0 ? "B" : "S"
+                drawText(mark, at: CGPoint(x: point.x + 4, y: point.y - 6), color: color, fontSize: 9)
+            }
+        }
+        if annotations.corporate && [.day, .week, .month].contains(period) {
+            let daily = StockChartMock.dataset(for: .day).candles
+            for (label, offset) in [("E", 9), ("D", 25)] where daily.count > offset {
+                let date = daily[daily.count - offset].date
+                guard let index = candles.firstIndex(where: { $0.date >= date }), visible.contains(index) else { continue }
+                let rect = CGRect(x: x(index) - 7, y: mainRect.maxY - 15, width: 14, height: 14)
+                UIColor(red: 25/255, green: 110/255, blue: 1, alpha: 1).setFill()
+                UIBezierPath(ovalIn: rect).fill()
+                drawText(label, at: CGPoint(x: rect.minX + 4, y: rect.minY + 1), color: .white, fontSize: 9)
+            }
         }
     }
 
@@ -426,14 +488,15 @@ final class StockChartCanvasView: UIView, UIGestureRecognizerDelegate {
             let names: [String]
             switch indicator {
             case .none: continue
-            case .ma: names = ["MA5", "MA10", "MA20", "MA30", "MA60"]
-            case .ema: names = ["EMA5", "EMA10", "EMA20", "EMA30", "EMA60"]
+            case .ma: names = indicatorSettings.ma.filter(\.isEnabled).map { "MA\($0.period)" }
+            case .ema: names = indicatorSettings.ema.filter(\.isEnabled).map { "EMA\($0.period)" }
             case .boll: names = ["MID", "UP", "LOW"]
             case .sar: names = ["SAR"]
             }
             for (i, line) in lines.enumerated() {
                 let value = index < line.count ? line[index] : nil
-                segments.append(("\(names[i]): \(value.map(formatPrice) ?? "--")", lineColors[i % lineColors.count]))
+                let slot = mainIndicatorColorSlots(indicator)[i]
+                segments.append(("\(names[i]): \(value.map(formatPrice) ?? "--")", lineColors[slot % lineColors.count]))
             }
             rowY += drawMainIndicatorBand(segments, y: rowY)
         }
@@ -461,6 +524,16 @@ final class StockChartCanvasView: UIView, UIGestureRecognizerDelegate {
             drawText(text, at: CGPoint(x: itemX, y: y + textY), color: color, fontSize: 10)
         }
         return height
+    }
+
+    private func mainIndicatorColorSlots(_ indicator: StockChartMainIndicator) -> [Int] {
+        switch indicator {
+        case .ma: return indicatorSettings.ma.enabledSlotIndices
+        case .ema: return indicatorSettings.ema.enabledSlotIndices
+        case .boll: return [0, 1, 2]
+        case .sar: return [0]
+        case .none: return []
+        }
     }
 
     private func linesForMainIndicator(_ indicator: StockChartMainIndicator) -> [[Double?]] {
@@ -527,14 +600,16 @@ final class StockChartCanvasView: UIView, UIGestureRecognizerDelegate {
         var bars: [Double?] = []
         switch indicator {
         case .volume:
-            bars = candles.map { Optional($0.volume) }; lines = volumeMA; names = ["MA5", "MA10", "MA20"]
+            bars = candles.map { Optional($0.volume) }
+            if !period.isIntraday { lines = volumeMA; names = ["MA5", "MA10", "MA20"] }
         case .macd:
             bars = macdValues.histogram; lines = [macdValues.dif, macdValues.dea]; names = ["DIF", "DEA"]
         case .kdj:
             lines = [kdjValues.k, kdjValues.d, kdjValues.j]; names = ["K", "D", "J"]
         case .rsi:
-            lines = rsiLines; names = ["RSI6", "RSI12", "RSI24"]
+            lines = rsiLines; names = indicatorSettings.rsi.filter(\.isEnabled).map { "RSI\($0.period)" }
         }
+        let colorSlots = indicator == .rsi ? indicatorSettings.rsi.enabledSlotIndices : Array(lines.indices)
         var values = (lines + [bars]).flatMap { line in visible.compactMap { $0 < line.count ? line[$0] : nil } }.filter(\.isFinite)
         if indicator == .volume { values.append(0) }
         if indicator == .macd { values.append(0) }
@@ -547,21 +622,32 @@ final class StockChartCanvasView: UIView, UIGestureRecognizerDelegate {
         if indicator == .volume, chosen < bars.count, let value = bars[chosen] { segments.append((compact(value), textColor)) }
         for (i, line) in lines.enumerated() {
             let value = chosen < line.count ? line[chosen] : nil
-            segments.append(("\(names[i]): \(value.map { indicator == .volume ? compact($0) : formatPrice($0) } ?? "--")", lineColors[i]))
+            segments.append(("\(names[i]): \(value.map { indicator == .volume ? compact($0) : formatPrice($0) } ?? "--")", lineColors[colorSlots[i] % lineColors.count]))
         }
         if indicator == .macd, chosen < bars.count, let value = bars[chosen] { segments.append(("MACD: \(formatPrice(value))", lineColors[2])) }
         drawSegments(segments, y: top + 3)
         ctx.saveGState(); ctx.clip(to: graph)
         if !bars.isEmpty {
-            let width = indicator == .macd ? CGFloat(1) : max(0.5, step - (step > 1 ? 1 : 0.5))
+            let width: CGFloat
+            if indicator == .macd { width = 1 }
+            else if period == .intraday { width = 1 }
+            else if period == .fiveDays { width = bounds.width / CGFloat(candles.count) }
+            else { width = max(0.5, step - (step > 1 ? 1 : 0.5)) }
             for i in visible where i < bars.count {
                 guard let value = bars[i], value.isFinite else { continue }
                 let baseline = y(0), topY = min(y(value), baseline)
-                let color = indicator == .volume ? (candles[i].close >= candles[i].open ? upColor : downColor) : (value >= 0 ? upColor : downColor)
+                let color: UIColor
+                if indicator != .volume { color = value >= 0 ? upColor : downColor }
+                else if period.isIntraday {
+                    if i == 0 { color = upColor }
+                    else if candles[i].close > candles[i - 1].close { color = upColor }
+                    else if candles[i].close < candles[i - 1].close { color = downColor }
+                    else { color = textColor }
+                } else { color = candles[i].close >= candles[i].open ? upColor : downColor }
                 ctx.setFillColor(color.resolvedColor(with: traitCollection).cgColor); ctx.fill(CGRect(x: x(i) - width / 2, y: topY, width: width, height: max(0.5, abs(baseline - y(value)))))
             }
         }
-        for (i, line) in lines.enumerated() { drawLine(ctx, values: line, range: visible, x: x, y: y, color: lineColors[i], width: 0.7) }
+        for (i, line) in lines.enumerated() { drawLine(ctx, values: line, range: visible, x: x, y: y, color: lineColors[colorSlots[i] % lineColors.count], width: 0.7) }
         ctx.restoreGState()
         drawText(compact(high), at: CGPoint(x: 4, y: graph.minY), color: textColor, fontSize: 10)
     }

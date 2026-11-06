@@ -43,11 +43,21 @@
 
 这次迁入的是正式规则的独立实现，并非完整链接正式行情 SDK。未以正式 App 同一组行情截图进行逐像素比对；不将源码对照或 demo 测试表述为正式 App 像素等同验证。
 
+## 图表设置和分时 mock 补充（2026-11-06）
+
+- 重新核对远端 `UI重构/developer_LiquidGlass` 的 `667d285e395919c7cbc84fc6d440766f71425c6b`：自上述参考提交以来，分时、五日及图表设置绘制逻辑未改变。交易服务拆分及真实持仓空状态变化不接入 demo。
+- 设置入口包括横屏、指标设置、图表标注和日/周/月复权；指标栏可见性与绘图选中状态分离。指标参数、可见项、选中项、复权和标注开关在本地共享保存，分时和 K 线副图设置分开。
+- MA、EMA、BOLL、MACD、KDJ、RSI 参数参与实际计算。RSI 周期为 1 时，本实现避免正式实现将下一根价格变化写回上一根的前视行为。
+- 买卖点、持仓成本、到价提醒及公司行动为固定模拟标注，不读取真实账户；复权以模拟 2:1 拆股为例，从日线调整后聚合周/月，非服务端复权数据。
+- 正式美股分时为 390 个一分钟点，五日为 1,950 点；模拟价格采用固定种子逐分钟波动，成交量有开收盘活动、随机变化及偶发放量。分时/五日成交量不画 K 线的量均线，按正式实现分别使用 1pt 和单点间距宽度。
+- 美股常规交易时间参考 [NYSE 交易时间](https://www.nyse.com/trade/trading-information)；分钟量能的开收盘活跃模式参考 [日内成交量研究](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0165057)。
+- 本次验证：数据与指标脚本通过；模拟器构建及运行通过；五项既有明细、涨跌色/语言、下单、手势及弹层回归通过（`/tmp/stock-chart-settings-regression.xcresult`）。三项设置可见性/参数与复权标注/跨页面及重启保存测试通过（`/tmp/superpreview-chart-ui-agent-final.xcresult`）；最终渲染版参数和现价线的像素差测试通过（`/tmp/superpreview-chart-ui-pixels.xcresult`）。这些结果为分批运行，并非全部矩阵一次全量执行。
+
 ## 验证入口
 
 - `Scripts/test-stock-chart-data.sh`：独立 Swift 数据/指标测试，包括 OHLC 完整性、交易时段、聚合、已知指标样本、精度边界与缓存隔离。
 - `Scripts/test-stock-chart.sh`：先运行数据测试，再运行 iPhone 17 Pro / Pro Max、Light / Dark 矩阵。可用 `DEVICE_NAMES`、`APPEARANCES`、`FILTER`、`RESULTS_DIR` 限定运行范围。
-- `StockDetailChartUITests` 的 11 个用例已加入现有 `SuperPreviewUITests` target，因此现有 `Scripts/test-layout-adaptation.sh` 也包含图表回归；该入口同时先运行数据/指标测试。
+- `StockDetailChartUITests` 已加入现有 `SuperPreviewUITests` target，因此现有 `Scripts/test-layout-adaptation.sh` 也包含图表回归；该入口同时先运行数据/指标测试。
 
 ## 本次验证结果（2026-11-06）
 

@@ -37,12 +37,97 @@ struct StockChartDataset {
 
 enum StockChartMainIndicator: String, CaseIterable { case none, ma, ema, boll, sar }
 enum StockChartSubIndicator: String, CaseIterable { case volume, macd, kdj, rsi }
+enum StockChartAdjustment: String, CaseIterable { case forward, backward, none }
+
+struct ChartIndicatorLine: Hashable, Codable {
+    var period: Int
+    var isEnabled: Bool = true
+}
+
+extension Array where Element == ChartIndicatorLine {
+    // Series omit disabled slots, but line and legend colors retain slot identity.
+    var enabledSlotIndices: [Int] { indices.filter { self[$0].isEnabled } }
+}
+
+struct ChartIndicatorSettings: Hashable, Codable {
+    var ma: [ChartIndicatorLine] = [5, 10, 20, 30, 60, 120, 250].enumerated().map { ChartIndicatorLine(period: $0.element, isEnabled: $0.offset < 5) }
+    var ema: [ChartIndicatorLine] = [5, 10, 20, 30, 60, 120, 250].enumerated().map { ChartIndicatorLine(period: $0.element, isEnabled: $0.offset < 5) }
+    var rsi: [ChartIndicatorLine] = [6, 12, 24].map { ChartIndicatorLine(period: $0) }
+    var bollPeriod = 20
+    var bollStandardDeviations = 2.0
+    var macdFast = 12
+    var macdSlow = 26
+    var macdSignal = 9
+    var kdjPeriod = 9
+    var kdjKSmoothing = 3
+    var kdjDSmoothing = 3
+
+    // Keep externally supplied settings safe as well as settings from the UI.
+    var normalized: ChartIndicatorSettings {
+        var result = self
+        func clamp(_ value: Int, _ range: ClosedRange<Int>) -> Int { min(range.upperBound, max(range.lowerBound, value)) }
+        result.ma = ma.map { ChartIndicatorLine(period: clamp($0.period, 1...250), isEnabled: $0.isEnabled) }
+        result.ema = ema.map { ChartIndicatorLine(period: clamp($0.period, 2...250), isEnabled: $0.isEnabled) }
+        result.rsi = rsi.map { ChartIndicatorLine(period: clamp($0.period, 1...100), isEnabled: $0.isEnabled) }
+        result.bollPeriod = clamp(bollPeriod, 1...100)
+        result.bollStandardDeviations = bollStandardDeviations.isFinite ? min(5, max(0.1, bollStandardDeviations)) : 2
+        result.macdFast = clamp(macdFast, 2...100)
+        result.macdSlow = clamp(macdSlow, 2...100)
+        result.macdSignal = clamp(macdSignal, 2...100)
+        result.kdjPeriod = clamp(kdjPeriod, 2...100)
+        result.kdjKSmoothing = clamp(kdjKSmoothing, 1...50)
+        result.kdjDSmoothing = clamp(kdjDSmoothing, 1...50)
+        return result
+    }
+}
 
 enum StockChartMock {
     // Dates and price generation are fixed, so changing stocks or revisiting a period
     // never silently changes the chart. Prices are illustrative, not market data.
     private static let cache: [StockChartPeriod: StockChartDataset] = makeDatasets()
+    private static let adjustmentLock = NSLock()
+    private static var adjustmentCache: [StockChartPeriod: [StockChartAdjustment: StockChartDataset]] = [:]
     static func dataset(for period: StockChartPeriod) -> StockChartDataset { cache[period]! }
+
+    /// Synthetic 2:1 split on a Monday that is also the first of the month.
+    /// The original continuous history represents forward-adjusted prices.
+    static func adjustedDataset(for period: StockChartPeriod, adjustment: StockChartAdjustment) -> StockChartDataset {
+        let original = dataset(for: period)
+        guard [.day, .week, .month].contains(period), adjustment != .forward else { return original }
+        adjustmentLock.lock()
+        defer { adjustmentLock.unlock() }
+        if let cached = adjustmentCache[period]?[adjustment] { return cached }
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "America/New_York")!
+        calendar.firstWeekday = 2
+        calendar.minimumDaysInFirstWeek = 4
+        let splitDate = calendar.date(from: DateComponents(year: 2025, month: 12, day: 1))!
+        let daily = dataset(for: .day).candles.map { candle -> StockChartCandle in
+            let scale: Double = adjustment == .backward || candle.date < splitDate ? 2 : 1
+            return StockChartCandle(date: candle.date, open: candle.open * scale, high: candle.high * scale,
+                                    low: candle.low * scale, close: candle.close * scale, volume: candle.volume / scale)
+        }
+        let adjusted: [StockChartCandle]
+        if period == .day {
+            adjusted = daily
+        } else {
+            var groups: [[StockChartCandle]] = []
+            var previousKey = ""
+            for candle in daily {
+                let key = period == .week
+                    ? "\(calendar.component(.yearForWeekOfYear, from: candle.date))-\(calendar.component(.weekOfYear, from: candle.date))"
+                    : "\(calendar.component(.year, from: candle.date))-\(calendar.component(.month, from: candle.date))"
+                if key != previousKey { groups.append([]); previousKey = key }
+                groups[groups.count - 1].append(candle)
+            }
+            adjusted = groups.compactMap { aggregate($0, date: $0.last!.date) }
+        }
+        let reference = adjustment == .backward ? original.referenceClose * 2 : original.referenceClose
+        // No mockID: the existing indicator cache is keyed only by period.
+        let result = StockChartDataset(candles: adjusted, referenceClose: reference)
+        adjustmentCache[period, default: [:]][adjustment] = result
+        return result
+    }
 
     private static func makeDatasets() -> [StockChartPeriod: StockChartDataset] {
         var calendar = Calendar(identifier: .gregorian)
@@ -76,14 +161,37 @@ enum StockChartMock {
             let start = calendar.date(bySettingHour: 9, minute: 30, second: 0, of: day)!
             let open = daily[i].open
             let target = daily[i].close
+            // A seeded random walk supplies irregular minute-to-minute movement. A
+            // linear bridge retains the daily close without flattening the path.
+            var seed = UInt64(i + 1) &* 0x9E3779B97F4A7C15
+            func random() -> Double {
+                seed ^= seed >> 12
+                seed ^= seed << 25
+                seed ^= seed >> 27
+                return Double((seed &* 2685821657736338717) >> 11) / 9_007_199_254_740_992
+            }
+            var path: [Double] = []
+            var displacement = 0.0
+            var momentum = 0.0
+            for minute in 0..<390 {
+                let progress = Double(minute) / 389
+                let activity = 1 + 1.1 * exp(-progress * 14) + 0.65 * exp(-(1 - progress) * 12)
+                let shock = (random() + random() + random() - 1.5) * 0.075 * activity
+                momentum = 0.25 * momentum + shock
+                displacement += momentum
+                path.append(displacement)
+            }
             var previous = open
             var candles: [StockChartCandle] = []
             for minute in 0..<390 {
                 let progress = Double(minute + 1) / 390
-                let wave = sin(progress * .pi) * (0.75 * sin(progress * 13 + Double(i) * 0.2) + 0.3 * sin(progress * 43))
-                let value = open + (target - open) * progress + wave
-                let spread = 0.03 + 0.025 * abs(sin(Double(minute) * 0.31))
-                let volume = 12_000 + 7_000 * abs(cos(progress * .pi * 2)) + 4_000 * abs(sin(Double(minute + i) * 0.29))
+                let value = open + (target - open) * progress + path[minute] - path[389] * progress
+                let spread = 0.008 + random() * 0.025
+                // Trading activity is normally heavier near the open and close,
+                // with irregular minute volume and occasional bursts.
+                let activity = 1 + 2.4 * exp(-progress * 14) + 1.6 * exp(-(1 - progress) * 12)
+                let burst = random() < 0.025 ? 1.8 + random() : 1.0
+                let volume = (15_000 * activity * (0.45 + random() * 1.1) * burst).rounded()
                 candles.append(StockChartCandle(date: start.addingTimeInterval(Double(minute) * 60), open: previous,
                     high: max(previous, value) + spread, low: min(previous, value) - spread,
                     close: value, volume: volume))
@@ -196,11 +304,11 @@ enum StockChartCalculations {
         return result
     }
 
-    static func boll(_ values: [Double], period: Int, precision: Int = 3) -> (middle: [Double?], upper: [Double?], lower: [Double?]) {
+    static func boll(_ values: [Double], period: Int, standardDeviations: Double = 2, precision: Int = 3) -> (middle: [Double?], upper: [Double?], lower: [Double?]) {
         var middle = [Double?](repeating: nil, count: values.count)
         var upper = [Double?](repeating: nil, count: values.count)
         var lower = upper
-        guard period > 0, period <= values.count, let scaled = scaledValues(values, precision: precision) else { return (middle, upper, lower) }
+        guard period > 0, standardDeviations.isFinite, standardDeviations > 0, period <= values.count, let scaled = scaledValues(values, precision: precision) else { return (middle, upper, lower) }
         var sum: Int64 = 0
         var sumSquares = 0.0
         for i in values.indices {
@@ -225,7 +333,7 @@ enum StockChartCalculations {
             if i >= period - 1 {
                 let mean = Double(sum) / Double(period)
                 let variance = max(0, sumSquares / Double(period) - mean * mean)
-                let width = 2 * sqrt(variance)
+                let width = standardDeviations * sqrt(variance)
                 middle[i] = mean.rounded(.toNearestOrAwayFromZero) / scaled.scale
                 upper[i] = (mean + width).rounded(.toNearestOrAwayFromZero) / scaled.scale
                 lower[i] = (mean - width).rounded(.toNearestOrAwayFromZero) / scaled.scale
@@ -234,13 +342,13 @@ enum StockChartCalculations {
         return (middle, upper, lower)
     }
 
-    static func macd(_ values: [Double]) -> (dif: [Double?], dea: [Double?], histogram: [Double?]) {
-        let fast = ema(values, period: 12), slow = ema(values, period: 26)
+    static func macd(_ values: [Double], fastPeriod: Int = 12, slowPeriod: Int = 26, signalPeriod: Int = 9) -> (dif: [Double?], dea: [Double?], histogram: [Double?]) {
+        let fast = ema(values, period: fastPeriod), slow = ema(values, period: slowPeriod)
         let dif = values.indices.map { i -> Double? in
             guard let a = fast[i], let b = slow[i] else { return nil }
             return a - b
         }
-        let dea = ema(dif.map { $0 ?? .nan }, period: 9)
+        let dea = ema(dif.map { $0 ?? .nan }, period: signalPeriod)
         let histogram = values.indices.map { i -> Double? in
             guard let a = dif[i], let b = dea[i] else { return nil }
             return 2 * (a - b)
@@ -248,15 +356,19 @@ enum StockChartCalculations {
         return (dif, dea, histogram)
     }
 
-    static func kdj(_ candles: [StockChartCandle]) -> (k: [Double?], d: [Double?], j: [Double?]) {
+    static func kdj(_ candles: [StockChartCandle], period: Int = 9, kSmoothing: Int = 3, dSmoothing: Int = 3) -> (k: [Double?], d: [Double?], j: [Double?]) {
+        guard period > 0, kSmoothing > 0, dSmoothing > 0 else {
+            let empty = [Double?](repeating: nil, count: candles.count)
+            return (empty, empty, empty)
+        }
         var k = [Double?](), d = [Double?](), j = [Double?]()
         var previousK = 50.0, previousD = 50.0
         for i in candles.indices {
-            let window = candles[max(0, i - 8)...i]
+            let window = candles[max(0, i - period + 1)...i]
             let high = window.map(\.high).max()!, low = window.map(\.low).min()!
             let rsv = high == low ? 50 : (candles[i].close - low) / (high - low) * 100
-            previousK = previousK * 2 / 3 + rsv / 3
-            previousD = previousD * 2 / 3 + previousK / 3
+            previousK = (previousK * Double(kSmoothing - 1) + rsv) / Double(kSmoothing)
+            previousD = (previousD * Double(dSmoothing - 1) + previousK) / Double(dSmoothing)
             k.append(previousK); d.append(previousD); j.append(3 * previousK - 2 * previousD)
         }
         return (k, d, j)
@@ -268,7 +380,7 @@ enum StockChartCalculations {
         if period == 1 {
             for i in 1..<values.count {
                 let change = values[i] - values[i - 1]
-                result[i - 1] = change == 0 ? 50 : (change > 0 ? 100 : 0)
+                result[i] = change == 0 ? 50 : (change > 0 ? 100 : 0)
             }
             return result
         }
@@ -332,21 +444,21 @@ struct StockChartIndicatorSeries {
     let volumeMA: [[Double?]]
     let averagePrices: [Double]
 
-    fileprivate init(candles: [StockChartCandle], period: StockChartPeriod) {
+    fileprivate init(candles: [StockChartCandle], period: StockChartPeriod, settings: ChartIndicatorSettings) {
         let closes = candles.map(\.close)
         let volumes = candles.map(\.volume)
-        ma = [5, 10, 20, 30, 60].map { StockChartCalculations.ma(closes, period: $0) }
-        ema = [5, 10, 20, 30, 60].map { StockChartCalculations.ema(closes, period: $0) }
-        boll = StockChartCalculations.boll(closes, period: 20)
+        ma = settings.ma.filter(\.isEnabled).map { StockChartCalculations.ma(closes, period: $0.period) }
+        ema = settings.ema.filter(\.isEnabled).map { StockChartCalculations.ema(closes, period: $0.period) }
+        boll = StockChartCalculations.boll(closes, period: settings.bollPeriod, standardDeviations: settings.bollStandardDeviations)
         sar = StockChartCalculations.sar(candles)
-        macd = StockChartCalculations.macd(closes)
+        macd = StockChartCalculations.macd(closes, fastPeriod: settings.macdFast, slowPeriod: settings.macdSlow, signalPeriod: settings.macdSignal)
         // Production minute charts use rolling price extrema, not bar high/low.
         let kdjCandles = period.isIntraday ? candles.map { candle in
             StockChartCandle(date: candle.date, open: candle.close, high: candle.close,
                              low: candle.close, close: candle.close, volume: candle.volume)
         } : candles
-        kdj = StockChartCalculations.kdj(kdjCandles)
-        rsi = [6, 12, 24].map { StockChartCalculations.rsi(closes, period: $0) }
+        kdj = StockChartCalculations.kdj(kdjCandles, period: settings.kdjPeriod, kSmoothing: settings.kdjKSmoothing, dSmoothing: settings.kdjDSmoothing)
+        rsi = settings.rsi.filter(\.isEnabled).map { StockChartCalculations.rsi(closes, period: $0.period) }
         volumeMA = [5, 10, 20].map { StockChartCalculations.ma(volumes, period: $0, precision: 0) }
         var totalPriceVolume = 0.0
         var totalVolume = 0.0
@@ -365,18 +477,25 @@ struct StockChartIndicatorSeries {
 
 enum StockChartSeriesCache {
     private static let lock = NSLock()
-    private static var cached: [StockChartPeriod: StockChartIndicatorSeries] = [:]
+    private struct Key: Hashable {
+        let period: StockChartPeriod
+        let settings: ChartIndicatorSettings
+    }
+    private static var cached: [Key: StockChartIndicatorSeries] = [:]
 
-    static func series(for dataset: StockChartDataset, period: StockChartPeriod) -> StockChartIndicatorSeries {
+    static func series(for dataset: StockChartDataset, period: StockChartPeriod, settings: ChartIndicatorSettings = .init()) -> StockChartIndicatorSeries {
+        let settings = settings.normalized
         // Custom data, and a mock used with a different period, never share an entry.
         guard dataset.mockID == period else {
-            return StockChartIndicatorSeries(candles: dataset.candles, period: period)
+            return StockChartIndicatorSeries(candles: dataset.candles, period: period, settings: settings)
         }
         lock.lock()
         defer { lock.unlock() }
-        if let existing = cached[period] { return existing }
-        let result = StockChartIndicatorSeries(candles: dataset.candles, period: period)
-        cached[period] = result
+        let key = Key(period: period, settings: settings)
+        if let existing = cached[key] { return existing }
+        let result = StockChartIndicatorSeries(candles: dataset.candles, period: period, settings: settings)
+        if cached.count >= 24 { cached.removeAll() }
+        cached[key] = result
         return result
     }
 }

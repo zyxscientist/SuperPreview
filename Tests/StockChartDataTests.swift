@@ -59,6 +59,32 @@ struct StockChartDataTests {
         precondition(calendar.component(.minute, from: oneDay.candles.first!.date) == 30)
         precondition(calendar.component(.hour, from: oneDay.candles.last!.date) == 15)
         precondition(calendar.component(.minute, from: oneDay.candles.last!.date) == 59)
+        for dayIndex in 0..<5 {
+            let session = Array(fiveDays.candles[(dayIndex * 390)..<((dayIndex + 1) * 390)])
+            let matchingDaily = daily[daily.count - 5 + dayIndex]
+            precondition(calendar.isDate(session[0].date, inSameDayAs: matchingDaily.date))
+            for (index, bar) in session.enumerated() {
+                precondition(bar.date.timeIntervalSince(session[0].date) == Double(index * 60))
+                if index > 0 { near(bar.open, session[index - 1].close, "minute continuity") }
+            }
+            near(session.first!.open, matchingDaily.open, "session open")
+            near(session.last!.close, matchingDaily.close, "session close")
+            near(session.reduce(0) { $0 + $1.volume }, matchingDaily.volume, "session volume", tolerance: 1e-5)
+            let changes = zip(session.dropFirst(), session).map { $0.close - $1.close }
+            let reversals = zip(changes.dropFirst(), changes).filter { $0 * $1 < 0 }.count
+            precondition(reversals > 70, "minute prices should have irregular reversals")
+            func meanVolume(_ range: Range<Int>) -> Double {
+                session[range].reduce(0) { $0 + $1.volume } / Double(range.count)
+            }
+            let midday = meanVolume(165..<225)
+            precondition(meanVolume(0..<60) > midday * 1.4, "opening volume should exceed midday")
+            precondition(meanVolume(330..<390) > midday * 1.25, "closing volume should exceed midday")
+            precondition(Set(session.map(\.volume)).count > 350, "minute volume should vary")
+        }
+        for (intradayBar, fiveDayBar) in zip(oneDay.candles, fiveDays.candles.suffix(390)) {
+            precondition(intradayBar.date == fiveDayBar.date && intradayBar.close == fiveDayBar.close
+                         && intradayBar.volume == fiveDayBar.volume)
+        }
         let minutes = StockChartMock.dataset(for: .minute1).candles
         let fives = StockChartMock.dataset(for: .minute5).candles
         precondition(minutes.count == 11700 && fives.count == 2340)
@@ -83,6 +109,39 @@ struct StockChartDataTests {
             near(last.high, matching.map(\.high).max()!, "aggregated high")
             near(last.low, matching.map(\.low).min()!, "aggregated low")
             near(last.volume, matching.reduce(0) { $0 + $1.volume }, "aggregated volume", tolerance: 1e-5)
+        }
+        let split = calendar.date(from: DateComponents(year: 2025, month: 12, day: 1))!
+        let unadjusted = StockChartMock.adjustedDataset(for: .day, adjustment: .none)
+        let backward = StockChartMock.adjustedDataset(for: .day, adjustment: .backward)
+        precondition(unadjusted.mockID == nil && backward.mockID == nil)
+        for (index, original) in daily.enumerated() {
+            let scale = original.date < split ? 2.0 : 1.0
+            near(unadjusted.candles[index].close, original.close * scale, "unadjusted close")
+            near(unadjusted.candles[index].volume, original.volume / scale, "unadjusted volume")
+            near(backward.candles[index].close, original.close * 2, "backward close")
+        }
+        for period in [StockChartPeriod.week, .month] {
+            let original = StockChartMock.dataset(for: period)
+            let unadjustedPeriod = StockChartMock.adjustedDataset(for: period, adjustment: .none)
+            let backwardPeriod = StockChartMock.adjustedDataset(for: period, adjustment: .backward)
+            precondition(unadjustedPeriod.mockID == nil && backwardPeriod.mockID == nil)
+            precondition(original.candles.count == unadjustedPeriod.candles.count && original.candles.count == backwardPeriod.candles.count)
+            for (index, bar) in original.candles.enumerated() {
+                let scale = bar.date < split ? 2.0 : 1.0
+                near(unadjustedPeriod.candles[index].open, bar.open * scale, "unadjusted aggregated open")
+                near(unadjustedPeriod.candles[index].high, bar.high * scale, "unadjusted aggregated high")
+                near(unadjustedPeriod.candles[index].low, bar.low * scale, "unadjusted aggregated low")
+                near(unadjustedPeriod.candles[index].close, bar.close * scale, "unadjusted aggregated close")
+                near(backwardPeriod.candles[index].close, bar.close * 2, "backward aggregated close")
+            }
+        }
+        for period in [StockChartPeriod.intraday, .fiveDays, .minute1, .minute5, .minute15, .minute30, .minute60] {
+            let original = StockChartMock.dataset(for: period)
+            for adjustment in [StockChartAdjustment.forward, .none, .backward] {
+                let adjusted = StockChartMock.adjustedDataset(for: period, adjustment: adjustment)
+                precondition(adjusted.mockID == original.mockID && adjusted.candles.count == original.candles.count)
+                near(adjusted.candles[0].close, original.candles[0].close, "intraday adjustment unchanged")
+            }
         }
         let ma = StockChartCalculations.ma([1, 2, 3, 4], period: 3)
         precondition(ma[0] == nil && ma[1] == nil)
@@ -113,6 +172,54 @@ struct StockChartDataTests {
         let rsi = StockChartCalculations.rsi([1, 2, 1, 2], period: 3)
         precondition(rsi[0] == nil && rsi[1] == nil)
         near(rsi[2], 50, "RSI seed"); near(rsi[3], 200.0 / 3, "RSI Wilder")
+        let rsiOne = StockChartCalculations.rsi([1, 3, 2, 2], period: 1)
+        precondition(rsiOne[0] == nil)
+        near(rsiOne[1], 100, "RSI 1 current increase")
+        near(rsiOne[2], 0, "RSI 1 current decrease")
+        near(rsiOne[3], 50, "RSI 1 flat")
+        let narrow = StockChartCalculations.boll([1, 2, 3], period: 3, standardDeviations: 1)
+        near(narrow.upper[2], 2.816, "custom BOLL multiplier")
+        let customKD = StockChartCalculations.kdj([candle(10, 0, 10), candle(10, 0, 0)], period: 2, kSmoothing: 2, dSmoothing: 2)
+        near(customKD.k[0], 75, "custom K smoothing")
+        near(customKD.d[0], 62.5, "custom D smoothing")
+        let sample = [1.0, 2, 4, 3, 7, 2, 8, 1, 9, 5]
+        let customMACD = StockChartCalculations.macd(sample, fastPeriod: 2, slowPeriod: 4, signalPeriod: 3)
+        let defaultMACD = StockChartCalculations.macd(sample)
+        precondition(customMACD.dif.last! != defaultMACD.dif.last!)
+        var settings = ChartIndicatorSettings()
+        settings.ma[0].period = 3
+        settings.ma[1].isEnabled = false
+        settings.bollPeriod = 3
+        settings.bollStandardDeviations = 1
+        settings.macdFast = 2
+        settings.kdjKSmoothing = 2
+        settings.rsi[0].period = 3
+        precondition(settings.ma.enabledSlotIndices == [0, 2, 3, 4], "disabled MA must not shift remaining color slots")
+        var slotSettings = ChartIndicatorSettings()
+        slotSettings.ma[0].isEnabled = false
+        slotSettings.ma[5].isEnabled = true
+        slotSettings.ema[0].isEnabled = false
+        slotSettings.rsi[0].isEnabled = false
+        precondition(slotSettings.ma.enabledSlotIndices == [1, 2, 3, 4, 5])
+        precondition(slotSettings.ema.enabledSlotIndices == [1, 2, 3, 4])
+        precondition(slotSettings.rsi.enabledSlotIndices == [1, 2])
+        let serialized = try! JSONEncoder().encode(slotSettings)
+        precondition(try! JSONDecoder().decode(ChartIndicatorSettings.self, from: serialized) == slotSettings)
+        var limits = ChartIndicatorSettings()
+        limits.bollPeriod = 1
+        precondition(limits.normalized.bollPeriod == 1)
+        limits.bollPeriod = 101
+        precondition(limits.normalized.bollPeriod == 100)
+        let configured = StockChartSeriesCache.series(for: oneDay, period: .intraday, settings: settings)
+        let closes = oneDay.candles.map(\.close)
+        precondition(configured.ma.count == 4)
+        near(configured.ma[0][2], StockChartCalculations.ma(closes, period: 3)[2]!, "configured MA")
+        near(configured.boll.upper[2], StockChartCalculations.boll(closes, period: 3, standardDeviations: 1).upper[2]!, "configured BOLL")
+        near(configured.macd.dif[20], StockChartCalculations.macd(closes, fastPeriod: 2).dif[20]!, "configured MACD")
+        precondition(configured.rsi[0][2] != nil, "configured RSI")
+        let cachedConfigured = StockChartSeriesCache.series(for: oneDay, period: .intraday, settings: settings)
+        precondition(configured.ma[0].withUnsafeBufferPointer { $0.baseAddress } == cachedConfigured.ma[0].withUnsafeBufferPointer { $0.baseAddress })
+        precondition(intradaySeries.ma[0][2] == nil, "settings must isolate cached series")
         let sar = StockChartCalculations.sar([candle(10, 8, 9), candle(11, 9, 10), candle(12, 10, 11), candle(9, 7, 8)])
         near(sar[0], 8, "SAR initial"); near(sar[1], 8, "SAR clamp"); near(sar[3], 12, "SAR reversal")
         precondition(StockChartCalculations.ma([1, 2], period: 0).allSatisfy { $0 == nil })

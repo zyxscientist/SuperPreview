@@ -23,6 +23,7 @@ final class StockDetailChartUITests: XCTestCase {
         showChart()
         let canvas = element("stockDetail.chart.canvas")
         XCTAssertEqual(state(canvas)["period"], "intraday")
+        XCTAssertEqual(integerState(canvas, "count"), 390, "The initial intraday viewport should show all 390 trading minutes")
         XCTAssertTrue(state(canvas)["main"]?.contains("ma") == true)
         XCTAssertTrue(state(canvas)["sub"]?.contains("volume") == true)
         XCTAssertEqual(canvas.frame.height, 333, accuracy: 2)
@@ -111,6 +112,11 @@ final class StockDetailChartUITests: XCTestCase {
         for period in periods {
             element("stockDetail.chart.period.\(period)").tap()
             waitForState(canvas, key: "period", value: period)
+            if period == "fiveDays" {
+                XCTAssertEqual(integerState(canvas, "count"), 1_950, "The five-day viewport should show five full trading sessions")
+            } else if period == "intraday" {
+                XCTAssertEqual(integerState(canvas, "count"), 390, "Returning to intraday should restore the full session")
+            }
             starts[period] = integerState(canvas, "start")
         }
         XCTAssertGreaterThan(starts["day"] ?? -1, starts["week"] ?? -1)
@@ -124,27 +130,26 @@ final class StockDetailChartUITests: XCTestCase {
         XCTAssertGreaterThan(starts["minute1"] ?? -1, starts["minute5"] ?? -1)
         XCTAssertGreaterThan(starts["minute5"] ?? -1, starts["minute60"] ?? -1)
 
-        element("stockDetail.chart.settings").tap()
-        setIndicatorSwitch("stockDetail.chart.main.ema", from: "0", to: "1")
-        setIndicatorSwitch("stockDetail.chart.sub.macd", from: "0", to: "1")
-        setIndicatorSwitch("stockDetail.chart.sub.kdj", from: "0", to: "1")
-        element("stockDetail.chart.settings.done").tap()
+        element("stockDetail.chart.period.day").tap()
+        waitForState(canvas, key: "period", value: "day")
+        element("stockDetail.chart.indicator.main.ema").tap()
+        element("stockDetail.chart.indicator.sub.macd").tap()
         waitForStateContaining(canvas, key: "main", value: "ema")
         waitForStateContaining(canvas, key: "sub", value: "macd")
-        waitForStateContaining(canvas, key: "sub", value: "kdj")
         XCTAssertGreaterThan(canvas.frame.height, 333, "Additional subcharts must add drawing space")
         screenshot("chart-indicators")
 
-        element("stockDetail.chart.settings").tap()
-        setIndicatorSwitch("stockDetail.chart.sub.macd", from: "1", to: "0")
-        setIndicatorSwitch("stockDetail.chart.sub.kdj", from: "1", to: "0")
-        setIndicatorSwitch("stockDetail.chart.sub.rsi", from: "0", to: "1")
-        setIndicatorSwitch("stockDetail.chart.main.boll", from: "0", to: "1")
-        element("stockDetail.chart.settings.done").tap()
-        waitForStateContaining(canvas, key: "sub", value: "rsi")
-        waitForStateContaining(canvas, key: "main", value: "boll")
+        openIndicatorSettings()
+        setIndicatorVisibility("stockDetail.chart.sub.macd", from: "1", to: "0")
+        dismissIndicatorSettings()
         waitForStateNotContaining(canvas, key: "sub", value: "macd")
-        waitForStateNotContaining(canvas, key: "sub", value: "kdj")
+
+        openIndicatorSettings()
+        setIndicatorVisibility("stockDetail.chart.sub.macd", from: "0", to: "1")
+        dismissIndicatorSettings()
+        waitForStateContaining(canvas, key: "sub", value: "macd")
+        XCTAssertTrue(element("stockDetail.chart.indicator.sub.macd").isSelected,
+                      "Showing an indicator again should preserve its previous selection")
         XCTAssertEqual(canvas.frame.height, 441, accuracy: 2)
     }
 
@@ -188,6 +193,148 @@ final class StockDetailChartUITests: XCTestCase {
         screenshot("chart-shortcut-indicators")
     }
 
+    func testSettingsAdjustmentParametersAndAnnotations() {
+        openDetail()
+        showChart()
+        let canvas = element("stockDetail.chart.canvas")
+        element("stockDetail.chart.period.day").tap()
+        waitForState(canvas, key: "period", value: "day")
+
+        element("stockDetail.chart.settings").tap()
+        _ = element("stockDetail.chart.settings.sheet")
+        XCTAssertTrue(element("stockDetail.chart.adjustment.forward").isSelected)
+        element("stockDetail.chart.adjustment.none").tap()
+        XCTAssertTrue(element("stockDetail.chart.adjustment.none").isSelected)
+        dismissSheet(element("stockDetail.chart.settings.sheet"))
+        waitForState(canvas, key: "adjustment", value: "none")
+        let originalMAImage = canvas.screenshot().image
+
+        openIndicatorSettings()
+        element("stockDetail.chart.parameter.ma").tap()
+        let value = element("stockDetail.chart.parameter.value.0")
+        guard let original = value.value as? String, let number = Int(original) else {
+            XCTFail("The first MA parameter must be numeric")
+            return
+        }
+        element("stockDetail.chart.parameter.increment.0").tap()
+        XCTAssertEqual(value.value as? String, String(number + 1))
+        element("stockDetail.chart.parameter.save").tap()
+        dismissIndicatorSettings()
+        let changedMAImage = canvas.screenshot().image
+        attachImage(originalMAImage, name: "chart-ma-before-parameter")
+        attachImage(changedMAImage, name: "chart-ma-after-parameter")
+        assertPixelDifference(originalMAImage, changedMAImage, subject: "MA parameter")
+        openIndicatorSettings()
+        element("stockDetail.chart.parameter.ma").tap()
+        XCTAssertEqual(element("stockDetail.chart.parameter.value.0").value as? String, String(number + 1),
+                       "Saved parameters should survive reopening the editor")
+        element("stockDetail.chart.parameter.increment.0").tap()
+        element("stockDetail.chart.parameter.back").tap()
+        element("stockDetail.chart.parameter.ma").tap()
+        XCTAssertEqual(element("stockDetail.chart.parameter.value.0").value as? String, String(number + 1),
+                       "Going back should discard unsaved edits")
+        element("stockDetail.chart.parameter.reset").tap()
+        let confirm = app.alerts.buttons.matching(NSPredicate(format: "label IN %@", ["确定", "確定", "Confirm"])).firstMatch
+        XCTAssertTrue(confirm.waitForExistence(timeout: 5))
+        confirm.tap()
+        XCTAssertEqual(element("stockDetail.chart.parameter.value.0").value as? String, original)
+        element("stockDetail.chart.parameter.save").tap()
+        dismissIndicatorSettings()
+
+        let originalAnnotations = state(canvas)["annotations"]
+        let originalAnnotationImage = canvas.screenshot().image
+        element("stockDetail.chart.settings").tap()
+        element("stockDetail.chart.settings.labels").tap()
+        let currentPrice = element("stockDetail.chart.labels.currentPrice")
+        let initialValue = currentPrice.value as? String
+        XCTAssertTrue(initialValue == "0" || initialValue == "1")
+        currentPrice.tap()
+        XCTAssertNotEqual(currentPrice.value as? String, initialValue)
+        element("stockDetail.chart.labels.back").tap()
+        waitForCanvas(canvas) { self.state(canvas)["annotations"] != originalAnnotations }
+        let changedAnnotationImage = canvas.screenshot().image
+        attachImage(originalAnnotationImage, name: "chart-current-price-before-toggle")
+        attachImage(changedAnnotationImage, name: "chart-current-price-after-toggle")
+        assertPixelDifference(originalAnnotationImage, changedAnnotationImage, subject: "Current price annotation")
+        element("stockDetail.chart.settings").tap()
+        element("stockDetail.chart.settings.labels").tap()
+        let restoredControl = element("stockDetail.chart.labels.currentPrice")
+        restoredControl.tap()
+        XCTAssertEqual(restoredControl.value as? String, initialValue)
+        element("stockDetail.chart.labels.back").tap()
+        waitForCanvas(canvas) { self.state(canvas)["annotations"] == originalAnnotations }
+        XCTAssertEqual(state(canvas)["annotations"], originalAnnotations)
+        screenshot("chart-settings-interactions")
+    }
+
+    func testSettingsCarryFromDetailToOrderChart() {
+        openDetail()
+        showChart()
+        let canvas = element("stockDetail.chart.canvas")
+        element("stockDetail.chart.period.day").tap()
+        waitForState(canvas, key: "period", value: "day")
+        element("stockDetail.chart.indicator.sub.macd").tap()
+        waitForStateContaining(canvas, key: "sub", value: "macd")
+
+        element("stockDetail.chart.settings").tap()
+        element("stockDetail.chart.adjustment.none").tap()
+        element("stockDetail.chart.settings.indicators").tap()
+        setIndicatorVisibility("stockDetail.chart.sub.macd", from: "1", to: "0")
+        element("stockDetail.chart.parameter.ma").tap()
+        let parameter = element("stockDetail.chart.parameter.value.0")
+        guard let original = parameter.value as? String, let number = Int(original) else {
+            XCTFail("The first MA parameter must be numeric")
+            return
+        }
+        element("stockDetail.chart.parameter.increment.0").tap()
+        element("stockDetail.chart.parameter.save").tap()
+        dismissIndicatorSettings()
+        waitForStateNotContaining(canvas, key: "sub", value: "macd")
+        waitForState(canvas, key: "adjustment", value: "none")
+
+        element("stockDetail.bottomActionBar.trade").tap()
+        element("stockOrder.symbolInput.expandChart").tap()
+        let orderCanvas = element("stockDetail.chart.canvas")
+        let orderScroll = app.scrollViews.firstMatch
+        let day = element("stockDetail.chart.period.day")
+        for _ in 0..<6 where !day.isHittable { orderScroll.swipeUp() }
+        day.tap()
+        waitForState(orderCanvas, key: "period", value: "day")
+        waitForState(orderCanvas, key: "adjustment", value: "none")
+        waitForStateNotContaining(orderCanvas, key: "sub", value: "macd")
+
+        let settings = element("stockDetail.chart.settings")
+        for _ in 0..<6 where !settings.isHittable { orderScroll.swipeUp() }
+        settings.tap()
+        element("stockDetail.chart.settings.indicators").tap()
+        setIndicatorVisibility("stockDetail.chart.sub.macd", from: "0", to: "1")
+        element("stockDetail.chart.parameter.ma").tap()
+        XCTAssertEqual(element("stockDetail.chart.parameter.value.0").value as? String, String(number + 1),
+                       "The order chart should share the saved detail-chart parameters")
+        element("stockDetail.chart.parameter.back").tap()
+        dismissIndicatorSettings()
+        waitForStateContaining(orderCanvas, key: "sub", value: "macd")
+        XCTAssertTrue(element("stockDetail.chart.indicator.sub.macd").isSelected,
+                      "The hidden indicator's selection should survive the page transition")
+
+        app.terminate()
+        app.launchEnvironment["UITEST_PRESERVE_CHART_SETTINGS"] = "1"
+        app.launch()
+        openDetail()
+        showChart()
+        let relaunchedCanvas = element("stockDetail.chart.canvas")
+        element("stockDetail.chart.period.day").tap()
+        waitForState(relaunchedCanvas, key: "period", value: "day")
+        waitForState(relaunchedCanvas, key: "adjustment", value: "none")
+        waitForStateContaining(relaunchedCanvas, key: "sub", value: "macd")
+        openIndicatorSettings()
+        element("stockDetail.chart.parameter.ma").tap()
+        XCTAssertEqual(element("stockDetail.chart.parameter.value.0").value as? String, String(number + 1),
+                       "Saved chart parameters should survive an app restart")
+        element("stockDetail.chart.parameter.back").tap()
+        dismissIndicatorSettings()
+    }
+
     func testDoubleTapExpandsAndCloseReturnsToDetail() {
         openDetail()
         showChart()
@@ -225,8 +372,9 @@ final class StockDetailChartUITests: XCTestCase {
             XCTAssertEqual(element("stockDetail.chart.period.intraday").label, intraday)
             XCTAssertEqual(element("stockDetail.chart.period.day").label, daily)
             element("stockDetail.chart.settings").tap()
-            XCTAssertTrue(app.staticTexts[settings].waitForExistence(timeout: 5), "Missing localized settings title: \(settings)")
-            element("stockDetail.chart.settings.done").tap()
+            XCTAssertEqual(element("stockDetail.chart.settings.indicators").label, settings)
+            element("stockDetail.chart.settings.indicators").tap()
+            dismissIndicatorSettings()
             showDebug()
         }
         elementByLabel("简体中文").tap()
@@ -319,16 +467,12 @@ final class StockDetailChartUITests: XCTestCase {
         let period = scopedElement("stockDetail.chart.period.intraday", in: card)
         let originalPeriodTop = period.frame.minY
         scopedElement("stockDetail.chart.settings", in: card).tap()
-        let done = element("stockDetail.chart.settings.done")
-        let macd = element("stockDetail.chart.sub.macd")
-        let initialValue = macd.value as? String
-        XCTAssertNotNil(initialValue)
-        let sheetStart = done.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+        let sheet = element("stockDetail.chart.settings.sheet")
+        let sheetStart = sheet.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.2))
         sheetStart.press(forDuration: 0.05, thenDragTo: sheetStart.withOffset(CGVector(dx: -100, dy: 0)))
-        XCTAssertTrue(done.exists, "Dragging the settings sheet must not dismiss it")
-        XCTAssertEqual(macd.value as? String, initialValue, "Dragging must not change the indicator toggle")
+        XCTAssertTrue(sheet.exists, "Dragging the settings sheet must not dismiss it")
         screenshot("scroll-chart-settings-drag")
-        done.tap()
+        dismissSheet(sheet)
         assertStillInScroll(scroll)
 
         canvas.coordinate(withNormalizedOffset: CGVector(dx: 0.55, dy: 0.4)).doubleTap()
@@ -353,9 +497,7 @@ final class StockDetailChartUITests: XCTestCase {
         let canvas = scopedElement("stockDetail.chart.canvas", in: card)
         // An extra subchart makes the plot extend behind the floating bar on
         // both screen heights, so this exercises actual overlap in each case.
-        scopedElement("stockDetail.chart.settings", in: card).tap()
-        setIndicatorSwitch("stockDetail.chart.sub.macd", from: "0", to: "1")
-        element("stockDetail.chart.settings.done").tap()
+        scopedElement("stockDetail.chart.indicator.sub.macd", in: card).tap()
         waitForStateContaining(canvas, key: "sub", value: "macd")
         let symbol = element("stockDetail.scroll.symbol.us:NVDA")
         XCTAssertTrue(symbol.isHittable)
@@ -545,23 +687,39 @@ final class StockDetailChartUITests: XCTestCase {
         XCTAssertFalse(app.descendants(matching: .any)["stockOrder.demo"].exists, "Chart gestures must not open an order")
     }
 
-    private func setIndicatorSwitch(_ identifier: String, from initial: String, to expected: String) {
-        let control = app.switches[identifier].firstMatch
-        XCTAssertTrue(control.waitForExistence(timeout: 8), "Missing indicator switch: \(identifier)")
+    private func openIndicatorSettings() {
+        element("stockDetail.chart.settings").tap()
+        _ = element("stockDetail.chart.settings.sheet")
+        element("stockDetail.chart.settings.indicators").tap()
+        _ = element("stockDetail.chart.indicators.sheet")
+    }
+
+    private func dismissIndicatorSettings() {
+        dismissSheet(element("stockDetail.chart.indicators.sheet"))
+    }
+
+    private func dismissSheet(_ sheet: XCUIElement) {
+        let start = sheet.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.03))
+        start.press(forDuration: 0.05, thenDragTo: start.withOffset(CGVector(dx: 0, dy: 500)))
+        let dismissed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: sheet)
+        XCTAssertEqual(XCTWaiter.wait(for: [dismissed], timeout: 5), .completed, "Sheet should dismiss after a downward drag")
+    }
+
+    private func setIndicatorVisibility(_ identifier: String, from initial: String, to expected: String) {
+        let control = app.buttons[identifier].firstMatch
+        XCTAssertTrue(control.waitForExistence(timeout: 8), "Missing indicator visibility control: \(identifier)")
         let window = app.windows.firstMatch
         for _ in 0..<6 {
             let frame = control.frame
             if control.isHittable && frame.midY > window.frame.minY + 40 && frame.midY < window.frame.maxY - 40 { break }
             if frame.midY < window.frame.midY { app.swipeDown() } else { app.swipeUp() }
         }
-        XCTAssertTrue(control.isHittable, "Indicator switch should be visible: \(identifier)")
+        XCTAssertTrue(control.isHittable, "Indicator control should be visible: \(identifier)")
         XCTAssertEqual(control.value as? String, initial, "Unexpected initial value for \(identifier)")
-        // SwiftUI's Switch accessibility frame includes the row label. Tap the
-        // trailing track itself rather than the center of the whole row.
-        control.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+        control.tap()
         let changed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", expected), object: control)
         XCTAssertEqual(XCTWaiter.wait(for: [changed], timeout: 5), .completed,
-                       "Indicator switch did not change to \(expected): \(identifier)")
+                       "Indicator visibility did not change to \(expected): \(identifier)")
     }
 
     private func scopedElement(_ identifier: String, in parent: XCUIElement) -> XCUIElement {
@@ -652,6 +810,20 @@ final class StockDetailChartUITests: XCTestCase {
         }
         XCTAssertGreaterThan(redToGreen, 10, "\(subject) red pixels should change to green at the same position")
         XCTAssertGreaterThan(greenToRed, 10, "\(subject) green pixels should change to red at the same position")
+    }
+
+    private func assertPixelDifference(_ first: UIImage, _ second: UIImage, subject: String) {
+        guard let a = rgba(first), let b = rgba(second), a.width == b.width, a.height == b.height else {
+            XCTFail("Unable to compare \(subject) screenshots with matching dimensions")
+            return
+        }
+        var changed = 0
+        for i in stride(from: 0, to: a.pixels.count, by: 4) {
+            if (0..<3).contains(where: { abs(Int(a.pixels[i + $0]) - Int(b.pixels[i + $0])) > 20 }) {
+                changed += 1
+            }
+        }
+        XCTAssertGreaterThan(changed, 10, "\(subject) should change the rendered chart")
     }
     private func rgba(_ image: UIImage) -> (width: Int, height: Int, pixels: [UInt8])? {
         guard let cg = image.cgImage else { return nil }
