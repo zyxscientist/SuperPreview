@@ -42,6 +42,10 @@ struct StockChartTrades: View {
                         }
                     }
                 }
+                // The inline tape is a latest-trades preview. Vertical drags
+                // belong to its page; the dedicated details sheet browses the
+                // full tape independently. Programmatic positioning is kept.
+                .scrollDisabled(showsDetails)
                 .onAppear {
                     if let id = Self.rows.last?.id { proxy.scrollTo(id, anchor: .bottom) }
                 }

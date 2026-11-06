@@ -62,6 +62,88 @@ final class StockDetailChartUITests: XCTestCase {
         }
     }
 
+    func testShortOrderChartDragsMatchNativePageScrolling() {
+        openDetail()
+        element("stockDetail.bottomActionBar.trade").tap()
+        element("stockOrder.symbolInput.expandChart").tap()
+        let canvas = element("stockDetail.chart.canvas")
+        let scroll = app.scrollViews.firstMatch
+        XCTAssertTrue(canvas.isHittable)
+        assertShortChartDragsMatchNativePage(canvas, in: scroll, periods: ["intraday", "day"])
+    }
+
+    private func assertShortChartDragsMatchNativePage(_ canvas: XCUIElement, in scroll: XCUIElement, periods: [String]) {
+        for period in periods {
+            element("stockDetail.chart.period.\(period)").tap()
+            waitForState(canvas, key: "period", value: period)
+            let initialStart = state(canvas)["start"]
+            // The 12pt gutter has no chart recognizers. Compare against the
+            // same page, holding at the end to exclude inertial movement.
+            let native = shortPageDrag(canvas, in: scroll, outsideChart: true, dx: 0, dy: -44)
+            _ = shortPageDrag(canvas, in: scroll, outsideChart: true, dx: 0, dy: 44)
+            XCTAssertGreaterThan(native, 24, "Native reference drag must move the page")
+            for dx: CGFloat in [0, 28, -28] {
+                let moved = shortPageDrag(canvas, in: scroll, outsideChart: false, dx: dx, dy: -44)
+                XCTAssertEqual(moved, native, accuracy: 8,
+                               "\(period): short/diagonal drags must track like the page gutter; dx=\(dx)")
+                let returned = shortPageDrag(canvas, in: scroll, outsideChart: false, dx: -dx, dy: 44)
+                XCTAssertEqual(returned, -native, accuracy: 8, "Reverse drag must respond without another long swipe")
+                print("Chart scroll comparison: period=\(period), dx=\(dx), native=\(native), chart=\(moved), reverse=\(returned)")
+                XCTAssertEqual(state(canvas)["start"], initialStart, "Vertical browsing must not pan candle history")
+                XCTAssertEqual(state(canvas)["selected"], "none", "Scrolling must not select a crosshair")
+            }
+        }
+    }
+
+    func testShortChartDragsMatchNativePageScrolling() {
+        openDetail()
+        showChart()
+        let canvas = element("stockDetail.chart.canvas")
+        let scroll = app.scrollViews["stockDetail.page.quotePage"].firstMatch
+        assertShortChartDragsMatchNativePage(canvas, in: scroll, periods: ["intraday", "fiveDays", "day"])
+    }
+
+    func testChartFlickKeepsNativeDeceleration() {
+        openDetail()
+        showChart()
+        let canvas = element("stockDetail.chart.canvas")
+        element("stockDetail.chart.period.fiveDays").tap()
+        waitForState(canvas, key: "period", value: "fiveDays")
+        let before = canvas.frame.minY
+        let origin = canvas.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.4))
+        origin.press(forDuration: 0.01, thenDragTo: origin.withOffset(CGVector(dx: 0, dy: -70)),
+                     withVelocity: XCUIGestureVelocity(rawValue: 1_200), thenHoldForDuration: 0)
+        XCTAssertGreaterThan(before - canvas.frame.minY, 100,
+                             "A 70pt flick must keep scrolling after release using the page's native inertia")
+        XCTAssertEqual(state(canvas)["selected"], "none")
+    }
+
+    func testInlineTradeTapeScrollsThePage() {
+        openDetail()
+        showChart()
+        let canvas = element("stockDetail.chart.canvas")
+        let tape = element("stockDetail.chart.trades.list")
+        let before = canvas.frame.minY
+        let origin = tape.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+        origin.press(forDuration: 0.01, thenDragTo: origin.withOffset(CGVector(dx: 0, dy: -70)),
+                     withVelocity: XCUIGestureVelocity(rawValue: 150), thenHoldForDuration: 0.2)
+        XCTAssertGreaterThan(before - canvas.frame.minY, 45, "The inline tape must not swallow page scrolling")
+        let scrolledY = canvas.frame.minY
+        let reverse = tape.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+        reverse.press(forDuration: 0.01, thenDragTo: reverse.withOffset(CGVector(dx: 0, dy: 70)),
+                      withVelocity: XCUIGestureVelocity(rawValue: 150), thenHoldForDuration: 0.2)
+        XCTAssertGreaterThan(canvas.frame.minY - scrolledY, 45, "Downward drags must return the page, not scroll hidden tape rows")
+
+        element("stockDetail.chart.trades.details").tap()
+        let sheet = element("stockDetail.chart.trades.sheet")
+        let list = scopedElement("stockDetail.chart.trades.list", in: sheet)
+        let lastTime = list.staticTexts["15:59"].firstMatch
+        XCTAssertTrue(lastTime.isHittable)
+        list.swipeDown()
+        XCTAssertFalse(lastTime.isHittable, "The dedicated trade detail list must still scroll independently")
+        element("stockDetail.chart.settings.done").tap()
+    }
+
     func testQuoteInfoSpacingAndTimeframeLayout() {
         openDetail()
         let header = element("stockDetail.quoteData.header")
@@ -1248,6 +1330,19 @@ final class StockDetailChartUITests: XCTestCase {
             canvas.frame.minY > scrolledY + 20
         }, object: nil)
         XCTAssertEqual(XCTWaiter.wait(for: [movedDown], timeout: 5), .completed, "Dragging downward from the chart should scroll the page")
+    }
+
+    @discardableResult private func shortPageDrag(_ canvas: XCUIElement, in viewport: XCUIElement,
+                                                 outsideChart: Bool, dx: CGFloat, dy: CGFloat) -> CGFloat {
+        let window = app.windows.firstMatch
+        let visible = canvas.frame.intersection(viewport.frame).intersection(window.frame.insetBy(dx: 0, dy: 100))
+        XCTAssertGreaterThan(visible.height, 100)
+        let point = CGPoint(x: outsideChart ? viewport.frame.minX + 6 : visible.midX, y: visible.midY)
+        let origin = window.coordinate(withNormalizedOffset: .zero).withOffset(CGVector(dx: point.x, dy: point.y))
+        let before = canvas.frame.minY
+        origin.press(forDuration: 0.01, thenDragTo: origin.withOffset(CGVector(dx: dx, dy: dy)),
+                     withVelocity: XCUIGestureVelocity(rawValue: 100), thenHoldForDuration: 0.2)
+        return before - canvas.frame.minY
     }
 
     private func dragVerticallyFromChart(_ canvas: XCUIElement, in viewport: XCUIElement, distance: CGFloat) {

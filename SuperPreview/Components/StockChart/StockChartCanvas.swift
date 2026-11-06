@@ -15,6 +15,8 @@ final class StockChartCanvasView: UIView, UIGestureRecognizerDelegate {
     private var mainIndicators: [StockChartMainIndicator] = [.ma]
     private var legendExpanded = true
     private let legendButton = UIButton(type: .custom)
+    private let chartPan = UIPanGestureRecognizer()
+    private let chartPinch = UIPinchGestureRecognizer()
     private lazy var chartAccessibility = UIAccessibilityElement(accessibilityContainer: self)
     private var subIndicators: [StockChartSubIndicator] = []
     private var indicatorSettings = ChartIndicatorSettings()
@@ -79,13 +81,13 @@ final class StockChartCanvasView: UIView, UIGestureRecognizerDelegate {
         isAccessibilityElement = false
         chartAccessibility.accessibilityIdentifier = "stockDetail.chart.canvas"
         chartAccessibility.accessibilityTraits = .image
-        let pan = UIPanGestureRecognizer(target: self, action: #selector(panChanged(_:)))
-        pan.maximumNumberOfTouches = 1
-        pan.delegate = self
-        addGestureRecognizer(pan)
-        let pinch = UIPinchGestureRecognizer(target: self, action: #selector(pinchChanged(_:)))
-        pinch.delegate = self
-        addGestureRecognizer(pinch)
+        chartPan.addTarget(self, action: #selector(panChanged(_:)))
+        chartPan.maximumNumberOfTouches = 1
+        chartPan.delegate = self
+        addGestureRecognizer(chartPan)
+        chartPinch.addTarget(self, action: #selector(pinchChanged(_:)))
+        chartPinch.delegate = self
+        addGestureRecognizer(chartPinch)
         let longPress = UILongPressGestureRecognizer(target: self, action: #selector(longPressed(_:)))
         longPress.minimumPressDuration = 0.3
         longPress.delegate = self
@@ -120,6 +122,10 @@ final class StockChartCanvasView: UIView, UIGestureRecognizerDelegate {
         self.adjustment = adjustment
         self.dataset = dataset
         self.period = period
+        // Intraday charts have no horizontal viewport or pinch interaction.
+        // Disabled recognizers cannot hold up the enclosing page's pan.
+        chartPan.isEnabled = !period.isIntraday
+        chartPinch.isEnabled = !period.isIntraday
         self.mainIndicators = mainIndicators.filter { $0 != .none }
         self.subIndicators = subIndicators
         self.reversed = reversed
@@ -229,12 +235,12 @@ final class StockChartCanvasView: UIView, UIGestureRecognizerDelegate {
     }
 
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        // Preserve the host's native edge-back gesture. Ordinary page pans
-        // still wait for the chart to decide whether a drag is horizontal.
-        if otherGestureRecognizer is UIScreenEdgePanGestureRecognizer { return false }
+        // Only arbitrate taps (e.g. the Scroll card's tap-to-exit). The page's
+        // native pan must not wait for chart pan/pinch/long-press failure.
+        // Directional rejection above leaves vertical scrolling to UIKit at
+        // its normal threshold, including deceleration and touch interruption.
         guard let otherView = otherGestureRecognizer.view, otherView !== self, isDescendant(of: otherView) else { return false }
-        if gestureRecognizer is UITapGestureRecognizer { return otherGestureRecognizer is UITapGestureRecognizer }
-        return (gestureRecognizer is UIPanGestureRecognizer || gestureRecognizer is UIPinchGestureRecognizer || gestureRecognizer is UILongPressGestureRecognizer) && otherGestureRecognizer is UIPanGestureRecognizer
+        return gestureRecognizer is UITapGestureRecognizer && otherGestureRecognizer is UITapGestureRecognizer
     }
 
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer) -> Bool {
