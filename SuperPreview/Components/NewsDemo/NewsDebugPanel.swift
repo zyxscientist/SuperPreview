@@ -29,6 +29,9 @@ struct NewsDebugPanel: View {
                 .environment(\.demoLanguage, language)
                 .accessibilityIdentifier("news.debug.language")
 
+            DemoToastToggle()
+                .environment(\.demoLanguage, language)
+
             DemoMarketColorPicker()
                 .environment(\.demoLanguage, language)
 

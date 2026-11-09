@@ -117,6 +117,7 @@ enum MarketColor {
 
 enum DemoCopyKey {
     case newWatchlist, newTrade, stockOrderPage, debug, done, interfaceLanguage
+    case simulateToast, toastOrderSubmitted
     case marketColors, redUpGreenDown, greenUpRedDown
     case reduceLiquidGlassUsage, reduceLiquidGlassUsageDetails
     case reduceLiquidGlassUsageUnavailableDetails
@@ -362,6 +363,8 @@ private enum DemoCopy {
         .stockOrderPage: ("股票下单页", "股票下單頁", "Stock Order"),
         .debug: ("调试", "除錯", "Debug"),
         .done: ("完成", "完成", "Done"),
+        .simulateToast: ("循环播放 Toast", "循環播放 Toast", "Loop Toast"),
+        .toastOrderSubmitted: ("订单已提交", "訂單已提交", "Order submitted"),
         .interfaceLanguage: ("界面语言", "介面語言", "Interface Language"),
         .marketColors: ("涨跌色", "漲跌色", "Market Colors"),
         .redUpGreenDown: ("红涨绿跌", "紅漲綠跌", "Red Up, Green Down"),

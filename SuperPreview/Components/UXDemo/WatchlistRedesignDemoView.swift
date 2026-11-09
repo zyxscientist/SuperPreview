@@ -366,6 +366,8 @@ struct WatchlistRedesignDebugPanel: View {
 
             DemoLanguagePicker(language: $language)
 
+            DemoToastToggle()
+
             DemoTouchToggle()
 
             DemoMarketColorPicker()

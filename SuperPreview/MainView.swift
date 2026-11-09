@@ -19,7 +19,13 @@ struct MainView: View {
     @State private var isShowingTradeDebugPanel = false
     @State private var isShowingMarketDebugPanel = false
     @State private var isShowingNewsDebugPanel = false
+    @State private var isToastDemoEnabled = false
     private let isPreview = PreviewRuntime.isRunning || PreviewRuntime.isUITesting
+    private let toastPresenter: ToastPresenter?
+
+    init(toastPresenter: ToastPresenter? = nil) {
+        self.toastPresenter = toastPresenter
+    }
     
     @ViewBuilder
     var body: some View {
@@ -121,6 +127,18 @@ struct MainView: View {
                 .environment(\.demoLanguage, demoLanguageStore.language)
                 .presentationDragIndicator(.visible)
         }
+        .environment(\.toastDemoIsEnabled, toastPresenter == nil ? nil : $isToastDemoEnabled)
+        .onChange(of: toastDemoMessage) { _, message in
+            if let message {
+                toastPresenter?.show(message, repeats: true)
+            } else {
+                toastPresenter?.dismiss()
+            }
+        }
+    }
+
+    private var toastDemoMessage: String? {
+        isToastDemoEnabled ? demoLanguageStore.language.text(.toastOrderSubmitted) : nil
     }
 
     @ViewBuilder

@@ -642,6 +642,8 @@ private struct TradeAggregationDebugPanel: View {
 
             DemoLanguagePicker(language: $language)
 
+            DemoToastToggle()
+
             DemoTouchToggle()
 
             DemoMarketColorPicker()
