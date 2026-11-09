@@ -680,7 +680,7 @@ private struct StockOrderDebugPanel: View {
             DemoLanguagePicker(language: $language)
                 .accessibilityIdentifier("stockOrder.debug.language")
 
-            DemoToastToggle()
+            DemoToastControls()
 
             DemoTouchToggle()
 

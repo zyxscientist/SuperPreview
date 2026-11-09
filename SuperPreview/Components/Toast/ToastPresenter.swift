@@ -8,14 +8,16 @@ final class ToastPresenter: NSObject {
         case hidden, entering, visible, exiting
     }
 
-    private struct Request {
-        let message: String
-        let repeats: Bool
+    private enum Source {
+        case queued, demo
     }
 
     private weak var scene: UIWindowScene?
     private var overlay: ToastWindow?
-    private var request: Request?
+    // The queue keeps its head until that toast finishes exiting.
+    private var queue: [String] = []
+    private var demoMessage: String?
+    private var source: Source?
     private var phase: Phase = .hidden
     private var isSceneActive = false
     private var touchStartY: CGFloat?
@@ -26,19 +28,20 @@ final class ToastPresenter: NSObject {
         self.scene = scene
     }
 
-    func show(_ message: String, repeats: Bool = false) {
-        resetOverlay()
-        request = Request(message: message, repeats: repeats)
+    func show(_ message: String) {
+        queue.append(message)
         presentIfPossible()
     }
 
-    func dismiss() {
-        request = nil
-        cancelWait()
-        if phase == .hidden {
-            resetOverlay()
-        } else {
+    func setDemoMessage(_ message: String?) {
+        guard demoMessage != message else { return }
+        demoMessage = message
+        if message != nil {
+            presentIfPossible()
+        } else if source == .demo {
             dismissCurrent()
+        } else if phase == .hidden {
+            cancelWait()
         }
     }
 
@@ -47,18 +50,21 @@ final class ToastPresenter: NSObject {
         isSceneActive = isActive
         if isActive {
             presentIfPossible()
+        } else if phase == .exiting {
+            finishDismissal()
         } else {
             resetOverlay()
         }
     }
 
     private func presentIfPossible() {
-        guard isSceneActive, phase == .hidden, let scene, let request else { return }
-        let window = overlay ?? makeOverlay(in: scene, message: request.message)
+        guard isSceneActive, phase == .hidden, let scene,
+              let message = queue.first ?? demoMessage else { return }
+        let window = makeOverlay(in: scene, message: message)
         guard let card = window.card else { return }
+        cancelWait()
         overlay = window
-        if !request.repeats { self.request = nil }
-
+        source = queue.isEmpty ? .demo : .queued
         phase = .entering
         card.alpha = 0
         window.isHidden = false
@@ -100,13 +106,7 @@ final class ToastPresenter: NSObject {
 
         let didExit = { [weak self, weak window] in
             guard let self, let window, self.overlay === window, self.phase == .exiting else { return }
-            window.isHidden = true
-            self.phase = .hidden
-            if self.request?.repeats == true {
-                self.schedule(after: .seconds(1)) { $0.presentIfPossible() }
-            } else {
-                self.resetOverlay()
-            }
+            self.finishDismissal()
         }
 
         if UIAccessibility.isReduceMotionEnabled {
@@ -120,6 +120,20 @@ final class ToastPresenter: NSObject {
                 animations: { card.transform = transform },
                 completion: { _ in didExit() }
             )
+        }
+    }
+
+    private func finishDismissal() {
+        if source == .queued {
+            queue.removeFirst()
+        }
+        resetOverlay()
+        guard isSceneActive else { return }
+
+        if !queue.isEmpty {
+            presentIfPossible()
+        } else if demoMessage != nil {
+            schedule(after: .seconds(1)) { $0.presentIfPossible() }
         }
     }
 
@@ -163,7 +177,8 @@ final class ToastPresenter: NSObject {
     }
 
     @objc private func trackTouch(_ press: UILongPressGestureRecognizer) {
-        guard phase == .visible, let window = overlay, let card = window.card else { return }
+        guard phase == .visible, let window = overlay,
+              let card = window.card, press.view === card else { return }
         // Window coordinates stay fixed even as the card moves with the finger.
         let y = press.location(in: window).y
         switch press.state {
@@ -199,7 +214,10 @@ final class ToastPresenter: NSObject {
     }
 
     private func scheduleDismissal() {
-        schedule(after: .seconds(3)) { $0.dismissCurrent() }
+        schedule(after: .seconds(3)) { presenter in
+            guard presenter.phase == .visible, presenter.touchStartY == nil else { return }
+            presenter.dismissCurrent()
+        }
     }
 
     private func schedule(after delay: Duration, action: @escaping (ToastPresenter) -> Void) {
@@ -224,6 +242,7 @@ final class ToastPresenter: NSObject {
     private func resetOverlay() {
         cancelWait()
         phase = .hidden
+        source = nil
         touchStartY = nil
         overlay?.isHidden = true
         overlay = nil

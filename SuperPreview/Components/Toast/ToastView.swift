@@ -29,18 +29,36 @@ struct ToastView: View {
 
 extension EnvironmentValues {
     @Entry var toastDemoIsEnabled: Binding<Bool>? = nil
+    @Entry var toastPresenter: ToastPresenter? = nil
 }
 
-struct DemoToastToggle: View {
+struct DemoToastControls: View {
     @Environment(\.toastDemoIsEnabled) private var isEnabled
+    @Environment(\.toastPresenter) private var presenter
     @Environment(\.demoLanguage) private var language
 
+    private static let queueSample: [DemoCopyKey] = [
+        .toastOrderSubmitted, .toastAddedToWatchlist, .toastOrderCancelled
+    ]
+
     var body: some View {
-        if let isEnabled {
-            Toggle(language.text(.simulateToast), isOn: isEnabled)
-                .font(.system(size: 16, weight: .medium))
-                .foregroundStyle(Color("color-text-30"))
-                .accessibilityIdentifier("debug.toast.simulation")
+        if let isEnabled, let presenter {
+            VStack(alignment: .leading, spacing: 6) {
+                Toggle(language.text(.simulateToast), isOn: isEnabled)
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundStyle(Color("color-text-30"))
+                    .accessibilityIdentifier("debug.toast.simulation")
+
+                Button(language.text(.simulateToastQueue)) {
+                    for key in Self.queueSample {
+                        presenter.show(language.text(key))
+                    }
+                }
+                .buttonStyle(.borderless)
+                .font(.system(size: 14, weight: .medium))
+                .foregroundStyle(Color("color-brand-blue"))
+                .accessibilityIdentifier("debug.toast.queue")
+            }
         }
     }
 }

@@ -218,7 +218,7 @@ private struct JakartaFontDebugView: View {
     var body: some View {
         NavigationStack {
             Form {
-                DemoToastToggle()
+                DemoToastControls()
 
                 DemoTouchToggle()
 

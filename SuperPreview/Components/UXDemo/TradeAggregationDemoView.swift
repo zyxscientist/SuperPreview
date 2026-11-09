@@ -642,7 +642,7 @@ private struct TradeAggregationDebugPanel: View {
 
             DemoLanguagePicker(language: $language)
 
-            DemoToastToggle()
+            DemoToastControls()
 
             DemoTouchToggle()
 

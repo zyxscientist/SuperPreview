@@ -846,7 +846,7 @@ private struct StockDetailDebugSheet: View {
                 .padding(.bottom, 12)
                 .accessibilityIdentifier("stockDetail.debug.language")
 
-            DemoToastToggle()
+            DemoToastControls()
                 .padding(.horizontal, 20)
                 .padding(.bottom, 12)
 

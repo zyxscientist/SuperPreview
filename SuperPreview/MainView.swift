@@ -128,12 +128,9 @@ struct MainView: View {
                 .presentationDragIndicator(.visible)
         }
         .environment(\.toastDemoIsEnabled, toastPresenter == nil ? nil : $isToastDemoEnabled)
+        .environment(\.toastPresenter, toastPresenter)
         .onChange(of: toastDemoMessage) { _, message in
-            if let message {
-                toastPresenter?.show(message, repeats: true)
-            } else {
-                toastPresenter?.dismiss()
-            }
+            toastPresenter?.setDemoMessage(message)
         }
     }
 

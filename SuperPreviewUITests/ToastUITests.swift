@@ -33,8 +33,7 @@ final class ToastUITests: XCTestCase {
     func testSwipeDismissesToastAndAnotherDebugPanelCanStopTheLoop() {
         startToastLoop()
 
-        let center = toast.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
-        center.press(forDuration: 0.05, thenDragTo: center.withOffset(CGVector(dx: 0, dy: -48)))
+        swipeUp(on: toast)
         XCTAssertTrue(toast.waitForNonExistence(timeout: 0.8), "Swiping should dismiss before the three-second timeout")
         XCTAssertTrue(toast.waitForExistence(timeout: 3), "The preview should play again after a swipe")
 
@@ -60,8 +59,46 @@ final class ToastUITests: XCTestCase {
         XCTAssertFalse(toast.waitForExistence(timeout: 2), "Disabling the preview must cancel the next playback")
     }
 
+    func testQueuedToastsWaitWhileHeldAndFollowAutomaticAndSwipeDismissal() {
+        element("watchlist.debug.open").tap()
+        element("debug.toast.queue").tap()
+
+        let submitted = toast(labeled: "订单已提交")
+        let addedToWatchlist = toast(labeled: "已添加到自选")
+        let cancelled = toast(labeled: "订单已撤销")
+        XCTAssertTrue(submitted.exists || submitted.waitForExistence(timeout: 3))
+
+        submitted.press(forDuration: 3.25)
+        XCTAssertTrue(submitted.exists, "The queued messages must wait while the first toast is held")
+        XCTAssertEqual(toasts.count, 1)
+
+        Thread.sleep(forTimeInterval: 1.75)
+        XCTAssertTrue(submitted.exists, "The first toast still gets a fresh countdown on release")
+        XCTAssertTrue(addedToWatchlist.waitForExistence(timeout: 3), "The second toast should follow the first timeout")
+        XCTAssertEqual(toasts.count, 1)
+
+        swipeUp(on: addedToWatchlist)
+        XCTAssertTrue(cancelled.waitForExistence(timeout: 2), "The third toast should follow the swipe dismissal")
+        XCTAssertEqual(toasts.count, 1)
+        XCTAssertTrue(cancelled.waitForNonExistence(timeout: 5))
+        XCTAssertFalse(toast.exists, "The one-shot queue should end after its last message")
+    }
+
+    private var toasts: XCUIElementQuery {
+        app.descendants(matching: .any).matching(identifier: "toast.message")
+    }
+
     private var toast: XCUIElement {
-        app.descendants(matching: .any)["toast.message"].firstMatch
+        toasts.firstMatch
+    }
+
+    private func toast(labeled label: String) -> XCUIElement {
+        toasts.matching(NSPredicate(format: "label == %@", label)).firstMatch
+    }
+
+    private func swipeUp(on toast: XCUIElement) {
+        let center = toast.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+        center.press(forDuration: 0.05, thenDragTo: center.withOffset(CGVector(dx: 0, dy: -48)))
     }
 
     private func startToastLoop() {

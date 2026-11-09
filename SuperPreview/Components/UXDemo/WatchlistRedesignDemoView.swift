@@ -366,7 +366,7 @@ struct WatchlistRedesignDebugPanel: View {
 
             DemoLanguagePicker(language: $language)
 
-            DemoToastToggle()
+            DemoToastControls()
 
             DemoTouchToggle()
 
