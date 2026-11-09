@@ -275,12 +275,27 @@ struct ModalDemoView: View {
 }
 
 private struct ModalPresentation: View {
+    private enum Phase {
+        case initial, presented, dismissing
+    }
+
     let example: ModalExample
     let dismiss: () -> Void
-    @State private var isVisible = false
-    @State private var isDismissing = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var phase = Phase.initial
 
     private let fadeDuration: TimeInterval = 0.1
+    private let scaleDuration: TimeInterval = 0.28
+    private var isVisible: Bool { phase == .presented }
+
+    private var dismissalAnimation: Animation {
+        reduceMotion ? .linear(duration: fadeDuration) : .easeIn(duration: scaleDuration)
+    }
+
+    private var cardScaleAnimation: Animation? {
+        guard !reduceMotion else { return nil }
+        return phase == .dismissing ? dismissalAnimation : .spring(duration: scaleDuration, bounce: 0.34)
+    }
 
     var body: some View {
         GeometryReader { geometry in
@@ -295,30 +310,33 @@ private struct ModalPresentation: View {
                 ModalCard(example: example, maximumHeight: heightLimit, interactive: true, dismiss: beginDismissal)
                     .accessibilityElement(children: .contain)
                     .accessibilityIdentifier("modal.presented")
+                    .animation(cardScaleAnimation) { card in
+                        card.scaleEffect(isVisible || reduceMotion ? 1 : 0.9, anchor: .center)
+                    }
                     .padding(.horizontal, 16)
                     .offset(y: (geometry.safeAreaInsets.bottom - geometry.safeAreaInsets.top) / 2)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .opacity(isVisible ? 1 : 0)
-            .animation(.linear(duration: fadeDuration), value: isVisible)
-            .allowsHitTesting(isVisible && !isDismissing)
+            // Only entrance uses the short fade. Dismissal fades with the scale.
+            .animation(.linear(duration: fadeDuration), value: phase == .initial)
+            .allowsHitTesting(isVisible)
         }
         .onAppear {
-            // Start after the nonanimated cover is in place, so its background
-            // and the centered dialog fade together without moving.
+            // Start after the nonanimated cover is in place.
             DispatchQueue.main.async {
-                guard !isDismissing else { return }
-                isVisible = true
+                guard phase == .initial else { return }
+                phase = .presented
             }
         }
         .accessibilityAddTraits(.isModal)
     }
 
     private func beginDismissal() {
-        guard !isDismissing else { return }
-        isDismissing = true
-        isVisible = false
-        DispatchQueue.main.asyncAfter(deadline: .now() + fadeDuration) {
+        guard phase == .presented else { return }
+        withAnimation(dismissalAnimation) {
+            phase = .dismissing
+        } completion: {
             dismiss()
         }
     }
