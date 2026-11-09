@@ -18,6 +18,9 @@
 		84086BA2297158E100911F32 /* TodayOrderListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84086BA1297158E100911F32 /* TodayOrderListItemView.swift */; };
 		840CDDDA296D0C3C0074CCD0 /* SymbolInputField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840CDDD9296D0C3C0074CCD0 /* SymbolInputField.swift */; };
 		841D0E1D2D2D1D2D00BAD22D /* InAppNotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841D0E1C2D2D1D2D00BAD22D /* InAppNotificationView.swift */; };
+		70A570020000000000000001 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70A570010000000000000001 /* ToastView.swift */; };
+		70A570020000000000000002 /* ToastPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70A570010000000000000002 /* ToastPresenter.swift */; };
+		70A570020000000000000003 /* ToastUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70A570010000000000000003 /* ToastUITests.swift */; };
 		842F182D296D54B200D628C3 /* StockTradeTapeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842F182C296D54B200D628C3 /* StockTradeTapeView.swift */; };
 		8433D2FF2CAAA300007E5EAD /* TapeCellData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8433D2FE2CAAA300007E5EAD /* TapeCellData.swift */; };
 		8433D3012CAAA326007E5EAD /* TapeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8433D3002CAAA326007E5EAD /* TapeViewModel.swift */; };
@@ -261,6 +264,9 @@
 		84086BA1297158E100911F32 /* TodayOrderListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayOrderListItemView.swift; sourceTree = "<group>"; };
 		840CDDD9296D0C3C0074CCD0 /* SymbolInputField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SymbolInputField.swift; sourceTree = "<group>"; };
 		841D0E1C2D2D1D2D00BAD22D /* InAppNotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppNotificationView.swift; sourceTree = "<group>"; };
+		70A570010000000000000001 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
+		70A570010000000000000002 /* ToastPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastPresenter.swift; sourceTree = "<group>"; };
+		70A570010000000000000003 /* ToastUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastUITests.swift; sourceTree = "<group>"; };
 		842F182C296D54B200D628C3 /* StockTradeTapeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockTradeTapeView.swift; sourceTree = "<group>"; };
 		8433D2FE2CAAA300007E5EAD /* TapeCellData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapeCellData.swift; sourceTree = "<group>"; };
 		8433D3002CAAA326007E5EAD /* TapeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapeViewModel.swift; sourceTree = "<group>"; };
@@ -552,6 +558,15 @@
 			path = InAppNotification;
 			sourceTree = "<group>";
 		};
+		70A570030000000000000001 /* Toast */ = {
+			isa = PBXGroup;
+			children = (
+				70A570010000000000000001 /* ToastView.swift */,
+				70A570010000000000000002 /* ToastPresenter.swift */,
+			);
+			path = Toast;
+			sourceTree = "<group>";
+		};
 		84574C3029754FE10062D03D /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
@@ -838,6 +853,7 @@
 				AA1700100000000000000001 /* StockOrderAdvancedTradingUITests.swift */,
 				AA1700200000000000000001 /* MarketLifecycleStressUITests.swift */,
 				BC2600010000000000000010 /* StockDetailChartUITests.swift */,
+				70A570010000000000000003 /* ToastUITests.swift */,
 			);
 			path = SuperPreviewUITests;
 			sourceTree = "<group>";
@@ -928,6 +944,7 @@
 			children = (
 				83571D852F6943D6004C4213 /* PriceRefreshAnimation */,
 				841D0E192D2D1CDD00BAD22D /* InAppNotification */,
+				70A570030000000000000001 /* Toast */,
 				84B893E12CB92E2C00EA5F84 /* UXDemo */,
 				84BDAEC52CB7A282001588E7 /* StockDetailPage */,
 				846A94A42CAA585D000C1721 /* Market */,
@@ -1116,6 +1133,7 @@
 				AA1700110000000000000001 /* StockOrderAdvancedTradingUITests.swift in Sources */,
 				AA1700210000000000000001 /* MarketLifecycleStressUITests.swift in Sources */,
 				BC2600020000000000000010 /* StockDetailChartUITests.swift in Sources */,
+				70A570020000000000000003 /* ToastUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1315,6 +1333,8 @@
 				C0BE00142F86000000ABC001 /* CobeMetalShaders.metal in Sources */,
 				C2B67D4A26BF75DC00D52963 /* WealthView.swift in Sources */,
 				841D0E1D2D2D1D2D00BAD22D /* InAppNotificationView.swift in Sources */,
+				70A570020000000000000001 /* ToastView.swift in Sources */,
+				70A570020000000000000002 /* ToastPresenter.swift in Sources */,
 				84BDAEC42CB6566A001588E7 /* TransactionViewModel.swift in Sources */,
 				C2A0247D24FB5315004930F0 /* ContentView.swift in Sources */,
 				84086BA2297158E100911F32 /* TodayOrderListItemView.swift in Sources */,

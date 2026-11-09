@@ -12,6 +12,7 @@ import SwiftUI
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
+    private var toastPresenter: ToastPresenter?
     private var hasUpdatedAppIconForCurrentSession = false
 
 
@@ -20,9 +21,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
 
-        // Create the SwiftUI view that provides the window contents.
-        let contentView = MainView()
-
         // Use a UIHostingController as window root view controller.
         if let windowScene = scene as? UIWindowScene {
             #if DEBUG || DEMO_TOUCHES
@@ -30,13 +28,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             #else
             let window = UIWindow(windowScene: windowScene)
             #endif
-            window.rootViewController = UIHostingController(rootView: contentView)
+            let toastPresenter = ToastPresenter(scene: windowScene)
+            self.toastPresenter = toastPresenter
+            window.rootViewController = UIHostingController(rootView: MainView(toastPresenter: toastPresenter))
             self.window = window
             window.makeKeyAndVisible()
         }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
+        toastPresenter?.setSceneActive(false)
+        toastPresenter = nil
         #if DEBUG || DEMO_TOUCHES
         (window as? DemoTouchWindow)?.clearTouchIndicators()
         #endif
@@ -47,6 +49,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {
+        toastPresenter?.setSceneActive(true)
         // Called when the scene has moved from an inactive state to an active state.
         // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
         DispatchQueue.main.async { [weak self] in
@@ -55,6 +58,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneWillResignActive(_ scene: UIScene) {
+        toastPresenter?.setSceneActive(false)
         #if DEBUG || DEMO_TOUCHES
         (window as? DemoTouchWindow)?.clearTouchIndicators()
         #endif

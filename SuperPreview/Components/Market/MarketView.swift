@@ -404,6 +404,8 @@ private struct MarketDebugPanel: View {
 
                 DemoLanguagePicker(language: $language)
 
+                DemoToastControls()
+
                 DemoTouchToggle()
 
                 DemoMarketColorPicker()
