@@ -21,7 +21,7 @@ struct IndexSnapshotBoxProView: View {
             }.padding(.top, 15).padding(.horizontal, 15)
             IndicatorView()
         }
-        .frame(minWidth: 375, maxWidth: .infinity, minHeight: 123).background(Color("color-base-1"))
+        .frame(minWidth: 375, maxWidth: .infinity, minHeight: 123).background(Color("color-base1"))
         .overlay(FullWidthSeparatorView())
     }
 }

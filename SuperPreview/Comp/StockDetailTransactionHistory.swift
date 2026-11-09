@@ -46,10 +46,10 @@ struct StockDetailTransactionHistory: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .topLeading)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .overlay(alignment: .bottom) {
             Rectangle()
-                .fill(Color("color-separator-10"))
+                .fill(Color("color-separator1"))
                 .frame(height: StockDetailTransactionHistoryLayout.separatorHeight)
                 .padding(.horizontal, StockDetailTransactionHistoryLayout.horizontalPadding)
                 .accessibilityHidden(true)
@@ -103,7 +103,7 @@ struct StockDetailTransactionHistory: View {
             }
         }
         .frame(height: StockDetailTransactionHistoryLayout.headerHeight)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockDetail.transactionHistory.header")
     }
@@ -121,7 +121,7 @@ struct StockDetailTransactionHistory: View {
                             lineHeight: StockDetailTransactionHistoryLayout.moreLineHeight
                         )
                     )
-                    .foregroundColor(Color("color-text-90"))
+                    .foregroundColor(Color("color-text3"))
 
                 Image("subasset_expand_chevron")
                     .resizable()
@@ -294,7 +294,7 @@ private struct StockDetailTransactionHistoryPreviewHarness: View {
                 onLoadMore: { hasLoadedMore = true }
             )
         }
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .overlay(alignment: .bottomTrailing) {
             Text(hasLoadedMore ? "loaded" : "")
                 .font(.caption2)

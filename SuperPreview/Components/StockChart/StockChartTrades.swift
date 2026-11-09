@@ -78,7 +78,7 @@ struct StockChartTrades: View {
             .foregroundStyle(Color("color-text-60"))
             .frame(maxWidth: .infinity)
             .frame(height: 30)
-            .background(Color("color-scale-1"), in: RoundedRectangle(cornerRadius: 4))
+            .background(Color("color-grayscale1"), in: RoundedRectangle(cornerRadius: 4))
     }
 
     private func tradeRow(_ trade: Trade) -> some View {
@@ -112,6 +112,6 @@ struct StockChartTrades: View {
     }
 
     private func marketColor(up: Bool) -> Color {
-        MarketColor.resolve(up ? "color-utility3-red" : "color-utility3-green", reversed: reversed)
+        MarketColor.resolve(up ? "color-red" : "color-green", reversed: reversed)
     }
 }

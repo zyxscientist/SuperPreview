@@ -19,7 +19,7 @@ struct MacroDataPCEView: View {
                    // 标题
                    HStack {
                        Text("美国PCE")
-                           .foregroundStyle(Color(.colorText30))
+                           .foregroundStyle(Color(.colorText1))
                            .modifier(CustomFontModifier(size: 18, font: .medium))
                        Spacer()
                    }
@@ -59,7 +59,7 @@ struct MacroDataPCEView: View {
                                .modifier(CustomFontModifier(size: 14, font: .regular))
                            Text("2.40%")
                                .multilineTextAlignment(.leading)
-                               .foregroundStyle(Color(.colorBrandBlue))
+                               .foregroundStyle(Color(.colorBlue1))
                                .modifier(CustomFontModifier(size: 16, font: .bold))
                        }
                        .frame(width: 100, alignment: .leading)
@@ -72,7 +72,7 @@ struct MacroDataPCEView: View {
                                .modifier(CustomFontModifier(size: 14, font: .regular))
                            Text("2.30%")
                                .multilineTextAlignment(.leading)
-                               .foregroundStyle(Color(.colorText30))
+                               .foregroundStyle(Color(.colorText1))
                                .modifier(CustomFontModifier(size: 16, font: .bold))
                        }
                        .frame(width:100, alignment: .leading)
@@ -84,7 +84,7 @@ struct MacroDataPCEView: View {
                                .modifier(CustomFontModifier(size: 14, font: .regular))
                            Text("2.20%")
                                .multilineTextAlignment(.leading)
-                               .foregroundStyle(Color(.colorText30))
+                               .foregroundStyle(Color(.colorText1))
                                .modifier(CustomFontModifier(size: 16, font: .bold))
                        }
                        .frame(width: 100, alignment: .leading)
@@ -122,7 +122,7 @@ struct MacroDataPCEView: View {
                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                .overlay(
                    RoundedRectangle(cornerRadius: 10, style: .continuous)
-                       .stroke(Color(.colorSeparator10), lineWidth: 0.5)
+                       .stroke(Color(.colorSeparator1), lineWidth: 0.5)
                )
                .padding(.horizontal, 10)
                .shadow(color: Color.black.opacity(0.15), radius: 25, x: 0, y: 2)
@@ -148,7 +148,7 @@ struct MacroDataPCEView: View {
            return Text(monthString(from: dateFromString(viewModel.data_pce[dataIndex].date)))
                .padding(0)
                .modifier(CustomFontModifier(size: 11, font: .regular))
-               .foregroundColor(Color(.colorText90))
+               .foregroundColor(Color(.colorText3))
                .frame(width: 40)
                .position(x: x, y: 177)
        }
@@ -161,7 +161,7 @@ struct MacroDataPCEView: View {
                path.move(to: CGPoint(x: 15, y: y))
                path.addLine(to: CGPoint(x: geometry.size.width - 15, y: y))
            }
-           .stroke(Color(.colorScale2),
+           .stroke(Color(.colorGrayscale2),
                    style: StrokeStyle(
                        lineWidth: 0.5,
                        lineCap: .round,
@@ -189,7 +189,7 @@ struct MacroDataPCEView: View {
                 HStack(alignment:.bottom, spacing:0.0) {
                    ForEach(normalizedData.indices, id: \.self) { index in
                        Rectangle()
-                           .fill(Color(.colorBrandBlue))
+                           .fill(Color(.colorBlue1))
                            .frame(width: 2, height: max(normalizedData[index] * 144, 1))
                            .padding(.trailing, 1)
                    }

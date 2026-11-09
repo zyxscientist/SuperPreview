@@ -70,7 +70,7 @@ struct WatchlistRedesignDemoView: View {
                 }
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
             }
-            .background(Color("color-base-1").edgesIgnoringSafeArea(.all))
+            .background(Color("color-base1").edgesIgnoringSafeArea(.all))
             .ignoresSafeArea(.container, edges: .bottom)
         }
         .overlay(alignment: .topLeading) {
@@ -290,7 +290,7 @@ struct WatchlistRedesignRowPressStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .background(configuration.isPressed ? Color("color-scale-2") : baseColor)
+            .background(configuration.isPressed ? Color("color-grayscale2") : baseColor)
         .contentShape(Rectangle())
     }
 }
@@ -321,9 +321,9 @@ private struct WatchlistRedesignActionButtonLabel: View {
     var body: some View {
         Text(title)
             .modifier(CustomFontModifier(size: 14, font: .medium, lineHeight: 24))
-            .foregroundColor(Color("color-text-30"))
+            .foregroundColor(Color("color-text1"))
             .frame(maxWidth: .infinity, minHeight: 44)
-            .background(Color("color-scale-2"))
+            .background(Color("color-grayscale2"))
             .cornerRadius(leftRadius, corners: [.topLeft, .bottomLeft])
             .cornerRadius(rightRadius, corners: [.topRight, .bottomRight])
     }
@@ -331,7 +331,7 @@ private struct WatchlistRedesignActionButtonLabel: View {
 
 struct WatchlistRedesignDetailPlaceholder: View {
     var body: some View {
-        Color("color-base-1")
+        Color("color-base1")
             .edgesIgnoringSafeArea(.all)
             .navigationBarTitle("", displayMode: .inline)
     }
@@ -354,7 +354,7 @@ struct WatchlistRedesignDebugPanel: View {
             HStack {
                 Text(interfaceLanguage.text(.debug))
                     .modifier(CustomFontModifier(size: 20, font: .bold, lineHeight: 28))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
 
                 Spacer()
 
@@ -379,7 +379,7 @@ struct WatchlistRedesignDebugPanel: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(interfaceLanguage.text(.navigateOnTap))
                         .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
 
                     Text(interfaceLanguage.text(shouldNavigateOnRowTap ? .navigateOnTapOn : .navigateOnTapOff))
                         .modifier(CustomFontModifier(size: 13, font: .regular, lineHeight: 16))
@@ -390,7 +390,7 @@ struct WatchlistRedesignDebugPanel: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text(interfaceLanguage.text(.tabBarFontSize))
                     .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
 
                 Picker(interfaceLanguage.text(.tabBarFontSize), selection: $tabBarFontSize) {
                     Text("14").tag(CGFloat(14))
@@ -403,7 +403,7 @@ struct WatchlistRedesignDebugPanel: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(interfaceLanguage.text(.simulateQuoteUpdates))
                         .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
 
                     Text(interfaceLanguage.text(isPriceSimulationEnabled ? .quoteUpdatesOn : .quoteUpdatesOff))
                         .modifier(CustomFontModifier(size: 13, font: .regular, lineHeight: 16))
@@ -414,7 +414,7 @@ struct WatchlistRedesignDebugPanel: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text(interfaceLanguage.text(.updateSpeed))
                     .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
 
                 Picker(interfaceLanguage.text(.updateSpeed), selection: $priceSimulationSpeed) {
                     ForEach(WatchlistRedesignPriceSimulationSpeed.allCases) { speed in
@@ -428,7 +428,7 @@ struct WatchlistRedesignDebugPanel: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("模拟成交站内信")
                         .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
 
                     Text(
                         isInAppNotificationSimulationEnabled
@@ -445,7 +445,7 @@ struct WatchlistRedesignDebugPanel: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("模拟多条成交站内信")
                         .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
 
                     Text(
                         isMultipleInAppNotificationSimulationEnabled
@@ -463,7 +463,7 @@ struct WatchlistRedesignDebugPanel: View {
         }
         .padding(.horizontal, 20)
         .padding(.top, 24)
-        .background(Color("color-base-1").edgesIgnoringSafeArea(.all))
+        .background(Color("color-base1").edgesIgnoringSafeArea(.all))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("watchlist.debug.panel")
     }
@@ -520,7 +520,7 @@ struct WatchlistRedesignTabs: View {
         }
         .frame(maxWidth: .infinity)
         .frame(height: 48, alignment: .top)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityIdentifier("\(accessibilityPrefix).headerTabs")
     }
 
@@ -528,8 +528,8 @@ struct WatchlistRedesignTabs: View {
         ZStack(alignment: .topTrailing) {
             LinearGradient(
                 gradient: Gradient(stops: [
-                    .init(color: Color("color-transparent"), location: 0),
-                    .init(color: Color("color-base-1"), location: 0.37413)
+                    .init(color: Color("color-legacy-transparent"), location: 0),
+                    .init(color: Color("color-base1"), location: 0.37413)
                 ]),
                 startPoint: .leading,
                 endPoint: .trailing
@@ -567,7 +567,7 @@ struct WatchlistRedesignTabs: View {
                         .modifier(CustomFontModifier(size: fontSize, font: isSelected ? .bold : .regular, lineHeight: 24))
                         .foregroundColor(
                             isSelected
-                                ? (isReducedLiquidGlassUsageEnabled ? Color("color-text-r") : Color("color-text-30"))
+                                ? (isReducedLiquidGlassUsageEnabled ? Color("color-textr") : Color("color-text1"))
                                 : Color("color-text-60")
                         )
                         .padding(.horizontal, 14)
@@ -603,7 +603,7 @@ struct WatchlistRedesignTabs: View {
     private var selectionBackground: some View {
         if isReducedLiquidGlassUsageEnabled {
             Capsule()
-                .fill(Color("color-base-r"))
+                .fill(Color("color-baser"))
                 .allowsHitTesting(false)
                 .accessibilityHidden(true)
         } else if #available(iOS 26.0, *) {
@@ -613,7 +613,7 @@ struct WatchlistRedesignTabs: View {
                 .accessibilityHidden(true)
         } else {
             Capsule()
-                .fill(Color("color-base-r"))
+                .fill(Color("color-baser"))
         }
     }
 }
@@ -641,10 +641,10 @@ struct WatchlistRedesignTableHeader: View {
                 HStack(spacing: 8) {
                     Text(language.text(.name))
                         .modifier(CustomFontModifier(size: 14, font: .regular, lineHeight: 20))
-                        .foregroundColor(Color("color-text-90"))
+                        .foregroundColor(Color("color-text3"))
                         .accessibilityIdentifier("watchlist.header.name")
                     Rectangle()
-                        .fill(Color("color-separator-20"))
+                        .fill(Color("color-separator2"))
                         .frame(width: 1, height: 11)
                     Button(action: {
                         withAnimation(.easeInOut(duration: 0.1)) {
@@ -671,7 +671,7 @@ struct WatchlistRedesignTableHeader: View {
                         .scaledToFit()
                         .frame(width: 8, height: 16)
                 }
-                .foregroundColor(Color("color-text-90"))
+                .foregroundColor(Color("color-text3"))
                 .frame(width: 90, alignment: .trailing)
                 .position(x: proxy.size.width - 110 - 45, y: 18)
 
@@ -685,7 +685,7 @@ struct WatchlistRedesignTableHeader: View {
                         .scaledToFit()
                         .frame(width: 8, height: 16)
                 }
-                .foregroundColor(Color("color-text-90"))
+                .foregroundColor(Color("color-text3"))
                 .frame(width: 90, alignment: .trailing)
                 .padding(.trailing, 10)
                 .position(x: proxy.size.width - 47, y: 18)
@@ -693,10 +693,10 @@ struct WatchlistRedesignTableHeader: View {
             .accessibilityElement(children: .contain)
         }
         .frame(height: 36)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .overlay(
             Rectangle()
-                .fill(Color("color-separator-10"))
+                .fill(Color("color-separator1"))
                 .frame(height: 0.5),
             alignment: .bottom
         )
@@ -780,7 +780,7 @@ struct WatchlistRedesignRow: View {
         guard oldValue != newValue else { return }
 
         flashWorkItem?.cancel()
-        flashColor = oldValue < newValue ? MarketColor.resolve("color-utility3-red", reversed: marketColorReversed) : MarketColor.resolve("color-utility3-green", reversed: marketColorReversed)
+        flashColor = oldValue < newValue ? MarketColor.resolve("color-red", reversed: marketColorReversed) : MarketColor.resolve("color-green", reversed: marketColorReversed)
         isFlashVisible = true
 
         let workItem = DispatchWorkItem {
@@ -842,7 +842,7 @@ private struct WatchlistRedesignExtendedHoursGrid: View {
 
             Text(language.watchlistName(symbol: item.symbol, fallback: item.name))
                 .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .lineLimit(1)
         }
         .frame(width: nameWidth, height: mainRowHeight, alignment: .leading)
@@ -872,7 +872,7 @@ private struct WatchlistRedesignExtendedHoursGrid: View {
         Text(item.price)
             .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
             .monospacedDigit()
-            .foregroundColor(Color("color-text-30"))
+            .foregroundColor(Color("color-text1"))
             .lineLimit(1)
             .minimumScaleFactor(0.8)
             .frame(width: priceColumnWidth, height: mainRowHeight, alignment: .trailing)
@@ -937,7 +937,7 @@ private struct WatchlistRedesignExtendedHoursGrid: View {
                     : language.sessionTitle(label)
             )
             .modifier(CustomFontModifier(size: 8, font: .regular, lineHeight: 8))
-            .foregroundColor(Color("color-text-30"))
+            .foregroundColor(Color("color-text1"))
             .lineLimit(1)
             .minimumScaleFactor(0.01)
             .allowsTightening(true)
@@ -945,7 +945,7 @@ private struct WatchlistRedesignExtendedHoursGrid: View {
             .frame(height: 12)
             .overlay(
                 RoundedRectangle(cornerRadius: 2)
-                    .stroke(Color("color-separator-20"), lineWidth: 0.5)
+                    .stroke(Color("color-separator2"), lineWidth: 0.5)
             )
     }
 
@@ -958,11 +958,11 @@ private struct WatchlistRedesignExtendedHoursGrid: View {
     private var tileColor: Color {
         switch item.trend {
         case .up:
-            return MarketColor.resolve("color-utility3-red", reversed: marketColorReversed)
+            return MarketColor.resolve("color-red", reversed: marketColorReversed)
         case .down:
-            return MarketColor.resolve("color-utility3-green", reversed: marketColorReversed)
+            return MarketColor.resolve("color-green", reversed: marketColorReversed)
         case .flat:
-            return Color("color-text-90")
+            return Color("color-text3")
         }
     }
 
@@ -987,7 +987,7 @@ private struct WatchlistRedesignExtendedHoursGrid: View {
 
 private extension WatchlistRedesignItem {
     var backgroundColor: Color {
-        isPinned ? Color("color-scale-1") : Color("color-base-1")
+        isPinned ? Color("color-grayscale1") : Color("color-base1")
     }
 
     var supportsMiniK: Bool {
@@ -1039,15 +1039,15 @@ private struct WatchlistRedesignChangeIcon: View {
             Image("watchlistItem_up_red")
                 .renderingMode(.template)
                 .resizable()
-                .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
+                .foregroundColor(MarketColor.resolve("color-red", reversed: marketColorReversed))
         case (.down, .tinted):
             Image("watchlistItem_down_green")
                 .renderingMode(.template)
                 .resizable()
-                .foregroundColor(MarketColor.resolve("color-utility3-green", reversed: marketColorReversed))
+                .foregroundColor(MarketColor.resolve("color-green", reversed: marketColorReversed))
         case (.flat, .tinted):
             Circle()
-                .fill(Color("color-text-90"))
+                .fill(Color("color-text3"))
                 .frame(width: 5, height: 5)
         }
     }
@@ -1065,7 +1065,7 @@ struct WatchlistRedesignNameCell: View {
 
                 Text(language.watchlistName(symbol: item.symbol, fallback: item.name))
                     .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .lineLimit(1)
             }
 
@@ -1103,7 +1103,7 @@ struct WatchlistRedesignPriceCell: View {
             Text(item.price)
                 .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
                 .monospacedDigit()
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
 
@@ -1185,7 +1185,7 @@ struct WatchlistRedesignChangeCell: View {
                             : language.sessionTitle(label)
                     )
                     .modifier(CustomFontModifier(size: 8, font: .regular, lineHeight: 8))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .lineLimit(1)
                     .minimumScaleFactor(0.01)
                     .allowsTightening(true)
@@ -1193,7 +1193,7 @@ struct WatchlistRedesignChangeCell: View {
                     .frame(height: 12)
                     .overlay(
                         RoundedRectangle(cornerRadius: 2)
-                            .stroke(Color("color-separator-20"), lineWidth: 0.5)
+                            .stroke(Color("color-separator2"), lineWidth: 0.5)
                     )
             }
             .frame(width: 82, alignment: .leading)
@@ -1212,17 +1212,17 @@ struct WatchlistRedesignChangeCell: View {
     }
 
     private var regularBackgroundColor: Color {
-        item.trend == .flat ? Color("color-text-90") : tileColor
+        item.trend == .flat ? Color("color-text3") : tileColor
     }
 
     private var tileColor: Color {
         switch item.trend {
         case .up:
-            return MarketColor.resolve("color-utility3-red", reversed: marketColorReversed)
+            return MarketColor.resolve("color-red", reversed: marketColorReversed)
         case .down:
-            return MarketColor.resolve("color-utility3-green", reversed: marketColorReversed)
+            return MarketColor.resolve("color-green", reversed: marketColorReversed)
         case .flat:
-            return Color("color-text-90")
+            return Color("color-text3")
         }
     }
 }
@@ -1240,7 +1240,7 @@ struct WatchlistRedesignMiniKLine: View {
     var body: some View {
         ZStack {
             WatchlistRedesignReferenceLine()
-                .stroke(Color("color-separator-20"), style: StrokeStyle(lineWidth: 0.5, dash: [1.5, 2]))
+                .stroke(Color("color-separator2"), style: StrokeStyle(lineWidth: 0.5, dash: [1.5, 2]))
                 .frame(height: 1)
 
             MiniLineGraph(dataPoints: points)
@@ -1252,11 +1252,11 @@ struct WatchlistRedesignMiniKLine: View {
     private var lineColor: Color {
         switch trend {
         case .up:
-            return MarketColor.resolve("color-utility3-red", reversed: marketColorReversed)
+            return MarketColor.resolve("color-red", reversed: marketColorReversed)
         case .down:
-            return MarketColor.resolve("color-utility3-green", reversed: marketColorReversed)
+            return MarketColor.resolve("color-green", reversed: marketColorReversed)
         case .flat:
-            return Color("color-text-90")
+            return Color("color-text3")
         }
     }
 }

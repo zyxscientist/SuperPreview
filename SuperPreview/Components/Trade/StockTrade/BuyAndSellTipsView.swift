@@ -18,7 +18,7 @@ struct BuyAndSellTipsView: View {
                         .font(.system(size: 12, weight: .regular, design: .default))
                     Text("250")
                         .padding(.leading, 10)
-                        .foregroundColor(Color("color-utility3-red"))
+                        .foregroundColor(Color("color-red"))
                         .modifier(CustomFontModifier(size: 12, font: .medium))
                 }.frame(width: UIScreen.main.bounds.width/2-20, alignment: .leading)
                 
@@ -28,7 +28,7 @@ struct BuyAndSellTipsView: View {
                         .font(.system(size: 12, weight: .regular, design: .default))
                     Text("0")
                         .padding(.leading, 10)
-                        .foregroundColor(Color("color-utility3-green"))
+                        .foregroundColor(Color("color-green"))
                         .modifier(CustomFontModifier(size: 12, font: .medium))
                 }.frame(width: UIScreen.main.bounds.width/2-20, alignment: .leading)
             }
@@ -39,7 +39,7 @@ struct BuyAndSellTipsView: View {
                     .font(.system(size: 12, weight: .regular, design: .default))
                 Text("500")
                     .padding(.leading, 10)
-                    .foregroundColor(Color("color-utility3-red"))
+                    .foregroundColor(Color("color-red"))
                     .modifier(CustomFontModifier(size: 12, font: .medium))
             }
             .frame(width: UIScreen.main.bounds.width/2-20, alignment: .leading)

@@ -56,7 +56,7 @@ struct TotalAsset: View {
 
             HStack(alignment: .bottom, spacing: 0) {
                 AssetAmountText(numberIsHidden ? "***" : displayedTotalAmount)
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .frame(width: 230, height: 40, alignment: .leading)
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
@@ -74,7 +74,7 @@ struct TotalAsset: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 16)
         .frame(maxWidth: .infinity, minHeight: 100, maxHeight: 100, alignment: .topLeading)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
     }
 
     private var title: some View {
@@ -108,7 +108,7 @@ struct TotalAsset: View {
         HStack(spacing: 8) {
             Text(language.text(.totalProfitLoss))
                 .font(.custom("PlusJakartaSans-Medium", size: 16, relativeTo: .body))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
 
             Text(numberIsHidden ? "***" : displayedTotalProfitLoss)
                 .font(.custom("PlusJakartaSans-Medium", size: 16, relativeTo: .body))
@@ -131,10 +131,10 @@ struct TotalAsset: View {
     }
 
     private var totalProfitLossColor: Color {
-        guard isDataAvailable else { return Color("color-text-30") }
-        guard !numberIsHidden else { return Color("color-text-30") }
+        guard isDataAvailable else { return Color("color-text1") }
+        guard !numberIsHidden else { return Color("color-text1") }
         return totalProfitLoss.hasPrefix("-")
-            ? MarketColor.resolve("color-utility3-green", reversed: marketColorReversed)
+            ? MarketColor.resolve("color-green", reversed: marketColorReversed)
             : MarketColor.resolve("color-utility2-red", reversed: marketColorReversed)
     }
 

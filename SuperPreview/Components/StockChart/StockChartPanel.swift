@@ -93,7 +93,7 @@ struct StockChartPanel: View {
     var body: some View {
         chart(expanded: false)
             .background(StockChartTouchRegion(scope: touchScope))
-            .background(Color("color-base-1"))
+            .background(Color("color-base1"))
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("stockDetail.chart")
             .sheet(item: $pagePresentation) { target in
@@ -130,13 +130,13 @@ struct StockChartPanel: View {
                 }
             }
             .frame(width: geometry.size.height, height: geometry.size.width)
-            .background(Color("color-base-1"))
+            .background(Color("color-base1"))
             .rotationEffect(.degrees(90))
             .frame(width: geometry.size.width, height: geometry.size.height)
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("stockDetail.chart.expanded")
         }
-        .background(Color("color-base-1").ignoresSafeArea())
+        .background(Color("color-base1").ignoresSafeArea())
     }
 
     @ViewBuilder private func presentationContent(_ target: Presentation) -> some View {
@@ -170,7 +170,7 @@ struct StockChartPanel: View {
                 NavigationStack {
                     StockChartTrades(showsDetails: false)
                         .padding(.horizontal, 12)
-                        .background(Color("color-base-1"))
+                        .background(Color("color-base1"))
                         .navigationTitle(stockChartText(.transactionDetails, language: language))
                         .navigationBarTitleDisplayMode(.inline)
                         .toolbar { ToolbarItem(placement: .confirmationAction) { doneButton } }
@@ -252,7 +252,7 @@ struct StockChartPanel: View {
                         }
                     }
                 }
-                Color("color-scale-1").frame(width: 1, height: 16)
+                Color("color-grayscale1").frame(width: 1, height: 16)
             }
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 16) {
@@ -269,7 +269,7 @@ struct StockChartPanel: View {
         .padding(.leading, 16)
         .padding(.trailing, period == .intraday ? 142 : 16)
         .frame(height: 44)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockDetail.chart.indicators")
     }
@@ -278,7 +278,7 @@ struct StockChartPanel: View {
         Button(action: action) {
             Text(title)
                 .font(.custom("PlusJakartaSans-Regular", size: 14))
-                .foregroundStyle(Color(selected ? "color-brand-blue" : "color-text-60"))
+                .foregroundStyle(Color(selected ? "color-blue1" : "color-text-60"))
                 .frame(height: 20)
                 .contentShape(Rectangle())
         }
@@ -324,7 +324,7 @@ struct StockChartPanel: View {
             .accessibilityIdentifier("stockDetail.chart.settings")
         }
         .frame(height: 32)
-        .overlay(alignment: .bottom) { Color("color-separator-10").frame(height: 0.5) }
+        .overlay(alignment: .bottom) { Color("color-separator1").frame(height: 0.5) }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockDetail.chart.periodBar")
     }
@@ -339,7 +339,7 @@ struct StockChartPanel: View {
                 .overlay(alignment: .bottom) {
                     if selected {
                         RoundedRectangle(cornerRadius: 1)
-                            .fill(Color("color-brand-blue"))
+                            .fill(Color("color-blue1"))
                             .frame(height: 2)
                             .offset(y: 6)
                     }
@@ -348,7 +348,7 @@ struct StockChartPanel: View {
                 Image("chart_timeframe_more").resizable().frame(width: 10, height: 16)
             }
         }
-        .foregroundStyle(Color(selected ? "color-text-30" : "color-text-60"))
+        .foregroundStyle(Color(selected ? "color-text1" : "color-text-60"))
         .frame(height: 32)
         .contentShape(Rectangle())
     }
@@ -376,8 +376,8 @@ struct StockChartPanel: View {
         }
         let delta = candle.close - reference
         let changeColor: Color = abs(delta) < 0.0000001
-            ? Color("color-text-30")
-            : MarketColor.resolve(delta > 0 ? "color-utility3-red" : "color-utility3-green", reversed: reversed)
+            ? Color("color-text1")
+            : MarketColor.resolve(delta > 0 ? "color-red" : "color-green", reversed: reversed)
         let percent = reference != 0 ? delta / reference * 100 : 0
         let averages = period.isIntraday ? StockChartSeriesCache.series(for: data, period: period).averagePrices : []
         let average = averages.indices.contains(index) ? averages[index] : candle.close
@@ -386,13 +386,13 @@ struct StockChartPanel: View {
             : [(.open, price(candle.open)), (.high, price(candle.high)), (.changePercent, String(format: "%+.2f%%", percent)), (.close, price(candle.close)), (.low, price(candle.low)), (.change, String(format: "%+.3f", delta))]
         let orders = mockOrders(for: index, candle: candle, count: data.candles.count)
         return VStack(alignment: .leading, spacing: 3) {
-            Text(selectionDate(candle.date)).foregroundStyle(Color("color-text-90"))
+            Text(selectionDate(candle.date)).foregroundStyle(Color("color-text3"))
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3), spacing: 3) {
                 ForEach(fields, id: \.0) { key, value in
                     HStack(spacing: 3) {
                         Text(stockChartText(key, language: language)).foregroundStyle(Color("color-text-60"))
                         Text(value)
-                            .foregroundStyle(key == .change || key == .changePercent ? changeColor : Color("color-text-30"))
+                            .foregroundStyle(key == .change || key == .changePercent ? changeColor : Color("color-text1"))
                             .lineLimit(1)
                             .minimumScaleFactor(0.6)
                     }
@@ -431,7 +431,7 @@ struct StockChartPanel: View {
         .font(.custom("PlusJakartaSans-Regular", size: 10))
         .padding(6)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color("color-base-1").opacity(0.96))
+        .background(Color("color-base1").opacity(0.96))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockDetail.chart.selection")
     }
@@ -691,7 +691,7 @@ private struct StockChartSettingsSheet: View {
             .padding(.top, 28)
             .padding(.bottom, 32)
         }
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .presentationDragIndicator(.visible)
         .presentationDetents(showingIndicators ? [.height(period.isIntraday ? 350 : 590), .large] : [period == .day || period == .week || period == .month ? .height(468) : .height(204)])
         .accessibilityIdentifier(showingIndicators ? "stockDetail.chart.indicators.sheet" : "stockDetail.chart.settings.sheet")
@@ -735,9 +735,9 @@ private struct StockChartSettingsEntries: View {
                 Text(stockChartText(title, language: language)).font(.custom("PlusJakartaSans-Regular", size: 16)).lineLimit(1).minimumScaleFactor(0.7)
                 Spacer(minLength: 0)
             }
-            .foregroundStyle(Color("color-text-30"))
+            .foregroundStyle(Color("color-text1"))
             .padding(.horizontal, 16).frame(maxWidth: .infinity).frame(height: 56)
-            .background(Color("color-scale-1"), in: RoundedRectangle(cornerRadius: 8))
+            .background(Color("color-grayscale1"), in: RoundedRectangle(cornerRadius: 8))
         }.buttonStyle(.plain).accessibilityIdentifier("stockDetail.chart.settings.\(id)")
     }
 }
@@ -756,16 +756,16 @@ private struct StockChartAdjustmentSection: View {
                         if adjustment == option { Image(systemName: "checkmark").font(.system(size: 16, weight: .medium)) }
                     }
                     .font(.custom("PlusJakartaSans-Regular", size: 16))
-                    .foregroundStyle(Color("color-text-30"))
+                    .foregroundStyle(Color("color-text1"))
                     .padding(.horizontal, 16).frame(height: 56)
-                    .background(Color("color-scale-1"), in: RoundedRectangle(cornerRadius: 8))
+                    .background(Color("color-grayscale1"), in: RoundedRectangle(cornerRadius: 8))
                     .overlay(RoundedRectangle(cornerRadius: 8).stroke(adjustment == option ? Color("color-text-60") : .clear, lineWidth: 1))
                 }
                 .buttonStyle(.plain)
                 .accessibilityIdentifier("stockDetail.chart.adjustment.\(option == .forward ? "forward" : option == .backward ? "backward" : "none")")
                 .accessibilityAddTraits(adjustment == option ? .isSelected : [])
             }
-        }.foregroundStyle(Color("color-text-30"))
+        }.foregroundStyle(Color("color-text1"))
     }
 }
 
@@ -783,9 +783,9 @@ private struct StockChartIndicatorSection: View {
                         Button { toggle(item) } label: {
                             HStack(spacing: 16) {
                                 Image(systemName: selected.contains(item) ? "checkmark.circle.fill" : "circle")
-                                    .font(.system(size: 24)).foregroundStyle(Color(selected.contains(item) ? "color-brand-blue" : "color-text-60"))
+                                    .font(.system(size: 24)).foregroundStyle(Color(selected.contains(item) ? "color-blue1" : "color-text-60"))
                                 Text(item == "volume" ? "VOL" : item.uppercased())
-                                    .font(.custom("PlusJakartaSans-Regular", size: 16)).foregroundStyle(Color("color-text-30"))
+                                    .font(.custom("PlusJakartaSans-Regular", size: 16)).foregroundStyle(Color("color-text1"))
                                 Spacer(minLength: 0)
                             }.padding(.leading, 16).frame(maxWidth: .infinity).frame(height: 48).contentShape(Rectangle())
                         }
@@ -800,10 +800,10 @@ private struct StockChartIndicatorSection: View {
                                     .frame(width: 70, height: 48).contentShape(Rectangle())
                             }.buttonStyle(.plain).accessibilityLabel(item.uppercased()).accessibilityIdentifier("stockDetail.chart.parameter.\(item)")
                         }
-                    }.background(Color("color-scale-1"), in: RoundedRectangle(cornerRadius: 8))
+                    }.background(Color("color-grayscale1"), in: RoundedRectangle(cornerRadius: 8))
                 }
             }
-        }.foregroundStyle(Color("color-text-30"))
+        }.foregroundStyle(Color("color-text1"))
     }
 }
 
@@ -854,12 +854,12 @@ private struct StockChartParameterPage: View {
                 Button { confirmingReset = true } label: {
                     Text(stockChartText(.resetParameters, language: language))
                         .font(.custom("PlusJakartaSans-Medium", size: 16))
-                        .foregroundStyle(Color("color-text-30"))
+                        .foregroundStyle(Color("color-text1"))
                         .frame(maxWidth: .infinity).frame(height: 44)
-                        .background(Color("color-scale-1"), in: RoundedRectangle(cornerRadius: 5))
+                        .background(Color("color-grayscale1"), in: RoundedRectangle(cornerRadius: 5))
                 }.buttonStyle(.plain).padding(16).accessibilityIdentifier("stockDetail.chart.parameter.reset")
             }
-            .background(Color("color-base-1"))
+            .background(Color("color-base1"))
             .navigationTitle(name.uppercased() + (language == .english ? " " : "") + stockChartText(.parameterSettings, language: language))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -889,12 +889,12 @@ private struct StockChartParameterPage: View {
             if field.selectable {
                 Button { enabled[index].toggle() } label: {
                     Image(systemName: enabled[index] ? "checkmark.circle.fill" : "circle")
-                        .font(.system(size: 24)).foregroundStyle(Color(enabled[index] ? "color-brand-blue" : "color-text-60"))
+                        .font(.system(size: 24)).foregroundStyle(Color(enabled[index] ? "color-blue1" : "color-text-60"))
                 }.buttonStyle(.plain).accessibilityIdentifier("stockDetail.chart.parameter.enabled.\(index)")
                     .accessibilityValue(enabled[index] ? "1" : "0")
                     .accessibilityAddTraits(enabled[index] ? .isSelected : [])
             }
-            Text(localizedTitle(field.title)).font(.custom("PlusJakartaSans-Regular", size: 16)).foregroundStyle(Color("color-text-30"))
+            Text(localizedTitle(field.title)).font(.custom("PlusJakartaSans-Regular", size: 16)).foregroundStyle(Color("color-text1"))
             Spacer(minLength: 4)
             HStack(spacing: 0) {
                 Button { step(index, field: field, direction: -1) } label: { Image(systemName: "minus").frame(width: 32, height: 32) }
@@ -904,8 +904,8 @@ private struct StockChartParameterPage: View {
                     .accessibilityIdentifier("stockDetail.chart.parameter.value.\(index)")
                 Button { step(index, field: field, direction: 1) } label: { Image(systemName: "plus").frame(width: 32, height: 32) }
                     .accessibilityIdentifier("stockDetail.chart.parameter.increment.\(index)")
-            }.buttonStyle(.plain).foregroundStyle(Color("color-text-30"))
-                .background(Color("color-scale-1"), in: RoundedRectangle(cornerRadius: 4))
+            }.buttonStyle(.plain).foregroundStyle(Color("color-text1"))
+                .background(Color("color-grayscale1"), in: RoundedRectangle(cornerRadius: 4))
         }.frame(height: 56)
     }
 
@@ -977,7 +977,7 @@ private struct StockChartAnnotationsPage: View {
                     row(.corporateAction, binding: bindings.corporate, id: "corporate", icon: "calendar")
                 }.padding(.bottom, 16)
             }
-            .background(Color("color-base-1"))
+            .background(Color("color-base1"))
             .navigationTitle(stockChartText(.chartAnnotations, language: language))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .topBarLeading) {
@@ -990,11 +990,11 @@ private struct StockChartAnnotationsPage: View {
             HStack(spacing: 12) {
                 Image(systemName: icon).frame(width: 24)
                 Text(stockChartText(text, language: language)).font(.custom("PlusJakartaSans-Regular", size: 16))
-            }.foregroundStyle(Color("color-text-30"))
+            }.foregroundStyle(Color("color-text1"))
         }
-        .tint(Color("color-brand-blue"))
+        .tint(Color("color-blue1"))
         .padding(.horizontal, 16).frame(height: 56)
-        .background(Color("color-scale-1"), in: RoundedRectangle(cornerRadius: 8))
+        .background(Color("color-grayscale1"), in: RoundedRectangle(cornerRadius: 8))
         .padding(.horizontal, 16)
         .accessibilityIdentifier("stockDetail.chart.labels.\(id)")
     }
@@ -1189,9 +1189,9 @@ private struct StockChartCorporateSheet: View {
                 .padding(.bottom, 16)
             }
         }
-        .foregroundStyle(Color("color-text-30"))
+        .foregroundStyle(Color("color-text1"))
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockDetail.chart.corporate.sheet")
     }
@@ -1199,9 +1199,9 @@ private struct StockChartCorporateSheet: View {
     private func tab(_ label: String, selected: Bool, action: @escaping () -> Void) -> some View {
         Button { UIImpactFeedbackGenerator(style: .medium).impactOccurred(); action() } label: {
             Text(label).font(.custom(selected ? "PlusJakartaSans-Medium" : "PlusJakartaSans-Regular", size: 14))
-                .foregroundStyle(Color(selected ? "color-brand-blue" : "color-text-60"))
+                .foregroundStyle(Color(selected ? "color-blue1" : "color-text-60"))
                 .padding(.bottom, 8)
-                .overlay(alignment: .bottom) { if selected { Color("color-brand-blue").frame(height: 2) } }
+                .overlay(alignment: .bottom) { if selected { Color("color-blue1").frame(height: 2) } }
         }.buttonStyle(.plain)
     }
 
@@ -1216,7 +1216,7 @@ private struct StockChartCorporateSheet: View {
                     metricRow(text("总营收", "總營收", "Total Revenue"), values?.revenue ?? "--", percent(values?.revenueYoY, approximate: true), change: values?.revenueYoY)
                 }.padding(.vertical, 16)
             }
-            .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color("color-separator-10"), lineWidth: 1))
+            .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color("color-separator1"), lineWidth: 1))
             .clipShape(RoundedRectangle(cornerRadius: 12))
         }
     }
@@ -1228,23 +1228,23 @@ private struct StockChartCorporateSheet: View {
             Text(yoy).foregroundStyle(changeColor(change)).frame(maxWidth: .infinity, alignment: .trailing)
         }
         .font(.custom(header ? "PlusJakartaSans-Regular" : "PlusJakartaSans-Medium", size: header ? 14 : 16))
-        .foregroundStyle(Color(header ? "color-text-60" : "color-text-30"))
+        .foregroundStyle(Color(header ? "color-text-60" : "color-text1"))
         .padding(.horizontal, 12)
         .frame(height: header ? 44 : 24)
-        .background(header ? Color("color-scale-1") : .clear)
+        .background(header ? Color("color-grayscale1") : .clear)
     }
 
     private func dividendCard(_ dividend: StockChartCorporateDividend) -> some View {
         VStack(spacing: 0) {
             Text(dividend.amount).font(.custom("PlusJakartaSans-Medium", size: 16))
-                .frame(maxWidth: .infinity, alignment: .leading).padding(12).background(Color("color-scale-1"))
+                .frame(maxWidth: .infinity, alignment: .leading).padding(12).background(Color("color-grayscale1"))
             VStack(spacing: 12) {
                 dividendRow(text("除权除息日", "除權除息日", "Ex-Date"), dividend.date)
                 dividendRow(text("股权登记日", "股權登記日", "Record Date"), dividend.recordDate)
                 dividendRow(text("派息日", "派息日", "Payment Date"), dividend.payDate)
             }.padding(16)
         }
-        .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color("color-separator-10"), lineWidth: 1))
+        .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color("color-separator1"), lineWidth: 1))
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
@@ -1266,7 +1266,7 @@ private struct StockChartCorporateSheet: View {
         value.map { (approximate ? "≈" : "") + String(format: "%+.2f%%", $0) } ?? "--"
     }
     private func changeColor(_ value: Double?) -> Color {
-        guard let value, value != 0 else { return Color("color-text-30") }
-        return MarketColor.resolve(value > 0 ? "color-utility3-red" : "color-utility3-green", reversed: reversed)
+        guard let value, value != 0 else { return Color("color-text1") }
+        return MarketColor.resolve(value > 0 ? "color-red" : "color-green", reversed: reversed)
     }
 }

@@ -19,7 +19,7 @@ struct SnapshotGroupTitleView: View {
                 Image(flag_icon)
                     .frame(width: 19, height: 13)
                 Text(title)
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .font(.system(size: 14, weight: .semibold))
             }
             Spacer()
@@ -27,14 +27,14 @@ struct SnapshotGroupTitleView: View {
             HStack(spacing: 5.0){
                  Text("1,600,000.00")
                     .modifier(CustomFontModifier(size: 14, font: .semibold))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                 Image("chevron_up_sm")
                     .frame(width: 19, height: 13)
             }
         }
         .frame(maxWidth: 375, minHeight: 46)
         .padding(.horizontal, 10)
-        .background(Color("color-transparent"))
+        .background(Color("color-legacy-transparent"))
     }
 }
 

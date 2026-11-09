@@ -27,7 +27,7 @@ struct IndexGraphBoxView: View {
             }
             Text(indexName)
                 .font(.system(size: 12, weight: .medium))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .padding(.bottom, 5)
             Text(indexPrice)
                 .font(.system(size: 18, weight: .bold))
@@ -41,7 +41,7 @@ struct IndexGraphBoxView: View {
                     .font(.system(size: 12, weight: .medium))
                     .foregroundColor(red ? MarketColor.resolve("color-utility-red", reversed: marketColorReversed):MarketColor.resolve("color-utility-green", reversed: marketColorReversed))
             }
-        }.background(Color("color-transparent"))
+        }.background(Color("color-legacy-transparent"))
     }
 }
 

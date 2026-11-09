@@ -170,7 +170,7 @@ private struct NewsArticleRow: View {
                 Text(story.title.text(in: language))
                     .font(.custom("PlusJakartaSans-Medium", size: 16, relativeTo: .body))
                     .lineSpacing(8)
-                    .foregroundStyle(Color("color-text-30"))
+                    .foregroundStyle(Color("color-text1"))
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
                     .fixedSize(horizontal: false, vertical: true)
@@ -203,7 +203,7 @@ private struct NewsArticleRow: View {
         }
         .padding(16)
         .frame(maxWidth: .infinity, minHeight: style.minimumHeight, alignment: .topLeading)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .contentShape(Rectangle())
     }
 }
@@ -352,7 +352,7 @@ private struct NewsWatchlistTag: View {
 
             Text(language.watchlistName(symbol: symbol, fallback: symbol))
                 .font(.custom("PlusJakartaSans-Regular", size: 12, relativeTo: .caption))
-                .foregroundStyle(Color("color-text-30"))
+                .foregroundStyle(Color("color-text1"))
                 .multilineTextAlignment(.leading)
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(minHeight: 16)
@@ -360,7 +360,7 @@ private struct NewsWatchlistTag: View {
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
         .background(
-            Color("color-scale-1"),
+            Color("color-grayscale1"),
             in: RoundedRectangle(cornerRadius: 12, style: .continuous)
         )
         .accessibilityHidden(true)
@@ -419,7 +419,7 @@ private struct NewsArticleMetadata: View {
             Text(story.source.name.text(in: language))
         }
         .font(.custom("PlusJakartaSans-Regular", size: 12, relativeTo: .caption))
-        .foregroundStyle(Color("color-text-90"))
+        .foregroundStyle(Color("color-text3"))
         .lineLimit(1)
         .minimumScaleFactor(0.85)
         .frame(height: 12)
@@ -434,7 +434,7 @@ private struct NewsFeedEmptyState: View {
         VStack(spacing: 8) {
             Text(title.text(in: language))
                 .font(.custom("PlusJakartaSans-Medium", size: 16, relativeTo: .body))
-                .foregroundStyle(Color("color-text-30"))
+                .foregroundStyle(Color("color-text1"))
 
             Text(message.text(in: language))
                 .font(.custom("PlusJakartaSans-Regular", size: 14, relativeTo: .subheadline))

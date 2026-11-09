@@ -146,7 +146,7 @@ private struct StockDetailUSPageHeaderTabs: View {
             .animation(selectionAnimation, value: selection)
         }
         .frame(height: StockDetailUSPageHeaderTabsLayout.height)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockDetail.usCommonStockPage.headerTabs")
     }
@@ -169,7 +169,7 @@ private struct StockDetailUSPageHeaderTabs: View {
                                 lineHeight: StockDetailUSPageHeaderTabsLayout.lineHeight
                             )
                         )
-                        .foregroundColor(isSelected ? Color("color-text-30") : Color("color-text-60"))
+                        .foregroundColor(isSelected ? Color("color-text1") : Color("color-text-60"))
                         .lineLimit(1)
                         .fixedSize(horizontal: true, vertical: false)
                         .padding(.horizontal, StockDetailUSPageHeaderTabsLayout.itemHorizontalPadding)
@@ -213,7 +213,7 @@ private struct StockDetailUSPageHeaderTabs: View {
                 .accessibilityHidden(true)
         } else {
             Capsule()
-                .fill(Color("color-base-r"))
+                .fill(Color("color-baser"))
                 .allowsHitTesting(false)
                 .accessibilityHidden(true)
         }
@@ -224,7 +224,7 @@ private struct StockDetailUSPageEmptyView: View {
     let tab: StockDetailUSPageTab
 
     var body: some View {
-        Color("color-base-1")
+        Color("color-base1")
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .accessibilityLabel(tab.title(for: .simplifiedChinese))
             .accessibilityIdentifier("stockDetail.usCommonStockPage.empty.\(tab.accessibilityIdentifier)")
@@ -270,7 +270,7 @@ struct StockDetailTape: View {
         .padding(.bottom, StockDetailTapeLayout.bottomPadding)
         .padding(.horizontal, StockDetailTapeLayout.horizontalPadding)
         .frame(maxWidth: .infinity)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockDetail.tape")
     }
@@ -280,10 +280,10 @@ struct StockDetailTape: View {
             HStack(spacing: 0) {
                 HStack(spacing: StockDetailTapeLayout.titlePercentageSpacing) {
                     Text(language.text(.buyOrderBook))
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
 
                     Text(data.distribution.bidPercentage)
-                        .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
+                        .foregroundColor(MarketColor.resolve("color-red", reversed: marketColorReversed))
                         .modifier(
                             CustomFontModifier(
                                 size: StockDetailTapeLayout.percentageFontSize,
@@ -305,10 +305,10 @@ struct StockDetailTape: View {
 
                 HStack(spacing: StockDetailTapeLayout.titlePercentageSpacing) {
                     Text(language.text(.sellOrderBook))
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
 
                     Text(data.distribution.askPercentage)
-                        .foregroundColor(MarketColor.resolve("color-utility3-green", reversed: marketColorReversed))
+                        .foregroundColor(MarketColor.resolve("color-green", reversed: marketColorReversed))
                         .modifier(
                             CustomFontModifier(
                                 size: StockDetailTapeLayout.percentageFontSize,
@@ -330,10 +330,10 @@ struct StockDetailTape: View {
 
             GeometryReader { proxy in
                 HStack(spacing: 0) {
-                    MarketColor.resolve("color-utility3-red", reversed: marketColorReversed)
+                    MarketColor.resolve("color-red", reversed: marketColorReversed)
                         .frame(width: proxy.size.width * data.distribution.bidFraction)
 
-                    MarketColor.resolve("color-utility3-green", reversed: marketColorReversed)
+                    MarketColor.resolve("color-green", reversed: marketColorReversed)
                 }
                 .clipShape(Capsule())
             }
@@ -388,7 +388,7 @@ struct StockDetailTape: View {
                         lineHeight: StockDetailTapeLayout.levelLineHeight
                     )
                 )
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .monospacedDigit()
                 .lineLimit(1)
         }
@@ -408,9 +408,9 @@ private enum StockDetailTapeSide {
     func color(reversed: Bool) -> Color {
         switch self {
         case .bid:
-            MarketColor.resolve("color-utility3-red", reversed: reversed)
+            MarketColor.resolve("color-red", reversed: reversed)
         case .ask:
-            MarketColor.resolve("color-utility3-green", reversed: reversed)
+            MarketColor.resolve("color-green", reversed: reversed)
         }
     }
 

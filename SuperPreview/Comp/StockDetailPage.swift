@@ -216,7 +216,7 @@ struct StockDetailPage: View {
             .id(activeInstrument.id)
             .ignoresSafeArea(.container, edges: .bottom)
         }
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .background(
             NavigationLink(
                 destination: StockOrderDemoView(initialSelection: stockOrderInitialSelection),
@@ -410,7 +410,7 @@ struct StockDetailPage: View {
         }) { _, offset in
             quoteScrollOffset = -offset
         }
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityIdentifier("stockDetail.page.quotePage")
     }
 
@@ -448,7 +448,7 @@ struct StockDetailPage: View {
         // blank area above the navbar.
         .frame(maxHeight: .infinity, alignment: .topLeading)
         .clipped()
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityIdentifier("stockDetail.page.quotePage")
     }
 
@@ -602,7 +602,7 @@ struct StockDetailPage: View {
         StockDetailMoneyFlowTrend(data: data)
             .padding(.vertical, StockDetailPageLayout.moneyFlowCardPadding)
             .frame(maxWidth: .infinity)
-            .background(Color("color-base-1"))
+            .background(Color("color-base1"))
             .clipShape(
                 RoundedRectangle(
                     cornerRadius: StockDetailPageLayout.cardCornerRadius,
@@ -621,7 +621,7 @@ struct StockDetailPage: View {
                     lineHeight: StockDetailPageLayout.disclaimerLineHeight
                 )
             )
-            .foregroundColor(Color("color-text-90"))
+            .foregroundColor(Color("color-text3"))
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(StockDetailPageLayout.disclaimerPadding)
             .frame(
@@ -629,7 +629,7 @@ struct StockDetailPage: View {
                 minHeight: StockDetailPageLayout.disclaimerMinimumHeight,
                 alignment: .center
             )
-            .background(Color("color-base-1"))
+            .background(Color("color-base1"))
             .clipShape(
                 RoundedRectangle(
                     cornerRadius: StockDetailPageLayout.cardCornerRadius,
@@ -712,7 +712,7 @@ private struct StockDetailPageHeaderTabs: View {
             }
         }
         .frame(height: StockDetailPageHeaderTabsLayout.height)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockDetail.page.headerTabs")
     }
@@ -741,7 +741,7 @@ private struct StockDetailPageHeaderTabs: View {
                         )
                         .foregroundColor(
                             isSelected
-                                ? (isReducedLiquidGlassUsageEnabled ? Color("color-text-r") : Color("color-text-30"))
+                                ? (isReducedLiquidGlassUsageEnabled ? Color("color-textr") : Color("color-text1"))
                                 : Color("color-text-60")
                         )
                         .padding(.horizontal, StockDetailPageHeaderTabsLayout.itemHorizontalPadding)
@@ -783,7 +783,7 @@ private struct StockDetailPageHeaderTabs: View {
     private var selectionBackground: some View {
         if isReducedLiquidGlassUsageEnabled {
             Capsule()
-                .fill(Color("color-base-r"))
+                .fill(Color("color-baser"))
                 .allowsHitTesting(false)
                 .accessibilityHidden(true)
         } else if #available(iOS 26.0, *) {
@@ -793,7 +793,7 @@ private struct StockDetailPageHeaderTabs: View {
                 .accessibilityHidden(true)
         } else {
             Capsule()
-                .fill(Color("color-base-r"))
+                .fill(Color("color-baser"))
                 .allowsHitTesting(false)
                 .accessibilityHidden(true)
         }
@@ -806,7 +806,7 @@ private struct StockDetailPageEmptyView: View {
     @Environment(\.demoLanguage) private var language
 
     var body: some View {
-        Color("color-base-1")
+        Color("color-base1")
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .accessibilityLabel(tab.title(for: language))
             .accessibilityIdentifier("stockDetail.page.empty.\(tab.rawValue)")
@@ -826,7 +826,7 @@ private struct StockDetailDebugSheet: View {
             HStack {
                 Text(interfaceLanguage.text(.debug))
                     .modifier(CustomFontModifier(size: 20, font: .bold, lineHeight: 28))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
 
                 Spacer()
 
@@ -834,7 +834,7 @@ private struct StockDetailDebugSheet: View {
                     dismiss()
                 }
                 .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
-                .foregroundColor(Color("color-brand-blue"))
+                .foregroundColor(Color("color-blue1"))
                 .accessibilityIdentifier("stockDetail.debug.done")
             }
             .padding(.horizontal, 20)
@@ -871,7 +871,7 @@ private struct StockDetailDebugSheet: View {
                 .padding(.bottom, 24)
             }
         }
-        .background(Color("color-base-1").ignoresSafeArea())
+        .background(Color("color-base1").ignoresSafeArea())
         .presentationDragIndicator(.visible)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockDetail.debug.sheet")
@@ -887,7 +887,7 @@ private struct StockDetailDebugSheet: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(displayName(for: instrument))
                         .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 22))
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
                         .frame(maxWidth: .infinity, alignment: .leading)
 
                     Text("\(instrument.symbol) · \(variantTitle(for: instrument))")
@@ -898,7 +898,7 @@ private struct StockDetailDebugSheet: View {
 
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(Color("color-brand-blue"))
+                        .foregroundColor(Color("color-blue1"))
                         .accessibilityHidden(true)
                 }
             }
@@ -906,8 +906,8 @@ private struct StockDetailDebugSheet: View {
             .frame(minHeight: 64)
             .background(
                 isSelected
-                    ? Color("color-brand-blue").opacity(0.08)
-                    : Color("color-scale-1"),
+                    ? Color("color-blue1").opacity(0.08)
+                    : Color("color-grayscale1"),
                 in: RoundedRectangle(cornerRadius: 12, style: .continuous)
             )
         }

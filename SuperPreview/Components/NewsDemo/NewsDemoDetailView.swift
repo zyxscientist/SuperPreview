@@ -14,12 +14,12 @@ struct NewsDemoDetailView: View {
     private let catalog: NewsStoryCatalog
     private let showsRelatedStocks: Bool
 
-    private var pageBackground: Color { Color("color-base-1") }
-    private var primaryText: Color { Color("color-text-30") }
+    private var pageBackground: Color { Color("color-base1") }
+    private var primaryText: Color { Color("color-text1") }
     private var secondaryText: Color { Color("color-text-60") }
-    private var tertiaryText: Color { Color("color-text-90") }
-    private var brandBlue: Color { Color("color-brand-blue") }
-    private var quietFill: Color { Color("color-scale-1") }
+    private var tertiaryText: Color { Color("color-text3") }
+    private var brandBlue: Color { Color("color-blue1") }
+    private var quietFill: Color { Color("color-grayscale1") }
 
     init(articleID: String) {
         self.articleID = articleID
@@ -505,8 +505,8 @@ private struct NewsDemoRelatedStock: Identifiable {
 
         var colorName: String {
             switch self {
-            case .gain: return "color-utility3-red"
-            case .loss: return "color-utility3-green"
+            case .gain: return "color-red"
+            case .loss: return "color-green"
             }
         }
     }
@@ -559,7 +559,7 @@ private struct NewsDemoRelatedStockRow: View {
                 )
             )
                 .modifier(CustomFontModifier(size: 12, font: .regular, lineHeight: 16))
-                .foregroundStyle(Color("color-brand-blue"))
+                .foregroundStyle(Color("color-blue1"))
                 .lineLimit(1)
                 .truncationMode(.tail)
                 .frame(maxWidth: .infinity, minHeight: 16, alignment: .topLeading)
@@ -708,7 +708,7 @@ private extension View {
     func articleBodyStyle() -> some View {
         self
             .font(.custom("PlusJakartaSans-Regular", size: 18, relativeTo: .body))
-            .foregroundStyle(Color("color-text-30"))
+            .foregroundStyle(Color("color-text1"))
             .lineSpacing(6)
             .multilineTextAlignment(.leading)
             .fixedSize(horizontal: false, vertical: true)

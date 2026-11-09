@@ -134,7 +134,7 @@ struct MarketIndustrySectorsView: View {
             HStack(spacing: 8) {
                 Text(language.text(.marketIndustrySectors))
                     .modifier(CustomFontModifier(size: 18, font: .bold, lineHeight: 28))
-                    .foregroundStyle(Color("color-text-30"))
+                    .foregroundStyle(Color("color-text1"))
 
                 Spacer(minLength: 0)
 
@@ -165,18 +165,18 @@ struct MarketIndustrySectorsView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 80, height: 80)
-                    .background(Color("color-base-1"))
+                    .background(Color("color-base1"))
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                     .overlay {
                         RoundedRectangle(cornerRadius: 12)
-                            .strokeBorder(Color("color-separator-10"), lineWidth: 1)
+                            .strokeBorder(Color("color-separator1"), lineWidth: 1)
                     }
                     .accessibilityHidden(true)
 
                 VStack(alignment: .leading, spacing: 10) {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(sectorName)
-                            .foregroundStyle(Color("color-text-30"))
+                            .foregroundStyle(Color("color-text1"))
                             .frame(height: 20, alignment: .leading)
 
                         Text(formattedChange(sector.percentChange))
@@ -204,7 +204,7 @@ struct MarketIndustrySectorsView: View {
     private func leadingStockTag(_ sector: MarketIndustrySector, name: String) -> some View {
         HStack(spacing: 8) {
             Text(name)
-                .foregroundStyle(Color("color-text-30"))
+                .foregroundStyle(Color("color-text1"))
                 .truncationMode(.tail)
 
             Text(formattedChange(sector.leadingStockPercentChange))
@@ -215,11 +215,11 @@ struct MarketIndustrySectorsView: View {
         .frame(height: 16)
         .padding(.horizontal, 6)
         .padding(.vertical, 2)
-        .background(Color("color-scale-1"), in: RoundedRectangle(cornerRadius: 4))
+        .background(Color("color-grayscale1"), in: RoundedRectangle(cornerRadius: 4))
     }
 
     private func changeColor(_ change: Double) -> Color {
-        MarketColor.resolve(change >= 0 ? "color-utility3-red" : "color-utility3-green", reversed: marketColorReversed)
+        MarketColor.resolve(change >= 0 ? "color-red" : "color-green", reversed: marketColorReversed)
     }
 
     private func formattedChange(_ change: Double) -> String {
@@ -350,7 +350,7 @@ private struct MarketIndustryCarousel<Content: View>: UIViewControllerRepresenta
 struct MarketIndustrySectorsView_Previews: PreviewProvider {
     static var previews: some View {
         MarketIndustrySectorsView()
-            .background(Color("color-base-1"))
+            .background(Color("color-base1"))
             .previewLayout(.fixed(width: 402, height: 372))
             .previewDisplayName("行业板块")
     }

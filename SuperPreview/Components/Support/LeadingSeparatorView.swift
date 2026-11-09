@@ -14,7 +14,7 @@ struct LeadingSeparatorView: View {
             Spacer()
             Rectangle()
                 .frame(maxHeight:0.5)
-                .foregroundColor(Color("color-separator-10"))
+                .foregroundColor(Color("color-separator1"))
                 .padding(.leading,15)
         }
     }

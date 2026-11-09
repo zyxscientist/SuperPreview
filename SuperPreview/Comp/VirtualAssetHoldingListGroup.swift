@@ -39,9 +39,9 @@ enum VirtualAssetHoldingValueTone {
         case .red:
             return MarketColor.resolve("color-utility2-red", reversed: reversed)
         case .green:
-            return MarketColor.resolve("color-utility3-green", reversed: reversed)
+            return MarketColor.resolve("color-green", reversed: reversed)
         case .neutral:
-            return Color("color-text-30")
+            return Color("color-text1")
         }
     }
 }
@@ -250,7 +250,7 @@ struct VirtualAssetHoldingListGroup: View {
             height: contentHeight,
             alignment: .topLeading
         )
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .clipped()
         .environment(\.tradeAggregationViewportWidth, viewportWidth)
         .accessibilityElement(children: .contain)
@@ -592,7 +592,7 @@ private struct VirtualAssetHoldingFixedSection: View {
                     isExpanded: isExpanded,
                     action: toggleCategory
                 )
-                .background(Color("color-base-1"))
+                .background(Color("color-base1"))
                 .zIndex(1)
             }
         }
@@ -617,7 +617,7 @@ private struct VirtualAssetHoldingMarketHeader: View {
 
                 Text(category.title(language: language))
                     .font(.custom("PlusJakartaSans-Medium", size: 16, relativeTo: .body))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .frame(height: 20)
 
                 Spacer(minLength: 0)
@@ -668,10 +668,10 @@ private struct VirtualAssetHoldingHeadInfo: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
         .frame(width: max(viewportWidth - 32, 0), height: VirtualAssetHoldingLayout.headInfoHeight)
-        .background(Color("color-scale-1"))
+        .background(Color("color-grayscale1"))
         .overlay {
             RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .stroke(Color("color-separator-10"), lineWidth: 0.5)
+                .stroke(Color("color-separator1"), lineWidth: 0.5)
         }
         .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
         .frame(
@@ -758,7 +758,7 @@ private struct VirtualAssetHoldingScrollableTable: View {
             width: VirtualAssetHoldingLayout.contentWidth,
             alignment: .topLeading
         )
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("trade.virtualTable.\(category.rawValue)")
     }
@@ -869,7 +869,7 @@ private struct VirtualAssetHoldingScrollableHeader: View {
             height: VirtualAssetHoldingLayout.headerHeight,
             alignment: .top
         )
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
     }
 }
 
@@ -888,7 +888,7 @@ private struct VirtualAssetHoldingNameHeader: View {
                 height: VirtualAssetHoldingLayout.headerHeight,
                 alignment: .topLeading
             )
-            .background(Color("color-base-1"))
+            .background(Color("color-base1"))
     }
 }
 
@@ -901,14 +901,14 @@ private struct VirtualAssetHoldingNameCell: View {
         VStack(alignment: .leading, spacing: 2) {
             Text(display(language.securityName(id: holding.id, fallback: holding.name)))
                 .font(.custom("PlusJakartaSans-Regular", size: 16, relativeTo: .body))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .frame(width: 110, height: 24, alignment: .leading)
 
             Text(display(holding.symbol))
                 .font(.custom("PlusJakartaSans-Regular", size: 14, relativeTo: .subheadline))
                 .monospacedDigit()
                 .foregroundColor(
-                    Color(isNumberHidden ? "color-text-30" : "color-text-60")
+                    Color(isNumberHidden ? "color-text1" : "color-text-60")
                 )
                 .frame(width: 110, height: 20, alignment: .leading)
         }
@@ -918,7 +918,7 @@ private struct VirtualAssetHoldingNameCell: View {
             height: VirtualAssetHoldingLayout.rowHeight,
             alignment: .leading
         )
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
     }
 
     private func display(_ value: String) -> String {
@@ -937,14 +937,14 @@ private struct VirtualAssetHoldingMetricsRow: View {
             valuePair(
                 primary: holding.marketValue,
                 secondary: holding.quantity,
-                primaryColor: Color("color-text-30"),
+                primaryColor: Color("color-text1"),
                 secondaryColor: Color("color-text-60")
             )
 
             valuePair(
                 primary: holding.currentPrice,
                 secondary: holding.costPrice,
-                primaryColor: Color("color-text-30"),
+                primaryColor: Color("color-text1"),
                 secondaryColor: Color("color-text-60")
             )
 
@@ -967,8 +967,8 @@ private struct VirtualAssetHoldingMetricsRow: View {
             valuePair(
                 primary: holding.holdingRatio,
                 secondary: nil,
-                primaryColor: Color("color-text-30"),
-                secondaryColor: Color("color-text-30")
+                primaryColor: Color("color-text1"),
+                secondaryColor: Color("color-text1")
             )
         }
         .padding(.leading, VirtualAssetHoldingLayout.metricsLeadingInset)
@@ -979,7 +979,7 @@ private struct VirtualAssetHoldingMetricsRow: View {
             height: VirtualAssetHoldingLayout.rowHeight,
             alignment: .top
         )
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
     }
 
     private func valuePair(
@@ -991,8 +991,8 @@ private struct VirtualAssetHoldingMetricsRow: View {
         VirtualAssetHoldingValuePairCell(
             primary: isNumberHidden ? "***" : primary,
             secondary: secondary.map { isNumberHidden ? "***" : $0 },
-            primaryColor: isNumberHidden ? Color("color-text-30") : primaryColor,
-            secondaryColor: isNumberHidden ? Color("color-text-30") : secondaryColor
+            primaryColor: isNumberHidden ? Color("color-text1") : primaryColor,
+            secondaryColor: isNumberHidden ? Color("color-text1") : secondaryColor
         )
     }
 }
@@ -1053,9 +1053,9 @@ private struct VirtualAssetHoldingActionBar: View {
                 } label: {
                     Text(action.title(language: language))
                         .font(.custom("PlusJakartaSans-Medium", size: 16, relativeTo: .body))
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
                         .frame(maxWidth: .infinity, minHeight: VirtualAssetHoldingLayout.actionHeight, maxHeight: VirtualAssetHoldingLayout.actionHeight)
-                        .background(Color("color-scale-2"))
+                        .background(Color("color-grayscale2"))
                         .clipShape(
                             UnevenRoundedRectangle(
                                 cornerRadii: cornerRadii(at: index),
@@ -1109,7 +1109,7 @@ private struct VirtualAssetHoldingSeparator: View {
 
     var body: some View {
         Rectangle()
-            .fill(Color("color-separator-10"))
+            .fill(Color("color-separator1"))
             .frame(width: max(viewportWidth - 32, 0), height: 0.5)
             .frame(
                 width: viewportWidth,
@@ -1169,6 +1169,6 @@ private struct VirtualAssetHoldingPreviewContainer<Content: View>: View {
             height: 880,
             alignment: .top
         )
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
     }
 }

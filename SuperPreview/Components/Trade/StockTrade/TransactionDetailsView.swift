@@ -51,7 +51,7 @@ struct TransactionDetailsView: View {
                 } label: {
                     Image(systemName: "play.fill")
                         .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(Color(.colorText90))
+                        .foregroundStyle(Color(.colorText3))
                         .frame(width: 28, height: 28)
                         .background(
                             Circle()
@@ -125,7 +125,7 @@ struct TransactionDetailsView: View {
                     if isBrowsingHistory {
                         Button(action: resumeFollowingLatest) {
                             Text("回到最新")
-                                .foregroundStyle(Color(.colorText90))
+                                .foregroundStyle(Color(.colorText3))
                                 .modifier(CustomFontModifier(size: 10, font: .medium))
                                 .padding(.horizontal, 8)
                                 .frame(height: 20)
@@ -135,7 +135,7 @@ struct TransactionDetailsView: View {
                                 )
                                 .overlay(
                                     Capsule()
-                                        .stroke(Color(.colorSeparator10), lineWidth: 0.5)
+                                        .stroke(Color(.colorSeparator1), lineWidth: 0.5)
                                 )
                         }
                         .buttonStyle(.plain)
@@ -145,7 +145,7 @@ struct TransactionDetailsView: View {
                 }
 
                 Text("成交明细")
-                    .foregroundStyle(Color(.colorText90))
+                    .foregroundStyle(Color(.colorText3))
                     .modifier(CustomFontModifier(size: 11, font: .medium))
                     .frame(minWidth: 130, maxWidth: 130, maxHeight: 24)
                     .background(Color(.colorBase1))
@@ -158,7 +158,7 @@ struct TransactionDetailsView: View {
             // 描边
             .overlay(
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .stroke(Color(.colorSeparator10), lineWidth: 0.5)
+                    .stroke(Color(.colorSeparator1), lineWidth: 0.5)
             )
             .shadow(color: Color.black.opacity(0.15), radius: 25, x: 0, y: 2)
         }
@@ -276,7 +276,7 @@ struct TransactionDetailsCell: View {
                 Text(transactionDetailsCellData.price)
                     .lineLimit(1)
                     .minimumScaleFactor(0.5)
-                    .foregroundStyle(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
+                    .foregroundStyle(MarketColor.resolve("color-red", reversed: marketColorReversed))
                     .modifier(CustomFontModifier(size: 11, font: .medium))
             }
 

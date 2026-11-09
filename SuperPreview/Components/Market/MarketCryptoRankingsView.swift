@@ -53,7 +53,7 @@ struct MarketCryptoRankingsView: View {
                 HStack(spacing: 8) {
                     Text(language.text(.crypto24hRankings))
                         .modifier(CustomFontModifier(size: 18, font: .bold, lineHeight: 28))
-                        .foregroundStyle(Color("color-text-30"))
+                        .foregroundStyle(Color("color-text1"))
                     Spacer(minLength: 0)
                     Image("chevron_right_text30_sm")
                         .resizable().scaledToFit().frame(width: 16, height: 16)
@@ -111,12 +111,12 @@ struct MarketCryptoRankingsView: View {
         return Button { selectedMetric = metric } label: {
             Text(language.text(metric.title))
                 .modifier(CustomFontModifier(size: 14, font: active ? .bold : .regular, lineHeight: 20))
-                .foregroundStyle(Color(active ? "color-text-30" : "color-text-60"))
+                .foregroundStyle(Color(active ? "color-text1" : "color-text-60"))
                 .fixedSize(horizontal: true, vertical: false)
                 .padding(.horizontal, 12)
                 .frame(height: 32)
-                .background(Color(active ? "color-base-1" : "color-scale-1"), in: RoundedRectangle(cornerRadius: 6))
-                .overlay { RoundedRectangle(cornerRadius: 6).strokeBorder(active ? Color("color-base-r") : .clear, lineWidth: 1) }
+                .background(Color(active ? "color-base1" : "color-grayscale1"), in: RoundedRectangle(cornerRadius: 6))
+                .overlay { RoundedRectangle(cornerRadius: 6).strokeBorder(active ? Color("color-baser") : .clear, lineWidth: 1) }
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(active ? .isSelected : [])
@@ -132,7 +132,7 @@ struct MarketCryptoRankingsView: View {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(language.securityName(id: item.nameID, fallback: item.fallbackName))
                             .modifier(CustomFontModifier(size: 16, font: .regular, lineHeight: 24))
-                            .foregroundStyle(Color("color-text-30")).frame(height: 24)
+                            .foregroundStyle(Color("color-text1")).frame(height: 24)
                         Text(item.symbol)
                             .modifier(CustomFontModifier(size: 13, font: .regular, lineHeight: 16))
                             .foregroundStyle(Color("color-text-60")).frame(height: 16)
@@ -146,10 +146,10 @@ struct MarketCryptoRankingsView: View {
 
                 HStack(spacing: 8) {
                     Text(item.price)
-                        .foregroundStyle(MarketColor.resolve(item.change >= 0 ? "color-utility3-red" : "color-utility3-green", reversed: marketColorReversed))
+                        .foregroundStyle(MarketColor.resolve(item.change >= 0 ? "color-red" : "color-green", reversed: marketColorReversed))
                         .frame(maxWidth: .infinity, alignment: .trailing)
                     Text(metricValue(item))
-                        .foregroundStyle(MarketColor.resolve(selectedMetric == .gainers || selectedMetric == .losers ? (item.change >= 0 ? "color-utility3-red" : "color-utility3-green") : "color-text-30", reversed: marketColorReversed))
+                        .foregroundStyle(MarketColor.resolve(selectedMetric == .gainers || selectedMetric == .losers ? (item.change >= 0 ? "color-red" : "color-green") : "color-text1", reversed: marketColorReversed))
                         .frame(maxWidth: .infinity, alignment: .trailing)
                 }
                 .modifier(CustomFontModifier(size: 16, font: .regular, lineHeight: 24))
@@ -158,7 +158,7 @@ struct MarketCryptoRankingsView: View {
             }
         }
         .frame(height: 66)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .contentShape(Rectangle())
     }
 

@@ -77,7 +77,7 @@ struct TodayOrdersPageView: View {
             .accessibilityIdentifier("todayOrders.scroll")
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .toolbar(.hidden, for: .navigationBar)
         .modifier(TodayOrdersNavigationBackSwipeModifier(policy: navigationBackSwipePolicy))
         .accessibilityElement(children: .contain)
@@ -201,7 +201,7 @@ private struct TodayOrdersPageTableHeader: View {
         }
         .frame(width: 402, height: 32, alignment: .center)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("todayOrders.header")
     }

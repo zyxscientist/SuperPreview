@@ -764,7 +764,7 @@ private struct StockDetailScrollCardDeck: View, Equatable {
             .scaleEffect(scale, anchor: .topLeading)
         }
         .frame(width: cardWidth, height: cardHeight, alignment: .topLeading)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .clipShape(
             RoundedRectangle(
                 cornerRadius: ScrollLayout.cardCornerRadius,
@@ -882,7 +882,7 @@ private struct StockDetailScrollSymbolBar: View {
                                 )
                                 .foregroundColor(
                                     index == currentIndex
-                                        ? Color("color-brand-blue")
+                                        ? Color("color-blue1")
                                         : Color("color-text-60")
                                 )
                                 .fixedSize()
@@ -938,7 +938,7 @@ private struct StockDetailScrollSymbolBar: View {
                 .glassEffect(.regular, in: shape)
                 .accessibilityHidden(true)
         } else {
-            Color("color-scale-1")
+            Color("color-grayscale1")
                 .opacity(0.92)
                 .background(.ultraThinMaterial)
                 .clipShape(shape)
@@ -1757,7 +1757,7 @@ private final class StockDetailScrollOrderPageController:
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(named: "color-base-1")
+        view.backgroundColor = UIColor(named: "color-base1")
         let edgePan = UIScreenEdgePanGestureRecognizer(target: self, action: #selector(returnPan(_:)))
         edgePan.edges = .left
         edgePan.delegate = self

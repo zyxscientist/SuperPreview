@@ -21,11 +21,11 @@ struct MarketConnectOverviewView: View {
                 HStack(alignment: .center, spacing: 8) {
                     Text(language.text(selected == .north ? .connectNorthOverview : .connectSouthOverview))
                         .modifier(CustomFontModifier(size: 18, font: .bold, lineHeight: 28))
-                        .foregroundStyle(Color("color-text-30"))
+                        .foregroundStyle(Color("color-text1"))
                     Spacer(minLength: 0)
                     Text(language.text(.connectUpdated))
                         .modifier(CustomFontModifier(size: 12, font: .regular, lineHeight: 16))
-                        .foregroundStyle(Color("color-text-90"))
+                        .foregroundStyle(Color("color-text3"))
                 }
                 .frame(height: 28)
 
@@ -35,7 +35,7 @@ struct MarketConnectOverviewView: View {
                         .foregroundStyle(Color("color-text-60"))
                     Text(language.text(.connectTotalValue))
                         .modifier(CustomFontModifier(size: 24, font: .bold, lineHeight: 36))
-                        .foregroundStyle(Color("color-text-30"))
+                        .foregroundStyle(Color("color-text1"))
                 }
 
                 VStack(spacing: 12) {
@@ -44,7 +44,7 @@ struct MarketConnectOverviewView: View {
                             Capsule().frame(width: max(0, (geometry.size.width - 4) * (selected == .north ? 155.0 / 366.0 : 157.0 / 366.0)))
                             Capsule()
                         }
-                        .foregroundStyle(Color("color-text-30"))
+                        .foregroundStyle(Color("color-text1"))
                     }
                     .frame(height: 8)
 
@@ -60,10 +60,10 @@ struct MarketConnectOverviewView: View {
         }
         .background(alignment: .top) {
             ConnectHeaderShape(isNorth: selected == .north)
-                .fill(LinearGradient(colors: [Color("color-scale-1"), Color("color-base-1")], startPoint: .top, endPoint: .bottom))
+                .fill(LinearGradient(colors: [Color("color-grayscale1"), Color("color-base1")], startPoint: .top, endPoint: .bottom))
                 .overlay {
                     ConnectHeaderShape(isNorth: selected == .north)
-                        .stroke(LinearGradient(colors: [Color("color-separator-10").opacity(0.6), Color("color-base-1")], startPoint: .top, endPoint: .bottom), lineWidth: 1)
+                        .stroke(LinearGradient(colors: [Color("color-separator1").opacity(0.6), Color("color-base1")], startPoint: .top, endPoint: .bottom), lineWidth: 1)
                 }
                 .frame(height: 120)
                 .allowsHitTesting(false)
@@ -80,7 +80,7 @@ struct MarketConnectOverviewView: View {
                     .opacity(selected == direction ? 1 : 0.5)
                 Text(language.text(title))
                     .modifier(CustomFontModifier(size: 18, font: selected == direction ? .medium : .regular, lineHeight: 28))
-                    .foregroundStyle(Color(selected == direction ? "color-text-30" : "color-text-60"))
+                    .foregroundStyle(Color(selected == direction ? "color-text1" : "color-text-60"))
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
             }
@@ -107,7 +107,7 @@ struct MarketConnectOverviewView: View {
                 Image("market_connect_south").renderingMode(.template).resizable().frame(width: 24, height: 24)
             }
         }
-        .foregroundStyle(Color(direction == .north ? "color-utility3-red" : "color-utility3-green"))
+        .foregroundStyle(Color(direction == .north ? "color-red" : "color-green"))
         .frame(width: 24, height: 24, alignment: .topLeading)
         .accessibilityHidden(true)
     }
@@ -116,10 +116,10 @@ struct MarketConnectOverviewView: View {
         VStack(alignment: alignment, spacing: 4) {
             (Text(language.text(title) + " ") + Text(language.text(.connectSegmentValue)).font(.custom("PlusJakartaSans-Bold", size: 14)))
                 .modifier(CustomFontModifier(size: 14, font: .regular, lineHeight: 20))
-                .foregroundStyle(Color("color-text-30"))
+                .foregroundStyle(Color("color-text1"))
                 .lineLimit(1).minimumScaleFactor(0.7)
             (Text(language.text(.connectRemainingQuota) + " ").foregroundColor(Color("color-text-60"))
-             + Text(language.text(.connectQuotaSufficient)).font(.custom("PlusJakartaSans-Bold", size: 12)).foregroundColor(Color("color-utility3-green")))
+             + Text(language.text(.connectQuotaSufficient)).font(.custom("PlusJakartaSans-Bold", size: 12)).foregroundColor(Color("color-green")))
                 .modifier(CustomFontModifier(size: 12, font: .regular, lineHeight: 16))
                 .lineLimit(1).minimumScaleFactor(0.7)
         }

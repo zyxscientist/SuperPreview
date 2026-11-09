@@ -110,14 +110,14 @@ struct CobeMetalConfiguration: Equatable {
     var baseColor = SIMD3<Float>(repeating: 0.92)
     // color-text-60 (text2) in the default light appearance.
     var landColor = SIMD3<Float>(repeating: Float(0x6D) / 255.0)
-    // color-brand-blue: #196EFF in both appearances.
+    // color-blue1: #196EFF in both appearances.
     var markerColor = SIMD3<Float>(
         Float(0x19) / 255.0,
         Float(0x6E) / 255.0,
         1.0
     )
     var glowColor = SIMD3<Float>(repeating: 0.72)
-    // color-text-30 (the primary text1 color) in the default light appearance.
+    // color-text1 (the primary text1 color) in the default light appearance.
     var arcColor = SIMD3<Float>(repeating: Float(0x33) / 255.0)
     var arcWidth: Float = 0.5
     var arcHeight: Float = 0.3

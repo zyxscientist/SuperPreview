@@ -18,7 +18,7 @@ struct OrderTypeView: View {
             
             Text("增强限价交易")
                 .padding(.leading, 33)
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .modifier(CustomFontModifier(size: 16, font: .medium))
             
             Spacer()
@@ -29,7 +29,7 @@ struct OrderTypeView: View {
         }
         .padding(.leading, 15)
         .frame(width: UIScreen.main.bounds.size.width,height: 44)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .overlay {
             FullWidthSeparatorView()
         }

@@ -132,7 +132,7 @@ struct FundSubAssetCard_Previews: PreviewProvider {
         }
         .padding(.top, 16)
         .frame(width: 402, height: 420, alignment: .top)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .previewLayout(.fixed(width: 402, height: 420))
         .previewDisplayName("Fund SubAssetCard")
     }

@@ -55,7 +55,7 @@ struct AssetCategoryTabBar: View {
         }
         .frame(maxWidth: .infinity)
         .frame(height: 48)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("trade.categoryTabs")
     }
@@ -76,7 +76,7 @@ struct AssetCategoryTabBar: View {
                 )
                 .foregroundColor(
                     isSelected
-                        ? (isReducedLiquidGlassUsageEnabled ? Color("color-text-r") : Color("color-text-30"))
+                        ? (isReducedLiquidGlassUsageEnabled ? Color("color-textr") : Color("color-text1"))
                         : Color("color-text-60")
                 )
                 .lineLimit(1)
@@ -102,9 +102,9 @@ struct AssetCategoryTabBar: View {
         ZStack(alignment: .trailing) {
             LinearGradient(
                 gradient: Gradient(stops: [
-                    .init(color: Color("color-transparent"), location: 0),
-                    .init(color: Color("color-base-1"), location: 0.37413),
-                    .init(color: Color("color-base-1"), location: 1)
+                    .init(color: Color("color-legacy-transparent"), location: 0),
+                    .init(color: Color("color-base1"), location: 0.37413),
+                    .init(color: Color("color-base1"), location: 1)
                 ]),
                 startPoint: .leading,
                 endPoint: .trailing
@@ -131,12 +131,12 @@ private struct AssetCategoryTabSelectionBackground: ViewModifier {
             if #available(iOS 26.0, *) {
                 content.glassEffect(.regular.interactive(), in: Capsule())
             } else {
-                content.background(Color("color-base-r"), in: Capsule())
+                content.background(Color("color-baser"), in: Capsule())
             }
         } else if isSelected {
-            content.background(Color("color-base-r"), in: Capsule())
+            content.background(Color("color-baser"), in: Capsule())
         } else {
-            content.background(Color("color-base-1"), in: Capsule())
+            content.background(Color("color-base1"), in: Capsule())
         }
     }
 }
@@ -153,15 +153,15 @@ private struct AssetCategoryTabBarPreviewContainer: View {
                 ForEach(AssetCategory.allCases) { category in
                     Text(category.title(language: language))
                         .font(.custom("PlusJakartaSans-Medium", size: 16, relativeTo: .body))
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(Color("color-base-1"))
+                        .background(Color("color-base1"))
                         .tag(category)
                 }
             }
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
         }
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
     }
 }
 

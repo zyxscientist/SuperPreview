@@ -89,7 +89,7 @@ struct StockDetailBottomActionBar: View {
                     .minimumScaleFactor(0.8)
                     .frame(maxWidth: .infinity)
                     .frame(height: StockDetailBottomActionBarLayout.buttonHeight)
-                    .background(Color("color-brand-blue"), in: Capsule())
+                    .background(Color("color-blue1"), in: Capsule())
                     .contentShape(Capsule())
             }
             .buttonStyle(.plain)
@@ -142,7 +142,7 @@ struct StockDetailBottomActionBar: View {
                         width: StockDetailBottomActionBarLayout.iconSize,
                         height: StockDetailBottomActionBarLayout.iconSize
                     )
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
 
                 Text(title)
                     .modifier(
@@ -152,7 +152,7 @@ struct StockDetailBottomActionBar: View {
                             lineHeight: StockDetailBottomActionBarLayout.utilityFontSize
                         )
                     )
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
                     .allowsTightening(true)
@@ -207,7 +207,7 @@ private struct StockDetailBottomActionBarPreviewHarness: View {
         .padding(.top, 16)
         .padding(.bottom, 8)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
     }
 }
 

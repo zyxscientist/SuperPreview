@@ -48,18 +48,19 @@ final class StockChartCanvasView: UIView, UIGestureRecognizerDelegate {
     private var buttonMarkers: [StockChartCorporateMarker] = []
     private var corporateMarkers: [StockChartCorporateMarker] = []
 
-    // CommonColorConfig.plist chartMA1...chartMA5, independent of market direction.
+    // Preserve the indicator slot order; these chart colors are independent of market direction.
     private let lineColors: [UIColor] = [
-        UIColor(red: 255 / 255, green: 166 / 255, blue: 80 / 255, alpha: 1),
-        UIColor(red: 55 / 255, green: 155 / 255, blue: 255 / 255, alpha: 1),
-        UIColor(red: 214 / 255, green: 103 / 255, blue: 205 / 255, alpha: 1),
-        UIColor(red: 233 / 255, green: 208 / 255, blue: 80 / 255, alpha: 1),
-        UIColor(red: 80 / 255, green: 213 / 255, blue: 227 / 255, alpha: 1),
-        UIColor(red: 255 / 255, green: 51 / 255, blue: 102 / 255, alpha: 1),
-        UIColor(red: 33 / 255, green: 206 / 255, blue: 153 / 255, alpha: 1)
+        UIColor(resource: .color05Ma0005),
+        UIColor(resource: .color05Ma0010),
+        UIColor(resource: .color05Ma0020),
+        UIColor(resource: .color05Ma0030),
+        UIColor(resource: .color05Ma0060),
+        UIColor(resource: .color05Ma0120),
+        UIColor(resource: .color05Ma0250)
     ]
-    private var upColor: UIColor { UIColor(MarketColor.resolve("color-utility3-red", reversed: reversed)) }
-    private var downColor: UIColor { UIColor(MarketColor.resolve("color-utility3-green", reversed: reversed)) }
+    private let instrumentColor = UIColor(resource: .color041D)
+    private var upColor: UIColor { UIColor(MarketColor.resolve("color-red", reversed: reversed)) }
+    private var downColor: UIColor { UIColor(MarketColor.resolve("color-green", reversed: reversed)) }
     private var textColor: UIColor { UIColor { $0.userInterfaceStyle == .dark ? UIColor(white: 0.65, alpha: 1) : UIColor(white: 0.42, alpha: 1) } }
     private var gridColor: UIColor { UIColor { $0.userInterfaceStyle == .dark ? UIColor(white: 1, alpha: 0.10) : UIColor(white: 0, alpha: 0.09) } }
     private var mainRect: CGRect {
@@ -346,12 +347,12 @@ final class StockChartCanvasView: UIView, UIGestureRecognizerDelegate {
         if period.isIntraday {
             let closes = candles.map { Optional($0.close) }
             if let first = visible.first, let lastIndex = visible.last {
-                ctx.setFillColor(UIColor(red: 0.098, green: 0.431, blue: 1, alpha: 0.047).cgColor)
+                ctx.setFillColor(instrumentColor.withAlphaComponent(0.047).cgColor)
                 ctx.move(to: CGPoint(x: x(first), y: mainRect.maxY))
                 for i in visible { ctx.addLine(to: CGPoint(x: x(i), y: priceY(candles[i].close))) }
                 ctx.addLine(to: CGPoint(x: x(lastIndex), y: mainRect.maxY)); ctx.closePath(); ctx.fillPath()
             }
-            drawLine(ctx, values: closes, range: visible, x: x, y: priceY, color: UIColor(red: 0.098, green: 0.431, blue: 1, alpha: 1), width: 1)
+            drawLine(ctx, values: closes, range: visible, x: x, y: priceY, color: instrumentColor, width: 1)
             drawLine(ctx, values: averagePrices.map(Optional.some), range: visible, x: x, y: priceY, color: lineColors[0], width: 0.7)
         } else {
             let width = max(0.5, step - (step > 1 ? 1 : 0.5))
@@ -425,7 +426,7 @@ final class StockChartCanvasView: UIView, UIGestureRecognizerDelegate {
             }
         }
         let currentPrice = period.isIntraday ? latest.close : candles[visible.upperBound - 1].close
-        if annotations.currentPrice { line(currentPrice, color: UIColor(red: 25/255, green: 110/255, blue: 1, alpha: 1), clamp: true) }
+        if annotations.currentPrice { line(currentPrice, color: instrumentColor, clamp: true) }
         // Fixed synthetic position and alert prices; no account or order data is read.
         if annotations.cost { line(latest.close * 0.995, color: lineColors[0], icon: "line_holdings") }
         if annotations.priceAlert {
@@ -557,7 +558,7 @@ final class StockChartCanvasView: UIView, UIGestureRecognizerDelegate {
             x += width + 6
         }
         let height: CGFloat = items.contains { $0.3 == 1 } ? 36 : 20
-        let background = UIColor(named: "color-base-1") ?? .systemBackground
+        let background = UIColor(named: "color-base1") ?? .systemBackground
         background.resolvedColor(with: traitCollection).withAlphaComponent(0.8).setFill()
         UIRectFill(CGRect(x: inset, y: y, width: max(0, bounds.width - inset), height: height))
         for (text, color, itemX, itemLine) in items {

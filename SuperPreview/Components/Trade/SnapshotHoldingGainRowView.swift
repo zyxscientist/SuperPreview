@@ -19,7 +19,7 @@ struct SnapshotHoldingGainRowView: View {
             VStack(alignment: .leading, spacing: 0.0) {
                 Text(name)
                     .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .frame(width: 110, height: 20, alignment: .leading)
                 Text(symbol)
                     .modifier(CustomFontModifier(size: 14, font: .medium))
@@ -32,22 +32,22 @@ struct SnapshotHoldingGainRowView: View {
                     VStack(alignment: .trailing, spacing: 0.0) {
                         Text("191,143.00")
                             .modifier(CustomFontModifier(size: 14, font: .medium))
-                            .foregroundColor(Color("color-text-30"))
+                            .foregroundColor(Color("color-text1"))
                             .frame(width: 86, height: 20, alignment: .trailing)
                         Text("200,000")
                             .modifier(CustomFontModifier(size: 14, font: .medium))
-                            .foregroundColor(Color("color-text-30"))
+                            .foregroundColor(Color("color-text1"))
                             .frame(width: 86, height: 20, alignment: .trailing)
                         
                     }
                 VStack(alignment: .trailing, spacing: 0.0) {
                     Text("126.200")
                         .modifier(CustomFontModifier(size: 14, font: .medium))
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
                         .frame(width: 76, height: 20, alignment: .trailing)
                     Text("8.110")
                         .modifier(CustomFontModifier(size: 14, font: .medium))
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
                         .frame(width: 76, height: 20, alignment: .trailing)
                     
                 }
@@ -78,7 +78,7 @@ struct SnapshotHoldingGainRowView: View {
                 }
             }
         }
-        .background(Color("color-transparent"))
+        .background(Color("color-legacy-transparent"))
         .padding(.vertical, 7)
         .padding(.horizontal ,0)
     }//

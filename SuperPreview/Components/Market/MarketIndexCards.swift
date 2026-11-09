@@ -79,7 +79,7 @@ struct MarketIndexCards: View {
                         .frame(height: 133)
                         .glassEffect(.regular, in: shape)
                 } else {
-                    shape.fill(Color("color-scale-1"))
+                    shape.fill(Color("color-grayscale1"))
                         .frame(maxWidth: .infinity)
                         .frame(height: 133)
                 }
@@ -92,7 +92,7 @@ private struct MarketIndexCard: View {
     @Environment(\.marketColorReversed) private var marketColorReversed
 
     private var changeColor: Color {
-        MarketColor.resolve(quote.change.hasPrefix("-") ? "color-utility3-green" : "color-utility3-red", reversed: marketColorReversed)
+        MarketColor.resolve(quote.change.hasPrefix("-") ? "color-green" : "color-red", reversed: marketColorReversed)
     }
     let quote: MarketIndexQuote
     @Environment(\.demoLanguage) private var language
@@ -101,7 +101,7 @@ private struct MarketIndexCard: View {
         VStack(alignment: .leading, spacing: 0) {
             Text(language.text(quote.title))
                 .modifier(CustomFontModifier(size: 14, font: .regular))
-                .foregroundStyle(Color("color-text-30"))
+                .foregroundStyle(Color("color-text1"))
                 .frame(height: 20)
 
             Text(quote.value)

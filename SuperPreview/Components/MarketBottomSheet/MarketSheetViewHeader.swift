@@ -13,7 +13,7 @@ struct MarketSheetViewHeader: View {
         VStack(alignment: .leading) {
             Text("Market")
                 .modifier(CustomFontModifier(size: 20, font: .medium))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
             
             HStack(spacing: 2){
                 Text("Swipe Up")

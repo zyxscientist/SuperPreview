@@ -23,14 +23,14 @@ struct TradeView: View {
                             }
                     }.offset(y:0)
                 }
-                .background(Color("color-base-0"))
+                .background(Color("color-base0"))
     }
 }
 
 struct TradeViewPreviews: PreviewProvider {
     static var previews: some View {
          ZStack {
-           Color("color-base-0")
+           Color("color-base0")
                 .edgesIgnoringSafeArea(.all)
             TradeView()
          }

@@ -30,7 +30,7 @@ struct StockOrderSymbolSearchSheet: View {
             searchContent
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockOrder.symbolSearchSheet")
         .onAppear {
@@ -53,7 +53,7 @@ struct StockOrderSymbolSearchSheet: View {
 
                 TextField("", text: $query)
                     .modifier(CustomFontModifier(size: 18, font: .regular, lineHeight: 28))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled(true)
                     .focused($searchFieldFocused)
@@ -87,10 +87,10 @@ struct StockOrderSymbolSearchSheet: View {
                 } label: {
                     Text(language.text(.cancel))
                         .modifier(CustomFontModifier(size: 16, font: .bold, lineHeight: 24))
-                        .foregroundColor(Color("color-text-r"))
+                        .foregroundColor(Color("color-textr"))
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
-                        .background(Color("color-base-r"))
+                        .background(Color("color-baser"))
                         .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
                 }
                 .buttonStyle(PlainButtonStyle())
@@ -104,7 +104,7 @@ struct StockOrderSymbolSearchSheet: View {
         .frame(height: 44)
         .background(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .fill(Color("color-dialog"))
+                .fill(Color("color-legacy-dialog"))
                 .overlay {
                     // 内阴影
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
@@ -115,7 +115,7 @@ struct StockOrderSymbolSearchSheet: View {
         )
         .overlay(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .stroke(Color("color-separator-10"), lineWidth: 1)
+                .stroke(Color("color-separator1"), lineWidth: 1)
         )
         .padding(.horizontal, 16)
         .accessibilityIdentifier("stockOrder.symbolSearchSheet.searchBox")
@@ -145,7 +145,7 @@ struct StockOrderSymbolSearchSheet: View {
                 HStack(spacing: 0) {
                     Text(language.text(.recentSearches))
                         .modifier(CustomFontModifier(size: 14, font: .regular, lineHeight: 24))
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
 
                     Spacer(minLength: 0)
 
@@ -218,7 +218,7 @@ struct StockOrderSymbolSearchSheet: View {
             } label: {
                 Text(language.text(.refreshNow))
                     .modifier(CustomFontModifier(size: 12, font: .regular, lineHeight: 16))
-                    .foregroundColor(Color("color-brand-blue"))
+                    .foregroundColor(Color("color-blue1"))
             }
             .buttonStyle(PlainButtonStyle())
             .accessibilityLabel(language.text(.refreshNow))
@@ -236,13 +236,13 @@ struct StockOrderSymbolSearchSheet: View {
             HStack(spacing: 2) {
                 Text(symbol.id)
                     .modifier(CustomFontModifier(size: 18, font: .regular, lineHeight: 28))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .lineLimit(1)
                     .frame(width: 96, alignment: .leading)
 
                 Text(symbol.localizedName(for: language))
                     .modifier(CustomFontModifier(size: 18, font: .regular, lineHeight: 28))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .lineLimit(1)
                     .minimumScaleFactor(0.55)
                     .allowsTightening(true)
@@ -267,7 +267,7 @@ private struct StockOrderSearchSheetHandle: View {
     var body: some View {
         VStack(spacing: 0) {
             Capsule()
-                .fill(Color("color-scale-3"))
+                .fill(Color("color-grayscale3"))
                 .frame(width: 40, height: 4)
                 .padding(.top, 10)
         }

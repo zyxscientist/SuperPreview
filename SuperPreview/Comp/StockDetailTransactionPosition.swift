@@ -85,10 +85,10 @@ struct StockDetailTransactionPosition: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .overlay(alignment: .bottom) {
             Rectangle()
-                .fill(Color("color-separator-10"))
+                .fill(Color("color-separator1"))
                 .frame(height: StockDetailTransactionPositionLayout.separatorHeight)
                 .padding(.horizontal, StockDetailTransactionPositionLayout.horizontalPadding)
                 .accessibilityHidden(true)
@@ -131,7 +131,7 @@ struct StockDetailTransactionPosition: View {
         .frame(maxWidth: .infinity)
         .frame(height: StockDetailTransactionPositionLayout.cardHeight)
         .background(
-            Color("color-scale-1"),
+            Color("color-grayscale1"),
             in: RoundedRectangle(
                 cornerRadius: StockDetailTransactionPositionLayout.cardCornerRadius,
                 style: .continuous
@@ -301,11 +301,11 @@ struct StockDetailTransactionPosition: View {
     private func color(for tone: StockDetailTransactionPositionProfitLossTone) -> Color {
         switch tone {
         case .gain:
-            MarketColor.resolve("color-utility3-red", reversed: marketColorReversed)
+            MarketColor.resolve("color-red", reversed: marketColorReversed)
         case .loss:
-            MarketColor.resolve("color-utility3-green", reversed: marketColorReversed)
+            MarketColor.resolve("color-green", reversed: marketColorReversed)
         case .flat:
-            Color("color-text-30")
+            Color("color-text1")
         }
     }
 
@@ -406,7 +406,7 @@ private struct StockDetailTransactionPositionPreviewHarness: View {
 
             StockDetailTransactionPosition(state: state)
         }
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
     }
 }
 

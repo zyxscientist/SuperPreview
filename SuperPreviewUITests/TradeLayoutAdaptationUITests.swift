@@ -1279,8 +1279,7 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
             guard let app else { return }
             let presented = app.descendants(matching: .any)["modal.presented"].firstMatch
             if presented.exists {
-                let cancel = app.buttons.matching(identifier: "modal.presented")
-                    .matching(NSPredicate(format: "label == %@", "取消")).firstMatch
+                let cancel = presented.buttons["取消"].firstMatch
                 if cancel.exists { cancel.tap() }
             }
             if app.navigationBars["新弹窗组件"].exists {
@@ -1314,27 +1313,213 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
     }
 
     private func assertModalDestructiveIsRed() {
-        enterComponentLibrary()
-        waitFor("compare.modalDemo").tap()
-        let entry = app.buttons["modal.show.button-12-danger"].firstMatch
-        let scroll = app.scrollViews.firstMatch
-        for _ in 0..<30 where !entry.isHittable { scroll.swipeUp() }
-        XCTAssertTrue(entry.isHittable, "Destructive modal example was not reachable")
-        entry.tap()
-        _ = waitFor("modal.presented")
-        let button = app.buttons.matching(identifier: "modal.presented")
-            .matching(NSPredicate(format: "label == %@", "删除")).firstMatch
+        enterModalDemo()
+        let modal = showModalExample("button-12-danger")
+        let button = modal.buttons["删除"].firstMatch
         XCTAssertTrue(button.waitForExistence(timeout: 8))
-        assertSolidColorPixels(button, colors: [(255, 90, 80)], minimum: 5)
+        assertSolidColorPixels(button, colors: [(254, 74, 74)], minimum: 5)
+        attachModal(modal, name: "centered-modal-horizontal-red")
     }
 
     private func returnFromModalDemo() {
         let modal = waitFor("modal.presented")
-        app.buttons.matching(identifier: "modal.presented")
-            .matching(NSPredicate(format: "label == %@", "取消")).firstMatch.tap()
+        modal.buttons["取消"].firstMatch.tap()
         waitForDisappearance(modal)
         app.navigationBars.buttons.firstMatch.tap()
         XCTAssertTrue(waitFor("compare.componentLibrary").exists)
+    }
+
+    func testCenteredModalButtonVariants() {
+        enterModalDemo()
+
+        let pair = showModalExample("button-12")
+        let confirm = pair.buttons["确定"].firstMatch
+        let cancel = pair.buttons["取消"].firstMatch
+        XCTAssertEqual(confirm.frame.height, 44, accuracy: 1)
+        XCTAssertEqual(confirm.frame.width, cancel.frame.width, accuracy: 1)
+        XCTAssertEqual(confirm.frame.midY, cancel.frame.midY, accuracy: 1)
+        XCTAssertEqual(confirm.frame.minX - cancel.frame.maxX, 12, accuracy: 1)
+        assertSolidColorPixels(confirm, colors: [(25, 110, 255)], minimum: 100)
+        assertSolidColorPixels(cancel, colors: [(239, 239, 239), (34, 34, 34)], minimum: 100)
+        attachModal(pair, name: "centered-modal-horizontal-default")
+        confirm.press(forDuration: 3)
+        waitForDisappearance(pair)
+
+        let disabledBlue = showModalExample("button-12-disabled")
+        let disabledConfirm = disabledBlue.buttons["确定"].firstMatch
+        XCTAssertTrue(disabledConfirm.exists)
+        XCTAssertFalse(disabledConfirm.isEnabled)
+        disabledConfirm.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        XCTAssertTrue(disabledBlue.exists, "Tapping the disabled action must keep the modal open")
+        attachModal(disabledBlue, name: "centered-modal-disabled-blue")
+        disabledBlue.buttons["取消"].firstMatch.tap()
+        waitForDisappearance(disabledBlue)
+
+        let emphasized = showModalExample("button-21-danger")
+        let emphasizedAction = emphasized.buttons["删除"].firstMatch
+        let emphasizedCancel = emphasized.buttons["取消"].firstMatch
+        XCTAssertLessThan(emphasizedAction.frame.maxY, emphasizedCancel.frame.minY)
+        assertSolidColorPixels(emphasizedAction, colors: [(25, 110, 255)], minimum: 5)
+        attachModal(emphasized, name: "centered-modal-vertical-blue")
+        emphasizedCancel.tap()
+        waitForDisappearance(emphasized)
+
+        let disabledBlack = showModalExample("button-31-disabled")
+        let disabledBlackAction = disabledBlack.buttons["确定"].firstMatch
+        XCTAssertTrue(disabledBlackAction.exists)
+        XCTAssertFalse(disabledBlackAction.isEnabled)
+        attachModal(disabledBlack, name: "centered-modal-disabled-black")
+        disabledBlack.buttons["取消"].firstMatch.tap()
+        waitForDisappearance(disabledBlack)
+    }
+
+    func testModalTransparentAndOutlineDisabledStates() {
+        enterModalDemo()
+
+        let normalModal = showModalExample("button-12-danger")
+        let normal = normalModal.buttons["删除"].firstMatch
+        XCTAssertTrue(normal.isEnabled)
+        let normalImage = normal.screenshot().image
+        attachModal(normalModal, name: "modal-transparent-normal")
+        // Hold long enough for the simulator recording to capture the real pressed state.
+        normal.press(forDuration: 3)
+        waitForDisappearance(normalModal)
+
+        let disabledModal = showModalExample("button-12-transparent-disabled")
+        let disabled = disabledModal.buttons["删除"].firstMatch
+        XCTAssertFalse(disabled.isEnabled)
+        let disabledImage = disabled.screenshot().image
+        attachModal(disabledModal, name: "modal-transparent-disabled")
+        assertTransparentDisabledPixels(normal: normalImage, disabled: disabledImage)
+        disabled.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        XCTAssertTrue(disabledModal.exists, "Disabled transparent action must not dismiss")
+        disabledModal.buttons["取消"].firstMatch.tap()
+        waitForDisappearance(disabledModal)
+
+        let outline = showModalExample("button-12-outline")
+        XCTAssertTrue(outline.buttons["取消"].firstMatch.isEnabled)
+        let disabledOutline = outline.buttons["确定"].firstMatch
+        XCTAssertFalse(disabledOutline.isEnabled)
+        attachModal(outline, name: "modal-outline-normal-and-disabled")
+        disabledOutline.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        XCTAssertTrue(outline.exists, "Disabled outline action must not dismiss")
+        outline.buttons["取消"].firstMatch.press(forDuration: 3)
+        waitForDisappearance(outline)
+    }
+
+    private func assertTransparentDisabledPixels(normal: UIImage, disabled: UIImage) {
+        func rgba(_ image: UIImage) -> (Int, Int, [UInt8])? {
+            guard let cg = image.cgImage else { return nil }
+            let width = cg.width, height = cg.height
+            var data = [UInt8](repeating: 0, count: width * height * 4)
+            let success = data.withUnsafeMutableBytes { bytes -> Bool in
+                guard let context = CGContext(data: bytes.baseAddress, width: width, height: height,
+                    bitsPerComponent: 8, bytesPerRow: width * 4,
+                    space: CGColorSpace(name: CGColorSpace.sRGB)!,
+                    bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.byteOrder32Big.rawValue)
+                else { return false }
+                context.draw(cg, in: CGRect(x: 0, y: 0, width: width, height: height))
+                return true
+            }
+            return success ? (width, height, data) : nil
+        }
+        guard let (width, height, a) = rgba(normal), let (w, h, b) = rgba(disabled), width == w, height == h else {
+            XCTFail("Button screenshots could not be compared")
+            return
+        }
+        // This point is inside the fill but away from the text and rounded corners.
+        let sample = ((height / 2) * width + width / 4) * 4
+        for channel in 0..<3 {
+            XCTAssertEqual(Int(a[sample + channel]), Int(b[sample + channel]), accuracy: 2,
+                           "Disabled transparent background must remain unchanged")
+        }
+        // Compare total distance from the same background in the central text region.
+        var normalInk = 0, disabledInk = 0
+        for y in height / 4..<height * 3 / 4 {
+            for x in width * 2 / 5..<width * 3 / 5 {
+                let i = (y * width + x) * 4
+                for channel in 0..<3 {
+                    normalInk += abs(Int(a[i + channel]) - Int(a[sample + channel]))
+                    disabledInk += abs(Int(b[i + channel]) - Int(b[sample + channel]))
+                }
+            }
+        }
+        XCTAssertGreaterThan(normalInk, 1000, "Expected visible normal text")
+        XCTAssertEqual(Double(disabledInk) / Double(normalInk), 0.5, accuracy: 0.1,
+                       "Disabled transparent text should have half opacity")
+    }
+
+    func testCenteredModalScrollableContentAndSlots() {
+        enterModalDemo()
+
+        for (id, heightLimit) in [("limit-320", CGFloat(424)), ("limit-320-phone", CGFloat(536))] {
+            let modal = showModalExample(id)
+            attachModal(modal, name: "centered-modal-\(id)")
+            let content = modal.scrollViews["modal.content.scroll"].firstMatch
+            XCTAssertTrue(content.exists)
+            let title = modal.staticTexts["标题"].firstMatch
+            let message = content.staticTexts.firstMatch
+            let cancel = modal.buttons["取消"].firstMatch
+            XCTAssertTrue(title.exists)
+            XCTAssertTrue(message.exists)
+            XCTAssertTrue(cancel.exists)
+            // The modal accessibility container spans the cover, so the scroll
+            // viewport gives the actual card width.
+            XCTAssertEqual(content.frame.width, 320, accuracy: 1, id)
+            XCTAssertEqual(title.frame.minX, message.frame.minX, accuracy: 1,
+                           "Title and body must share a leading edge in \(id)")
+            XCTAssertLessThanOrEqual(cancel.frame.maxY - title.frame.minY + 30, heightLimit + 1)
+            if id == "limit-320-phone" {
+                XCTAssertTrue(modal.buttons.matching(NSPredicate(format: "label CONTAINS %@", "香港: +852")).firstMatch.exists)
+                XCTAssertTrue(modal.buttons.matching(NSPredicate(format: "label CONTAINS %@", "大陆: 400")).firstMatch.exists)
+            }
+            let initialMessageY = message.frame.minY
+            let initialCancelY = cancel.frame.midY
+            content.swipeUp()
+            XCTAssertLessThan(message.frame.minY, initialMessageY - 10, "Body should scroll in \(id)")
+            XCTAssertEqual(cancel.frame.midY, initialCancelY, accuracy: 1, "Action area must stay fixed in \(id)")
+            cancel.tap()
+            waitForDisappearance(modal)
+        }
+
+        let checkbox = showModalExample("check-off")
+        let toggle = checkbox.buttons["不再显示此消息"].firstMatch
+        XCTAssertEqual(toggle.value as? String, "未勾选")
+        attachModal(checkbox, name: "centered-modal-checkbox-off")
+        toggle.tap()
+        XCTAssertEqual(toggle.value as? String, "已勾选")
+        attachModal(checkbox, name: "centered-modal-checkbox-on")
+        checkbox.buttons["取消"].firstMatch.tap()
+        waitForDisappearance(checkbox)
+
+        let password = showModalExample("slot-password")
+        XCTAssertTrue(password.staticTexts["输入交易密码以解锁交易"].exists)
+        XCTAssertTrue(password.staticTexts["忘记密码"].exists)
+        attachModal(password, name: "centered-modal-password-slot")
+        password.buttons["取消"].firstMatch.tap()
+        waitForDisappearance(password)
+    }
+
+    private func enterModalDemo() {
+        enterComponentLibrary()
+        waitFor("compare.modalDemo").tap()
+    }
+
+    private func showModalExample(_ id: String) -> XCUIElement {
+        let entry = app.buttons["modal.show.\(id)"].firstMatch
+        let gallery = app.scrollViews["modal.gallery"].firstMatch
+        XCTAssertTrue(gallery.waitForExistence(timeout: 8))
+        for _ in 0..<30 where !entry.isHittable { gallery.swipeUp() }
+        XCTAssertTrue(entry.isHittable, "Modal example \(id) was not reachable")
+        entry.tap()
+        return waitFor("modal.presented")
+    }
+
+    private func attachModal(_ modal: XCUIElement, name: String) {
+        let attachment = XCTAttachment(screenshot: modal.screenshot())
+        attachment.name = name
+        attachment.lifetime = .keepAlways
+        add(attachment)
     }
 
     func testStockDetailPriceArrowFollowsMarketColors() throws {

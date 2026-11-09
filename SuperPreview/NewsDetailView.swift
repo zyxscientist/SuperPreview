@@ -87,7 +87,7 @@ struct NewsDetailView: View {
                 .navigationBarBackButtonHidden(true)
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationTitle("详情")
-                .background(Color("color-base-1"))
+                .background(Color("color-base1"))
                 
                 
                 // 滚动至顶部按钮
@@ -99,9 +99,9 @@ struct NewsDetailView: View {
                     }, label: {
                         Image(systemName: "arrow.up")
                             .font(.system(size: 15, weight: .semibold))
-                            .foregroundColor(Color("color-text-30"))
+                            .foregroundColor(Color("color-text1"))
                             .padding(10)
-                            .background(Color("color-scale-2"))
+                            .background(Color("color-grayscale2"))
                             .clipShape(/*@START_MENU_TOKEN@*/Circle()/*@END_MENU_TOKEN@*/)
                             .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 0)
                     })
@@ -124,7 +124,7 @@ struct NewsDetailViewPreviews: PreviewProvider {
     static var previews: some View {
         if #available(iOS 14.0, *) {
             ZStack {
-                Color("color-base-0")
+                Color("color-base0")
                     .ignoresSafeArea(.container)
                 NewsDetailView()
             }

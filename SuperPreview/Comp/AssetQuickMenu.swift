@@ -61,7 +61,7 @@ struct AssetQuickMenu: View {
 
                             Text(item.title)
                                 .font(.custom("PlusJakartaSans-Regular", size: 14, relativeTo: .subheadline))
-                                .foregroundColor(Color("color-text-30"))
+                                .foregroundColor(Color("color-text1"))
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.72)
                                 .allowsTightening(true)
@@ -78,7 +78,7 @@ struct AssetQuickMenu: View {
         }
         .frame(maxWidth: .infinity)
         .frame(height: itemHeight)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier(accessibilityIdentifier)
     }

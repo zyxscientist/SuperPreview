@@ -31,14 +31,14 @@ struct EveningSummaryClipView: View {
                 Text("美国商务部长罗斯：贸易战并不新鲜，美国准备好了")
                     .frame(minWidth: 265,alignment: .leading)
                     .font(.system(size: 16, weight: .regular))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .padding(.top, 10)
             }
 
         }
         .padding(.horizontal, 15)
         .frame(minWidth: 375, maxWidth: .infinity, maxHeight: 110)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
     }
 }
 

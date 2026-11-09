@@ -59,7 +59,7 @@ struct NewsLiveView: View {
         if let firstStory = filteredStories.first {
             Text(firstStory.date.displayText(for: language))
                 .modifier(CustomFontModifier(size: 16, font: .bold, lineHeight: 24))
-                .foregroundStyle(Color("color-text-30"))
+                .foregroundStyle(Color("color-text1"))
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 10)
@@ -71,7 +71,7 @@ struct NewsLiveView: View {
         VStack(spacing: 6) {
             Text(language.newsLiveEmptyTitle)
                 .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
-                .foregroundStyle(Color("color-text-30"))
+                .foregroundStyle(Color("color-text1"))
 
             Text(language.newsLiveEmptyMessage)
                 .modifier(CustomFontModifier(size: 14, font: .regular, lineHeight: 20))
@@ -113,7 +113,7 @@ private struct NewsLiveFilterBar: View {
         .scrollBounceBehavior(.basedOnSize, axes: .horizontal)
         .frame(maxWidth: .infinity, alignment: .leading)
         .frame(height: 48)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("news.live.categoryBar")
     }
@@ -130,7 +130,7 @@ private struct NewsLiveFilterBar: View {
                     lineHeight: 20
                 )
             )
-            .foregroundStyle(Color(isSelected ? "color-text-30" : "color-text-60"))
+            .foregroundStyle(Color(isSelected ? "color-text1" : "color-text-60"))
             .lineLimit(1)
             .fixedSize(horizontal: true, vertical: false)
             .frame(height: 20)
@@ -138,12 +138,12 @@ private struct NewsLiveFilterBar: View {
             .padding(.vertical, 6)
             .background {
                 RoundedRectangle(cornerRadius: 6, style: .continuous)
-                    .fill(Color(isSelected ? "color-base-1" : "color-scale-1"))
+                    .fill(Color(isSelected ? "color-base1" : "color-grayscale1"))
             }
             .overlay {
                 RoundedRectangle(cornerRadius: 6, style: .continuous)
                     .strokeBorder(
-                        isSelected ? Color("color-base-r") : .clear,
+                        isSelected ? Color("color-baser") : .clear,
                         lineWidth: 1
                     )
             }
@@ -200,7 +200,7 @@ private struct NewsLiveArticleRow: View {
                 HStack(spacing: 6) {
                     Text(publishedDate)
                         .modifier(CustomFontModifier(size: 12, font: .medium, lineHeight: 16))
-                        .foregroundStyle(Color("color-text-90"))
+                        .foregroundStyle(Color("color-text3"))
                         .frame(height: 16)
                         .fixedSize(horizontal: true, vertical: false)
 
@@ -234,7 +234,7 @@ private struct NewsLiveArticleRow: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(title)
                             .modifier(CustomFontModifier(size: 18, font: .medium, lineHeight: 28))
-                            .foregroundStyle(Color("color-text-30"))
+                            .foregroundStyle(Color("color-text1"))
                             .multilineTextAlignment(.leading)
                             .fixedSize(horizontal: false, vertical: true)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -242,7 +242,7 @@ private struct NewsLiveArticleRow: View {
                         if !summary.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                             Text(summary)
                                 .modifier(CustomFontModifier(size: 14, font: .regular, lineHeight: 20))
-                                .foregroundStyle(Color("color-text-30"))
+                                .foregroundStyle(Color("color-text1"))
                                 .multilineTextAlignment(.leading)
                                 .fixedSize(horizontal: false, vertical: true)
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -264,7 +264,7 @@ private struct NewsLiveArticleRow: View {
                 Link(destination: story.source.url) {
                     Text(language.newsLiveViewOriginalTitle)
                         .modifier(CustomFontModifier(size: 14, font: .regular, lineHeight: 20))
-                        .foregroundStyle(Color("color-brand-blue"))
+                        .foregroundStyle(Color("color-blue1"))
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .buttonStyle(.plain)

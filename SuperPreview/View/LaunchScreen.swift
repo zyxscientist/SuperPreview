@@ -18,7 +18,7 @@ struct LaunchScreen: View {
         if !isFinished {
         ZStack{
             if #available(iOS 14.0, *) {
-                Color("color-base-0")
+                Color("color-base0")
                     .ignoresSafeArea()
             } else {
                 // Fallback on earlier versions
@@ -36,7 +36,7 @@ struct LaunchScreen: View {
                     Spacer()
 
                     Text("Version 5.6.0")
-                        .foregroundColor(Color("color-text-90"))
+                        .foregroundColor(Color("color-text3"))
                         .modifier(CustomFontModifier(size: 12, font: .regular))
                 }
             }

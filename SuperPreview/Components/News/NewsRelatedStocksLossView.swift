@@ -17,7 +17,7 @@ struct NewsRelatedStocksLossView: View {
     var body: some View {
         HStack {
             Text(name)
-                .foregroundColor(Color("color-brand-blue"))
+                .foregroundColor(Color("color-blue1"))
             Spacer()
             Text("150.600")
                 .foregroundColor(MarketColor.resolve("color-utility-green", reversed: marketColorReversed))

@@ -37,7 +37,7 @@ struct WealthTabsView: View {
             VStack(alignment: .center, spacing: 5.0)  {
                 Text("持仓")
                     .font(.system(size: 16))
-                    .foregroundColor(self.index == 0 ? Color("color-text-30") : Color("color-text-60"))
+                    .foregroundColor(self.index == 0 ? Color("color-text1") : Color("color-text-60"))
                     .fontWeight(self.index == 0 ? .semibold : .regular)
                     .onTapGesture {
                         withAnimation(.none){
@@ -47,7 +47,7 @@ struct WealthTabsView: View {
                 
                 Capsule()
                     .frame(width:30  ,height: 2)
-                    .foregroundColor(Color("color-brand-blue").opacity(self.index == 0 ? 1 : 0))
+                    .foregroundColor(Color("color-blue1").opacity(self.index == 0 ? 1 : 0))
                 
             }
             .fixedSize()
@@ -58,7 +58,7 @@ struct WealthTabsView: View {
             VStack(alignment: .center, spacing: 5.0)  {
                 Text("美股")
                     .font(.system(size: 16))
-                    .foregroundColor(self.index == 1 ? Color("color-text-30") : Color("color-text-60"))
+                    .foregroundColor(self.index == 1 ? Color("color-text1") : Color("color-text-60"))
                     .fontWeight(self.index == 1 ? .semibold : .regular)
                     .onTapGesture {
                         withAnimation(.none){
@@ -68,7 +68,7 @@ struct WealthTabsView: View {
                 
                 Capsule()
                     .frame(height: 2)
-                    .foregroundColor(Color("color-brand-blue").opacity(self.index == 1 ? 1 : 0))
+                    .foregroundColor(Color("color-blue1").opacity(self.index == 1 ? 1 : 0))
                 
             }
             .fixedSize()
@@ -80,7 +80,7 @@ struct WealthTabsView: View {
             VStack(alignment: .center, spacing: 5.0)  {
                 Text("港股")
                     .font(.system(size: 16))
-                    .foregroundColor(self.index == 2 ? Color("color-text-30") : Color("color-text-60"))
+                    .foregroundColor(self.index == 2 ? Color("color-text1") : Color("color-text-60"))
                     .fontWeight(self.index == 2 ? .semibold : .regular)
                     .onTapGesture {
                         withAnimation(.none){
@@ -90,7 +90,7 @@ struct WealthTabsView: View {
                 
                 Capsule()
                     .frame(height: 2)
-                    .foregroundColor(Color("color-brand-blue").opacity(self.index == 2 ? 1 : 0))
+                    .foregroundColor(Color("color-blue1").opacity(self.index == 2 ? 1 : 0))
                 
             }
             .fixedSize()
@@ -102,7 +102,7 @@ struct WealthTabsView: View {
             VStack(alignment: .center, spacing: 5.0)  {
                 Text("沪深")
                     .font(.system(size: 16))
-                    .foregroundColor(self.index == 3 ? Color("color-text-30") : Color("color-text-60"))
+                    .foregroundColor(self.index == 3 ? Color("color-text1") : Color("color-text-60"))
                     .fontWeight(self.index == 3 ? .semibold : .regular)
                     .onTapGesture {
                         withAnimation(.none){
@@ -112,7 +112,7 @@ struct WealthTabsView: View {
                 
                 Capsule()
                 .frame(height: 2)
-                    .foregroundColor(Color("color-brand-blue").opacity(self.index == 3 ? 1 : 0))
+                    .foregroundColor(Color("color-blue1").opacity(self.index == 3 ? 1 : 0))
                 
             }
             .fixedSize()
@@ -124,7 +124,7 @@ struct WealthTabsView: View {
             VStack(alignment: .center, spacing: 5.0)  {
                 Text("新能源")
                     .font(.system(size: 16))
-                    .foregroundColor(self.index == 4 ? Color("color-text-30") : Color("color-text-60"))
+                    .foregroundColor(self.index == 4 ? Color("color-text1") : Color("color-text-60"))
                     .fontWeight(self.index == 4 ? .semibold : .regular)
                     .onTapGesture {
                         withAnimation(.none){
@@ -134,7 +134,7 @@ struct WealthTabsView: View {
                 
                 Capsule()
                     .frame(height: 2)
-                    .foregroundColor(Color("color-brand-blue").opacity(self.index == 4 ? 1 : 0))
+                    .foregroundColor(Color("color-blue1").opacity(self.index == 4 ? 1 : 0))
                 
             }
             .fixedSize()
@@ -145,7 +145,7 @@ struct WealthTabsView: View {
             Spacer()
         }
         .padding(.horizontal, 15)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .overlay(
             FullWidthSeparatorView()
         )

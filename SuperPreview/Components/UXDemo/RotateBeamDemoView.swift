@@ -17,7 +17,7 @@ struct RotateBeamDemoView: View {
                     VStack(spacing: 10) {
                         Text("Rotate Beam")
                             .font(.system(size: 28, weight: .semibold))
-                            .foregroundStyle(Color("color-text-30"))
+                            .foregroundStyle(Color("color-text1"))
                         Text("沿着边缘，流动的光。")
                             .font(.system(size: 15))
                             .foregroundStyle(Color("color-text-60"))
@@ -30,7 +30,7 @@ struct RotateBeamDemoView: View {
                     Text(String(format: "ROTATE · %.1fs / LOOP", rotationDuration))
                         .font(.system(size: 11, weight: .medium, design: .monospaced))
                         .tracking(2)
-                        .foregroundStyle(Color("color-text-90"))
+                        .foregroundStyle(Color("color-text3"))
 
                     controls
                         .frame(maxWidth: 330)
@@ -41,7 +41,7 @@ struct RotateBeamDemoView: View {
                 .frame(minHeight: geometry.size.height)
             }
         }
-        .background(Color("color-base-0").ignoresSafeArea())
+        .background(Color("color-base0").ignoresSafeArea())
         .navigationTitle("Rotate Beam")
         .navigationBarTitleDisplayMode(.inline)
         .accessibilityIdentifier("compare.rotateBeam.demo")
@@ -71,7 +71,7 @@ struct RotateBeamDemoView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("实时参数")
                         .font(.system(size: 17, weight: .semibold))
-                        .foregroundStyle(Color("color-text-30"))
+                        .foregroundStyle(Color("color-text1"))
                     Text("拖动滑块，立即观察 Beam 变化")
                         .font(.system(size: 12))
                         .foregroundStyle(Color("color-text-60"))
@@ -88,7 +88,7 @@ struct RotateBeamDemoView: View {
                     rotationDuration = 4
                 }
                 .font(.system(size: 12, weight: .medium))
-                .foregroundStyle(Color("color-brand-blue"))
+                .foregroundStyle(Color("color-blue1"))
                 .buttonStyle(.plain)
                 .accessibilityIdentifier("compare.rotateBeam.reset")
             }
@@ -158,7 +158,7 @@ struct RotateBeamDemoView: View {
             HStack {
                 Text(title)
                     .font(.system(size: 13, weight: .medium))
-                    .foregroundStyle(Color("color-text-30"))
+                    .foregroundStyle(Color("color-text1"))
                 Spacer()
                 Text(valueText)
                     .font(.system(size: 12, design: .monospaced))
@@ -166,7 +166,7 @@ struct RotateBeamDemoView: View {
             }
 
             Slider(value: value, in: range, step: step)
-                .tint(Color("color-brand-blue"))
+                .tint(Color("color-blue1"))
                 .accessibilityIdentifier(identifier)
         }
     }
@@ -210,7 +210,7 @@ struct RotateBeamBorder: View {
                     .init(color: Color("color-fund-orange"), location: colorStart + colorSpan * 0.32),
                     .init(color: Color("color-emoney-gold"), location: colorStart + colorSpan * 0.48),
                     .init(color: Color("color-futu-green"), location: colorStart + colorSpan * 0.64),
-                    .init(color: Color("color-brand-blue"), location: colorStart + colorSpan * 0.79),
+                    .init(color: Color("color-blue1"), location: colorStart + colorSpan * 0.79),
                     .init(color: Color("color-cash-purple"), location: colorStart + colorSpan * 0.92),
                     .init(color: .white, location: 0.985),
                     .init(color: .clear, location: 1)
@@ -225,7 +225,7 @@ struct RotateBeamBorder: View {
             let spread = min(max(glowSpread, 0.1), 10)
 
             ZStack {
-                shape.strokeBorder(Color("color-text-90").opacity(0.35), lineWidth: 1)
+                shape.strokeBorder(Color("color-text3").opacity(0.35), lineWidth: 1)
                 Group {
                     shape.strokeBorder(light, lineWidth: 7 * width)
                         .blur(radius: 12 * spread)

@@ -23,7 +23,7 @@ struct CompareView: View {
 struct CompareViewPreviews: PreviewProvider {
 static var previews: some View {
         ZStack {
-            Color("color-base-0")
+            Color("color-base0")
                 .edgesIgnoringSafeArea(.all)
             CompareView()
         }
@@ -51,11 +51,11 @@ struct CompareHeaderTabsView: View {
                         VStack(spacing: 5) {
                             Text(tabTitles[tabIndex])
                                 .font(.system(size: 16))
-                                .foregroundColor(index == tabIndex ? Color("color-text-30") : Color("color-text-60"))
+                                .foregroundColor(index == tabIndex ? Color("color-text1") : Color("color-text-60"))
                                 .fontWeight(index == tabIndex ? .semibold : .regular)
 
                             Capsule()
-                                .fill(Color("color-brand-blue"))
+                                .fill(Color("color-blue1"))
                                 .frame(width: 30, height: 2)
                                 .opacity(index == tabIndex ? 1 : 0)
                         }
@@ -73,7 +73,7 @@ struct CompareHeaderTabsView: View {
             }
             .padding(.leading, 15)
             .padding(.trailing, 11)
-            .background(Color("color-base-1"))
+            .background(Color("color-base1"))
             .overlay(FullWidthSeparatorView())
 
             // Keep the selected vertical scroller directly under the app's TabView,
@@ -114,7 +114,7 @@ struct CompareTab1View: View {
                             WatchlistItemView(stock: stock)
                         }
                     }
-                }.background(Color("color-base-0"))
+                }.background(Color("color-base0"))
             }
         }
     }
@@ -130,7 +130,7 @@ struct CompareTab2View: View {
                         WatchlistItemView(stock: stock)
                     }
                 }
-            }.background(Color("color-base-0"))
+            }.background(Color("color-base0"))
         }
     }
 }
@@ -146,7 +146,7 @@ struct CompareTab3View: View {
                         WatchlistItemView(stock: stock)
                     }
                 }
-            }.background(Color("color-base-0"))
+            }.background(Color("color-base0"))
         }
     }
 }
@@ -162,7 +162,7 @@ struct CompareTab4View: View {
                         WatchlistItemView(stock: stock)
                     }
                 }
-            }.background(Color("color-base-0"))
+            }.background(Color("color-base0"))
         }
     }
 }
@@ -443,7 +443,7 @@ struct CompareTab5View: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("compare.componentLibrary")
-        .background(Color("color-base-0"))
+        .background(Color("color-base0"))
     }
 
     private var stockDetailUSCommonStockTitle: String {

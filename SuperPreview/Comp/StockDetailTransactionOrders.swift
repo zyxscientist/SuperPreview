@@ -71,10 +71,10 @@ struct StockDetailTransactionOrders: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .topLeading)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .overlay(alignment: .bottom) {
             Rectangle()
-                .fill(Color("color-separator-10"))
+                .fill(Color("color-separator1"))
                 .frame(height: StockDetailTransactionOrdersLayout.separatorHeight)
                 .padding(.horizontal, StockDetailTransactionOrdersLayout.horizontalPadding)
                 .accessibilityHidden(true)
@@ -168,7 +168,7 @@ struct StockDetailTransactionOrders: View {
             }
         }
         .frame(height: StockDetailTransactionOrdersLayout.headerHeight)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockDetail.transactionOrders.header")
     }
@@ -272,7 +272,7 @@ private struct StockDetailTransactionOrdersPreviewHarness: View {
                 latestAction = action.rawValue
             }
         }
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .overlay(alignment: .bottomTrailing) {
             Text(latestAction)
                 .font(.caption2)

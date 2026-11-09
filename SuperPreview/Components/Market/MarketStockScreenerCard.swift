@@ -29,7 +29,7 @@ struct MarketStockScreenerCard: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(language.text(.marketStockScreenerTitle))
                             .modifier(CustomFontModifier(size: 14, font: .medium, lineHeight: 20))
-                            .foregroundStyle(Color("color-text-30"))
+                            .foregroundStyle(Color("color-text1"))
                             .frame(height: 20, alignment: .leading)
 
                         Text(language.text(.marketStockScreenerSubtitle))
@@ -50,7 +50,7 @@ struct MarketStockScreenerCard: View {
             .padding(12)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
-                Color("color-scale-1"),
+                Color("color-grayscale1"),
                 in: RoundedRectangle(cornerRadius: 10, style: .continuous)
             )
             .contentShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
@@ -72,7 +72,7 @@ struct MarketStockScreenerCard: View {
                 shape
                     .fill(.ultraThinMaterial)
                     .overlay {
-                        shape.strokeBorder(Color("color-separator-10"), lineWidth: 0.5)
+                        shape.strokeBorder(Color("color-separator1"), lineWidth: 0.5)
                     }
                     .frame(width: 36, height: 36)
                     .shadow(color: .black.opacity(0.02), radius: 7.5, x: 0, y: 8)

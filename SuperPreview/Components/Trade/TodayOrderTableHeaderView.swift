@@ -46,7 +46,7 @@ struct TodayOrderTableHeaderView: View {
             .frame(width: UIScreen.main.bounds.width * 23 / 100, alignment: .trailing)
             
         }
-        .background(Color("color-transparent"))
+        .background(Color("color-legacy-transparent"))
         .padding(.vertical, 5)
     }
 }

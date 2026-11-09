@@ -92,7 +92,7 @@ struct StockOrderQuantityAvailability: View {
         }
         .padding(.horizontal, StockOrderQuantityAvailabilityLayout.horizontalPadding)
         .frame(maxWidth: .infinity, alignment: .topLeading)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockOrder.quantityAvailability")
     }
@@ -110,7 +110,7 @@ struct StockOrderQuantityAvailability: View {
         } label: {
             HStack(spacing: StockOrderQuantityAvailabilityLayout.textSpacing) {
                 Text(title + ":")
-                    .foregroundColor(Color("color-text-90"))
+                    .foregroundColor(Color("color-text3"))
 
                 Text(value.displayValue)
                     .foregroundColor(tone.color)
@@ -145,9 +145,9 @@ private enum StockOrderQuantityAvailabilityTone {
     var color: Color {
         switch self {
         case .buy:
-            Color("color-utility3-red")
+            Color("color-red")
         case .sell:
-            Color("color-utility3-green")
+            Color("color-green")
         }
     }
 }

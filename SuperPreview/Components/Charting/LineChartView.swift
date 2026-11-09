@@ -85,11 +85,11 @@ struct LineChartView: View {
             }.frame(height: 240, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
 
             Fill_LineGraph(dataPoints: ChartMockData.oneMonth.normalized, bottomBuffer: 20)
-                .foregroundColor(Color("color-brand-blue").opacity(0.15))
+                .foregroundColor(Color("color-blue1").opacity(0.15))
                 .frame(width: 390, height: 200)
             
             LineGraph(dataPoints: ChartMockData.oneMonth.normalized)
-                .stroke(Color("color-brand-blue"), lineWidth: 1)
+                .stroke(Color("color-blue1"), lineWidth: 1)
                 .frame(width: 390, height: 200)
             
             Text("返回数据总数量：\(ChartMockData.oneMonth.normalized.count)")

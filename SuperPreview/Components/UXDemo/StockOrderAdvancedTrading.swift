@@ -236,8 +236,8 @@ struct StockOrderAdvancedTradingToolBar: View {
                         )
                         .foregroundColor(
                             selection == section
-                                ? Color("color-text-r")
-                                : Color("color-text-30")
+                                ? Color("color-textr")
+                                : Color("color-text1")
                         )
                         .lineLimit(1)
                         .lineSpacing(max(metrics.lineHeight - metrics.fontSize, 0))
@@ -264,7 +264,7 @@ struct StockOrderAdvancedTradingToolBar: View {
                     .firstIndex(of: selection) ?? 0
 
                 Capsule()
-                    .fill(Color("color-base-r"))
+                    .fill(Color("color-baser"))
                     .frame(width: segmentWidth, height: geometry.size.height)
                     .offset(x: CGFloat(selectedIndex) * segmentWidth)
                     .animation(selectionAnimation, value: selection)

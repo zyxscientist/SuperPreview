@@ -17,11 +17,11 @@ struct StockTradeTapeView: View {
         VStack(spacing:10){
             HStack(spacing:0){
                 Rectangle()
-                    .foregroundColor(MarketColor.resolve("color-utility3-green", reversed: marketColorReversed))
+                    .foregroundColor(MarketColor.resolve("color-green", reversed: marketColorReversed))
                     .frame(height: 5)
                 
                 Rectangle()
-                    .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
+                    .foregroundColor(MarketColor.resolve("color-red", reversed: marketColorReversed))
                     .frame(height: 5)
             }
             .cornerRadius(100)
@@ -31,38 +31,38 @@ struct StockTradeTapeView: View {
                 ZStack {
                     HStack(spacing: 0.0){
                         Rectangle()
-                            .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed).opacity(0.15))
+                            .foregroundColor(MarketColor.resolve("color-red", reversed: marketColorReversed).opacity(0.15))
                             .frame(height: 27)
                             .overlay(
                                 HStack{
                                     Text("16.980")
-                                        .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
+                                        .foregroundColor(MarketColor.resolve("color-red", reversed: marketColorReversed))
                                         .modifier(CustomFontModifier(size: 12, font: .medium))
                                         .padding(.leading, 10)
                                     
                                     Spacer()
                                     
                                     Text("2K(       1)")
-                                        .foregroundColor(Color("color-text-30"))
+                                        .foregroundColor(Color("color-text1"))
                                         .modifier(CustomFontModifier(size: 12, font: .medium))
                                         .padding(.trailing, 10)
                                 }
                             )
                         
                         Rectangle()
-                            .foregroundColor(MarketColor.resolve("color-utility3-green", reversed: marketColorReversed).opacity(0.15))
+                            .foregroundColor(MarketColor.resolve("color-green", reversed: marketColorReversed).opacity(0.15))
                             .frame(height: 27)
                             .overlay(
                                 HStack{
                                     Text("15.910")
-                                        .foregroundColor(MarketColor.resolve("color-utility3-green", reversed: marketColorReversed))
+                                        .foregroundColor(MarketColor.resolve("color-green", reversed: marketColorReversed))
                                         .modifier(CustomFontModifier(size: 12, font: .medium))
                                         .padding(.leading, 10)
                                     
                                     Spacer()
                                     
                                     Text("33.21K(      33)")
-                                        .foregroundColor(Color("color-text-30"))
+                                        .foregroundColor(Color("color-text1"))
                                         .modifier(CustomFontModifier(size: 12, font: .medium))
                                         .padding(.trailing, 10)
                                 }
@@ -87,7 +87,7 @@ struct StockTradeTapeView: View {
         
         // TODO: 记笔记他妈的这个坑我好久
         .frame(height: openTapeView ? 320 : 82, alignment: .top)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .clipped()
     }
 }
@@ -105,38 +105,38 @@ struct OtherTapeView: View {
             
             HStack(spacing: 0.0){
                 Rectangle()
-                    .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed).opacity(0.05))
+                    .foregroundColor(MarketColor.resolve("color-red", reversed: marketColorReversed).opacity(0.05))
                     .frame(height: 27)
                     .overlay(
                         HStack{
                             Text("799.980")
-                                .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
+                                .foregroundColor(MarketColor.resolve("color-red", reversed: marketColorReversed))
                                 .modifier(CustomFontModifier(size: 12, font: .medium))
                                 .padding(.leading, 10)
                             
                             Spacer()
                             
                             Text("2K(       1)")
-                                .foregroundColor(Color("color-text-30"))
+                                .foregroundColor(Color("color-text1"))
                                 .modifier(CustomFontModifier(size: 12, font: .medium))
                                 .padding(.trailing, 10)
                         }
                     )
                 
                 Rectangle()
-                    .foregroundColor(MarketColor.resolve("color-utility3-green", reversed: marketColorReversed).opacity(0.05))
+                    .foregroundColor(MarketColor.resolve("color-green", reversed: marketColorReversed).opacity(0.05))
                     .frame(height: 27)
                     .overlay(
                         HStack{
                             Text("799.980")
-                                .foregroundColor(MarketColor.resolve("color-utility3-green", reversed: marketColorReversed))
+                                .foregroundColor(MarketColor.resolve("color-green", reversed: marketColorReversed))
                                 .modifier(CustomFontModifier(size: 12, font: .medium))
                                 .padding(.leading, 10)
                             
                             Spacer()
                             
                             Text("33.21K(      33)")
-                                .foregroundColor(Color("color-text-30"))
+                                .foregroundColor(Color("color-text1"))
                                 .modifier(CustomFontModifier(size: 12, font: .medium))
                                 .padding(.trailing, 10)
                         }

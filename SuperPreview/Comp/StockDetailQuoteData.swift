@@ -87,7 +87,7 @@ enum StockDetailTradingSession: Hashable {
     fileprivate var color: Color {
         switch self {
         case .trading, .preMarketTrading, .afterHoursTrading:
-            Color("color-brand-blue")
+            Color("color-blue1")
         case .closed, .halted:
             Color("color-text-60")
         }
@@ -109,7 +109,7 @@ enum StockDetailTradingSession: Hashable {
 
 enum StockDetailLiveQuoteBackground {
     static func color(for colorScheme: ColorScheme) -> Color {
-        Color("color-brand-blue")
+        Color("color-blue1")
             .opacity(colorScheme == .dark ? 0.15 : 0.05)
     }
 }
@@ -149,11 +149,11 @@ enum StockDetailQuoteTrend: Hashable {
     fileprivate func color(reversed: Bool) -> Color {
         switch self {
         case .up:
-            MarketColor.resolve("color-utility3-red", reversed: reversed)
+            MarketColor.resolve("color-red", reversed: reversed)
         case .down:
-            MarketColor.resolve("color-utility3-green", reversed: reversed)
+            MarketColor.resolve("color-green", reversed: reversed)
         case .flat:
-            Color("color-text-30")
+            Color("color-text1")
         }
     }
 
@@ -178,11 +178,11 @@ struct StockDetailQuoteSummaryItem: Hashable, Identifiable {
         fileprivate func color(reversed: Bool) -> Color {
             switch self {
             case .primary:
-                Color("color-text-30")
+                Color("color-text1")
             case .positive:
-                MarketColor.resolve("color-utility3-red", reversed: reversed)
+                MarketColor.resolve("color-red", reversed: reversed)
             case .negative:
-                MarketColor.resolve("color-utility3-green", reversed: reversed)
+                MarketColor.resolve("color-green", reversed: reversed)
             }
         }
     }
@@ -306,7 +306,7 @@ struct StockDetailQuoteData: View {
         .padding(.horizontal, StockDetailQuoteDataLayout.horizontalPadding)
         .padding(.vertical, StockDetailQuoteDataLayout.verticalPadding)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockDetail.quoteData")
         .interactiveBottomCard(isPresented: $isShowingBadgeInfoSheet) {
@@ -520,7 +520,7 @@ struct StockDetailQuoteData: View {
                     width: StockDetailQuoteDataLayout.expandWidth,
                     height: StockDetailQuoteDataLayout.expandHeight
                 )
-                .background(Color("color-scale-1"))
+                .background(Color("color-grayscale1"))
                 .clipShape(
                     RoundedRectangle(
                         cornerRadius: StockDetailQuoteDataLayout.expandCornerRadius,
@@ -574,7 +574,7 @@ struct StockDetailQuoteData: View {
     private var timestampTextColor: Color {
         switch data.timestamp.session {
         case .trading, .preMarketTrading, .afterHoursTrading:
-            Color("color-text-30")
+            Color("color-text1")
         case .closed, .halted:
             Color("color-text-60")
         }
@@ -586,7 +586,7 @@ struct StockDetailQuoteData: View {
         case .trading, .preMarketTrading, .afterHoursTrading:
             StockDetailLiveQuoteBackground.color(for: colorScheme)
         case .closed:
-            Color("color-scale-1")
+            Color("color-grayscale1")
         case .halted:
             Color.clear
         }

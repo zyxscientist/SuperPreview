@@ -18,7 +18,7 @@ struct NewsTitleView: View {
             Text(news_title)
                 .lineSpacing(6)
                 .modifier(CustomFontModifier(size: fontsize, font: .medium))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
             
             Spacer()
         }

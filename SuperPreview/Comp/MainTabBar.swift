@@ -69,7 +69,7 @@ struct MainTabBar: UIViewRepresentable {
         tabBar.isTranslucent = true
         // The selected title uses UITabBar's tint color independently from
         // the always-original active icon artwork.
-        tabBar.tintColor = UIColor(named: "color-brand-blue")
+        tabBar.tintColor = UIColor(named: "color-blue1")
         tabBar.delegate = context.coordinator
         tabBar.itemPositioning = .fill
         tabBar.items = AppTab.allCases.map(makeItem)
@@ -79,7 +79,7 @@ struct MainTabBar: UIViewRepresentable {
 
     func updateUIView(_ tabBar: UITabBar, context: Context) {
         context.coordinator.parent = self
-        tabBar.tintColor = UIColor(named: "color-brand-blue")
+        tabBar.tintColor = UIColor(named: "color-blue1")
         if tabBar.items?.count != AppTab.allCases.count {
             tabBar.items = AppTab.allCases.map(makeItem)
         } else {
@@ -209,7 +209,7 @@ private struct ConditionalNavigationBarDebugItemModifier: ViewModifier {
                 trailing: Button(action: action) {
                     Text(title)
                         .modifier(CustomFontModifier(size: 13, font: .medium, lineHeight: 16))
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
                 }
                 .accessibilityIdentifier(identifier)
             )

@@ -41,7 +41,7 @@ struct DemoTouchToggle: View {
         if DemoTouchSettings.isAvailable {
             Toggle("Show Touch", isOn: $settings.isEnabled)
                 .font(.system(size: 16, weight: .medium))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .accessibilityIdentifier("debug.showTouch")
         }
     }

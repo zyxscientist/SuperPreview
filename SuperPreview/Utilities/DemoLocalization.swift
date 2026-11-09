@@ -106,8 +106,8 @@ enum MarketColor {
             "color-utility-green": "color-utility-red",
             "color-utility2-red": "color-utility2-green",
             "color-utility2-green": "color-utility2-red",
-            "color-utility3-red": "color-utility3-green",
-            "color-utility3-green": "color-utility3-red",
+            "color-red": "color-green",
+            "color-green": "color-red",
             "color-futu-red": "color-futu-green",
             "color-futu-green": "color-futu-red"
         ]
@@ -1004,7 +1004,7 @@ struct DemoMarketColorPicker: View {
         VStack(alignment: .leading, spacing: 8) {
             Text(language.text(.marketColors))
                 .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
 
             Picker(language.text(.marketColors), selection: $isReversed) {
                 Text(language.text(.redUpGreenDown))
@@ -1028,7 +1028,7 @@ struct DemoLanguagePicker: View {
         VStack(alignment: .leading, spacing: 8) {
             Text(interfaceLanguage.text(.interfaceLanguage))
                 .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
 
             Picker(interfaceLanguage.text(.interfaceLanguage), selection: $language) {
                 ForEach(DemoLanguage.allCases) { option in
@@ -1111,7 +1111,7 @@ struct DemoLiquidGlassUsageToggle: View {
         VStack(alignment: .leading, spacing: 4) {
             Text(interfaceLanguage.text(.reduceLiquidGlassUsage))
                 .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
 
             Text(interfaceLanguage.text(detailsKey))
                 .modifier(CustomFontModifier(size: 13, font: .regular, lineHeight: 16))

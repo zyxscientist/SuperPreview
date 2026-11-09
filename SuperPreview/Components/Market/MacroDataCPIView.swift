@@ -19,7 +19,7 @@ struct MacroDataCPIView: View {
             // 标题
             HStack{
                 Text("美国CPI")
-                    .foregroundStyle(Color(.colorText30))
+                    .foregroundStyle(Color(.colorText1))
                     .modifier(CustomFontModifier(size: 18, font: .medium))
                 Spacer()
             }
@@ -62,7 +62,7 @@ struct MacroDataCPIView: View {
                         .modifier(CustomFontModifier(size: 14, font: .regular))
                     Text("2.40%")
                         .multilineTextAlignment(.leading)
-                        .foregroundStyle(Color(.colorBrandBlue))
+                        .foregroundStyle(Color(.colorBlue1))
                         .modifier(CustomFontModifier(size: 16, font: .bold))
                 }
                 .frame(width:100, alignment: .leading)
@@ -75,7 +75,7 @@ struct MacroDataCPIView: View {
                         .modifier(CustomFontModifier(size: 14, font: .regular))
                     Text("2.30%")
                         .multilineTextAlignment(.leading)
-                        .foregroundStyle(Color(.colorText30))
+                        .foregroundStyle(Color(.colorText1))
                         .modifier(CustomFontModifier(size: 16, font: .bold))
                 }
                 .frame(width:100, alignment: .leading)
@@ -88,7 +88,7 @@ struct MacroDataCPIView: View {
                         .modifier(CustomFontModifier(size: 14, font: .regular))
                     Text("2.20%")
                         .multilineTextAlignment(.leading)
-                        .foregroundStyle(Color(.colorText30))
+                        .foregroundStyle(Color(.colorText1))
                         .modifier(CustomFontModifier(size: 16, font: .bold))
                 }
                 .frame(width:100, alignment: .leading)
@@ -106,22 +106,22 @@ struct MacroDataCPIView: View {
                 // 第一个
                 HStack(spacing: 5.5){
                     Capsule()
-                        .foregroundColor(Color(.colorBrandBlue))
+                        .foregroundColor(Color(.colorBlue1))
                         .frame(width: 10, height: 2)
                     
                     Text("公布值")
-                        .foregroundStyle(Color(.colorText90))
+                        .foregroundStyle(Color(.colorText3))
                         .modifier(CustomFontModifier(size: 13, font: .regular))
                 }
                 
                 // 第二个
                 HStack(spacing: 5.5){
                     Capsule()
-                        .foregroundColor(Color(.colorText30))
+                        .foregroundColor(Color(.colorText1))
                         .frame(width: 10, height: 2)
                     
                     Text("预测值")
-                        .foregroundStyle(Color(.colorText90))
+                        .foregroundStyle(Color(.colorText3))
                         .modifier(CustomFontModifier(size: 13, font: .regular))
                 }
                 
@@ -168,7 +168,7 @@ struct MacroDataCPIView: View {
             // 描边
             .overlay(
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .stroke(Color(.colorSeparator10), lineWidth: 0.5)
+                    .stroke(Color(.colorSeparator1), lineWidth: 0.5)
             )
             .padding(.horizontal, 10)
             .shadow(color: Color.black.opacity(0.15), radius: 25, x: 0, y: 2)
@@ -198,7 +198,7 @@ struct MacroDataCPIView: View {
         return Text(monthString(from: dateFromString(viewModel.data_cpi[dataIndex].date)))
             .padding(0)
             .modifier(CustomFontModifier(size: 11, font: .regular))
-            .foregroundColor(Color(.colorText90))
+            .foregroundColor(Color(.colorText3))
             .frame(width: 40)
             .position(x: x, y: 177)
     }
@@ -213,7 +213,7 @@ struct MacroDataCPIView: View {
             path.move(to: CGPoint(x: 15, y: y))
             path.addLine(to: CGPoint(x: geometry.size.width - 15, y: y))
         }
-        .stroke(Color(.colorScale2),
+        .stroke(Color(.colorGrayscale2),
                 style:StrokeStyle(
                     lineWidth: 0.5,
                     lineCap: .round,
@@ -229,7 +229,7 @@ struct MacroDataCPIView: View {
         let normalizedData = viewModel.data_cpi.map { CGFloat(($0.value - minValue) / (maxValue - minValue)) }
         
         return LineGraph(dataPoints: normalizedData)
-            .stroke(Color(.colorBrandBlue),
+            .stroke(Color(.colorBlue1),
                     style:StrokeStyle(
                         lineWidth: 1.5,
                         lineCap: .round
@@ -246,7 +246,7 @@ struct MacroDataCPIView: View {
         let normalizedData = viewModel.data_predict_cpi.map { CGFloat(($0.value - minValue) / (maxValue - minValue)) }
         
         return LineGraph(dataPoints: normalizedData)
-            .stroke(Color(.colorText30),
+            .stroke(Color(.colorText1),
                     style:StrokeStyle(
                         lineWidth: 1.5,
                         lineCap: .round,

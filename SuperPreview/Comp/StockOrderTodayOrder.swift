@@ -18,7 +18,7 @@ enum StockOrderTodayOrderSide: String, Hashable {
     }
 
     var color: Color {
-        self == .buy ? Color("color-utility3-red") : Color("color-utility3-green")
+        self == .buy ? Color("color-red") : Color("color-green")
     }
 }
 
@@ -178,7 +178,7 @@ struct StockOrderTodayOrder: View {
                 )
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .animation(
             SubAssetCardMotion.expansion(reduceMotion: reduceMotion),
             value: isActionGroupExpanded
@@ -200,7 +200,7 @@ struct StockOrderTodayOrder: View {
                     Text(price)
                         .modifier(CustomFontModifier(size: 16, font: .regular, lineHeight: 24))
                         .monospacedDigit()
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
                         .lineLimit(1)
                         .minimumScaleFactor(0.65)
                         .frame(
@@ -245,10 +245,10 @@ struct StockOrderTodayOrder: View {
                 if let tag, !tag.isEmpty {
                     Text(tag)
                         .modifier(CustomFontModifier(size: 10, font: .regular, lineHeight: 12))
-                        .foregroundColor(Color("color-brand-blue"))
+                        .foregroundColor(Color("color-blue1"))
                         .padding(.horizontal, StockOrderTodayOrderLayout.tagHorizontalPadding)
                         .padding(.vertical, StockOrderTodayOrderLayout.tagVerticalPadding)
-                        .background(Color("color-brand-blue").opacity(0.1))
+                        .background(Color("color-blue1").opacity(0.1))
                         .clipShape(RoundedRectangle(cornerRadius: 2, style: .continuous))
                 }
             }
@@ -281,7 +281,7 @@ struct StockOrderTodayOrder: View {
         VStack(alignment: .leading, spacing: StockOrderTodayOrderLayout.rowSpacing) {
             Text(productName)
                 .modifier(CustomFontModifier(size: 16, font: .regular, lineHeight: 24))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .lineLimit(1)
                 .minimumScaleFactor(0.65)
 
@@ -299,7 +299,7 @@ struct StockOrderTodayOrder: View {
             Text(quantity)
                 .modifier(CustomFontModifier(size: 16, font: .regular, lineHeight: 24))
                 .monospacedDigit()
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .lineLimit(1)
                 .minimumScaleFactor(0.65)
 
@@ -336,7 +336,7 @@ struct StockOrderTodayOrder: View {
         } label: {
             Text(language.text(action.titleKey))
                 .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
                 .frame(
@@ -344,7 +344,7 @@ struct StockOrderTodayOrder: View {
                     minHeight: StockOrderTodayOrderLayout.actionHeight,
                     maxHeight: StockOrderTodayOrderLayout.actionHeight
                 )
-                .background(Color("color-scale-2"))
+                .background(Color("color-grayscale2"))
                 .clipShape(
                     UnevenRoundedRectangle(
                         cornerRadii: position.cornerRadii,

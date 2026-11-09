@@ -25,7 +25,7 @@ struct TotalAssetView: View {
                         HStack(alignment: .center, spacing: 0.0) {
                             Text("HKD")
                                 .font(.system(size: 14, weight: .regular))
-                                .foregroundColor(Color("color-brand-blue"))
+                                .foregroundColor(Color("color-blue1"))
                             Image("switch_nor")
                         }
                         
@@ -33,7 +33,7 @@ struct TotalAssetView: View {
                     HStack(alignment: .bottom) {
                         Text("120,201.12")
                             .modifier(CustomFontModifier(size: 30, font: .semibold))
-                            .foregroundColor(Color("color-text-30"))
+                            .foregroundColor(Color("color-text1"))
                             .padding(.top,15)
                         
                         Spacer()
@@ -41,7 +41,7 @@ struct TotalAssetView: View {
                             Image("total_asset_graph")
                                 .frame(width: 110, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
                             Rectangle()
-                                .fill(LinearGradient(gradient: Gradient(colors: [Color("color-base-1").opacity(1),Color("color-base-1").opacity(0.0)]), startPoint: .leading, endPoint: .trailing))
+                                .fill(LinearGradient(gradient: Gradient(colors: [Color("color-base1").opacity(1),Color("color-base1").opacity(0.0)]), startPoint: .leading, endPoint: .trailing))
                                 .frame(width: 35,height: 50)
                                 .offset(x: -38, y: 0)
                         }
@@ -58,7 +58,7 @@ struct TotalAssetView: View {
                         .foregroundColor(Color("color-text-60"))
                     Text("924,213.11")
                         .modifier(CustomFontModifier(size: 13, font: .semibold))
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
                         .padding(.top, 5)
                 }
                 
@@ -70,7 +70,7 @@ struct TotalAssetView: View {
                         .foregroundColor(Color("color-text-60"))
                     Text("21,129.50")
                         .modifier(CustomFontModifier(size: 13, font: .semibold))
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
                         .padding(.top, 5)
                 }
                 
@@ -97,7 +97,7 @@ struct TotalAssetView: View {
         .padding(.horizontal, /*@START_MENU_TOKEN@*/10/*@END_MENU_TOKEN@*/)
         .padding(.vertical, 15)
         .frame(maxHeight: 148)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .clipShape(RoundedRectangle(cornerRadius: 10.0, style: .continuous))
         .padding(.horizontal, 15)
         .padding(.top, /*@START_MENU_TOKEN@*/10/*@END_MENU_TOKEN@*/)

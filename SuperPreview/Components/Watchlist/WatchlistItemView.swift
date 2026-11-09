@@ -32,7 +32,7 @@ struct WatchlistItemView: View {
                                 .multilineTextAlignment(.trailing)
                                 .lineLimit(1)
                                 .font(.system(size: CGFloat(nameLength), weight: .medium))
-                                .foregroundColor(Color("color-text-30"))
+                                .foregroundColor(Color("color-text1"))
                                 
 
                         }
@@ -72,7 +72,7 @@ struct WatchlistItemView: View {
                         .multilineTextAlignment(.trailing)
                         .modifier(CustomFontModifier(size: 15, font: .medium))
     //                    .foregroundColor(MarketColor.resolve(stock.direction, reversed: marketColorReversed))
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
                         .frame(width: 76, alignment: .trailing)
                 }
                     
@@ -91,7 +91,7 @@ struct WatchlistItemView: View {
                         
         }
         .frame(minHeight: 60, maxHeight: 60)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .overlay(
             LeadingSeparatorView()
         )

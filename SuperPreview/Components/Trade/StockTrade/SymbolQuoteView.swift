@@ -18,18 +18,18 @@ struct SymbolQuoteView: View {
             HStack(spacing: 0) {
                 
                 Text("云锋金融")
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .font(.system(size: 12, weight: .medium, design: .default))
                 
                 HStack(spacing: 5) {
                     Text("16.990")
-                        .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
+                        .foregroundColor(MarketColor.resolve("color-red", reversed: marketColorReversed))
                         .modifier(CustomFontModifier(size: 12, font: .medium))
                     Text("+1.210")
-                        .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
+                        .foregroundColor(MarketColor.resolve("color-red", reversed: marketColorReversed))
                         .modifier(CustomFontModifier(size: 12, font: .medium))
                     Text("+8.41%")
-                        .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
+                        .foregroundColor(MarketColor.resolve("color-red", reversed: marketColorReversed))
                         .modifier(CustomFontModifier(size: 12, font: .medium))
                 }.padding(.leading, 49)
                 
@@ -49,7 +49,7 @@ struct SymbolQuoteView: View {
         }
         .padding(.leading, 15)
         .frame(width: UIScreen.main.bounds.size.width,height: 35)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .overlay {
             FullWidthSeparatorView()
         }

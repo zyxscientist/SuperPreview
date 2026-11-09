@@ -45,11 +45,11 @@ enum StockDetailQuoteDetailTone: Hashable {
     fileprivate func color(reversed: Bool) -> Color {
         switch self {
         case .primary:
-            Color("color-text-30")
+            Color("color-text1")
         case .positive:
-            MarketColor.resolve("color-utility3-red", reversed: reversed)
+            MarketColor.resolve("color-red", reversed: reversed)
         case .negative:
-            MarketColor.resolve("color-utility3-green", reversed: reversed)
+            MarketColor.resolve("color-green", reversed: reversed)
         }
     }
 }

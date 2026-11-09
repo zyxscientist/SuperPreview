@@ -19,7 +19,7 @@ struct LiquidGlassResearchView: View {
         }
         .padding(20)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(Color("color-base-0").ignoresSafeArea())
+        .background(Color("color-base0").ignoresSafeArea())
         .navigationTitle("Liquid Glass 调研")
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -112,8 +112,8 @@ private enum TradeAction: String {
 
     var tint: Color {
         switch self {
-        case .buy: return Color("color-utility3-red")
-        case .sell: return Color("color-utility3-green")
+        case .buy: return Color("color-red")
+        case .sell: return Color("color-green")
         }
     }
 }

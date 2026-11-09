@@ -49,9 +49,9 @@ enum StockHoldingValueTone {
         case .gain:
             return MarketColor.resolve("color-utility2-red", reversed: reversed)
         case .loss:
-            return MarketColor.resolve("color-utility3-green", reversed: reversed)
+            return MarketColor.resolve("color-green", reversed: reversed)
         case .neutral:
-            return Color("color-text-30")
+            return Color("color-text1")
         }
     }
 }
@@ -299,7 +299,7 @@ struct StockHoldingListGroup: View {
             height: contentHeight,
             alignment: .topLeading
         )
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .clipped()
         .environment(\.tradeAggregationViewportWidth, viewportWidth)
         .accessibilityElement(children: .contain)
@@ -510,7 +510,7 @@ private struct StockHoldingMarketHeader: View {
 
                 Text(market.title(language: language))
                     .font(.custom("PlusJakartaSans-Medium", size: 16, relativeTo: .body))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .frame(height: 20)
 
                 Spacer(minLength: 0)
@@ -583,7 +583,7 @@ private struct StockHoldingScrollableMarketTable: View {
             }
         }
         .frame(width: StockHoldingLayout.contentWidth, alignment: .topLeading)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
     }
 }
 
@@ -722,7 +722,7 @@ private struct StockHoldingScrollableHeader: View {
             height: StockHoldingLayout.headerHeight,
             alignment: .top
         )
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
     }
 }
 
@@ -741,7 +741,7 @@ private struct StockHoldingNameHeader: View {
                 height: StockHoldingLayout.headerHeight,
                 alignment: .topLeading
             )
-            .background(Color("color-base-1"))
+            .background(Color("color-base1"))
     }
 }
 
@@ -754,13 +754,13 @@ private struct StockHoldingNameCell: View {
         VStack(alignment: .leading, spacing: 2) {
             Text(display(language.securityName(id: holding.id, fallback: holding.name)))
                 .font(.custom("PlusJakartaSans-Regular", size: 16, relativeTo: .body))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .frame(width: 110, height: 24, alignment: .leading)
 
             Text(display(holding.symbol))
                 .font(.custom("PlusJakartaSans-Regular", size: 14, relativeTo: .subheadline))
                 .monospacedDigit()
-                .foregroundColor(Color(isNumberHidden ? "color-text-30" : "color-text-60"))
+                .foregroundColor(Color(isNumberHidden ? "color-text1" : "color-text-60"))
                 .frame(width: 110, height: 20, alignment: .leading)
         }
         .padding(.leading, 16)
@@ -769,7 +769,7 @@ private struct StockHoldingNameCell: View {
             height: StockHoldingLayout.rowHeight,
             alignment: .leading
         )
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
     }
 
     private func display(_ value: String) -> String {
@@ -787,14 +787,14 @@ private struct StockHoldingMetricsRow: View {
             valuePair(
                 primary: holding.marketValue,
                 secondary: holding.quantity,
-                primaryColor: Color("color-text-30"),
+                primaryColor: Color("color-text1"),
                 secondaryColor: Color("color-text-60")
             )
 
             valuePair(
                 primary: holding.currentPrice,
                 secondary: holding.costPrice,
-                primaryColor: Color("color-text-30"),
+                primaryColor: Color("color-text1"),
                 secondaryColor: Color("color-text-60")
             )
 
@@ -815,8 +815,8 @@ private struct StockHoldingMetricsRow: View {
             valuePair(
                 primary: holding.holdingRatio,
                 secondary: nil,
-                primaryColor: Color("color-text-30"),
-                secondaryColor: Color("color-text-30")
+                primaryColor: Color("color-text1"),
+                secondaryColor: Color("color-text1")
             )
         }
         .padding(.leading, StockHoldingLayout.metricsLeadingInset)
@@ -827,7 +827,7 @@ private struct StockHoldingMetricsRow: View {
             height: StockHoldingLayout.rowHeight,
             alignment: .top
         )
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
     }
 
     private func valuePair(
@@ -839,8 +839,8 @@ private struct StockHoldingMetricsRow: View {
         StockHoldingValuePairCell(
             primary: isNumberHidden ? "***" : primary,
             secondary: secondary.map { isNumberHidden ? "***" : $0 },
-            primaryColor: isNumberHidden ? Color("color-text-30") : primaryColor,
-            secondaryColor: isNumberHidden ? Color("color-text-30") : secondaryColor
+            primaryColor: isNumberHidden ? Color("color-text1") : primaryColor,
+            secondaryColor: isNumberHidden ? Color("color-text1") : secondaryColor
         )
     }
 }
@@ -908,9 +908,9 @@ private struct StockHoldingActionBar: View {
         Button(action: action) {
             Text(title)
                 .font(.custom("PlusJakartaSans-Medium", size: 16, relativeTo: .body))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .frame(maxWidth: .infinity, minHeight: StockHoldingLayout.actionHeight, maxHeight: StockHoldingLayout.actionHeight)
-                .background(Color("color-scale-2"))
+                .background(Color("color-grayscale2"))
                 .clipShape(
                     UnevenRoundedRectangle(
                         cornerRadii: position.cornerRadii,
@@ -966,7 +966,7 @@ private struct StockHoldingSeparator: View {
 
     var body: some View {
         Rectangle()
-            .fill(Color("color-separator-10"))
+            .fill(Color("color-separator1"))
             .frame(width: max(viewportWidth - 32, 0), height: 0.5)
             .frame(
                 width: viewportWidth,
@@ -1025,6 +1025,6 @@ private struct StockHoldingListGroupPreviewContainer<Content: View>: View {
             height: 880,
             alignment: .top
         )
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
     }
 }

@@ -139,7 +139,7 @@ struct StockOrderBook: View {
             }
         }
         .clipped()
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .animation(
             StockOrderMotion.expansion(reduceMotion: reduceMotion),
             value: isShowingExpandedLevels
@@ -210,10 +210,10 @@ struct StockOrderBook: View {
             HStack(spacing: 0) {
                 HStack(spacing: StockOrderBookLayout.titlePercentageSpacing) {
                     Text(language.text(.buyOrderBook))
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
 
                     Text(distribution.bidPercentage)
-                        .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
+                        .foregroundColor(MarketColor.resolve("color-red", reversed: marketColorReversed))
                         .modifier(CustomFontModifier(size: 12, font: .regular, lineHeight: 16))
                         .monospacedDigit()
                 }
@@ -222,10 +222,10 @@ struct StockOrderBook: View {
 
                 HStack(spacing: StockOrderBookLayout.titlePercentageSpacing) {
                     Text(language.text(.sellOrderBook))
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
 
                     Text(distribution.askPercentage)
-                        .foregroundColor(MarketColor.resolve("color-utility3-green", reversed: marketColorReversed))
+                        .foregroundColor(MarketColor.resolve("color-green", reversed: marketColorReversed))
                         .modifier(CustomFontModifier(size: 12, font: .regular, lineHeight: 16))
                         .monospacedDigit()
                 }
@@ -237,11 +237,11 @@ struct StockOrderBook: View {
             GeometryReader { proxy in
                 HStack(spacing: 0) {
                     Rectangle()
-                        .fill(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
+                        .fill(MarketColor.resolve("color-red", reversed: marketColorReversed))
                         .frame(width: proxy.size.width * distribution.bidFraction)
 
                     Rectangle()
-                        .fill(MarketColor.resolve("color-utility3-green", reversed: marketColorReversed))
+                        .fill(MarketColor.resolve("color-green", reversed: marketColorReversed))
                         .frame(width: proxy.size.width * distribution.askFraction)
                 }
                 .clipShape(Capsule())
@@ -353,7 +353,7 @@ struct StockOrderBook: View {
     }
 
     private var collapsedMask: some View {
-        Color("color-base-1")
+        Color("color-base1")
             .mask {
                 Image("stock_order_orderbook_collapsed_mask")
                     .resizable()
@@ -411,9 +411,9 @@ private enum StockOrderBookSide {
     func color(reversed: Bool) -> Color {
         switch self {
         case .bid:
-            return MarketColor.resolve("color-utility3-red", reversed: reversed)
+            return MarketColor.resolve("color-red", reversed: reversed)
         case .ask:
-            return MarketColor.resolve("color-utility3-green", reversed: reversed)
+            return MarketColor.resolve("color-green", reversed: reversed)
         }
     }
 
@@ -457,7 +457,7 @@ private struct StockOrderBookCompactCell: View {
                 Spacer(minLength: 4)
 
                 StockOrderBookVolumeText(level: level, fontSize: 14, lineHeight: 20)
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
             }
             .padding(.leading, 6)
             .padding(.trailing, 8)
@@ -509,7 +509,7 @@ private struct StockOrderBookExpandedCell: View {
                 Spacer(minLength: 2)
 
                 StockOrderBookVolumeText(level: level, fontSize: 12, lineHeight: 16)
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
             }
             .padding(.leading, leadingPadding)
             .padding(.trailing, trailingPadding)

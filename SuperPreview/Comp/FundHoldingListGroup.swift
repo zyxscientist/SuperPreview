@@ -49,9 +49,9 @@ enum FundHoldingValueTone {
         case .gain:
             return MarketColor.resolve("color-utility2-red", reversed: reversed)
         case .loss:
-            return MarketColor.resolve("color-utility3-green", reversed: reversed)
+            return MarketColor.resolve("color-green", reversed: reversed)
         case .neutral:
-            return Color("color-text-30")
+            return Color("color-text1")
         }
     }
 }
@@ -208,7 +208,7 @@ struct FundHoldingListGroup: View {
             height: contentHeight,
             alignment: .topLeading
         )
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .clipped()
         .environment(\.tradeAggregationViewportWidth, viewportWidth)
         .accessibilityElement(children: .contain)
@@ -327,7 +327,7 @@ private struct FundHoldingCurrencyHeader: View {
 
                 Text(currency.title(language: language))
                     .font(.custom("PlusJakartaSans-Medium", size: 16, relativeTo: .body))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .frame(height: FundHoldingLayout.marketHeaderHeight)
 
                 Spacer(minLength: 0)
@@ -369,7 +369,7 @@ private struct FundHoldingScrollableTable: View {
             }
         }
         .frame(width: FundHoldingLayout.contentWidth, alignment: .topLeading)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
     }
 }
 
@@ -464,7 +464,7 @@ private struct FundHoldingScrollableHeader: View {
             height: FundHoldingLayout.tableHeaderHeight,
             alignment: .top
         )
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
     }
 }
 
@@ -483,7 +483,7 @@ private struct FundHoldingNameHeader: View {
                 height: FundHoldingLayout.tableHeaderHeight,
                 alignment: .topLeading
             )
-            .background(Color("color-base-1"))
+            .background(Color("color-base1"))
     }
 }
 
@@ -507,7 +507,7 @@ private struct FundHoldingNameCell: View {
             height: FundHoldingLayout.rowHeight,
             alignment: .topLeading
         )
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .clipped()
     }
 
@@ -515,7 +515,7 @@ private struct FundHoldingNameCell: View {
         HStack(spacing: 2) {
             Text(display(language.securityName(id: holding.id, fallback: holding.name)))
                 .font(.custom("PlusJakartaSans-Regular", size: 16, relativeTo: .body))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .lineLimit(1)
                 .truncationMode(.tail)
 
@@ -540,7 +540,7 @@ private struct FundHoldingNameCell: View {
             Text(display(holding.symbol))
                 .font(.custom("PlusJakartaSans-Regular", size: 14, relativeTo: .subheadline))
                 .monospacedDigit()
-                .foregroundColor(Color(isNumberHidden ? "color-text-30" : "color-text-60"))
+                .foregroundColor(Color(isNumberHidden ? "color-text1" : "color-text-60"))
                 .lineLimit(1)
 
             if holding.showsAIPTag && !isNumberHidden {
@@ -562,7 +562,7 @@ private struct FundHoldingTPlusZeroTag: View {
             Text("T+0")
                 .font(.custom("PlusJakartaSans-Medium", size: 10, relativeTo: .caption2))
                 .monospacedDigit()
-                .foregroundColor(Color("color-brand-blue"))
+                .foregroundColor(Color("color-blue1"))
                 .frame(height: 12)
 
             Image("fund_holding_tag_chevron")
@@ -572,7 +572,7 @@ private struct FundHoldingTPlusZeroTag: View {
         }
         .padding(.horizontal, 4)
         .padding(.vertical, 2)
-        .background(Color("color-brand-blue").opacity(0.1))
+        .background(Color("color-blue1").opacity(0.1))
         .clipShape(RoundedRectangle(cornerRadius: 2, style: .continuous))
         .fixedSize()
         .accessibilityElement(children: .ignore)
@@ -586,11 +586,11 @@ private struct FundHoldingAIPTag: View {
     var body: some View {
         Text(language.text(.recurringInvestmentTag))
             .font(.custom("PlusJakartaSans-Regular", size: 10, relativeTo: .caption2))
-            .foregroundColor(Color("color-brand-blue"))
+            .foregroundColor(Color("color-blue1"))
             .frame(height: 12)
             .padding(.horizontal, 6)
             .padding(.vertical, 2)
-            .background(Color("color-brand-blue").opacity(0.1))
+            .background(Color("color-blue1").opacity(0.1))
             .clipShape(RoundedRectangle(cornerRadius: 2, style: .continuous))
             .fixedSize()
             .accessibilityLabel(language.accessibilityText(.recurringInvestmentTag))
@@ -633,7 +633,7 @@ private struct FundHoldingMetricsRow: View {
             height: FundHoldingLayout.rowHeight,
             alignment: .top
         )
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
     }
 
     private func display(_ value: String) -> String {
@@ -641,7 +641,7 @@ private struct FundHoldingMetricsRow: View {
     }
 
     private func valueColor(_ tone: FundHoldingValueTone) -> Color {
-        isNumberHidden ? Color("color-text-30") : tone.color(reversed: marketColorReversed)
+        isNumberHidden ? Color("color-text1") : tone.color(reversed: marketColorReversed)
     }
 }
 
@@ -678,7 +678,7 @@ private struct FundHoldingSeparator: View {
 
     var body: some View {
         Rectangle()
-            .fill(Color("color-separator-10"))
+            .fill(Color("color-separator1"))
             .frame(width: max(viewportWidth - 32, 0), height: 0.5)
             .frame(width: viewportWidth, height: 1)
     }
@@ -726,6 +726,6 @@ private struct FundHoldingListGroupPreviewContainer<Content: View>: View {
             height: 1015,
             alignment: .top
         )
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
     }
 }

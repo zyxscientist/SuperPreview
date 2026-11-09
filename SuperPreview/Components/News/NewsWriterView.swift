@@ -14,7 +14,7 @@ struct NewsWriterView: View {
             Text("作者：刘少杰 苏扬")
                 .lineSpacing(13.8)
                 .font(.system(size: 14))
-                .foregroundColor(Color("color-text-90"))
+                .foregroundColor(Color("color-text3"))
                 .multilineTextAlignment(.leading)
             
             Spacer()

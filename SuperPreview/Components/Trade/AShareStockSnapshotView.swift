@@ -25,7 +25,7 @@ struct AShareStockSnapshotView: View {
                 
                 
             }
-            .background(Color("color-base-1"))
+            .background(Color("color-base1"))
             .clipShape(RoundedRectangle(cornerRadius: 10.0, style: .continuous))
             .padding(.horizontal, 15)
     }

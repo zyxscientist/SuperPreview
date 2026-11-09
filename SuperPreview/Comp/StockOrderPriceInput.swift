@@ -84,7 +84,7 @@ struct StockOrderPriceInput: View {
             maxHeight: StockOrderPriceInputLayout.controlHeight,
             alignment: .leading
         )
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .overlay(alignment: .topLeading) {
             if let priceDeviation {
                 StockOrderPriceDeviationBubble(
@@ -173,8 +173,8 @@ struct StockOrderPriceInput: View {
             )
             .foregroundColor(
                 priceTarget.isSpecifiedPrice
-                    ? Color("color-text-30")
-                    : Color("color-brand-blue")
+                    ? Color("color-text1")
+                    : Color("color-blue1")
             )
             .lineLimit(1)
             .minimumScaleFactor(0.7)
@@ -206,7 +206,7 @@ struct StockOrderPriceInput: View {
                                 lineHeight: 24
                             )
                         )
-                        .foregroundColor(Color("color-text-90"))
+                        .foregroundColor(Color("color-text3"))
                         .lineLimit(1)
                         .allowsHitTesting(false)
                 }
@@ -219,7 +219,7 @@ struct StockOrderPriceInput: View {
                             lineHeight: 24
                         )
                     )
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .keyboardType(.decimalPad)
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled(true)
@@ -251,7 +251,7 @@ struct StockOrderPriceInput: View {
             width: priceFieldWidth,
             height: StockOrderPriceInputLayout.controlHeight
         )
-        .background(Color("color-scale-2"))
+        .background(Color("color-grayscale2"))
         .clipShape(
             RoundedRectangle(
                 cornerRadius: StockOrderPriceInputLayout.fieldCornerRadius,
@@ -269,7 +269,7 @@ struct StockOrderPriceInput: View {
                     cornerRadius: StockOrderPriceInputLayout.fieldCornerRadius,
                     style: .continuous
                 )
-                .fill(Color("color-scale-2"))
+                .fill(Color("color-grayscale2"))
 
                 targetGlyph
             }
@@ -357,7 +357,7 @@ struct StockOrderPriceInput: View {
                     cornerRadius: StockOrderPriceInputLayout.nudgeCornerRadius,
                     style: .continuous
                 )
-                .fill(Color("color-base-1"))
+                .fill(Color("color-base1"))
 
                 Image(assetName)
                     .resizable()
@@ -511,12 +511,12 @@ private struct StockOrderPriceDeviationBubble: View {
                     lineHeight: 12
                 )
             )
-            .foregroundColor(Color("color-brand-blue"))
+            .foregroundColor(Color("color-blue1"))
             .lineLimit(1)
             .fixedSize(horizontal: true, vertical: false)
             .padding(.horizontal, 4)
             .padding(.vertical, 6)
-            .background(Color("color-brand-blue").opacity(0.1))
+            .background(Color("color-blue1").opacity(0.1))
             .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
             .overlay(alignment: .bottomLeading) {
                 Image("stock_order_price_deviation_bubble_pointer")

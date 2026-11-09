@@ -96,7 +96,7 @@ struct StockDetailBrokerOrderBook: View {
         .padding(.horizontal, StockDetailBrokerOrderBookLayout.horizontalPadding)
         .padding(.bottom, StockDetailBrokerOrderBookLayout.bottomPadding)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockDetail.brokerOrderBook")
     }
@@ -128,7 +128,7 @@ struct StockDetailBrokerOrderBook: View {
                 lineHeight: StockDetailBrokerOrderBookLayout.headerLineHeight
             )
         )
-        .foregroundColor(Color("color-text-30"))
+        .foregroundColor(Color("color-text1"))
         .frame(height: StockDetailBrokerOrderBookLayout.headerHeight)
     }
 
@@ -219,9 +219,9 @@ private enum StockDetailBrokerOrderBookSide {
     func tint(reversed: Bool) -> Color {
         switch self {
         case .bid:
-            MarketColor.resolve("color-utility3-red", reversed: reversed)
+            MarketColor.resolve("color-red", reversed: reversed)
         case .ask:
-            MarketColor.resolve("color-utility3-green", reversed: reversed)
+            MarketColor.resolve("color-green", reversed: reversed)
         }
     }
 
@@ -296,7 +296,7 @@ private struct StockDetailBrokerOrderBookLevelCell: View {
                     .frame(width: StockDetailBrokerOrderBookLayout.brokerCountWidth)
                 }
                 .modifier(rowTextFont)
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
             }
             .padding(.horizontal, StockDetailBrokerOrderBookLayout.rowHorizontalPadding)
         }
@@ -354,7 +354,7 @@ private struct StockDetailBrokerOrderBookSeatCell: View {
                 lineHeight: StockDetailBrokerOrderBookLayout.rowTextLineHeight
             )
         )
-        .foregroundColor(Color("color-text-30"))
+        .foregroundColor(Color("color-text1"))
         .padding(.horizontal, StockDetailBrokerOrderBookLayout.rowHorizontalPadding)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         .background(side.tint(reversed: marketColorReversed).opacity(StockDetailBrokerOrderBookLayout.seatBackgroundOpacity))

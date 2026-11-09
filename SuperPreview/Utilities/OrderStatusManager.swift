@@ -11,9 +11,9 @@ import Foundation
 func orderDirectionColor(direction: String) -> String {
     
     if direction == "买入" { // 返回方向颜色
-        return "color-utility3-red"
+        return "color-red"
     } else if direction == "卖出" {
-        return "color-utility3-green"
+        return "color-green"
     }
     
     return "No matching status color"

@@ -87,7 +87,7 @@ struct SubAssetCardContainer<Content: View>: View {
         }
         .frame(maxWidth: .infinity, alignment: .topLeading)
         .padding(12)
-        .background(Color("color-scale-1"))
+        .background(Color("color-grayscale1"))
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("trade.subAssetCard")
@@ -140,7 +140,7 @@ struct SubAssetCardHeader: View {
                     .frame(height: 20)
 
                 AssetAmountText(SubAssetCardValue.display(netAsset, isNumberHidden: isNumberHidden))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .frame(height: 40)
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
@@ -153,7 +153,7 @@ struct SubAssetCardHeader: View {
 
                         Text(SubAssetCardValue.display(profitLoss, isNumberHidden: isNumberHidden))
                             .font(.custom("PlusJakartaSans-Medium", size: 14, relativeTo: .subheadline))
-                            .foregroundColor(isNumberHidden ? Color("color-text-30") : MarketColor.resolve("color-utility2-red", reversed: marketColorReversed))
+                            .foregroundColor(isNumberHidden ? Color("color-text1") : MarketColor.resolve("color-utility2-red", reversed: marketColorReversed))
                     }
                     .frame(height: 20)
                     .lineLimit(1)
@@ -276,14 +276,14 @@ struct SubAssetMetricRow: View {
         if item.isGain && !isNumberHidden {
             return MarketColor.resolve("color-utility2-red", reversed: marketColorReversed)
         }
-        return Color("color-text-30")
+        return Color("color-text1")
     }
 }
 
 struct SubAssetCardSeparator: View {
     var body: some View {
         Rectangle()
-            .fill(Color("color-separator-10"))
+            .fill(Color("color-separator1"))
             .frame(maxWidth: .infinity, minHeight: 0.5, maxHeight: 0.5)
             .frame(height: 1, alignment: .bottom)
     }
@@ -303,7 +303,7 @@ struct SubAssetCurrencyValue: View {
 
             Text(SubAssetCardValue.display(value, isNumberHidden: isNumberHidden))
                 .font(.custom("PlusJakartaSans-Medium", size: 14, relativeTo: .subheadline))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .lineLimit(1)
         }
         .frame(height: 20)

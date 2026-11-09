@@ -14,7 +14,7 @@ struct NewsDebugPanel: View {
             HStack {
                 Text(language.text(.debug))
                     .modifier(CustomFontModifier(size: 20, font: .bold, lineHeight: 28))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .accessibilityIdentifier("news.debug.title")
 
                 Spacer()
@@ -38,7 +38,7 @@ struct NewsDebugPanel: View {
         .padding(.top, 24)
         .padding(.bottom, 32)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(Color("color-base-1").ignoresSafeArea())
+        .background(Color("color-base1").ignoresSafeArea())
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("news.debug.panel")
     }

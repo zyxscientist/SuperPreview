@@ -58,7 +58,7 @@ struct NewsView: View {
 
                 }
                 .navigationViewStyle(StackNavigationViewStyle())
-                .background(Color("color-base-1"))
+                .background(Color("color-base1"))
         }
     }
 

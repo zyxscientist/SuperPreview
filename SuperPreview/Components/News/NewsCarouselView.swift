@@ -57,7 +57,7 @@ struct NewsCarouselView: View {
                     .font(.system(size: 12, weight: .bold))
                     .foregroundColor(Color(.white))
                     .frame(minWidth: 0, maxWidth: 36, maxHeight: 18)
-                    .background(Color("color-brand-blue"))
+                    .background(Color("color-blue1"))
                     .cornerRadius(4)
                 
                 Spacer()

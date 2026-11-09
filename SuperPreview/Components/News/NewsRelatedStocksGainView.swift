@@ -18,7 +18,7 @@ struct NewsRelatedStocksGainView: View {
         HStack {
             Text(name)
                 .modifier(CustomFontModifier(size: 12, font: .medium))
-                .foregroundColor(Color("color-brand-blue"))
+                .foregroundColor(Color("color-blue1"))
             Spacer()
             Text("600.100")
                 .modifier(CustomFontModifier(size: 12, font: .medium))

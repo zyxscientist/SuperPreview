@@ -80,7 +80,7 @@ struct StockOrderTradeActionBar: View {
             actionButtons
                 .padding(.horizontal, StockOrderTradeActionBarLayout.horizontalPadding)
                 .frame(height: StockOrderTradeActionBarLayout.inlineContainerHeight)
-                .background(Color("color-base-1"))
+                .background(Color("color-base1"))
         }
     }
 
@@ -112,7 +112,7 @@ struct StockOrderTradeActionBar: View {
         case .locked:
             tradeButton(
                 title: language.text(.unlockTrading),
-                color: Color("color-brand-blue"),
+                color: Color("color-blue1"),
                 action: onUnlock,
                 identifier: "unlock"
             )
@@ -120,14 +120,14 @@ struct StockOrderTradeActionBar: View {
             HStack(spacing: buttonSpacing) {
                 tradeButton(
                     title: language.text(.buy),
-                    color: Color("color-utility3-red"),
+                    color: Color("color-red"),
                     action: onBuy,
                     identifier: "buy"
                 )
 
                 tradeButton(
                     title: language.text(.sell),
-                    color: Color("color-utility3-green"),
+                    color: Color("color-green"),
                     action: onSell,
                     identifier: "sell"
                 )
@@ -196,7 +196,7 @@ private struct StockOrderTradeActionBarPreviewHarness: View {
         }
         .padding(.top, 20)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
     }
 }
 

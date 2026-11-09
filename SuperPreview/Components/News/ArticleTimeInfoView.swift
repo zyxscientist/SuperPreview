@@ -14,23 +14,23 @@ struct ArticleTimeInfoView: View {
             HStack(spacing: 5.0) {
                 Text("独家")
                     .font(.system(size: 10, weight: .semibold))
-                    .foregroundColor(Color("color-brand-blue"))
+                    .foregroundColor(Color("color-blue1"))
                     .frame(minWidth: 0, maxWidth: 28, maxHeight: 16)
-                    .background(Color("color-brand-blue").opacity(0.2))
+                    .background(Color("color-blue1").opacity(0.2))
                     .cornerRadius(2)
                 
                 Text("2021/04/12")
                     .modifier(CustomFontModifier(size: 14, font: .medium))
-                    .foregroundColor(Color("color-text-90"))
+                    .foregroundColor(Color("color-text3"))
                 
                 Text("14:20")
                     .modifier(CustomFontModifier(size: 14, font: .medium))
-                    .foregroundColor(Color("color-text-90"))
+                    .foregroundColor(Color("color-text3"))
                 
                 
                 Text("有鱼投研")
                     .font(.system(size: 14))
-                    .foregroundColor(Color("color-brand-blue"))
+                    .foregroundColor(Color("color-blue1"))
                 
                 Spacer()
             }

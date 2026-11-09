@@ -17,9 +17,9 @@ private enum StockDetailHistoryPerformanceTone {
     func color(reversed: Bool) -> Color {
         switch self {
         case .positive:
-            MarketColor.resolve("color-utility3-red", reversed: reversed)
+            MarketColor.resolve("color-red", reversed: reversed)
         case .negative:
-            MarketColor.resolve("color-utility3-green", reversed: reversed)
+            MarketColor.resolve("color-green", reversed: reversed)
         case .neutral:
             Color("color-text-60")
         }
@@ -110,7 +110,7 @@ struct StockDetailHistoryPerformance: View {
         .padding(.horizontal, StockDetailHistoryPerformanceLayout.horizontalPadding)
         .frame(maxWidth: .infinity)
         .frame(height: StockDetailHistoryPerformanceLayout.height)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .overlay(alignment: .top) {
             separator
         }
@@ -123,7 +123,7 @@ struct StockDetailHistoryPerformance: View {
 
     private var separator: some View {
         Rectangle()
-            .fill(Color("color-separator-10"))
+            .fill(Color("color-separator1"))
             .frame(height: StockDetailHistoryPerformanceLayout.separatorHeight)
             .accessibilityHidden(true)
     }

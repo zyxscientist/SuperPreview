@@ -18,13 +18,13 @@ enum StockDetailRelatedInfoTone: Hashable {
     fileprivate func color(reversed: Bool) -> Color {
         switch self {
         case .primary:
-            Color("color-text-30")
+            Color("color-text1")
         case .secondary:
             Color("color-text-60")
         case .positive:
-            MarketColor.resolve("color-utility3-red", reversed: reversed)
+            MarketColor.resolve("color-red", reversed: reversed)
         case .negative:
-            MarketColor.resolve("color-utility3-green", reversed: reversed)
+            MarketColor.resolve("color-green", reversed: reversed)
         }
     }
 }
@@ -372,7 +372,7 @@ struct StockDetailRelatedInfo: View {
         .padding(.horizontal, StockDetailRelatedInfoLayout.horizontalPadding)
         .padding(.bottom, StockDetailRelatedInfoLayout.bottomPadding)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockDetail.relatedInfo")
     }
@@ -396,7 +396,7 @@ struct StockDetailRelatedInfo: View {
             return StockDetailLiveQuoteBackground.color(for: colorScheme)
         }
 
-        return Color("color-scale-1")
+        return Color("color-grayscale1")
     }
 
     @ViewBuilder

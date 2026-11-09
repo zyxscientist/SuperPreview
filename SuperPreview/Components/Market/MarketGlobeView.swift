@@ -161,7 +161,7 @@ struct MarketGlobeView: View {
                 }
             }
         }
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .modifier(MarketGlobeRotationInteraction(
             isCrypto: isCrypto,
             orientation: $orientation,
@@ -258,7 +258,7 @@ struct MarketGlobeView: View {
 struct MarketGlobeBottomFade: View {
     var body: some View {
         LinearGradient(
-            colors: [Color("color-base-1").opacity(0), Color("color-base-1")],
+            colors: [Color("color-base1").opacity(0), Color("color-base1")],
             startPoint: .top,
             endPoint: .bottom
         )

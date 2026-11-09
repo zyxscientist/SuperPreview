@@ -85,7 +85,7 @@ struct StockDetailTransactionHistoryOrder: View {
             height: StockDetailTransactionHistoryOrderLayout.rowHeight,
             alignment: .leading
         )
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityElement(children: .combine)
         .accessibilityIdentifier("stockDetail.transactionHistory.order")
     }
@@ -113,10 +113,10 @@ struct StockDetailTransactionHistoryOrder: View {
                                 lineHeight: StockDetailTransactionHistoryOrderLayout.tagLineHeight
                             )
                         )
-                        .foregroundColor(Color("color-brand-blue"))
+                        .foregroundColor(Color("color-blue1"))
                         .padding(.horizontal, StockDetailTransactionHistoryOrderLayout.tagHorizontalPadding)
                         .padding(.vertical, StockDetailTransactionHistoryOrderLayout.tagVerticalPadding)
-                        .background(Color("color-brand-blue").opacity(0.1))
+                        .background(Color("color-blue1").opacity(0.1))
                         .clipShape(RoundedRectangle(cornerRadius: 2, style: .continuous))
                 }
             }
@@ -164,7 +164,7 @@ struct StockDetailTransactionHistoryOrder: View {
                         lineHeight: StockDetailTransactionHistoryOrderLayout.primaryLineHeight
                     )
                 )
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .lineLimit(1)
                 .minimumScaleFactor(0.65)
 
@@ -197,7 +197,7 @@ struct StockDetailTransactionHistoryOrder: View {
                     )
                 )
                 .monospacedDigit()
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .lineLimit(1)
                 .minimumScaleFactor(0.65)
 
@@ -232,7 +232,7 @@ struct StockDetailTransactionHistoryOrder: View {
                     )
                 )
                 .monospacedDigit()
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .lineLimit(1)
                 .minimumScaleFactor(0.65)
 

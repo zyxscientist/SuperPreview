@@ -56,7 +56,7 @@ struct StockOrderAmountField: View {
             maxHeight: StockOrderAmountFieldLayout.fieldHeight,
             alignment: .leading
         )
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityElement(children: .combine)
         .accessibilityLabel(language.text(.amount))
         .accessibilityValue(displayAmount)
@@ -72,7 +72,7 @@ struct StockOrderAmountField: View {
                     lineHeight: 24
                 )
             )
-            .foregroundColor(Color("color-text-30"))
+            .foregroundColor(Color("color-text1"))
             .lineLimit(1)
             .minimumScaleFactor(0.7)
             .frame(
@@ -93,7 +93,7 @@ struct StockOrderAmountField: View {
                         lineHeight: 24
                     )
                 )
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .lineLimit(1)
                 .minimumScaleFactor(0.65)
 
@@ -106,7 +106,7 @@ struct StockOrderAmountField: View {
                             lineHeight: 16
                         )
                     )
-                    .foregroundColor(Color("color-utility3-warning"))
+                    .foregroundColor(Color("color-03-warning"))
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
                     .accessibilityIdentifier("stockOrder.amountField.marginReminder")

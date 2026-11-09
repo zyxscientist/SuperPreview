@@ -134,7 +134,7 @@ struct MarketIPOCenterView: View {
             HStack(spacing: 8) {
                 Text(language.text(.ipoCenter))
                     .modifier(CustomFontModifier(size: 18, font: .bold, lineHeight: 28))
-                    .foregroundStyle(Color("color-text-30"))
+                    .foregroundStyle(Color("color-text1"))
 
                 Spacer(minLength: 0)
 
@@ -199,17 +199,17 @@ struct MarketIPOCenterView: View {
                     .accessibilityHidden(true)
             }
                 .animation(nil, value: isSelected)
-                .foregroundStyle(Color(isSelected ? "color-text-30" : "color-text-60"))
+                .foregroundStyle(Color(isSelected ? "color-text1" : "color-text-60"))
                 .fixedSize(horizontal: true, vertical: false)
                 .padding(.horizontal, 12)
                 .frame(height: 32)
                 .background(
-                    Color(isSelected ? "color-base-1" : "color-scale-1"),
+                    Color(isSelected ? "color-base1" : "color-grayscale1"),
                     in: RoundedRectangle(cornerRadius: 6)
                 )
                 .overlay {
                     RoundedRectangle(cornerRadius: 6)
-                        .strokeBorder(isSelected ? Color("color-base-r") : .clear, lineWidth: 1)
+                        .strokeBorder(isSelected ? Color("color-baser") : .clear, lineWidth: 1)
                 }
         }
         .buttonStyle(.plain)
@@ -257,7 +257,7 @@ struct MarketIPOCenterView: View {
             VStack(alignment: .leading, spacing: 6) {
                 Text(nameAndCode)
                     .modifier(CustomFontModifier(size: 14, font: .medium, lineHeight: 20))
-                    .foregroundStyle(Color("color-text-30"))
+                    .foregroundStyle(Color("color-text1"))
                     .lineLimit(1)
                     .minimumScaleFactor(0.85)
                     .frame(height: 20)
@@ -273,13 +273,13 @@ struct MarketIPOCenterView: View {
             } label: {
                 Text(remainingTime)
                     .modifier(CustomFontModifier(size: 14, font: .medium, lineHeight: 16))
-                    .foregroundStyle(Color("color-text-r"))
+                    .foregroundStyle(Color("color-textr"))
                     .lineLimit(1)
                     .fixedSize(horizontal: true, vertical: false)
                     .padding(.horizontal, 12)
                     .frame(minWidth: 62)
                     .frame(height: 28)
-                    .background(Color("color-base-r"), in: Capsule())
+                    .background(Color("color-baser"), in: Capsule())
                     .contentShape(Capsule())
             }
             .buttonStyle(.plain)
@@ -307,7 +307,7 @@ struct MarketIPOCenterView: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text(nameAndCode)
                     .modifier(CustomFontModifier(size: 14, font: .medium, lineHeight: 20))
-                    .foregroundStyle(Color("color-text-30"))
+                    .foregroundStyle(Color("color-text1"))
                     .lineLimit(1)
                     .minimumScaleFactor(0.85)
                     .frame(height: 20)
@@ -364,7 +364,7 @@ struct MarketIPOCenterView: View {
             bottomTrailingRadius: isLast ? 20 : 2,
             topTrailingRadius: isFirst ? 20 : 2
         )
-        .fill(Color("color-scale-1"))
+        .fill(Color("color-grayscale1"))
     }
 
     @ViewBuilder
@@ -384,7 +384,7 @@ struct MarketIPOCenterView: View {
                     + Text(language.text(.ipoLeverage))
                 )
                 .modifier(CustomFontModifier(size: 12, font: .regular, lineHeight: 16))
-                .foregroundStyle(Color("color-utility6-orange"))
+                .foregroundStyle(Color("color-06-orange"))
                 .frame(height: 16)
             }
             .padding(.trailing, 8)
@@ -395,13 +395,13 @@ struct MarketIPOCenterView: View {
                     bottomTrailingRadius: 4,
                     topTrailingRadius: 4
                 )
-                .fill(Color("color-utility6-orange").opacity(0.1))
+                .fill(Color("color-06-orange").opacity(0.1))
             }
 
         case .zeroCashSubscriptionFee:
             Text(language.text(.ipoCashSubscriptionFeeZero))
                 .modifier(CustomFontModifier(size: 12, font: .regular, lineHeight: 16))
-                .foregroundStyle(Color("color-brand-blue"))
+                .foregroundStyle(Color("color-blue1"))
                 .frame(height: 16)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 2)
@@ -413,7 +413,7 @@ struct MarketIPOCenterView: View {
 struct MarketIPOCenterView_Previews: PreviewProvider {
     static var previews: some View {
         MarketIPOCenterView()
-            .background(Color("color-base-1"))
+            .background(Color("color-base1"))
             .previewLayout(.fixed(width: 402, height: 334))
             .previewDisplayName("新股中心 · 今日认购")
     }

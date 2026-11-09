@@ -107,7 +107,7 @@ struct CobeMetalDemoView: View {
             }
             .padding(.vertical, 12)
         }
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .navigationTitle("COBE Metal")
         .navigationBarTitleDisplayMode(.inline)
         .accessibilityIdentifier("cobe.metal.page")
@@ -202,17 +202,17 @@ private struct CobeMetalGlobePanel: View {
                         .foregroundColor(Color("color-text-60"))
                     Text("Metal 点阵地球")
                         .font(.system(size: 22, weight: .semibold))
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
                 }
 
                 Spacer()
 
                 Text("MSL 4.1")
                     .font(.system(size: 11, weight: .bold, design: .monospaced))
-                    .foregroundColor(Color("color-brand-blue"))
+                    .foregroundColor(Color("color-blue1"))
                     .padding(.horizontal, 9)
                     .padding(.vertical, 6)
-                    .background(Color("color-brand-blue").opacity(0.12))
+                    .background(Color("color-blue1").opacity(0.12))
                     .clipShape(Capsule())
             }
             .padding(.horizontal, 16)
@@ -336,7 +336,7 @@ private struct CobeRotationAnglePanel: View {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("当前转动角度")
                             .font(.system(size: 18, weight: .semibold))
-                            .foregroundColor(Color("color-text-30"))
+                            .foregroundColor(Color("color-text1"))
                         Text("实时读取当前渲染中的 phi / theta")
                             .font(.system(size: 12, weight: .medium, design: .monospaced))
                             .foregroundColor(Color("color-text-60"))
@@ -346,11 +346,11 @@ private struct CobeRotationAnglePanel: View {
 
                     Text(isAnimating ? "LIVE" : "PAUSED")
                         .font(.system(size: 10, weight: .bold, design: .monospaced))
-                        .foregroundColor(isAnimating ? Color("color-brand-blue") : Color("color-text-60"))
+                        .foregroundColor(isAnimating ? Color("color-blue1") : Color("color-text-60"))
                         .padding(.horizontal, 8)
                         .padding(.vertical, 5)
                         .background(
-                            (isAnimating ? Color("color-brand-blue") : Color("color-text-60"))
+                            (isAnimating ? Color("color-blue1") : Color("color-text-60"))
                                 .opacity(0.12)
                         )
                         .clipShape(Capsule())
@@ -362,11 +362,11 @@ private struct CobeRotationAnglePanel: View {
                 }
             }
             .padding(16)
-            .background(Color("color-base-1"))
+            .background(Color("color-base1"))
             .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .stroke(Color("color-text-90").opacity(0.45), lineWidth: 0.5)
+                    .stroke(Color("color-text3").opacity(0.45), lineWidth: 0.5)
             )
         }
         .accessibilityIdentifier("cobe.rotationAnglePanel")
@@ -379,7 +379,7 @@ private struct CobeRotationAnglePanel: View {
                 .foregroundColor(Color("color-text-60"))
             Text(String(format: "%+.3f rad", radians))
                 .font(.system(size: 16, weight: .semibold, design: .monospaced))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .lineLimit(1)
                 .minimumScaleFactor(0.75)
             Text(String(format: "%+.1f°", radians * 180.0 / Double.pi))
@@ -388,7 +388,7 @@ private struct CobeRotationAnglePanel: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(10)
-        .background(Color("color-base-0").opacity(0.55))
+        .background(Color("color-base0").opacity(0.55))
         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
     }
 }
@@ -407,7 +407,7 @@ private struct CobeLocationFocusPanel: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text("快速定位")
                     .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                 Text("点击城市，观看地球平滑转到正面")
                     .font(.system(size: 12, weight: .medium, design: .monospaced))
                     .foregroundColor(Color("color-text-60"))
@@ -423,13 +423,13 @@ private struct CobeLocationFocusPanel: View {
                         } label: {
                             HStack(spacing: 6) {
                                 Circle()
-                                    .fill(Color("color-brand-blue"))
+                                    .fill(Color("color-blue1"))
                                     .frame(width: 6, height: 6)
                                 Text(label)
                                     .font(.system(size: 10, weight: isFocused ? .bold : .medium, design: .monospaced))
                                     .lineLimit(1)
                                     .minimumScaleFactor(0.72)
-                                    .foregroundColor(isFocused ? Color("color-text-30") : Color("color-text-60"))
+                                    .foregroundColor(isFocused ? Color("color-text1") : Color("color-text-60"))
                                 Spacer(minLength: 0)
                             }
                             .padding(.horizontal, 9)
@@ -437,16 +437,16 @@ private struct CobeLocationFocusPanel: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .background(
                                 isFocused
-                                    ? Color("color-brand-blue").opacity(0.14)
-                                    : Color("color-base-0").opacity(0.55)
+                                    ? Color("color-blue1").opacity(0.14)
+                                    : Color("color-base0").opacity(0.55)
                             )
                             .clipShape(RoundedRectangle(cornerRadius: 9, style: .continuous))
                             .overlay(
                                 RoundedRectangle(cornerRadius: 9, style: .continuous)
                                     .stroke(
                                         isFocused
-                                            ? Color("color-brand-blue").opacity(0.35)
-                                            : Color("color-text-90").opacity(0.35),
+                                            ? Color("color-blue1").opacity(0.35)
+                                            : Color("color-text3").opacity(0.35),
                                         lineWidth: 0.5
                                     )
                             )
@@ -459,11 +459,11 @@ private struct CobeLocationFocusPanel: View {
             }
         }
         .padding(16)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .stroke(Color("color-text-90").opacity(0.45), lineWidth: 0.5)
+                .stroke(Color("color-text3").opacity(0.45), lineWidth: 0.5)
         )
         .accessibilityIdentifier("cobe.locationFocusPanel")
     }
@@ -476,7 +476,7 @@ private struct CobeLocationFocusPanel: View {
             HStack {
                 Text("数据预设")
                     .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                 Spacer()
                 Picker("数据预设", selection: $markerPreset) {
                     ForEach(CobeMarkerPreset.allCases) { preset in
@@ -484,18 +484,18 @@ private struct CobeLocationFocusPanel: View {
                     }
                 }
                 .pickerStyle(.menu)
-                .tint(Color("color-brand-blue"))
+                .tint(Color("color-blue1"))
                 .accessibilityIdentifier("cobe.markerPreset")
             }
 
             HStack(spacing: 8) {
                 Text("主题")
                     .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                 Spacer()
                 Text(theme.title)
                     .font(.system(size: 11, weight: .bold, design: .monospaced))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .padding(.horizontal, 9)
                     .padding(.vertical, 7)
                     .background(Color("color-text-60").opacity(0.12))
@@ -503,7 +503,7 @@ private struct CobeLocationFocusPanel: View {
             }
 
             Toggle("自动旋转", isOn: $autoRotate)
-                .tint(Color("color-brand-blue"))
+                .tint(Color("color-blue1"))
                 .accessibilityIdentifier("cobe.autoRotate")
                 .onChange(of: autoRotate) { _, newValue in
                     let now = Date()
@@ -513,11 +513,11 @@ private struct CobeLocationFocusPanel: View {
                 }
 
             Toggle("显示 Arcs", isOn: $showArcs)
-                .tint(Color("color-brand-blue"))
+                .tint(Color("color-blue1"))
                 .accessibilityIdentifier("cobe.showArcs")
 
             Toggle("显示原生标签", isOn: $showLabels)
-                .tint(Color("color-brand-blue"))
+                .tint(Color("color-blue1"))
                 .accessibilityIdentifier("cobe.showLabels")
 
             controlSlider(
@@ -634,11 +634,11 @@ private struct CobeLocationFocusPanel: View {
             )
         }
         .padding(16)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .stroke(Color("color-text-90").opacity(0.45), lineWidth: 0.5)
+                .stroke(Color("color-text3").opacity(0.45), lineWidth: 0.5)
         )
     }
 
@@ -664,11 +664,11 @@ private struct CobeLocationFocusPanel: View {
             )
         }
         .padding(16)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .stroke(Color("color-text-80").opacity(0.45), lineWidth: 0.5)
+                .stroke(Color(.colorSeparator1), lineWidth: 0.5)
         )
     }
 
@@ -676,7 +676,7 @@ private struct CobeLocationFocusPanel: View {
         VStack(alignment: .leading, spacing: 3) {
             Text(title)
                 .font(.system(size: 17, weight: .semibold))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
             Text(subtitle)
                 .font(.system(size: 11, weight: .medium, design: .monospaced))
                 .foregroundColor(Color("color-text-60"))
@@ -686,12 +686,12 @@ private struct CobeLocationFocusPanel: View {
     private func implementationRow(title: String, detail: String) -> some View {
         HStack(alignment: .top, spacing: 10) {
             RoundedRectangle(cornerRadius: 2)
-                .fill(Color("color-brand-blue"))
+                .fill(Color("color-blue1"))
                 .frame(width: 4, height: 30)
             VStack(alignment: .leading, spacing: 3) {
                 Text(title)
                     .font(.system(size: 13, weight: .semibold, design: .monospaced))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                 Text(detail)
                     .font(.system(size: 12, weight: .regular))
                     .foregroundColor(Color("color-text-60"))
@@ -716,7 +716,7 @@ private struct CobeLocationFocusPanel: View {
                 Spacer()
                 Text(formatter(value.wrappedValue))
                     .font(.system(size: 12, weight: .semibold, design: .monospaced))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
             }
 
             if let step {
@@ -794,14 +794,14 @@ struct CobeMarkerAnchorLabel: View {
                 Text(text)
                     .fixedSize()
                     .modifier(CustomFontModifier(size: 10, font: .semibold))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .padding(.horizontal, 6)
                     .padding(.vertical, 4)
-                    .background(Color("color-base-1").opacity(0.9))
+                    .background(Color("color-base1").opacity(0.9))
                     .clipShape(Capsule())
                     .overlay(
                         Capsule()
-                            .stroke(Color("color-text-90").opacity(0.5), lineWidth: 0.5)
+                            .stroke(Color("color-text3").opacity(0.5), lineWidth: 0.5)
                     )
             }
             .position(anchor.point(in: size))
@@ -838,7 +838,7 @@ enum CobeMetalTheme {
     }
 
     func markerColor(for _: ColorScheme) -> SIMD3<Float> {
-        // color-brand-blue: #196EFF in both appearances.
+        // color-blue1: #196EFF in both appearances.
         return SIMD3(
             Float(0x19) / 255.0,
             Float(0x6E) / 255.0,
@@ -869,10 +869,10 @@ enum CobeMetalTheme {
     func arcColor(for colorScheme: ColorScheme) -> SIMD3<Float> {
         switch colorScheme {
         case .dark:
-            // color-text-30 dark appearance: #FFFFFF.
+            // color-text1 dark appearance: #FFFFFF.
             return SIMD3(repeating: 1.0)
         default:
-            // color-text-30 light appearance: #333333.
+            // color-text1 light appearance: #333333.
             return SIMD3(repeating: Float(0x33) / 255.0)
         }
     }

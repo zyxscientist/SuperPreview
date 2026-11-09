@@ -141,7 +141,7 @@ struct StockDetailTransactionModule: View {
             revealedContent
         }
         .frame(maxWidth: .infinity, alignment: .top)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockDetail.transactionModule")
     }
@@ -286,7 +286,7 @@ struct StockDetailTransactionModuleTabBar: View {
             .padding(.vertical, StockDetailTransactionModuleTabBarLayout.verticalPadding)
         }
         .frame(height: StockDetailTransactionModuleTabBarLayout.height)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockDetail.transactionModule.tabBar")
     }
@@ -321,7 +321,7 @@ struct StockDetailTransactionModuleTabBar: View {
                     .lineLimit(1)
                     .minimumScaleFactor(StockDetailTransactionModuleTabBarLayout.minimumTitleScale)
             }
-            .foregroundColor(isSelected ? Color("color-brand-blue") : Color("color-text-30"))
+            .foregroundColor(isSelected ? Color("color-blue1") : Color("color-text1"))
             .padding(.vertical, StockDetailTransactionModuleTabBarLayout.buttonVerticalPadding)
             .frame(
                 width: width,
@@ -329,8 +329,8 @@ struct StockDetailTransactionModuleTabBar: View {
             )
             .background(
                 isSelected
-                    ? Color("color-brand-blue").opacity(StockDetailTransactionModuleTabBarLayout.selectedBackgroundOpacity)
-                    : Color("color-base-1"),
+                    ? Color("color-blue1").opacity(StockDetailTransactionModuleTabBarLayout.selectedBackgroundOpacity)
+                    : Color("color-base1"),
                 in: RoundedRectangle(
                     cornerRadius: StockDetailTransactionModuleTabBarLayout.cornerRadius,
                     style: .continuous
@@ -444,7 +444,7 @@ private struct StockDetailTransactionModulePreviewHarness: View {
                 }
             )
         }
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
     }
 }
 

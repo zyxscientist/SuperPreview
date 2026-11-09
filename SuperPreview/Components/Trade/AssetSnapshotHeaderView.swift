@@ -20,17 +20,17 @@ struct AssetSnapshotHeaderView: View {
             HStack(spacing: 7) {
                 Rectangle()
                     .frame(width: 3, height: 11)
-                    .foregroundColor(Color("color-brand-blue"))
+                    .foregroundColor(Color("color-blue1"))
                 Text(market)
                     .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
             }
             Spacer()
             HStack(spacing: 0.0) {
                 VStack(alignment: .trailing){
                     Text("HKD 6,600,000.00")
                         .modifier(CustomFontModifier(size: 16, font: .semibold))
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
                     HStack(spacing: 10.0) {
                         Text("+1,600,000.00")
                             .modifier(CustomFontModifier(size: 12, font: .semibold))
@@ -48,7 +48,7 @@ struct AssetSnapshotHeaderView: View {
         .padding(.leading, 0)
         .padding(.trailing, 10)
         .padding(.vertical, /*@START_MENU_TOKEN@*/10/*@END_MENU_TOKEN@*/)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
     }
 }
 

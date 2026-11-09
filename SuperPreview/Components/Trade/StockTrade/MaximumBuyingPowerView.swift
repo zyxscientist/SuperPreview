@@ -19,7 +19,7 @@ struct MaximumBuyingPowerView: View {
                 
                 
                     Text("HKD 20,168,098.00")
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
                         .modifier(CustomFontModifier(size: 12, font: .medium))
                         .padding(.leading, 37)
                 
@@ -30,7 +30,7 @@ struct MaximumBuyingPowerView: View {
         }
         .padding(.leading, 15)
         .frame(width: UIScreen.main.bounds.size.width, height: 35)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .overlay {
             FullWidthSeparatorView()
         }

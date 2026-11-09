@@ -16,7 +16,7 @@ struct JustifiedSeparatorView: View  {
             Spacer(minLength: 0)
             Rectangle()
                 .frame(minHeight: 0.5, maxHeight:0.5)
-                .foregroundColor(Color("color-separator-10"))
+                .foregroundColor(Color("color-separator1"))
                 .padding(.horizontal, horizontalPadding)
         }
     }

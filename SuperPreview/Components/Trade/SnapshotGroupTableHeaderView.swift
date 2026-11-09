@@ -53,7 +53,7 @@ struct SnapshotGroupTableHeaderView: View {
             }
             
         }
-        .background(Color("color-transparent"))
+        .background(Color("color-legacy-transparent"))
         .padding(.vertical, 4)
     }
 }

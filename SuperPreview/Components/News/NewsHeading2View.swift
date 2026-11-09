@@ -17,7 +17,7 @@ struct NewsHeading2View: View {
             HStack(spacing: 0.0) {
                 Text(content)
                     .font(.system(size: 22, weight: .semibold))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                 
                 Spacer()
             }.padding(.trailing, 15)

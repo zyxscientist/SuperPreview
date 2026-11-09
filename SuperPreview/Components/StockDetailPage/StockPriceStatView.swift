@@ -71,7 +71,7 @@ struct StockPriceStatView: View {
         // 描边
         .overlay(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .stroke(Color(.colorSeparator10), lineWidth: 0.5)
+                .stroke(Color(.colorSeparator1), lineWidth: 0.5)
         )
         .padding(.horizontal, 10)
         .shadow(color: Color.black.opacity(0.15), radius: 25, x: 0, y: 2)
@@ -101,7 +101,7 @@ struct StockPriceBlockView: View {
                     .renderingMode(.template)
                     .resizable()
                     .frame(width:9, height: 11)
-                    .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
+                    .foregroundColor(MarketColor.resolve("color-red", reversed: marketColorReversed))
                 
                 
                 // 现价
@@ -109,7 +109,7 @@ struct StockPriceBlockView: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.5)
                     .multilineTextAlignment(.leading)
-                    .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
+                    .foregroundColor(MarketColor.resolve("color-red", reversed: marketColorReversed))
                     .modifier(CustomFontModifier(size: 33, font: .bold))
             }
             
@@ -120,7 +120,7 @@ struct StockPriceBlockView: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.5)
                     .multilineTextAlignment(.leading)
-                    .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
+                    .foregroundColor(MarketColor.resolve("color-red", reversed: marketColorReversed))
                     .modifier(CustomFontModifier(size: 13, font: .bold))
                 
                 // 涨跌幅
@@ -128,7 +128,7 @@ struct StockPriceBlockView: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.5)
                     .multilineTextAlignment(.leading)
-                    .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
+                    .foregroundColor(MarketColor.resolve("color-red", reversed: marketColorReversed))
                     .modifier(CustomFontModifier(size: 13, font: .bold))
                 
             }
@@ -150,7 +150,7 @@ struct StockPriceBlockView: View {
                     .frame(width: 16, height: 16)
             }
             .padding(3)
-            .background(Color(.colorScale1))
+            .background(Color(.colorGrayscale1))
             .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
             
         }
@@ -210,7 +210,7 @@ struct StockStatView: View {
                         .lineLimit(1)
                         .minimumScaleFactor(0.5)
                         .multilineTextAlignment(.leading)
-                        .foregroundColor(Color(.colorText30))
+                        .foregroundColor(Color(.colorText1))
                         .modifier(CustomFontModifier(size: 13, font: .medium))
                 }
             }

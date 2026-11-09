@@ -29,13 +29,13 @@ enum StockOrderConfirmationValueTone {
     var color: Color {
         switch self {
         case .primary:
-            return Color("color-text-30")
+            return Color("color-text1")
         case .buy:
-            return Color("color-utility3-red")
+            return Color("color-red")
         case .sell:
-            return Color("color-utility3-green")
+            return Color("color-green")
         case .warning:
-            return Color("color-utility3-warning")
+            return Color("color-03-warning")
         }
     }
 }
@@ -111,7 +111,7 @@ struct StockOrderConfirmationSheet: View {
             bottomButtonArea
         }
         .frame(maxWidth: .infinity)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .clipShape(
             UnevenRoundedRectangle(
                 cornerRadii: RectangleCornerRadii(
@@ -131,7 +131,7 @@ struct StockOrderConfirmationSheet: View {
     private var sheetHandle: some View {
         VStack(spacing: 0) {
             Capsule()
-                .fill(Color("color-scale-3"))
+                .fill(Color("color-grayscale3"))
                 .frame(
                     width: StockOrderConfirmationSheetLayout.handleWidth,
                     height: StockOrderConfirmationSheetLayout.handleHeight
@@ -155,7 +155,7 @@ struct StockOrderConfirmationSheet: View {
             if let warning = data.warning, !warning.isEmpty {
                 Text(warning)
                     .modifier(CustomFontModifier(size: 16, font: .regular, lineHeight: 24))
-                    .foregroundColor(Color("color-utility3-warning"))
+                    .foregroundColor(Color("color-03-warning"))
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, StockOrderConfirmationSheetLayout.horizontalPadding)
                     .accessibilityIdentifier("stockOrder.confirmationSheet.warning")
@@ -186,7 +186,7 @@ struct StockOrderConfirmationSheet: View {
 
             Text(data.estimatedAmount)
                 .modifier(CustomFontModifier(size: 30, font: .bold, lineHeight: 40))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .lineLimit(1)
                 .minimumScaleFactor(0.65)
                 .accessibilityIdentifier("stockOrder.confirmationSheet.estimatedAmount")
@@ -228,23 +228,23 @@ struct StockOrderConfirmationSheet: View {
     private var bottomButtonArea: some View {
         VStack(spacing: 0) {
             Rectangle()
-                .fill(Color("color-separator-10"))
+                .fill(Color("color-separator1"))
                 .frame(height: StockOrderConfirmationSheetLayout.separatorHeight)
                 .accessibilityHidden(true)
 
             HStack(spacing: StockOrderConfirmationSheetLayout.buttonSpacing) {
                 actionButton(
                     title: language.text(.cancel),
-                    fill: Color("color-scale-2"),
-                    foreground: Color("color-text-30"),
+                    fill: Color("color-grayscale2"),
+                    foreground: Color("color-text1"),
                     action: cancel,
                     identifier: "cancel"
                 )
 
                 actionButton(
                     title: language.text(.confirm),
-                    fill: Color("color-base-r"),
-                    foreground: Color("color-text-r"),
+                    fill: Color("color-baser"),
+                    foreground: Color("color-textr"),
                     action: confirm,
                     identifier: "confirm"
                 )

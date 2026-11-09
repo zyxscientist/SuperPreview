@@ -16,7 +16,7 @@ struct AssetChart: View {
 
             AssetTrendShape()
                 .stroke(
-                    Color("color-brand-blue"),
+                    Color("color-blue1"),
                     style: StrokeStyle(
                         lineWidth: 1.5,
                         lineCap: .round,
@@ -37,7 +37,7 @@ struct AssetChart: View {
                 path.addLine(to: CGPoint(x: proxy.size.width, y: centerY))
             }
             .stroke(
-                Color("color-separator-20"),
+                Color("color-separator2"),
                 style: StrokeStyle(lineWidth: 0.5, dash: [2, 2])
             )
         }
@@ -112,12 +112,12 @@ struct AssetChart_Previews: PreviewProvider {
         Group {
             AssetChart()
                 .padding()
-                .background(Color("color-base-1"))
+                .background(Color("color-base1"))
                 .previewDisplayName("Light")
 
             AssetChart()
                 .padding()
-                .background(Color("color-base-1"))
+                .background(Color("color-base1"))
                 .preferredColorScheme(.dark)
                 .previewDisplayName("Dark")
         }

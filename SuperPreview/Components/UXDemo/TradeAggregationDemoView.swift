@@ -134,7 +134,7 @@ struct TradeAggregationDemoView: View {
             .accessibilityIdentifier("trade.root")
         }
         .coordinateSpace(name: TradeAggregationLayout.stickyCoordinateSpace)
-        .background(Color("color-base-1").ignoresSafeArea())
+        .background(Color("color-base1").ignoresSafeArea())
         .background(
             NavigationLink(
                 destination: StockOrderDemoView(),
@@ -174,7 +174,7 @@ struct TradeAggregationDemoView: View {
                 isShowingDebugPanel = true
             }
         )
-        .toolbarBackground(Color("color-base-1"), for: .navigationBar)
+        .toolbarBackground(Color("color-base1"), for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .sheet(
             isPresented: $isShowingDebugPanel,
@@ -327,13 +327,13 @@ struct TradeAggregationDemoView: View {
                 .frame(height: TradeAggregationLayout.quickMenuSeparatorAreaHeight)
                 .overlay(alignment: .bottom) {
                     Rectangle()
-                        .fill(Color("color-separator-10"))
+                        .fill(Color("color-separator1"))
                         .frame(height: TradeAggregationLayout.quickMenuSeparatorLineHeight)
                 }
                 .accessibilityHidden(true)
         }
         .frame(width: viewportWidth)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("trade.quickMenu.pinned")
     }
@@ -404,7 +404,7 @@ private struct TradeAggregationSummerAdvertisement: View {
                 cornerRadius: TradeAggregationSummerAdvertisementStyle.cornerRadius,
                 style: .continuous
             )
-                .stroke(Color("color-separator-10"), lineWidth: 0.5)
+                .stroke(Color("color-separator1"), lineWidth: 0.5)
         }
         .padding(.horizontal, 16)
         .accessibilityElement(children: .ignore)
@@ -509,7 +509,7 @@ private struct TradeAggregationCategoryPage: View {
                     relativeTo: .headline
                 )
             )
-            .foregroundColor(Color("color-text-30"))
+            .foregroundColor(Color("color-text1"))
             .frame(maxWidth: .infinity, minHeight: TradeAggregationLayout.holdingsTitleHeight, maxHeight: TradeAggregationLayout.holdingsTitleHeight, alignment: .leading)
             .padding(.leading, 16)
             .accessibilityIdentifier("trade.positionDetails")
@@ -571,7 +571,7 @@ private struct TradeAggregationMRNoticeBar: View {
     var body: some View {
         Text(language.text(.mrNotice))
             .modifier(CustomFontModifier(size: 14, font: .regular, lineHeight: 20))
-            .foregroundColor(Color("color-utility6-orange"))
+            .foregroundColor(Color("color-06-orange"))
             .frame(maxWidth: .infinity, minHeight: 36, maxHeight: 36, alignment: .leading)
             .padding(.horizontal, 16)
             .lineLimit(1)
@@ -595,7 +595,7 @@ private struct TradeAggregationMRMaintenanceStateView: View {
 
             Text(language.text(.systemUpgrade))
                 .modifier(CustomFontModifier(size: 18, font: .medium, lineHeight: 24))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .frame(maxWidth: .infinity)
 
             Text(language.text(.maintenanceDetails))
@@ -607,7 +607,7 @@ private struct TradeAggregationMRMaintenanceStateView: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 60)
         .frame(width: viewportWidth, alignment: .top)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityElement(children: .ignore)
         .accessibilityIdentifier("trade.mrMaintenance")
     }
@@ -629,7 +629,7 @@ private struct TradeAggregationDebugPanel: View {
             HStack {
                 Text(interfaceLanguage.text(.debug))
                     .modifier(CustomFontModifier(size: 20, font: .bold, lineHeight: 28))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .accessibilityIdentifier("trade.debug.title")
 
                 Spacer()
@@ -655,7 +655,7 @@ private struct TradeAggregationDebugPanel: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(interfaceLanguage.text(.simulateLiveData))
                         .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
 
                     Text(
                         interfaceLanguage.text(isLiveDataEnabled ? .liveDataOn : .liveDataOff)
@@ -670,7 +670,7 @@ private struct TradeAggregationDebugPanel: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("模拟成交站内信")
                         .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
 
                     Text(
                         isInAppNotificationSimulationEnabled
@@ -687,7 +687,7 @@ private struct TradeAggregationDebugPanel: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("模拟多条成交站内信")
                         .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
 
                     Text(
                         isMultipleInAppNotificationSimulationEnabled
@@ -705,7 +705,7 @@ private struct TradeAggregationDebugPanel: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(interfaceLanguage.text(.mrTestMode))
                         .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
 
                     Text(interfaceLanguage.text(.mrTestDetails))
                         .modifier(CustomFontModifier(size: 13, font: .regular, lineHeight: 16))
@@ -718,7 +718,7 @@ private struct TradeAggregationDebugPanel: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(interfaceLanguage.text(.showSummerCampaign))
                         .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
 
                     Text(interfaceLanguage.text(.summerCampaignDetails))
                         .modifier(CustomFontModifier(size: 13, font: .regular, lineHeight: 16))
@@ -746,7 +746,7 @@ private struct TradeAggregationDebugPanel: View {
         }
         .padding(.horizontal, 20)
         .padding(.top, 24)
-        .background(Color("color-base-1").edgesIgnoringSafeArea(.all))
+        .background(Color("color-base1").edgesIgnoringSafeArea(.all))
     }
 }
 

@@ -21,12 +21,12 @@ struct PriceRefreshAnimationView: View {
         HStack(alignment: .center, spacing:0){
             Text("USD")
                 .modifier(CustomFontModifier(size: 16, font: .bold))
-                .foregroundColor(Color(.colorText30))
+                .foregroundColor(Color(.colorText1))
                 .padding(.vertical, 0)
             
             Text(String(format: "%.2f", randomNumber))
                 .modifier(CustomFontModifier(size: 16, font: .bold))
-                .foregroundColor(Color(.colorText30))
+                .foregroundColor(Color(.colorText1))
                 .contentTransition(.numericText())
                 .padding(.leading, 2)
         }

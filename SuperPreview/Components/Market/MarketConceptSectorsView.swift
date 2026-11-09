@@ -77,7 +77,7 @@ struct MarketConceptSectorsView: View {
             HStack(spacing: 8) {
                 Text(language.text(.marketConceptSectorsTitle))
                     .modifier(CustomFontModifier(size: 18, font: .bold, lineHeight: 28))
-                    .foregroundStyle(Color("color-text-30"))
+                    .foregroundStyle(Color("color-text1"))
 
                 Spacer(minLength: 0)
 
@@ -103,7 +103,7 @@ struct MarketConceptSectorsView: View {
             ForEach(Array(sectors.enumerated()), id: \.element.id) { index, sector in
                 if index > 0 {
                     Rectangle()
-                        .fill(Color("color-separator-10"))
+                        .fill(Color("color-separator1"))
                         .frame(width: 1, height: 40)
                         .accessibilityHidden(true)
                 }
@@ -126,7 +126,7 @@ struct MarketConceptSectorsView: View {
                 VStack(spacing: 4) {
                     Text(title)
                         .modifier(CustomFontModifier(size: 14, font: .medium, lineHeight: 20))
-                        .foregroundStyle(Color("color-text-30"))
+                        .foregroundStyle(Color("color-text1"))
                         .lineLimit(1)
                         .truncationMode(.tail)
                         .frame(maxWidth: .infinity)
@@ -142,7 +142,7 @@ struct MarketConceptSectorsView: View {
                 VStack(spacing: 4) {
                     Text(sector.leadingStockSymbol)
                         .modifier(CustomFontModifier(size: 12, font: .regular, lineHeight: 16))
-                        .foregroundStyle(Color("color-text-30"))
+                        .foregroundStyle(Color("color-text1"))
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
                         .frame(width: 76, height: 16)
@@ -163,7 +163,7 @@ struct MarketConceptSectorsView: View {
     }
 
     private func changeColor(_ change: Double) -> Color {
-        MarketColor.resolve(change >= 0 ? "color-utility3-red" : "color-utility3-green", reversed: marketColorReversed)
+        MarketColor.resolve(change >= 0 ? "color-red" : "color-green", reversed: marketColorReversed)
     }
 
     private func formattedChange(_ change: Double) -> String {

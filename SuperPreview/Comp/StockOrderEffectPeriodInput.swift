@@ -69,7 +69,7 @@ struct StockOrderEffectPeriodInput: View {
             maxHeight: StockOrderEffectPeriodInputLayout.inputHeight,
             alignment: .leading
         )
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .fullScreenCover(isPresented: $isActionSheetPresented) {
             StockOrderEffectPeriodActionSheet(
                 selection: $selection,
@@ -102,7 +102,7 @@ struct StockOrderEffectPeriodInput: View {
                         lineHeight: 24
                     )
                 )
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .lineLimit(1)
 
             if showsInfoButton {
@@ -140,7 +140,7 @@ struct StockOrderEffectPeriodInput: View {
                             lineHeight: 24
                         )
                     )
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .lineLimit(1)
                     .minimumScaleFactor(0.75)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -154,7 +154,7 @@ struct StockOrderEffectPeriodInput: View {
                         cornerRadius: StockOrderEffectPeriodInputLayout.arrowButtonCornerRadius,
                         style: .continuous
                     )
-                    .fill(Color("color-base-1"))
+                    .fill(Color("color-base1"))
 
                     Image("stock_order_type_chevron_down")
                         .resizable()
@@ -179,7 +179,7 @@ struct StockOrderEffectPeriodInput: View {
                 height: StockOrderEffectPeriodInputLayout.inputHeight,
                 alignment: .leading
             )
-            .background(Color("color-scale-2"))
+            .background(Color("color-grayscale2"))
             .clipShape(
                 RoundedRectangle(
                     cornerRadius: StockOrderEffectPeriodInputLayout.inputCornerRadius,

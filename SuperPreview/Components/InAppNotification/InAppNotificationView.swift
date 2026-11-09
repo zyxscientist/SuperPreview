@@ -15,7 +15,7 @@ struct InAppNotificationView: View {
 
     var body: some View {
         ZStack {
-            Color("color-base-1")
+            Color("color-base1")
                 .ignoresSafeArea()
 
             Image("fake_page_bg")
@@ -29,7 +29,7 @@ struct InAppNotificationView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("模拟成交站内信")
                             .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
-                            .foregroundColor(Color("color-text-30"))
+                            .foregroundColor(Color("color-text1"))
 
                         Text("每次显示 5 秒，退场 1 秒后再次推送")
                             .modifier(CustomFontModifier(size: 13, font: .regular, lineHeight: 16))
@@ -37,14 +37,14 @@ struct InAppNotificationView: View {
                     }
                 }
                 .padding(16)
-                .background(Color("color-base-1"))
+                .background(Color("color-base1"))
                 .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
 
                 Toggle(isOn: $isMultipleMessageSimulationEnabled) {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("模拟多条成交站内信")
                             .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
-                            .foregroundColor(Color("color-text-30"))
+                            .foregroundColor(Color("color-text1"))
 
                         Text(
                             isMultipleMessageSimulationEnabled
@@ -57,7 +57,7 @@ struct InAppNotificationView: View {
                 }
                 .disabled(!isSimulationEnabled)
                 .padding(16)
-                .background(Color("color-base-1"))
+                .background(Color("color-base1"))
                 .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             }
             .padding(.horizontal, 20)
@@ -112,7 +112,7 @@ struct InAppNotificationBannerView: View {
 
             Text(message)
                 .modifier(CustomFontModifier(size: 14, font: .regular, lineHeight: 20))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .lineLimit(2)
                 .truncationMode(.tail)
                 .frame(maxWidth: .infinity, minHeight: 40, maxHeight: 40, alignment: .topLeading)
@@ -135,7 +135,7 @@ struct InAppNotificationBannerView: View {
 
     private var background: some View {
         ZStack {
-            Color("color-base-1")
+            Color("color-base1")
 
             LinearGradient(
                 colors: [
@@ -708,13 +708,13 @@ extension View {
 #Preview("Banner Light") {
     InAppNotificationBannerView()
         .padding(10)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .preferredColorScheme(.light)
 }
 
 #Preview("Banner Dark") {
     InAppNotificationBannerView()
         .padding(10)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .preferredColorScheme(.dark)
 }

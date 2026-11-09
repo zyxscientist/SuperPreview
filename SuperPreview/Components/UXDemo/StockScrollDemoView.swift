@@ -29,7 +29,7 @@ struct StockScrollDemoView: View {
             
             Text("自选列表的第 \(currentStockIndex) 个股票")
                 .modifier(CustomFontModifier(size: 32, font: .medium))
-                .foregroundColor(Color(.colorText30))
+                .foregroundColor(Color(.colorText1))
             
             Text("Feature: WatchlistStock Scroll")
                 .modifier(CustomFontModifier(size: 22, font: .medium))
@@ -46,7 +46,7 @@ struct StockScrollDemoView: View {
                         .renderingMode(.template)
                         .resizable()
                         .frame(width: 15, height: 24)
-                        .foregroundColor(Color(.colorText30))
+                        .foregroundColor(Color(.colorText1))
                         .offset(x: -35)
                         .opacity(opacityForArrow(maxOffset: (geometry.size.width - widthOfTheView) / 2))
                         .blur(radius: blurForArrow(maxOffset: (geometry.size.width - widthOfTheView) / 2))
@@ -55,7 +55,7 @@ struct StockScrollDemoView: View {
                     Text("交易")
                         .modifier(CustomFontModifier(size: 16, font: .medium))
                         .frame(maxWidth: 500, minHeight: 48)
-                        .background(Color(.colorBrandBlue))
+                        .background(Color(.colorBlue1))
                         .foregroundColor(.white)
                         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                     
@@ -68,7 +68,7 @@ struct StockScrollDemoView: View {
                                 .renderingMode(.template)
                                 .resizable()
                                 .frame(width:24, height: 24)
-                                .foregroundColor(Color(.colorText30))
+                                .foregroundColor(Color(.colorText1))
                             
                             Text("自选")
                                 .foregroundColor(Color(.colorText60))
@@ -84,7 +84,7 @@ struct StockScrollDemoView: View {
                                 .renderingMode(.template)
                                 .resizable()
                                 .frame(width:24, height: 24)
-                                .foregroundColor(Color(.colorText30))
+                                .foregroundColor(Color(.colorText1))
                             
                             Text("提醒")
                                 .foregroundColor(Color(.colorText60))
@@ -100,7 +100,7 @@ struct StockScrollDemoView: View {
                         .renderingMode(.template)
                         .resizable()
                         .frame(width: 15, height: 24)
-                        .foregroundColor(Color(.colorText30))
+                        .foregroundColor(Color(.colorText1))
                         .offset(x: 35)
                         .opacity(opacityForArrow(maxOffset: (geometry.size.width - widthOfTheView) / 2))
                         .blur(radius: blurForArrow(maxOffset: (geometry.size.width - widthOfTheView) / 2))

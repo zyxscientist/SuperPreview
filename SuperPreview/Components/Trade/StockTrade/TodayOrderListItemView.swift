@@ -47,7 +47,7 @@ struct TodayOrderListItemView: View {
             VStack(alignment: .leading, spacing: 1) {
                 Text("云锋金融")
                     .font(.system(size: 15, weight: .regular))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                 Text("00376.HK")
                     .modifier(CustomFontModifier(size: 12, font: .medium))
                     .foregroundColor(Color("color-text-60"))
@@ -60,7 +60,7 @@ struct TodayOrderListItemView: View {
                     Image(status.rawValue != 1 ? "TO_price_nudge_minus_invisiable" : "TO_price_nudge_minus") // 根据状态隐藏价格微调按钮
                     Text("16.39")
                         .modifier(CustomFontModifier(size: 15, font: .medium))
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
                     Image(status.rawValue != 1 ? "TO_price_nudge_minus_invisiable" : "TO_price_nudge_add") // 根据状态隐藏价格微调按钮
                     }
             }
@@ -69,7 +69,7 @@ struct TodayOrderListItemView: View {
             VStack(alignment: .trailing, spacing: 1.0) {
                 Text("2,000")
                     .modifier(CustomFontModifier(size: 15, font: .medium))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .padding(.trailing, 15)
                 Text(status.rawValue != 1 ? "2000" : "0") // 根据状态显示成交数量
                     .modifier(CustomFontModifier(size: 12, font: .medium))
@@ -79,7 +79,7 @@ struct TodayOrderListItemView: View {
             .frame(width: UIScreen.main.bounds.width * 23 / 100, alignment: .trailing)
             
         }
-        .background(Color("color-transparent"))
+        .background(Color("color-legacy-transparent"))
         .padding(.vertical, 10)
     }
 }

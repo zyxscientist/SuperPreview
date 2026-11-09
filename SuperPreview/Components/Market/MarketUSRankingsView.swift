@@ -152,7 +152,7 @@ struct MarketUSRankingsView: View {
             }
 
             // Preserve enough scrollable height to keep the header pinned.
-            Color("color-base-1")
+            Color("color-base1")
                 .frame(height: max(24, minimumRowsHeight - CGFloat(visibleItems.count) * 66))
                 .accessibilityHidden(true)
         } header: {
@@ -194,7 +194,7 @@ struct MarketUSRankingsView: View {
         .padding(.vertical, 12)
         .padding(.top, headerTopInset)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .zIndex(2)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("market.usRankings.header")
@@ -217,7 +217,7 @@ struct MarketUSRankingsView: View {
         } label: {
             Text(language.text(tab.title))
                 .modifier(CustomFontModifier(size: isSelected ? 18 : 14, font: isSelected ? .medium : .regular, lineHeight: 28))
-                .foregroundStyle(Color(isSelected ? "color-text-30" : "color-text-60"))
+                .foregroundStyle(Color(isSelected ? "color-text1" : "color-text-60"))
                 .lineLimit(1)
                 .fixedSize(horizontal: true, vertical: false)
                 .frame(height: 28)
@@ -226,7 +226,7 @@ struct MarketUSRankingsView: View {
                     if isSelected {
                         RoundedRectangle(cornerRadius: 4)
                             .fill(LinearGradient(
-                                colors: [Color("color-scale-3"), Color("color-base-1")],
+                                colors: [Color("color-grayscale3"), Color("color-base1")],
                                 startPoint: .leading,
                                 endPoint: .trailing
                             ))
@@ -247,8 +247,8 @@ private struct MarketUSRankingRow: View {
     let name: String
 
     private var changeColor: Color {
-        if item.percentChange > 0 { return MarketColor.resolve("color-utility3-red", reversed: marketColorReversed) }
-        if item.percentChange < 0 { return MarketColor.resolve("color-utility3-green", reversed: marketColorReversed) }
+        if item.percentChange > 0 { return MarketColor.resolve("color-red", reversed: marketColorReversed) }
+        if item.percentChange < 0 { return MarketColor.resolve("color-green", reversed: marketColorReversed) }
         return Color("color-text-60")
     }
 
@@ -260,7 +260,7 @@ private struct MarketUSRankingRow: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(name)
                         .modifier(CustomFontModifier(size: 16, font: .regular, lineHeight: 24))
-                        .foregroundStyle(Color("color-text-30"))
+                        .foregroundStyle(Color("color-text1"))
                         .frame(height: 24)
 
                     Text(item.symbol)
@@ -286,7 +286,7 @@ private struct MarketUSRankingRow: View {
                 HStack(spacing: 8) {
                     Text(item.price)
                         .modifier(CustomFontModifier(size: 16, font: .regular, lineHeight: 24))
-                        .foregroundStyle(Color("color-text-30"))
+                        .foregroundStyle(Color("color-text1"))
                         .frame(maxWidth: .infinity, alignment: .trailing)
 
                     Text(item.formattedChange)
@@ -300,7 +300,7 @@ private struct MarketUSRankingRow: View {
             }
         }
         .frame(height: 66)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .contentShape(Rectangle())
     }
 }
@@ -323,5 +323,5 @@ private extension MarketUSRankingItem {
         }
     }
     .frame(width: 402)
-    .background(Color("color-base-1"))
+    .background(Color("color-base1"))
 }

@@ -70,7 +70,7 @@ struct MarketHeatmapView: View {
             HStack(spacing: 8) {
                 Text(language.text(.marketHeatmapTitle))
                     .modifier(CustomFontModifier(size: 18, font: .bold, lineHeight: 28))
-                    .foregroundStyle(Color("color-text-30"))
+                    .foregroundStyle(Color("color-text1"))
 
                 Spacer(minLength: 0)
 
@@ -115,7 +115,7 @@ struct MarketHeatmapView: View {
 
         return VStack(alignment: .leading, spacing: 6) {
             Text(name)
-                .foregroundStyle(Color("color-text-30"))
+                .foregroundStyle(Color("color-text1"))
                 .lineLimit(1)
                 .truncationMode(.tail)
                 .frame(height: 14, alignment: .leading)
@@ -155,7 +155,7 @@ struct MarketHeatmapView: View {
     }
 
     private func changeColor(for sector: MarketHeatmapSector) -> Color {
-        MarketColor.resolve(sector.percentChange >= 0 ? "color-utility3-red" : "color-utility3-green", reversed: marketColorReversed)
+        MarketColor.resolve(sector.percentChange >= 0 ? "color-red" : "color-green", reversed: marketColorReversed)
     }
 
     private func formattedChange(_ change: Double) -> String {
@@ -166,7 +166,7 @@ struct MarketHeatmapView: View {
 struct MarketHeatmapView_Previews: PreviewProvider {
     static var previews: some View {
         MarketHeatmapView()
-            .background(Color("color-base-1"))
+            .background(Color("color-base1"))
             .previewLayout(.fixed(width: 402, height: 206))
             .previewDisplayName("热力图")
     }

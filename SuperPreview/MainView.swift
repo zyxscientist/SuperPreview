@@ -82,7 +82,7 @@ struct MainView: View {
                     }
                 }
                 
-                .navigationBarColor(backgroundColor: UIColor(SwiftUI.Color("color-base-1")), titleColor: UIColor(SwiftUI.Color("color-text-30")))
+                .navigationBarColor(backgroundColor: UIColor(SwiftUI.Color("color-base1")), titleColor: UIColor(SwiftUI.Color("color-text1")))
                 .navigationBarTitle(
                     navigationBarTitle(
                         selectedTab: self.selectedTab,
@@ -192,7 +192,7 @@ private struct MainViewToolbarModifier: ViewModifier {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 36, height: 36)
-                            .foregroundStyle(Color("color-text-30"))
+                            .foregroundStyle(Color("color-text1"))
                     }
                 }
             }
@@ -216,7 +216,7 @@ private struct MainViewToolbarModifier: ViewModifier {
         Button(action: action) {
             Text(language.text(.debug))
                 .modifier(CustomFontModifier(size: 13, font: .medium, lineHeight: 16))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
         }
         .accessibilityIdentifier(identifier)
     }

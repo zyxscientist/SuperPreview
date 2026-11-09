@@ -158,7 +158,7 @@ struct StockDetailCapitalDistribution: View {
         }
         .padding(StockDetailCapitalDistributionLayout.contentPadding)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockDetail.capitalDistribution")
     }
@@ -174,7 +174,7 @@ struct StockDetailCapitalDistribution: View {
                             lineHeight: StockDetailCapitalDistributionLayout.titleLineHeight
                         )
                     )
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
 
                 Image("question_outline_16")
                     .resizable()
@@ -239,7 +239,7 @@ struct StockDetailCapitalDistribution: View {
                 )
 
             Circle()
-                .fill(Color("color-base-1"))
+                .fill(Color("color-base1"))
                 .frame(
                     width: StockDetailCapitalDistributionLayout.ringHoleSize,
                     height: StockDetailCapitalDistributionLayout.ringHoleSize
@@ -264,7 +264,7 @@ struct StockDetailCapitalDistribution: View {
                             lineHeight: StockDetailCapitalDistributionLayout.netFlowTitleLineHeight
                         )
                     )
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
             }
         }
         .frame(
@@ -282,12 +282,12 @@ struct StockDetailCapitalDistribution: View {
                 Text(data.inflowTotal)
                     .foregroundColor(StockDetailCapitalDistributionOrderSize.medium.inflowColor(reversed: marketColorReversed))
                 Text(":\(data.displayInflowTitle(for: language))")
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
             }
 
             HStack(spacing: 0) {
                 Text("\(data.displayOutflowTitle(for: language)):")
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                 Text(data.outflowTotal)
                     .foregroundColor(StockDetailCapitalDistributionOrderSize.medium.outflowColor(reversed: marketColorReversed))
             }
@@ -367,7 +367,7 @@ struct StockDetailCapitalDistribution: View {
                     lineHeight: StockDetailCapitalDistributionLayout.legendLineHeight
                 )
             )
-            .foregroundColor(Color("color-text-30"))
+            .foregroundColor(Color("color-text1"))
             .lineLimit(1)
             .fixedSize(horizontal: true, vertical: false)
     }
@@ -381,7 +381,7 @@ struct StockDetailCapitalDistribution: View {
                     lineHeight: StockDetailCapitalDistributionLayout.legendLineHeight
                 )
             )
-            .foregroundColor(Color("color-text-30"))
+            .foregroundColor(Color("color-text1"))
             .lineLimit(1)
             .fixedSize(horizontal: true, vertical: false)
     }
@@ -484,12 +484,12 @@ private extension StockDetailCapitalDistributionOrderSize {
 
     private func color(direction: StockDetailCapitalDistributionDirection) -> Color {
         switch (self, direction) {
-        case (.large, .inflow): Color("color-stock-detail-capital-inflow-strong")
-        case (.medium, .inflow): Color("color-stock-detail-capital-inflow-regular")
-        case (.small, .inflow): Color("color-stock-detail-capital-inflow-weak")
-        case (.large, .outflow): Color("color-stock-detail-capital-outflow-strong")
-        case (.medium, .outflow): Color("color-stock-detail-capital-outflow-regular")
-        case (.small, .outflow): Color("color-stock-detail-capital-outflow-weak")
+        case (.large, .inflow): Color(.color01PositiveDark)
+        case (.medium, .inflow): Color(.color01PositiveRegular)
+        case (.small, .inflow): Color(.color01PositiveLight)
+        case (.large, .outflow): Color(.color02NegativeDark)
+        case (.medium, .outflow): Color(.color02NegativeRegular)
+        case (.small, .outflow): Color(.color02NegativeLight)
         }
     }
 }

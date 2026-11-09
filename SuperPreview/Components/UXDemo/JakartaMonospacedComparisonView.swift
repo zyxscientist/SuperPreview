@@ -33,7 +33,7 @@ struct JakartaMonospacedComparisonView: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 20)
         }
-        .background(Color("color-base-0").edgesIgnoringSafeArea(.all))
+        .background(Color("color-base0").edgesIgnoringSafeArea(.all))
         .navigationTitle("Jakarta 等宽对比")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -42,7 +42,7 @@ struct JakartaMonospacedComparisonView: View {
                     isShowingDebugPanel = true
                 }
                 .font(fontWeight.font(size: 13))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
             }
         }
         .sheet(isPresented: $isShowingDebugPanel) {
@@ -54,7 +54,7 @@ struct JakartaMonospacedComparisonView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("数字是否等宽，直接影响报价的稳定感")
                 .font(fontWeight.font(size: 20))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
 
             Text("两侧均使用 Plus Jakarta Sans Medium；等宽样本仅额外开启 monospacedDigit()。可从字宽、连续报价与列表列对齐三个角度观察差异。")
                 .font(fontWeight.font(size: 14))
@@ -69,7 +69,7 @@ struct JakartaMonospacedComparisonView: View {
             HStack {
                 Text("横向字宽对比")
                     .font(fontWeight.font(size: 15))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                 Spacer()
                 Text("相同字符数，不同数字字形")
                     .font(fontWeight.font(size: 11))
@@ -88,7 +88,7 @@ struct JakartaMonospacedComparisonView: View {
             )
         }
         .padding(14)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .cornerRadius(12)
     }
 
@@ -111,11 +111,11 @@ struct JakartaMonospacedComparisonView: View {
                 Spacer()
                 Text(showsAlternateQuote ? "样本 B" : "样本 A")
                     .font(fontWeight.font(size: 12))
-                    .foregroundColor(Color("color-brand-blue"))
+                    .foregroundColor(Color("color-blue1"))
             }
-            .foregroundColor(Color("color-text-30"))
+            .foregroundColor(Color("color-text1"))
             .padding(14)
-            .background(Color("color-base-1"))
+            .background(Color("color-base1"))
             .cornerRadius(10)
         }
         .buttonStyle(.plain)
@@ -128,7 +128,7 @@ struct JakartaMonospacedComparisonView: View {
             HStack {
                 Text("报价列对齐")
                     .font(fontWeight.font(size: 15))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                 Spacer()
                 Text("相同样本 · 并排对照")
                     .font(fontWeight.font(size: 11))
@@ -161,13 +161,13 @@ struct JakartaMonospacedComparisonView: View {
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: "eye")
                 .font(.system(size: 14, weight: .semibold))
-                .foregroundColor(Color("color-brand-blue"))
+                .foregroundColor(Color("color-blue1"))
                 .padding(.top, 2)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text("推荐用法")
                     .font(fontWeight.font(size: 14))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                 Text("价格、涨跌幅、时间和数量等频繁变化的读数适合开启；股票名称、代码和正文仍建议保持默认比例数字。")
                     .font(fontWeight.font(size: 13))
                     .foregroundColor(Color("color-text-60"))
@@ -231,7 +231,7 @@ private struct JakartaFontDebugView: View {
                                 VStack(alignment: .leading, spacing: 3) {
                                     Text(weight.title)
                                         .font(weight.font(size: 16))
-                                        .foregroundColor(Color("color-text-30"))
+                                        .foregroundColor(Color("color-text1"))
                                     Text(weight.description)
                                         .font(.system(size: 12))
                                         .foregroundColor(Color("color-text-60"))
@@ -239,7 +239,7 @@ private struct JakartaFontDebugView: View {
                                 Spacer()
                                 if selectedWeight == weight {
                                     Image(systemName: "checkmark.circle.fill")
-                                        .foregroundColor(Color("color-brand-blue"))
+                                        .foregroundColor(Color("color-blue1"))
                                 }
                             }
                             .contentShape(Rectangle())
@@ -289,33 +289,33 @@ private struct JakartaHorizontalDigitRow: View {
         HStack(spacing: 8) {
             HStack(spacing: 5) {
                 Circle()
-                    .fill(isMonospaced ? Color("color-brand-blue") : Color("color-text-60"))
+                    .fill(isMonospaced ? Color("color-blue1") : Color("color-text-60"))
                     .frame(width: 6, height: 6)
                 Text(title)
                     .font(fontWeight.font(size: 12))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
             }
             .frame(width: 54, alignment: .leading)
 
             ForEach(samples.indices, id: \.self) { index in
                 if index > 0 {
                     Rectangle()
-                        .fill(Color("color-separator-20"))
+                        .fill(Color("color-separator2"))
                         .frame(width: 1, height: 14)
                 }
 
                 numberText(samples[index])
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
             }
         }
         .padding(.horizontal, 10)
         .frame(maxWidth: .infinity, minHeight: 40, alignment: .leading)
-        .background(isMonospaced ? Color("color-brand-blue-20").opacity(0.42) : Color("color-base-0"))
+        .background(isMonospaced ? Color("color-brand-blue-20").opacity(0.42) : Color("color-base0"))
         .overlay(
             RoundedRectangle(cornerRadius: 8)
-                .stroke(isMonospaced ? Color("color-brand-blue").opacity(0.7) : Color("color-separator-20"), lineWidth: 1)
+                .stroke(isMonospaced ? Color("color-blue1").opacity(0.7) : Color("color-separator2"), lineWidth: 1)
         )
         .cornerRadius(8)
         .accessibilityLabel("\(title)：\(samples.joined(separator: "，"))")
@@ -364,10 +364,10 @@ private struct JakartaNumberSampleCard: View {
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(isMonospaced ? Color("color-brand-blue").opacity(0.7) : Color("color-separator-20"), lineWidth: 1)
+                .stroke(isMonospaced ? Color("color-blue1").opacity(0.7) : Color("color-separator2"), lineWidth: 1)
         )
         .cornerRadius(12)
     }
@@ -376,11 +376,11 @@ private struct JakartaNumberSampleCard: View {
         VStack(alignment: .leading, spacing: 5) {
             HStack(spacing: 6) {
                 Circle()
-                    .fill(isMonospaced ? Color("color-brand-blue") : Color("color-text-60"))
+                    .fill(isMonospaced ? Color("color-blue1") : Color("color-text-60"))
                     .frame(width: 7, height: 7)
                 Text(title)
                     .font(fontWeight.font(size: 15))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
             }
             Text(subtitle)
                 .font(fontWeight.font(size: 11))
@@ -398,10 +398,10 @@ private struct JakartaNumberSampleCard: View {
                 numberText("111.11", size: 19)
                 numberText("888.88", size: 19)
             }
-            .foregroundColor(Color("color-text-30"))
+            .foregroundColor(Color("color-text1"))
             .overlay(alignment: .trailing) {
                 Rectangle()
-                    .fill(Color("color-brand-blue").opacity(0.5))
+                    .fill(Color("color-blue1").opacity(0.5))
                     .frame(width: 1, height: 46)
                     .offset(x: 2)
             }
@@ -429,7 +429,7 @@ private struct JakartaQuoteRow: View {
     let value: String
     let isMonospaced: Bool
     let fontWeight: JakartaFontWeight
-    var valueColor: Color = Color("color-text-30")
+    var valueColor: Color = Color("color-text1")
 
     var body: some View {
         HStack(spacing: 4) {

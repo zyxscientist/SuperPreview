@@ -20,7 +20,7 @@ struct HoldingRowView: View {
             VStack(alignment: .leading, spacing: 5.0) {
                 Text(name)
                     .font(.system(size: fontsize, weight: .semibold))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                 Text(symbol)
                     .font(.system(size: fontsize, weight: .regular))
                     .foregroundColor(Color("color-text-60"))
@@ -30,20 +30,20 @@ struct HoldingRowView: View {
             VStack(alignment: .trailing, spacing: 5.0) {
                 Text("8,888.88")
                     .font(.system(size: fontsize, weight: .semibold))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                 Text("100")
                     .font(.system(size: fontsize, weight: .semibold))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                 
             }.padding(.trailing, 32)
             
             VStack(alignment: .trailing, spacing: 5.0) {
                 Text("343.000")
                     .font(.system(size: fontsize, weight: .semibold))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                 Text("323.000")
                     .font(.system(size: fontsize, weight: .semibold))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                 
             }.padding(.trailing, 15)
             VStack(alignment: .trailing, spacing: 5.0) {
@@ -56,7 +56,7 @@ struct HoldingRowView: View {
                 
             }.padding(.leading, 0)
         }
-        .background(Color("color-transparent"))
+        .background(Color("color-legacy-transparent"))
         .padding(15)
         .overlay(FullWidthSeparatorView())
     }

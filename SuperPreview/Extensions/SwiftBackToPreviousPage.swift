@@ -909,7 +909,7 @@ struct NavigationBackSwipeHarnessView: View {
 
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color("color-base-1"))
+            .background(Color("color-base1"))
             .accessibilityIdentifier("backSwipeHarness.root")
         }
         .navigationViewStyle(StackNavigationViewStyle())
@@ -963,7 +963,7 @@ private struct NavigationBackSwipeHarnessDestination: View {
         }
         .padding(24)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
     }
 }
 #endif

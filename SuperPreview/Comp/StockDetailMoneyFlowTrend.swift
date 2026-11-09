@@ -80,7 +80,7 @@ struct StockDetailMoneyFlowTrend: View {
         }
         .padding(.horizontal, StockDetailMoneyFlowTrendLayout.horizontalPadding)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockDetail.moneyFlowTrend")
     }
@@ -95,7 +95,7 @@ struct StockDetailMoneyFlowTrend: View {
                         lineHeight: StockDetailMoneyFlowTrendLayout.titleLineHeight
                     )
                 )
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .lineLimit(1)
 
             Spacer(minLength: 0)
@@ -136,7 +136,7 @@ struct StockDetailMoneyFlowTrend: View {
         ZStack {
             Rectangle()
                 .stroke(
-                    Color("color-separator-10"),
+                    Color("color-separator1"),
                     lineWidth: StockDetailMoneyFlowTrendLayout.gridLineWidth
                 )
 
@@ -145,7 +145,7 @@ struct StockDetailMoneyFlowTrend: View {
                     .frame(height: StockDetailMoneyFlowTrendLayout.zeroLinePosition)
 
                 Rectangle()
-                    .fill(Color("color-separator-10"))
+                    .fill(Color("color-separator1"))
                     .frame(height: StockDetailMoneyFlowTrendLayout.gridLineWidth)
 
                 Spacer(minLength: 0)
@@ -167,14 +167,14 @@ struct StockDetailMoneyFlowTrend: View {
     private var chartValueLabels: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text(data.upperValue)
-                .capitalTrendValueStyle(color: Color("color-utility3-red"))
+                .capitalTrendValueStyle(color: Color("color-red"))
                 .padding(.leading, StockDetailMoneyFlowTrendLayout.labelHorizontalInset)
                 .padding(.top, StockDetailMoneyFlowTrendLayout.labelVerticalInset)
 
             Spacer(minLength: 0)
 
             Text(data.lowerValue)
-                .capitalTrendValueStyle(color: Color("color-utility3-green"))
+                .capitalTrendValueStyle(color: Color("color-green"))
                 .padding(.leading, StockDetailMoneyFlowTrendLayout.labelHorizontalInset)
                 .padding(.bottom, StockDetailMoneyFlowTrendLayout.labelVerticalInset)
         }

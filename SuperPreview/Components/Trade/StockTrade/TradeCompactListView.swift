@@ -19,7 +19,7 @@ struct TradeCompactListView: View {
         VStack(spacing: 0) {
             HStack(alignment: .center, spacing: 15) {
                 Text("持仓(2)")
-                    .foregroundColor(positionList ? Color("color-text-30") : Color("color-text-60"))
+                    .foregroundColor(positionList ? Color("color-text1") : Color("color-text-60"))
                     .modifier(CustomFontModifier(size: 14, font: positionList ? .semibold : .medium))
                     .onTapGesture {
                         positionList = true
@@ -27,7 +27,7 @@ struct TradeCompactListView: View {
                         conditionalOrderList = false
                     }
                 Text("今日订单(1/3)")
-                    .foregroundColor(todayOrderList ? Color("color-text-30") : Color("color-text-60"))
+                    .foregroundColor(todayOrderList ? Color("color-text1") : Color("color-text-60"))
                     .modifier(CustomFontModifier(size: 14, font: todayOrderList ? .semibold : .medium))
                     .onTapGesture {
                         positionList = false
@@ -35,7 +35,7 @@ struct TradeCompactListView: View {
                         conditionalOrderList = false
                     }
                 Text("条件单(0/0)")
-                    .foregroundColor(conditionalOrderList ? Color("color-text-30") : Color("color-text-60"))
+                    .foregroundColor(conditionalOrderList ? Color("color-text1") : Color("color-text-60"))
                     .modifier(CustomFontModifier(size: 14, font: conditionalOrderList ? .semibold : .medium))
                     .onTapGesture {
                         positionList = false
@@ -81,7 +81,7 @@ struct TradeCompactListView: View {
             .frame(height: conditionalOrderList ? nil : 0, alignment: .top)
             .opacity(conditionalOrderList ? 1 : 0)
             
-        }.background(Color("color-base-1"))
+        }.background(Color("color-base1"))
     }
 }
 

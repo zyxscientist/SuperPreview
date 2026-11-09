@@ -181,7 +181,7 @@ struct StockOrderOrderTypeInput: View {
         }
         .padding(.horizontal, StockOrderOrderTypeInputLayout.horizontalPadding)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .fullScreenCover(isPresented: $isOrderTypeActionSheetPresented) {
             StockOrderOrderTypeActionSheet(
                 selection: $selection,
@@ -222,7 +222,7 @@ struct StockOrderOrderTypeInput: View {
         HStack(spacing: StockOrderOrderTypeInputLayout.labelIconSpacing) {
             Text(language.text(.orderType))
                 .modifier(CustomFontModifier(size: 16, font: .regular, lineHeight: 24))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .lineLimit(1)
 
             if showsInfoButton {
@@ -254,7 +254,7 @@ struct StockOrderOrderTypeInput: View {
             HStack(spacing: 0) {
                 Text(selectedTitle)
                     .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .lineLimit(1)
                     .minimumScaleFactor(0.75)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -265,7 +265,7 @@ struct StockOrderOrderTypeInput: View {
                         cornerRadius: StockOrderOrderTypeInputLayout.arrowButtonCornerRadius,
                         style: .continuous
                     )
-                    .fill(Color("color-base-1"))
+                    .fill(Color("color-base1"))
 
                     Image("stock_order_type_chevron_down")
                         .resizable()
@@ -288,7 +288,7 @@ struct StockOrderOrderTypeInput: View {
                 maxHeight: StockOrderOrderTypeInputLayout.inputHeight,
                 alignment: .leading
             )
-            .background(Color("color-scale-2"))
+            .background(Color("color-grayscale2"))
             .clipShape(
                 RoundedRectangle(
                     cornerRadius: StockOrderOrderTypeInputLayout.inputCornerRadius,
@@ -306,7 +306,7 @@ struct StockOrderOrderTypeInput: View {
     private var unselectableValue: some View {
         Text(selectedTitle)
             .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
-            .foregroundColor(Color("color-text-30"))
+            .foregroundColor(Color("color-text1"))
             .lineLimit(1)
             .minimumScaleFactor(0.75)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -317,7 +317,7 @@ struct StockOrderOrderTypeInput: View {
     private func reminder(_ text: String) -> some View {
         Text(text)
             .modifier(CustomFontModifier(size: 12, font: .regular, lineHeight: 16))
-            .foregroundColor(Color("color-text-90"))
+            .foregroundColor(Color("color-text3"))
             .fixedSize(horizontal: false, vertical: true)
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.vertical, StockOrderOrderTypeInputLayout.reminderVerticalPadding)

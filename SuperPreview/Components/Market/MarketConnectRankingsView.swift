@@ -126,7 +126,7 @@ struct MarketConnectRankingsView: View {
                     .accessibilityLabel(String(format: language.text(.marketRankingAccessibilityFormat), stock.name(language), stock.symbol, stock.price, stock.formattedChange))
                     .accessibilityIdentifier("market.connectRankings.stock.\(stock.symbol)")
             }
-            Color("color-base-1")
+            Color("color-base1")
                 .frame(height: max(24, minimumRowsHeight - CGFloat(visibleStocks.count) * 66))
                 .accessibilityHidden(true)
         } header: {
@@ -170,7 +170,7 @@ struct MarketConnectRankingsView: View {
         }
         .padding(.top, 4)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityIdentifier("market.connectRankings.header")
     }
 
@@ -183,14 +183,14 @@ struct MarketConnectRankingsView: View {
                 } label: {
                     Text(language.text(item.title))
                         .modifier(CustomFontModifier(size: tab == item ? 18 : 14, font: tab == item ? .medium : .regular, lineHeight: 28))
-                        .foregroundStyle(Color(tab == item ? "color-text-30" : "color-text-60"))
+                        .foregroundStyle(Color(tab == item ? "color-text1" : "color-text-60"))
                         .fixedSize(horizontal: true, vertical: false)
                         .frame(height: 28)
                         .padding(.horizontal, tab == item ? 2 : 0)
                         .background(alignment: .bottom) {
                             if tab == item {
                                 RoundedRectangle(cornerRadius: 4)
-                                    .fill(LinearGradient(colors: [Color("color-scale-3"), Color("color-base-1")], startPoint: .leading, endPoint: .trailing))
+                                    .fill(LinearGradient(colors: [Color("color-grayscale3"), Color("color-base1")], startPoint: .leading, endPoint: .trailing))
                                     .frame(height: 8)
                             }
                         }
@@ -210,12 +210,12 @@ struct MarketConnectRankingsView: View {
         } label: {
             Text(language.text(option.title(direction: direction)))
                 .modifier(CustomFontModifier(size: 14, font: active ? .bold : .regular, lineHeight: 20))
-                .foregroundStyle(Color(active ? "color-text-30" : "color-text-60"))
+                .foregroundStyle(Color(active ? "color-text1" : "color-text-60"))
                 .fixedSize(horizontal: true, vertical: false)
                 .padding(.horizontal, 12)
                 .frame(height: 32)
-                .background(Color(active ? "color-base-1" : "color-scale-1"), in: RoundedRectangle(cornerRadius: 6))
-                .overlay { RoundedRectangle(cornerRadius: 6).strokeBorder(active ? Color("color-base-r") : .clear, lineWidth: 1) }
+                .background(Color(active ? "color-base1" : "color-grayscale1"), in: RoundedRectangle(cornerRadius: 6))
+                .overlay { RoundedRectangle(cornerRadius: 6).strokeBorder(active ? Color("color-baser") : .clear, lineWidth: 1) }
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(active ? .isSelected : [])
@@ -229,7 +229,7 @@ struct MarketConnectRankingsView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(stock.name(language))
                         .modifier(CustomFontModifier(size: 16, font: .regular, lineHeight: 24))
-                        .foregroundStyle(Color("color-text-30")).frame(height: 24)
+                        .foregroundStyle(Color("color-text1")).frame(height: 24)
                     Text(stock.symbol)
                         .modifier(CustomFontModifier(size: 13, font: .regular, lineHeight: 16))
                         .foregroundStyle(Color("color-text-60")).frame(height: 16)
@@ -245,9 +245,9 @@ struct MarketConnectRankingsView: View {
                 }
                 HStack(spacing: 8) {
                     Text(stock.price).modifier(CustomFontModifier(size: 16, font: .regular, lineHeight: 24))
-                        .foregroundStyle(Color("color-text-30")).frame(maxWidth: .infinity, alignment: .trailing)
+                        .foregroundStyle(Color("color-text1")).frame(maxWidth: .infinity, alignment: .trailing)
                     Text(stock.formattedChange).modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
-                        .foregroundStyle(MarketColor.resolve(stock.change >= 0 ? "color-utility3-red" : "color-utility3-green", reversed: marketColorReversed))
+                        .foregroundStyle(MarketColor.resolve(stock.change >= 0 ? "color-red" : "color-green", reversed: marketColorReversed))
                         .frame(maxWidth: .infinity, alignment: .trailing)
                 }
                 .lineLimit(1).minimumScaleFactor(0.8)
@@ -255,7 +255,7 @@ struct MarketConnectRankingsView: View {
             }
         }
         .frame(height: 66)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .contentShape(Rectangle())
     }
 }

@@ -42,11 +42,11 @@ extension StockOrderQuoteTrend {
     func tileColor(reversed: Bool) -> Color {
         switch self {
         case .up:
-            return MarketColor.resolve("color-utility3-red", reversed: reversed)
+            return MarketColor.resolve("color-red", reversed: reversed)
         case .down:
-            return MarketColor.resolve("color-utility3-green", reversed: reversed)
+            return MarketColor.resolve("color-green", reversed: reversed)
         case .flat:
-            return Color("color-text-90")
+            return Color("color-text3")
         }
     }
 

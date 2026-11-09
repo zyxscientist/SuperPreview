@@ -32,7 +32,7 @@ struct SystemSegmentedControlDemoView: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 20)
         }
-        .background(Color("color-base-0").ignoresSafeArea())
+        .background(Color("color-base0").ignoresSafeArea())
         .navigationTitle("iOS Segmented Control")
         .navigationBarTitleDisplayMode(.inline)
         .accessibilityIdentifier("compare.systemSegmentedControl.demo")
@@ -42,7 +42,7 @@ struct SystemSegmentedControlDemoView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("iOS 系统 Segmented Control")
                 .font(.system(size: 20, weight: .semibold))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
 
             Text("SwiftUI 通过 Picker 的 SegmentedPickerStyle 直接使用系统分段控件。下面的选中态、圆角、动画和触控反馈均由系统负责。")
                 .font(.system(size: 14))
@@ -106,7 +106,7 @@ struct SystemSegmentedControlDemoView: View {
             .accessibilityIdentifier("compare.systemSegmentedControl.disabled")
 
             Toggle("模拟禁用状态", isOn: $isSecondaryControlDisabled)
-                .tint(Color("color-brand-blue"))
+                .tint(Color("color-blue1"))
                 .accessibilityIdentifier("compare.systemSegmentedControl.disableToggle")
         }
     }
@@ -124,7 +124,7 @@ struct SystemSegmentedControlDemoView: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(12)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color("color-base-0"))
+                .background(Color("color-base0"))
                 .cornerRadius(8)
         }
     }
@@ -135,7 +135,7 @@ struct SystemSegmentedControlDemoView: View {
         VStack(alignment: .leading, spacing: 14, content: content)
             .padding(16)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color("color-base-1"))
+            .background(Color("color-base1"))
             .cornerRadius(12)
     }
 
@@ -143,7 +143,7 @@ struct SystemSegmentedControlDemoView: View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title)
                 .font(.system(size: 16, weight: .semibold))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
 
             Text(subtitle)
                 .font(.system(size: 13))
@@ -156,7 +156,7 @@ struct SystemSegmentedControlDemoView: View {
             Text(title)
                 .foregroundColor(Color("color-text-60"))
             Text(value)
-                .foregroundColor(Color("color-brand-blue"))
+                .foregroundColor(Color("color-blue1"))
         }
         .font(.system(size: 13, weight: .medium))
         .accessibilityElement(children: .combine)

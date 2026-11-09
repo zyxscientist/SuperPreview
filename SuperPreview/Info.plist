@@ -53,7 +53,7 @@
 	<key>UILaunchScreen</key>
 	<dict>
 		<key>UIColorName</key>
-		<string>color-base-0</string>
+		<string>color-base0</string>
 		<key>UIImageName</key>
 		<string></string>
 	</dict>

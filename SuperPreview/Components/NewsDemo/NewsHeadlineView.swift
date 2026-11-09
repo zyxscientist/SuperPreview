@@ -152,7 +152,7 @@ struct NewsHeadlineView: View {
         VStack(spacing: 8) {
             Text(NewsHeadlineEmptyCopy.title.text(in: language))
                 .modifier(NewsHeadlineFont(size: 16, weight: .medium, lineHeight: 24))
-                .foregroundStyle(Color("color-text-30"))
+                .foregroundStyle(Color("color-text1"))
 
             Text(NewsHeadlineEmptyCopy.message.text(in: language))
                 .modifier(NewsHeadlineFont(size: 14, weight: .regular, lineHeight: 20))
@@ -204,7 +204,7 @@ private struct NewsHeadlineArticleRow: View {
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .contentShape(Rectangle())
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
     }
 
     private var textContent: some View {
@@ -218,7 +218,7 @@ private struct NewsHeadlineArticleRow: View {
     private var title: some View {
         Text(story.title.text(in: language))
             .modifier(NewsHeadlineFont(size: 16, weight: .medium, lineHeight: 24))
-            .foregroundStyle(Color("color-text-30"))
+            .foregroundStyle(Color("color-text1"))
             .lineLimit(2)
             .multilineTextAlignment(.leading)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -231,7 +231,7 @@ private struct NewsHeadlineArticleRow: View {
             Text(story.source.name.text(in: language))
         }
         .modifier(NewsHeadlineFont(size: 12, weight: .regular, lineHeight: 12))
-        .foregroundStyle(Color("color-text-90"))
+        .foregroundStyle(Color("color-text3"))
         .lineLimit(1)
     }
 }
@@ -260,9 +260,9 @@ private enum NewsHeadlineEmptyCopy {
 private struct NewsHeadlinePagination: View {
     var body: some View {
         HStack(spacing: 4) {
-            indicator(width: 8, color: Color("color-text-30"))
-            indicator(width: 3, color: Color("color-scale-4"))
-            indicator(width: 3, color: Color("color-scale-4"))
+            indicator(width: 8, color: Color("color-text1"))
+            indicator(width: 3, color: Color("color-grayscale4"))
+            indicator(width: 3, color: Color("color-grayscale4"))
             indicator(width: 3, color: .white)
         }
         .accessibilityHidden(true)

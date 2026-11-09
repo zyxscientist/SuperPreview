@@ -52,7 +52,7 @@ struct NewsDemoView: View {
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color("color-base-1").edgesIgnoringSafeArea(.all))
+            .background(Color("color-base1").edgesIgnoringSafeArea(.all))
             .ignoresSafeArea(.container, edges: .bottom)
         }
         .background(articleNavigationLink)

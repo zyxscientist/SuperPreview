@@ -29,11 +29,11 @@ enum TransactionTypeSymbol {
     var color: Color {
         switch self {
         case .buy:
-            return Color(.colorUtility3Red)
+            return Color(.colorRed)
         case .sell:
-            return Color(.colorUtility3Green)
+            return Color(.colorGreen)
         case .neutral:
-            return Color(.colorText90)  // 假设中性交易使用默认文本颜色
+            return Color(.colorText3)  // 假设中性交易使用默认文本颜色
         }
     }
 }

@@ -14,11 +14,11 @@ struct HeaderTabsView: View {
             VStack(spacing: 5.0) {
                 Text("股票")
                     .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                 
                  Capsule()
                     .frame(width: 32, height: 2)
-                    .foregroundColor(Color("color-brand-blue"))
+                    .foregroundColor(Color("color-blue1"))
             }
                 Text("基金")
                     .font(.system(size: 16, weight: .regular))
@@ -38,7 +38,7 @@ struct HeaderTabsView: View {
                 .padding(.top, 0)
             
         }
-        .background(Color("color-transparent"))
+        .background(Color("color-legacy-transparent"))
         .padding(.horizontal,15)
         .padding(.top, 5)
     }

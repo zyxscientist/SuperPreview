@@ -29,7 +29,7 @@ struct PriceInputField: View {
                         HapticManager.instance.impactHaptic(type: .medium)
                     }
                 Text("\(priceQuantityViewModel.price.formatted())")
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .modifier(CustomFontModifier(size: 16, font: .medium))
             }.padding(.leading, 65)
             
@@ -63,7 +63,7 @@ struct PriceInputField: View {
         }
         .padding(.horizontal, 15)
         .frame(width: UIScreen.main.bounds.size.width,height: 44)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .overlay {
             FullWidthSeparatorView()
         }
@@ -80,34 +80,34 @@ struct PriceTargetingMenu: View {
     var body: some View {
         VStack(spacing: 0) {
             Text("指定价")
-                .foregroundColor(Color("color-brand-blue"))
+                .foregroundColor(Color("color-blue1"))
                 .frame(width: 88, height: 40)
                 .overlay {
                     FullWidthSeparatorView()
                 }
             Text("跟市价")
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .frame(width: 88, height: 40)
                 .overlay {
                     FullWidthSeparatorView()
                 }
             Text("跟买一")
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .frame(width: 88, height: 40)
                 .overlay {
                     FullWidthSeparatorView()
                 }
             Text("跟卖一")
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .frame(width: 88, height: 40)
         }
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .clipShape(
             RoundedRectangle(cornerRadius: 6, style: .continuous)
         )
         .overlay( // 再次叠加
             RoundedRectangle(cornerRadius: 6.0, style: .continuous)
-                .stroke(Color("color-separator-10"), lineWidth: 0.5)
+                .stroke(Color("color-separator1"), lineWidth: 0.5)
         )
         .shadow(color:.black.opacity(0.07),radius: 4)
     }

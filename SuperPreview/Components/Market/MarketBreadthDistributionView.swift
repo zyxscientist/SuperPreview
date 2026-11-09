@@ -53,13 +53,13 @@ struct MarketBreadthDistributionView: View {
         HStack(alignment: .center, spacing: 10) {
             Text(language.text(.marketBreadthDistribution))
                 .modifier(CustomFontModifier(size: 18, font: .bold, lineHeight: 28))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
 
             Spacer(minLength: 0)
 
             Text(String(format: language.text(.marketBreadthUpdatedFormat), data.updatedAt))
                 .modifier(CustomFontModifier(size: 12, font: .regular, lineHeight: 16))
-                .foregroundColor(Color("color-text-90"))
+                .foregroundColor(Color("color-text3"))
                 .lineLimit(1)
                 .fixedSize(horizontal: true, vertical: false)
         }
@@ -73,7 +73,7 @@ struct MarketBreadthDistributionView: View {
 
             HStack(spacing: 4) {
                 Capsule()
-                    .fill(MarketColor.resolve("color-utility3-green", reversed: marketColorReversed))
+                    .fill(MarketColor.resolve("color-green", reversed: marketColorReversed))
                     .frame(width: 178 * scale)
 
                 Capsule()
@@ -81,7 +81,7 @@ struct MarketBreadthDistributionView: View {
                     .frame(width: 39 * scale)
 
                 Capsule()
-                    .fill(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
+                    .fill(MarketColor.resolve("color-red", reversed: marketColorReversed))
                     .frame(width: 145 * scale)
             }
         }
@@ -109,12 +109,12 @@ struct MarketBreadthDistributionView: View {
                 .frame(width: 10, height: 8)
                 .rotationEffect(.degrees(90))
                 .frame(width: 8, height: 10)
-                .foregroundColor(MarketColor.resolve("color-utility3-green", reversed: marketColorReversed))
+                .foregroundColor(MarketColor.resolve("color-green", reversed: marketColorReversed))
                 .accessibilityHidden(true)
 
             Text(formatted(data.downCount))
                 .modifier(CustomFontModifier(size: 14, font: .bold, lineHeight: 20))
-                .foregroundColor(MarketColor.resolve("color-utility3-green", reversed: marketColorReversed))
+                .foregroundColor(MarketColor.resolve("color-green", reversed: marketColorReversed))
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel(String(format: language.text(.marketBreadthDownAccessibilityFormat), formatted(data.downCount)))
@@ -124,7 +124,7 @@ struct MarketBreadthDistributionView: View {
         HStack(spacing: 4) {
             Text(formatted(data.upCount))
                 .modifier(CustomFontModifier(size: 14, font: .bold, lineHeight: 20))
-                .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
+                .foregroundColor(MarketColor.resolve("color-red", reversed: marketColorReversed))
 
             Image("market_breadth_distribution_up")
                 .renderingMode(.template)
@@ -132,7 +132,7 @@ struct MarketBreadthDistributionView: View {
                 .frame(width: 10, height: 8)
                 .rotationEffect(.degrees(-90))
                 .frame(width: 8, height: 10)
-                .foregroundColor(MarketColor.resolve("color-utility3-red", reversed: marketColorReversed))
+                .foregroundColor(MarketColor.resolve("color-red", reversed: marketColorReversed))
                 .accessibilityHidden(true)
         }
         .accessibilityElement(children: .combine)
@@ -148,7 +148,7 @@ struct MarketBreadthDistributionView_Previews: PreviewProvider {
     static var previews: some View {
         MarketBreadthDistributionView()
             .frame(width: 402)
-            .background(Color("color-base-1"))
+            .background(Color("color-base1"))
             .previewLayout(.sizeThatFits)
             .previewDisplayName("涨跌分布")
     }

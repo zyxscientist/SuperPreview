@@ -67,7 +67,7 @@ struct StockOrderExtendedHoursInput: View {
             maxHeight: StockOrderExtendedHoursInputLayout.inputHeight,
             alignment: .leading
         )
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .fullScreenCover(isPresented: $isActionSheetPresented) {
             StockOrderExtendedHoursActionSheet(
                 selection: $selection,
@@ -94,7 +94,7 @@ struct StockOrderExtendedHoursInput: View {
         HStack(spacing: StockOrderExtendedHoursInputLayout.labelIconSpacing) {
             Text(language.text(.extendedHours))
                 .modifier(CustomFontModifier(size: 16, font: .regular, lineHeight: 24))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .lineLimit(1)
 
             if showsInfoButton {
@@ -126,7 +126,7 @@ struct StockOrderExtendedHoursInput: View {
             HStack(spacing: 0) {
                 Text(selectedTitle)
                     .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .lineLimit(1)
                     .minimumScaleFactor(0.75)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -137,7 +137,7 @@ struct StockOrderExtendedHoursInput: View {
                         cornerRadius: StockOrderExtendedHoursInputLayout.arrowButtonCornerRadius,
                         style: .continuous
                     )
-                    .fill(Color("color-base-1"))
+                    .fill(Color("color-base1"))
 
                     Image("stock_order_type_chevron_down")
                         .resizable()
@@ -159,7 +159,7 @@ struct StockOrderExtendedHoursInput: View {
                 height: StockOrderExtendedHoursInputLayout.inputHeight,
                 alignment: .leading
             )
-            .background(Color("color-scale-2"))
+            .background(Color("color-grayscale2"))
             .clipShape(
                 RoundedRectangle(
                     cornerRadius: StockOrderExtendedHoursInputLayout.inputCornerRadius,

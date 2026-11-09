@@ -60,7 +60,7 @@ struct IntradayCardView: View {
         }
         .padding(10)
         .frame(maxHeight: 140)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .cornerRadius(10, antialiased: true)
         
         // 点击缩放动画效果

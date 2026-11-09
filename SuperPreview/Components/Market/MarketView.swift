@@ -47,7 +47,7 @@ struct MarketView: View {
                 marketContent(bottomContentClearance: geometry.safeAreaInsets.bottom + 28)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .background(Color("color-base-1").ignoresSafeArea())
+            .background(Color("color-base1").ignoresSafeArea())
             .ignoresSafeArea(.container, edges: .bottom)
         }
         .accessibilityIdentifier("market.root")
@@ -314,7 +314,7 @@ private struct MarketScrollingPage<Content: View>: View {
 
                 // Match the watchlist: rows scroll behind the floating tab bar,
                 // and the last row can still be brought fully above it.
-                Color("color-base-1")
+                Color("color-base1")
                     .frame(height: bottomContentClearance)
                     .accessibilityHidden(true)
             }
@@ -324,7 +324,7 @@ private struct MarketScrollingPage<Content: View>: View {
         }
         // A category without a globe must cover its own part of the shared
         // Metal surface while a neighboring page is still visible mid-swipe.
-        .background(showsGlobe ? Color.clear : Color("color-base-1"))
+        .background(showsGlobe ? Color.clear : Color("color-base1"))
         .scrollBounceBehavior(.always, axes: .vertical)
         .onScrollGeometryChange(for: CGFloat.self) { scroll in
             max(-(scroll.contentOffset.y + scroll.contentInsets.top), 0)
@@ -362,7 +362,7 @@ private struct MarketScrollingPage<Content: View>: View {
                         }
                 }
 
-                Color("color-base-1")
+                Color("color-base1")
             }
             // One continuous opaque surface sits outside all row buttons.
             // Extending it below the content also covers bottom overscroll.
@@ -392,7 +392,7 @@ private struct MarketDebugPanel: View {
                 HStack {
                     Text(interfaceLanguage.text(.debug))
                         .modifier(CustomFontModifier(size: 20, font: .bold, lineHeight: 28))
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
 
                     Spacer()
 
@@ -415,7 +415,7 @@ private struct MarketDebugPanel: View {
 
                 Toggle(interfaceLanguage.text(.showShaderOnly), isOn: $isShaderOnly)
                     .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .accessibilityIdentifier("market.debug.showShaderOnly")
 
                 Button(action: exportGlobeParameters) {
@@ -429,8 +429,8 @@ private struct MarketDebugPanel: View {
                     }
                     .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
                     .padding(.horizontal, 16)
-                    .foregroundColor(Color("color-brand-blue"))
-                    .background(Color("color-brand-blue").opacity(0.12))
+                    .foregroundColor(Color("color-blue1"))
+                    .background(Color("color-blue1").opacity(0.12))
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
                 .buttonStyle(PlainButtonStyle())
@@ -442,7 +442,7 @@ private struct MarketDebugPanel: View {
             .padding(.top, 24)
             .padding(.bottom, 32)
         }
-        .background(Color("color-base-1").ignoresSafeArea())
+        .background(Color("color-base1").ignoresSafeArea())
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("market.debug.panel")
         .sheet(item: $shareFile) { file in

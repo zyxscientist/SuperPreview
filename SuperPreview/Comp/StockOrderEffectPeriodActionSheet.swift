@@ -133,7 +133,7 @@ struct StockOrderEffectPeriodActionSheet: View {
                     }
             }
         }
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .clipShape(
             RoundedRectangle(
                 cornerRadius: StockOrderEffectPeriodActionSheetLayout.cornerRadius,
@@ -152,7 +152,7 @@ struct StockOrderEffectPeriodActionSheet: View {
                         lineHeight: 24
                     )
                 )
-                .foregroundColor(Color("color-brand-blue"))
+                .foregroundColor(Color("color-blue1"))
                 .frame(
                     maxWidth: .infinity,
                     minHeight: StockOrderEffectPeriodActionSheetLayout.rowHeight,
@@ -161,7 +161,7 @@ struct StockOrderEffectPeriodActionSheet: View {
                 .contentShape(Rectangle())
         }
         .buttonStyle(PlainButtonStyle())
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .clipShape(
             RoundedRectangle(
                 cornerRadius: StockOrderEffectPeriodActionSheetLayout.cornerRadius,
@@ -174,7 +174,7 @@ struct StockOrderEffectPeriodActionSheet: View {
 
     private var separator: some View {
         Rectangle()
-            .fill(Color("color-separator-10"))
+            .fill(Color("color-separator1"))
             .frame(height: StockOrderEffectPeriodActionSheetLayout.separatorHeight)
             .accessibilityHidden(true)
     }
@@ -191,7 +191,7 @@ struct StockOrderEffectPeriodActionSheet: View {
                         lineHeight: 24
                     )
                 )
-                .foregroundColor(Color("color-brand-blue"))
+                .foregroundColor(Color("color-blue1"))
                 .multilineTextAlignment(.center)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)

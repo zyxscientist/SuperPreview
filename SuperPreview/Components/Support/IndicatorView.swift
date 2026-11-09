@@ -11,9 +11,9 @@ import SwiftUI
 struct IndicatorView: View {
     var body: some View {
         HStack(spacing: 5.0) {
-            Capsule().frame(width: 10, height: 3).foregroundColor(Color("color-text-30"))
-            Capsule().frame(width: 5, height: 3).foregroundColor(Color("color-text-90"))
-            Capsule().frame(width: 5, height: 3).foregroundColor(Color("color-text-90"))
+            Capsule().frame(width: 10, height: 3).foregroundColor(Color("color-text1"))
+            Capsule().frame(width: 5, height: 3).foregroundColor(Color("color-text3"))
+            Capsule().frame(width: 5, height: 3).foregroundColor(Color("color-text3"))
         }.frame(minWidth: 375,maxWidth: .infinity, minHeight: 20, maxHeight: 20)
     }
 }

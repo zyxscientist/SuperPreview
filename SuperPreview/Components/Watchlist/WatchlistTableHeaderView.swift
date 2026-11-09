@@ -36,7 +36,7 @@ struct WatchlistTableHeaderView: View {
             }.padding(.trailing, 11)
         }
         .frame(minHeight: 36,maxHeight: 36)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .overlay(FullWidthSeparatorView())
     }
 }

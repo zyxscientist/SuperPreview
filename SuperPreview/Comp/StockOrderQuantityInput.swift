@@ -40,9 +40,9 @@ enum StockOrderQuantityQuickInputTone: String, Hashable {
     fileprivate var color: Color {
         switch self {
         case .buy:
-            Color("color-utility3-red")
+            Color("color-red")
         case .sell:
-            Color("color-utility3-green")
+            Color("color-green")
         }
     }
 }
@@ -195,7 +195,7 @@ struct StockOrderQuantityInput: View {
             alignment: .top
         )
         .clipped()
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .animation(
             StockOrderMotion.expansion(reduceMotion: reduceMotion),
             value: isQuickInputPresented
@@ -279,8 +279,8 @@ struct StockOrderQuantityInput: View {
             )
             .foregroundColor(
                 showsValidationError
-                    ? Color("color-utility3-red")
-                    : Color("color-text-30")
+                    ? Color("color-red")
+                    : Color("color-text1")
             )
             .lineLimit(1)
             .minimumScaleFactor(0.7)
@@ -328,7 +328,7 @@ struct StockOrderQuantityInput: View {
                             )
                         )
                         .monospacedDigit()
-                        .foregroundColor(Color("color-text-90"))
+                        .foregroundColor(Color("color-text3"))
                         .lineLimit(1)
                         .allowsHitTesting(false)
                 }
@@ -342,7 +342,7 @@ struct StockOrderQuantityInput: View {
                         )
                     )
                     .monospacedDigit()
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .keyboardType(inputMode.maxFractionDigits == nil ? .numberPad : .decimalPad)
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled(true)
@@ -374,7 +374,7 @@ struct StockOrderQuantityInput: View {
             width: quantityFieldWidth,
             height: StockOrderQuantityInputLayout.controlHeight
         )
-        .background(Color("color-scale-2"))
+        .background(Color("color-grayscale2"))
         .clipShape(
             RoundedRectangle(
                 cornerRadius: StockOrderQuantityInputLayout.fieldCornerRadius,
@@ -392,7 +392,7 @@ struct StockOrderQuantityInput: View {
                     cornerRadius: StockOrderQuantityInputLayout.fieldCornerRadius,
                     style: .continuous
                 )
-                .fill(Color("color-scale-2"))
+                .fill(Color("color-grayscale2"))
                 .frame(
                     width: StockOrderQuantityInputLayout.quickInputBackgroundSize,
                     height: StockOrderQuantityInputLayout.quickInputBackgroundSize
@@ -475,7 +475,7 @@ struct StockOrderQuantityInput: View {
                     cornerRadius: StockOrderQuantityInputLayout.nudgeCornerRadius,
                     style: .continuous
                 )
-                .fill(Color("color-base-1"))
+                .fill(Color("color-base1"))
 
                 Image(assetName)
                     .resizable()
@@ -672,7 +672,7 @@ private struct StockOrderQuantityQuickInputPanel: View {
                             lineHeight: 16
                         )
                     )
-                    .foregroundColor(Color("color-text-90"))
+                    .foregroundColor(Color("color-text3"))
                     .lineLimit(1)
                     .minimumScaleFactor(0.65)
                     .frame(
@@ -726,7 +726,7 @@ private struct StockOrderQuantityQuickInputPanel: View {
                         )
                     )
                     .monospacedDigit()
-                    .foregroundColor(Color("color-text-90"))
+                    .foregroundColor(Color("color-text3"))
                     .lineLimit(1)
 
                 Text(showsValues ? option.displayQuantity : "--")
@@ -738,7 +738,7 @@ private struct StockOrderQuantityQuickInputPanel: View {
                         )
                     )
                     .monospacedDigit()
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .lineLimit(1)
                     .minimumScaleFactor(0.68)
             }

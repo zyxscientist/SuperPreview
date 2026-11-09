@@ -135,7 +135,7 @@ struct StockOrderOrderTypeActionSheet: View {
                     }
             }
         }
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .clipShape(
             RoundedRectangle(
                 cornerRadius: StockOrderOrderTypeActionSheetLayout.cornerRadius,
@@ -156,7 +156,7 @@ struct StockOrderOrderTypeActionSheet: View {
                         lineHeight: 24
                     )
                 )
-                .foregroundColor(Color("color-brand-blue"))
+                .foregroundColor(Color("color-blue1"))
                 .frame(
                     maxWidth: .infinity,
                     minHeight: StockOrderOrderTypeActionSheetLayout.rowHeight,
@@ -165,7 +165,7 @@ struct StockOrderOrderTypeActionSheet: View {
                 .contentShape(Rectangle())
         }
         .buttonStyle(PlainButtonStyle())
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .clipShape(
             RoundedRectangle(
                 cornerRadius: StockOrderOrderTypeActionSheetLayout.cornerRadius,
@@ -178,7 +178,7 @@ struct StockOrderOrderTypeActionSheet: View {
 
     private var separator: some View {
         Rectangle()
-            .fill(Color("color-separator-10"))
+            .fill(Color("color-separator1"))
             .frame(height: StockOrderOrderTypeActionSheetLayout.separatorHeight)
             .accessibilityHidden(true)
     }
@@ -195,7 +195,7 @@ struct StockOrderOrderTypeActionSheet: View {
                         lineHeight: 24
                     )
                 )
-                .foregroundColor(Color("color-brand-blue"))
+                .foregroundColor(Color("color-blue1"))
                 .multilineTextAlignment(.center)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)

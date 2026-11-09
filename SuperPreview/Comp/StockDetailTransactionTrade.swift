@@ -48,10 +48,10 @@ struct StockDetailTransactionTrade: View {
             quantityAvailability
             actionButtons
         }
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .overlay(alignment: .bottom) {
             Rectangle()
-                .fill(Color("color-separator-10"))
+                .fill(Color("color-separator1"))
                 .frame(height: StockDetailTransactionTradeLayout.separatorHeight)
                 .padding(.horizontal, StockDetailTransactionTradeLayout.horizontalPadding)
                 .accessibilityHidden(true)
@@ -97,7 +97,7 @@ struct StockDetailTransactionTrade: View {
                             lineHeight: StockDetailTransactionTradeLayout.accountLineHeight
                         )
                     )
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
 
@@ -106,7 +106,7 @@ struct StockDetailTransactionTrade: View {
                         Text("\(language.text(.maximumBuyingPower)):")
                         Text(buyingPower.displayValue)
                     }
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .modifier(
                         CustomFontModifier(
                             size: StockDetailTransactionTradeLayout.buyingPowerFontSize,
@@ -143,7 +143,7 @@ struct StockDetailTransactionTrade: View {
         }
         .padding(.horizontal, StockDetailTransactionTradeLayout.horizontalPadding)
         .frame(height: StockDetailTransactionTradeLayout.accountHeaderHeight)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockDetail.transactionTrade.account")
     }
@@ -282,7 +282,7 @@ struct StockDetailTransactionTrade: View {
     }
 
     private func actionColor(for side: StockOrderConfirmationSide) -> Color {
-        side == .buy ? Color("color-utility3-red") : Color("color-utility3-green")
+        side == .buy ? Color("color-red") : Color("color-green")
     }
 
     private func dismissInput() {
@@ -328,7 +328,7 @@ private struct StockDetailTransactionTradePreviewHarness: View {
 
             StockDetailTransactionTrade(symbol: symbol)
         }
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
     }
 }
 

@@ -91,7 +91,7 @@ struct StockOrderPriceTargetMenu: View {
             Image("stock_order_price_target_menu_pointer")
                 .resizable()
                 .renderingMode(.template)
-                .foregroundStyle(Color("color-base-1"))
+                .foregroundStyle(Color("color-base1"))
                 .scaledToFit()
                 .frame(
                     width: StockOrderPriceTargetMenuLayout.pointerWidth,
@@ -123,7 +123,7 @@ struct StockOrderPriceTargetMenu: View {
                     .overlay(alignment: .bottom) {
                         if index < supportedTargets.count - 1 {
                             Rectangle()
-                                .fill(Color("color-separator-10"))
+                                .fill(Color("color-separator1"))
                                 .frame(
                                     height: StockOrderPriceTargetMenuLayout.separatorHeight
                                 )
@@ -132,7 +132,7 @@ struct StockOrderPriceTargetMenu: View {
                     }
             }
         }
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .clipShape(
             RoundedRectangle(
                 cornerRadius: StockOrderPriceTargetMenuLayout.cornerRadius,
@@ -156,8 +156,8 @@ struct StockOrderPriceTargetMenu: View {
                 )
                 .foregroundColor(
                     target == selection
-                        ? Color("color-brand-blue")
-                        : Color("color-text-30")
+                        ? Color("color-blue1")
+                        : Color("color-text1")
                 )
                 .lineLimit(1)
                 .minimumScaleFactor(0.62)
@@ -199,7 +199,7 @@ private struct StockOrderPriceTargetMenuPreviewHarness: View {
             supportedTargets: StockOrderPriceTargetOptions.advancedQuote
         )
         .padding(24)
-        .background(Color("color-base-0"))
+        .background(Color("color-base0"))
     }
 }
 
@@ -215,7 +215,7 @@ struct StockOrderPriceTargetMenu_Previews: PreviewProvider {
                 supportedTargets: StockOrderPriceTargetOptions.basicQuote
             )
             .padding(24)
-            .background(Color("color-base-0"))
+            .background(Color("color-base0"))
             .environment(\.demoLanguage, .english)
             .preferredColorScheme(.dark)
             .previewDisplayName("Basic Quote · English · Dark")

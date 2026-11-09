@@ -25,7 +25,7 @@ struct AssociatedInfoView: View {
                         .lineLimit(1)
                         .minimumScaleFactor(0.5)
                         .frame(width: 85, alignment: .leading)
-                        .foregroundColor(Color(.colorText30))
+                        .foregroundColor(Color(.colorText1))
                         .modifier(CustomFontModifier(size: 13, font: .regular))
                 }
                 
@@ -33,7 +33,7 @@ struct AssociatedInfoView: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.5)
                     .multilineTextAlignment(.leading)
-                    .foregroundColor(Color(.colorText30))
+                    .foregroundColor(Color(.colorText1))
                     .modifier(CustomFontModifier(size: 13, font: .regular))
                 
                 Spacer()
@@ -46,7 +46,7 @@ struct AssociatedInfoView: View {
             // 描边
             .overlay(
                 RoundedRectangle(cornerRadius: 6, style: .continuous)
-                    .stroke(Color(.colorSeparator10), lineWidth: 0.5)
+                    .stroke(Color(.colorSeparator1), lineWidth: 0.5)
             )
             // 🔚结束
             
@@ -63,7 +63,7 @@ struct AssociatedInfoView: View {
                         .minimumScaleFactor(0.5)
                         .multilineTextAlignment(.leading)
                         .frame(width: 85, alignment: .leading)
-                        .foregroundColor(Color(.colorText30))
+                        .foregroundColor(Color(.colorText1))
                         .modifier(CustomFontModifier(size: 13, font: .regular))
                 }
                 
@@ -71,7 +71,7 @@ struct AssociatedInfoView: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.5)
                     .multilineTextAlignment(.leading)
-                    .foregroundColor(Color(.colorText30))
+                    .foregroundColor(Color(.colorText1))
                     .modifier(CustomFontModifier(size: 13, font: .regular))
                 
                 Spacer()
@@ -84,7 +84,7 @@ struct AssociatedInfoView: View {
             // 描边
             .overlay(
                 RoundedRectangle(cornerRadius: 6, style: .continuous)
-                    .stroke(Color(.colorSeparator10), lineWidth: 0.5)
+                    .stroke(Color(.colorSeparator1), lineWidth: 0.5)
             )
             // 🔚结束
             
@@ -101,7 +101,7 @@ struct AssociatedInfoView: View {
                         .minimumScaleFactor(0.5)
                         .multilineTextAlignment(.leading)
                         .frame(width: 85, alignment: .leading)
-                        .foregroundColor(Color(.colorText30))
+                        .foregroundColor(Color(.colorText1))
                         .modifier(CustomFontModifier(size: 13, font: .regular))
                 }
                 
@@ -109,7 +109,7 @@ struct AssociatedInfoView: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.5)
                     .multilineTextAlignment(.leading)
-                    .foregroundColor(Color(.colorText30))
+                    .foregroundColor(Color(.colorText1))
                     .modifier(CustomFontModifier(size: 13, font: .regular))
                 
                 Spacer()
@@ -122,7 +122,7 @@ struct AssociatedInfoView: View {
             // 描边
             .overlay(
                 RoundedRectangle(cornerRadius: 6, style: .continuous)
-                    .stroke(Color(.colorSeparator10), lineWidth: 0.5)
+                    .stroke(Color(.colorSeparator1), lineWidth: 0.5)
             )
             // 🔚结束
             

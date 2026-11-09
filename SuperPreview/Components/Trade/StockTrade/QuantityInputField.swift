@@ -34,7 +34,7 @@ struct QuantityInputField: View {
         
                     }
                 Text("\(priceQuantityViewModel.quantity)")
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .modifier(CustomFontModifier(size: 16, font: .medium))
             }.padding(.leading, 65)
             
@@ -61,7 +61,7 @@ struct QuantityInputField: View {
         }
         .padding(.horizontal, 15)
         .frame(width: UIScreen.main.bounds.size.width,height: 44)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .overlay {
             FullWidthSeparatorView()
         }

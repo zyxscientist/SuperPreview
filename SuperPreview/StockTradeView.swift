@@ -60,7 +60,7 @@ struct StockTradeView: View {
                                 Rectangle().frame(height: 30)
                                     .blur(radius: openTapeView ? 2 : 0)
                                     .opacity(openTapeView ? 0 : 1)
-                                    .foregroundColor(Color("color-base-1"))
+                                    .foregroundColor(Color("color-base1"))
                                     .mask(LinearGradient(
                                         gradient:
                                             Gradient(
@@ -112,25 +112,25 @@ struct StockTradeView: View {
                                 .padding(.bottom, 5)
                             VStack(spacing: 15){
                                 Text("1/4")
-                                    .foregroundColor(Color("color-utility3-red"))
+                                    .foregroundColor(Color("color-red"))
                                     .modifier(CustomFontModifier(size: 12, font: .medium))
                                 Text("1/3")
-                                    .foregroundColor(Color("color-utility3-red"))
+                                    .foregroundColor(Color("color-red"))
                                     .modifier(CustomFontModifier(size: 12, font: .medium))
                                 Text("1/2")
-                                    .foregroundColor(Color("color-utility3-red"))
+                                    .foregroundColor(Color("color-red"))
                                     .modifier(CustomFontModifier(size: 12, font: .medium))
                                 Text("全仓")
-                                    .foregroundColor(Color("color-utility3-red"))
+                                    .foregroundColor(Color("color-red"))
                                     .modifier(CustomFontModifier(size: 12, font: .medium))
                             }
                             .frame(width: UIScreen.main.bounds.width/4-15)
                             .padding(.vertical, 10)
-                            .background(Color("color-utility3-red").opacity(0.1))
+                            .background(Color("color-red").opacity(0.1))
                             .clipShape(RoundedRectangle(cornerRadius: 8.0))
                             .overlay(
                                 RoundedRectangle(cornerRadius: 8.0, style: .continuous)
-                                    .stroke(Color("color-utility3-red"), lineWidth: 1)
+                                    .stroke(Color("color-red"), lineWidth: 1)
                             )
                         }.padding(.trailing, 5)
                         
@@ -142,25 +142,25 @@ struct StockTradeView: View {
                                 .padding(.bottom, 5)
                             VStack(spacing: 15){
                                 Text("1/4")
-                                    .foregroundColor(Color("color-utility3-red"))
+                                    .foregroundColor(Color("color-red"))
                                     .modifier(CustomFontModifier(size: 12, font: .medium))
                                 Text("1/3")
-                                    .foregroundColor(Color("color-utility3-red"))
+                                    .foregroundColor(Color("color-red"))
                                     .modifier(CustomFontModifier(size: 12, font: .medium))
                                 Text("1/2")
-                                    .foregroundColor(Color("color-utility3-red"))
+                                    .foregroundColor(Color("color-red"))
                                     .modifier(CustomFontModifier(size: 12, font: .medium))
                                 Text("全仓")
-                                    .foregroundColor(Color("color-utility3-red"))
+                                    .foregroundColor(Color("color-red"))
                                     .modifier(CustomFontModifier(size: 12, font: .medium))
                             }
                             .frame(width: UIScreen.main.bounds.width/4-15)
                             .padding(.vertical, 10)
-                            .background(Color("color-utility3-red").opacity(0.1))
+                            .background(Color("color-red").opacity(0.1))
                             .clipShape(RoundedRectangle(cornerRadius: 8.0))
                             .overlay(
                                 RoundedRectangle(cornerRadius: 8.0, style: .continuous)
-                                    .stroke(Color("color-utility3-red"), lineWidth: 1)
+                                    .stroke(Color("color-red"), lineWidth: 1)
                             )
                         }.padding(.trailing, 10)
                         
@@ -172,25 +172,25 @@ struct StockTradeView: View {
                                 .padding(.bottom, 5)
                             VStack(spacing: 15){
                                 Text("1/4")
-                                    .foregroundColor(Color("color-utility3-green"))
+                                    .foregroundColor(Color("color-green"))
                                     .modifier(CustomFontModifier(size: 12, font: .medium))
                                 Text("1/3")
-                                    .foregroundColor(Color("color-utility3-green"))
+                                    .foregroundColor(Color("color-green"))
                                     .modifier(CustomFontModifier(size: 12, font: .medium))
                                 Text("1/2")
-                                    .foregroundColor(Color("color-utility3-green"))
+                                    .foregroundColor(Color("color-green"))
                                     .modifier(CustomFontModifier(size: 12, font: .medium))
                                 Text("全仓")
-                                    .foregroundColor(Color("color-utility3-green"))
+                                    .foregroundColor(Color("color-green"))
                                     .modifier(CustomFontModifier(size: 12, font: .medium))
                             }
                             .frame(width: UIScreen.main.bounds.width/2-20)
                             .padding(.vertical, 10)
-                            .background(Color("color-utility3-green").opacity(0.1))
+                            .background(Color("color-green").opacity(0.1))
                             .clipShape(RoundedRectangle(cornerRadius: 8.0))
                             .overlay(
                                 RoundedRectangle(cornerRadius: 8.0, style: .continuous)
-                                    .stroke(Color("color-utility3-green"), lineWidth: 1)
+                                    .stroke(Color("color-green"), lineWidth: 1)
                             )
                         }
                         
@@ -200,7 +200,7 @@ struct StockTradeView: View {
                     .frame(width: UIScreen.main.bounds.size.width, height: quantityQuickType ? nil : 0)
                     .opacity(quantityQuickType ? 1 : 0)
                     .blur(radius: quantityQuickType ? 0 : 2)
-                    .background(Color("color-base-1"))
+                    .background(Color("color-base1"))
                     .overlay{
                         FullWidthSeparatorView()
                     }
@@ -220,11 +220,11 @@ struct StockTradeView: View {
                     BuyAndSellTipsView()
                     TradeCompactListView()
                 }
-                Rectangle().fill(Color("color-base-0")).frame(height:120) // 占位元素，使得滚动区域的在下极限时表现正常
+                Rectangle().fill(Color("color-base0")).frame(height:120) // 占位元素，使得滚动区域的在下极限时表现正常
             }
         }
         .frame(width: UIScreen.main.bounds.size.width)
-        .background(Color("color-base-0"))
+        .background(Color("color-base0"))
         .overlay(
             // 买卖按钮组
             StockTradeButtonBar(),alignment: .bottom
@@ -251,10 +251,10 @@ struct StockTradeView: View {
                     HStack(spacing: 1) {
                         Text("港股融资账户")
                             .modifier(CustomFontModifier(size: 16, font: .medium))
-                            .foregroundColor(Color("color-text-30"))
+                            .foregroundColor(Color("color-text1"))
                         Text("(0168)")
                             .modifier(CustomFontModifier(size: 16, font: .medium))
-                            .foregroundColor(Color("color-text-30"))
+                            .foregroundColor(Color("color-text1"))
                     }
                     Image("chevron_down_filled_sm")
                 }
@@ -287,7 +287,7 @@ struct StockTradeButtonBar: View {
         
         // 背景
         Rectangle()
-            .foregroundColor(Color("color-base-1"))
+            .foregroundColor(Color("color-base1"))
             .frame(width: UIScreen.main.bounds.size.width, height: 94)
         
         // 按钮组
@@ -297,7 +297,7 @@ struct StockTradeButtonBar: View {
                     VStack(spacing: 0) {
                         HStack(spacing: 10){
                             Rectangle()
-                                .foregroundColor(Color("color-utility3-red"))
+                                .foregroundColor(Color("color-red"))
                                 .frame(maxWidth:UIScreen.main.bounds.size.width/2-15, minHeight: 44,  maxHeight: 44)
                                 .clipShape(RoundedRectangle(cornerRadius: 8.0, style: .continuous))
                                 .overlay(
@@ -307,7 +307,7 @@ struct StockTradeButtonBar: View {
                                 )
                             
                             Rectangle()
-                                .foregroundColor(Color("color-utility3-green"))
+                                .foregroundColor(Color("color-green"))
                                 .frame(maxWidth:UIScreen.main.bounds.size.width, minHeight: 44, maxHeight: 44)
                                 .clipShape(RoundedRectangle(cornerRadius: 8.0, style: .continuous))
                                 .overlay(
@@ -322,7 +322,7 @@ struct StockTradeButtonBar: View {
                             Image("ysl_mini_logo")
                             Text("交易服务由云锋证券提供")
                                 .modifier(CustomFontModifier(size: 9, font: .regular))
-                                .foregroundColor(Color("color-text-90"))
+                                .foregroundColor(Color("color-text3"))
                         }.padding(.top, 6)
                     }
                 }.padding(.bottom, 33)

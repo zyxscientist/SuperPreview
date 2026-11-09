@@ -19,7 +19,7 @@ struct NewsParagraphView: View {
                 Text(content)
                     .lineSpacing(13.8)
                     .font(.system(size: fontsize))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .multilineTextAlignment(.leading)
             }.padding(.horizontal, 15)
         }

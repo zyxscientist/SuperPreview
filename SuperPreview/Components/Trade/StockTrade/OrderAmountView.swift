@@ -24,7 +24,7 @@ struct OrderAmountView: View {
             VStack(alignment: .leading, spacing: 0) {
                 Text(String(format: "%.2f", priceQuantityViewModel.amount)) // 小数位管理
                     .padding(.leading, 65)
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .modifier(CustomFontModifier(size: 15, font: .medium))
                 
                 HStack(spacing: 5) {
@@ -43,12 +43,12 @@ struct OrderAmountView: View {
         }
         .padding(.horizontal, 15)
         .frame(width: UIScreen.main.bounds.size.width,height: 44)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .overlay {
             FullWidthSeparatorView()
             Capsule()
                 .frame(width: 54, height: 23)
-                .foregroundColor(Color("color-base-1"))
+                .foregroundColor(Color("color-base1"))
                 .clipShape(Capsule(style: .continuous))
                 .overlay(
                     Text(advanceSetting ? "收起" : "展开")
@@ -56,7 +56,7 @@ struct OrderAmountView: View {
                 )
                 .overlay( // 再次叠加
                     Capsule(style: .continuous)
-                        .stroke(Color("color-separator-10"), lineWidth: 0.5)
+                        .stroke(Color("color-separator1"), lineWidth: 0.5)
                 )
                 .shadow(color:.black.opacity(0.07),radius: 4)
                 .offset(x:UIScreen.main.bounds.width/2-27-15, y: 22)

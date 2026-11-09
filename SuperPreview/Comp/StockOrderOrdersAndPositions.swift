@@ -64,7 +64,7 @@ private struct StockOrderProductCategoryPicker: View {
                         )
                         .foregroundColor(
                             selection == category
-                                ? Color("color-text-30")
+                                ? Color("color-text1")
                                 : Color("color-text-60")
                         )
                         .lineLimit(1)
@@ -72,7 +72,7 @@ private struct StockOrderProductCategoryPicker: View {
                         .frame(maxWidth: .infinity, minHeight: 26, maxHeight: 26)
                         .background(
                             selection == category
-                                ? Color("color-base-1")
+                                ? Color("color-base1")
                                 : Color.clear
                         )
                         .clipShape(
@@ -88,7 +88,7 @@ private struct StockOrderProductCategoryPicker: View {
             }
         }
         .padding(2)
-        .background(Color("color-scale-2"))
+        .background(Color("color-grayscale2"))
         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         .frame(height: 30)
         .padding(.horizontal, 16)
@@ -178,7 +178,7 @@ struct StockOrderOrdersAndPositions: View {
             content
         }
         .frame(width: viewportWidth, alignment: .topLeading)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockOrder.ordersAndPositions")
     }
@@ -201,7 +201,7 @@ struct StockOrderOrdersAndPositions: View {
                         Image(systemName: "chevron.right")
                             .font(.system(size: 10, weight: .medium))
                     }
-                    .foregroundColor(Color("color-brand-blue"))
+                    .foregroundColor(Color("color-blue1"))
                     .frame(height: StockOrderOrdersAndPositionsLayout.tabHeight)
                 }
                 .buttonStyle(PlainButtonStyle())
@@ -361,7 +361,7 @@ struct StockOrderOrdersAndPositions: View {
             height: StockOrderOrdersAndPositionsLayout.headerHeight,
             alignment: .center
         )
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockOrder.ordersAndPositions.todayOrdersHeader")
     }
@@ -385,14 +385,14 @@ struct StockOrderOrdersAndPositions: View {
                         lineHeight: 20
                     )
                 )
-                .foregroundColor(isSelected ? Color("color-brand-blue") : Color("color-text-60"))
+                .foregroundColor(isSelected ? Color("color-blue1") : Color("color-text-60"))
                 .lineLimit(1)
                 .padding(.horizontal, StockOrderOrdersAndPositionsLayout.tabHorizontalPadding)
                 .frame(height: StockOrderOrdersAndPositionsLayout.tabHeight)
-                .background(isSelected ? Color("color-brand-blue").opacity(0.08) : Color("color-scale-2"))
+                .background(isSelected ? Color("color-blue1").opacity(0.08) : Color("color-grayscale2"))
                 .overlay {
                     RoundedRectangle(cornerRadius: 4, style: .continuous)
-                        .stroke(isSelected ? Color("color-brand-blue") : Color.clear, lineWidth: 2)
+                        .stroke(isSelected ? Color("color-blue1") : Color.clear, lineWidth: 2)
                 }
                 .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
         }
@@ -447,7 +447,7 @@ struct StockOrderOrdersAndPositions: View {
 
                 Button(language.text(.refreshNow), action: onRefresh)
                     .modifier(CustomFontModifier(size: 14, font: .regular, lineHeight: 20))
-                    .foregroundColor(Color("color-brand-blue"))
+                    .foregroundColor(Color("color-blue1"))
                     .buttonStyle(PlainButtonStyle())
                     .accessibilityIdentifier("stockOrder.ordersAndPositions.refresh")
             }

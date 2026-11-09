@@ -23,8 +23,8 @@ struct OrderBookTapeView: View {
                     
                     HStack(spacing: 0){
                         // 分买卖两侧构建
-                        BuySideTapeCellView(index: index, orderDirectionColor: MarketColor.resolve("color-utility3-red", reversed: marketColorReversed), data: viewModel.leftData.count > index ? viewModel.leftData[index] : nil, viewModel: viewModel) // 比较数据总量的大小，如果大过index就为nil，确保不大过 index 数量，让视图保持10档
-                        SellSideTapeCellView(index: index, orderDirectionColor: MarketColor.resolve("color-utility3-green", reversed: marketColorReversed), data: viewModel.rightData.count > index ? viewModel.rightData[index] : nil, viewModel: viewModel)
+                        BuySideTapeCellView(index: index, orderDirectionColor: MarketColor.resolve("color-red", reversed: marketColorReversed), data: viewModel.leftData.count > index ? viewModel.leftData[index] : nil, viewModel: viewModel) // 比较数据总量的大小，如果大过index就为nil，确保不大过 index 数量，让视图保持10档
+                        SellSideTapeCellView(index: index, orderDirectionColor: MarketColor.resolve("color-green", reversed: marketColorReversed), data: viewModel.rightData.count > index ? viewModel.rightData[index] : nil, viewModel: viewModel)
                     }
                 }
             }
@@ -32,7 +32,7 @@ struct OrderBookTapeView: View {
             .clipShape(RoundedRectangle(cornerRadius: 6.0, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: 6, style: .continuous)
-                    .stroke(Color(.colorSeparator10), lineWidth: 0.5)
+                    .stroke(Color(.colorSeparator1), lineWidth: 0.5)
             )
             .padding(.horizontal, 15)
             .padding(.top, 40)
@@ -95,12 +95,12 @@ struct BuySideTapeCellView: View {
                 HStack(spacing: 0){
                     Text(formatTapeVolume(data?.volume ?? 0))
                         .multilineTextAlignment(.trailing)
-                        .foregroundColor(Color(.colorText30))
+                        .foregroundColor(Color(.colorText1))
                         .modifier(CustomFontModifier(size: 13, font: .regular))
                     
                     Text("(")
                         .multilineTextAlignment(.trailing)
-                        .foregroundColor(Color(.colorText30))
+                        .foregroundColor(Color(.colorText1))
                         .modifier(CustomFontModifier(size: 13, font: .regular))
                         .padding(.leading, 3)
                     
@@ -110,13 +110,13 @@ struct BuySideTapeCellView: View {
                         .minimumScaleFactor(0.5)
                         .frame(width:25, alignment: .trailing) // 固定宽度并靠右边对齐
                         .multilineTextAlignment(.trailing)
-                        .foregroundColor(Color(.colorText30))
+                        .foregroundColor(Color(.colorText1))
                         .modifier(CustomFontModifier(size: 13, font: .regular))
                     
                     
                     Text(")")
                         .multilineTextAlignment(.trailing)
-                        .foregroundColor(Color(.colorText30))
+                        .foregroundColor(Color(.colorText1))
                         .modifier(CustomFontModifier(size: 13, font: .regular))
                     
                 }
@@ -197,12 +197,12 @@ struct SellSideTapeCellView: View {
                 HStack(spacing: 0){
                     Text(formatTapeVolume(data?.volume ?? 0))
                         .multilineTextAlignment(.trailing)
-                        .foregroundColor(Color(.colorText30))
+                        .foregroundColor(Color(.colorText1))
                         .modifier(CustomFontModifier(size: 13, font: .regular))
                     
                     Text("(")
                         .multilineTextAlignment(.trailing)
-                        .foregroundColor(Color(.colorText30))
+                        .foregroundColor(Color(.colorText1))
                         .modifier(CustomFontModifier(size: 13, font: .regular))
                         .padding(.leading, 3)
                     
@@ -212,13 +212,13 @@ struct SellSideTapeCellView: View {
                         .minimumScaleFactor(0.5)
                         .frame(width:25, alignment: .trailing) // 固定宽度并靠右边对齐
                         .multilineTextAlignment(.trailing)
-                        .foregroundColor(Color(.colorText30))
+                        .foregroundColor(Color(.colorText1))
                         .modifier(CustomFontModifier(size: 13, font: .regular))
                     
                     
                     Text(")")
                         .multilineTextAlignment(.trailing)
-                        .foregroundColor(Color(.colorText30))
+                        .foregroundColor(Color(.colorText1))
                         .modifier(CustomFontModifier(size: 13, font: .regular))
                     
                 }

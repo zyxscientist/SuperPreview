@@ -234,7 +234,7 @@ private struct StockSubAssetCashBreakdown: View {
     private func value(_ text: String, alignment: Alignment) -> some View {
         Text(SubAssetCardValue.display(text, isNumberHidden: isNumberHidden))
             .font(.custom("PlusJakartaSans-Medium", size: 14, relativeTo: .subheadline))
-            .foregroundColor(Color("color-text-30"))
+            .foregroundColor(Color("color-text1"))
             .frame(maxWidth: .infinity, minHeight: 20, maxHeight: 20, alignment: alignment)
             .lineLimit(1)
     }
@@ -248,7 +248,7 @@ struct StockSubAssetCard_Previews: PreviewProvider {
         }
         .padding(.top, 16)
         .frame(width: 402, height: 420, alignment: .top)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .previewLayout(.fixed(width: 402, height: 420))
         .previewDisplayName("Stock SubAssetCard")
     }

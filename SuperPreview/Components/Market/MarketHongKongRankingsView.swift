@@ -124,7 +124,7 @@ struct MarketHongKongRankingsView: View {
 
             // Keep the header pinned when a filter has fewer than a screen of
             // results, without inserting another vertical scrolling surface.
-            Color("color-base-1")
+            Color("color-base1")
                 .frame(height: max(24, minimumRowsHeight - CGFloat(filteredItems.count) * 66))
                 .accessibilityHidden(true)
         } header: {
@@ -146,7 +146,7 @@ struct MarketHongKongRankingsView: View {
                 HStack(spacing: 8) {
                     Text(language.text(.marketRankingsTitle))
                         .modifier(CustomFontModifier(size: 18, font: .bold, lineHeight: 28))
-                        .foregroundStyle(Color("color-text-30"))
+                        .foregroundStyle(Color("color-text1"))
 
                     Spacer(minLength: 0)
 
@@ -176,7 +176,7 @@ struct MarketHongKongRankingsView: View {
         }
         .padding(.top, headerTopInset)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .zIndex(2)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("market.hkRankings.header")
@@ -190,18 +190,18 @@ struct MarketHongKongRankingsView: View {
         } label: {
             Text(board.title(in: language))
                 .modifier(CustomFontModifier(size: 14, font: isSelected ? .bold : .regular, lineHeight: 20))
-                .foregroundStyle(Color(isSelected ? "color-text-30" : "color-text-60"))
+                .foregroundStyle(Color(isSelected ? "color-text1" : "color-text-60"))
                 .fixedSize(horizontal: true, vertical: false)
                 .padding(.horizontal, 12)
                 .frame(minWidth: board.minimumTabWidth)
                 .frame(height: 32)
                 .background(
-                    Color(isSelected ? "color-base-1" : "color-scale-1"),
+                    Color(isSelected ? "color-base1" : "color-grayscale1"),
                     in: RoundedRectangle(cornerRadius: 6)
                 )
                 .overlay {
                     RoundedRectangle(cornerRadius: 6)
-                        .strokeBorder(isSelected ? Color("color-base-r") : .clear, lineWidth: 1)
+                        .strokeBorder(isSelected ? Color("color-baser") : .clear, lineWidth: 1)
                 }
         }
         .buttonStyle(.plain)
@@ -216,8 +216,8 @@ private struct MarketHongKongRankingRow: View {
     let name: String
 
     private var changeColor: Color {
-        if item.percentChange > 0 { return MarketColor.resolve("color-utility3-red", reversed: marketColorReversed) }
-        if item.percentChange < 0 { return MarketColor.resolve("color-utility3-green", reversed: marketColorReversed) }
+        if item.percentChange > 0 { return MarketColor.resolve("color-red", reversed: marketColorReversed) }
+        if item.percentChange < 0 { return MarketColor.resolve("color-green", reversed: marketColorReversed) }
         return Color("color-text-60")
     }
 
@@ -229,7 +229,7 @@ private struct MarketHongKongRankingRow: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(name)
                         .modifier(CustomFontModifier(size: 16, font: .regular, lineHeight: 24))
-                        .foregroundStyle(Color("color-text-30"))
+                        .foregroundStyle(Color("color-text1"))
                         .frame(height: 24)
 
                     Text(item.symbol)
@@ -254,7 +254,7 @@ private struct MarketHongKongRankingRow: View {
 
                 HStack(spacing: 8) {
                     Text(item.price)
-                        .foregroundStyle(Color("color-text-30"))
+                        .foregroundStyle(Color("color-text1"))
                         .frame(maxWidth: .infinity, alignment: .trailing)
 
                     Text(item.formattedChange)
@@ -268,7 +268,7 @@ private struct MarketHongKongRankingRow: View {
             }
         }
         .frame(height: 66)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .contentShape(Rectangle())
     }
 }
@@ -291,7 +291,7 @@ private extension MarketHongKongRankingItem {
         }
     }
     .frame(width: 402)
-    .background(Color("color-base-1"))
+    .background(Color("color-base1"))
 }
 
 #Preview("港股榜单 · 深色") {
@@ -301,6 +301,6 @@ private extension MarketHongKongRankingItem {
         }
     }
     .frame(width: 402)
-    .background(Color("color-base-1"))
+    .background(Color("color-base1"))
     .preferredColorScheme(.dark)
 }

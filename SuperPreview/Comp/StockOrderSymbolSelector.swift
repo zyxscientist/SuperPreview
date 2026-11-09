@@ -140,7 +140,7 @@ struct StockOrderSymbolInput: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockOrder.symbolInput")
     }
@@ -149,13 +149,13 @@ struct StockOrderSymbolInput: View {
         HStack(spacing: 0) {
             Text(language.text(.name))
                 .modifier(CustomFontModifier(size: 16, font: .regular, lineHeight: 24))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .frame(width: 112, height: 44, alignment: .leading)
 
             Button(action: onSearchRequested) {
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .fill(Color("color-scale-2"))
+                        .fill(Color("color-grayscale2"))
 
                     Text(language.text(.stockInputPlaceholder))
                         .modifier(CustomFontModifier(size: 16, font: .regular, lineHeight: 28))
@@ -261,7 +261,7 @@ struct StockOrderSymbolInput: View {
             .padding(.leading, 12)
             .padding(.trailing, 8)
             .frame(minWidth: 80, minHeight: 20)
-            .background(Color("color-scale-2"))
+            .background(Color("color-grayscale2"))
             .clipShape(Capsule())
         }
         .buttonStyle(PlainButtonStyle())
@@ -401,7 +401,7 @@ private struct StockOrderExtendedHoursGrid: View {
 
             Text(symbol.id)
                 .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .lineLimit(1)
                 .fixedSize(horizontal: true, vertical: false)
 
@@ -436,7 +436,7 @@ private struct StockOrderExtendedHoursGrid: View {
         Text(symbol.quote.price)
             .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
             .monospacedDigit()
-            .foregroundColor(Color("color-text-30"))
+            .foregroundColor(Color("color-text1"))
             .lineLimit(1)
             .minimumScaleFactor(0.8)
             .frame(
@@ -502,7 +502,7 @@ private struct StockOrderExtendedHoursGrid: View {
             if let localizationKey = symbol.quote.session.localizationKey {
                 Text(language.text(localizationKey))
                     .modifier(CustomFontModifier(size: 8, font: .regular, lineHeight: 8))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .lineLimit(1)
                     .minimumScaleFactor(0.01)
                     .allowsTightening(true)
@@ -510,7 +510,7 @@ private struct StockOrderExtendedHoursGrid: View {
                     .frame(height: 12)
                     .overlay(
                         RoundedRectangle(cornerRadius: 2)
-                            .stroke(Color("color-separator-20"), lineWidth: 0.5)
+                            .stroke(Color("color-separator2"), lineWidth: 0.5)
                     )
             }
         }
@@ -556,7 +556,7 @@ private struct StockOrderSelectedSymbolCell: View {
 
             Text(symbol.id)
                 .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .lineLimit(1)
                 .fixedSize(horizontal: true, vertical: false)
 
@@ -585,7 +585,7 @@ private struct StockOrderPriceView: View {
             Text(quote.price)
                 .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
                 .monospacedDigit()
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
 
@@ -668,7 +668,7 @@ private struct StockOrderChangeTile: View {
                 if let localizationKey = quote.session.localizationKey {
                     Text(language.text(localizationKey))
                         .modifier(CustomFontModifier(size: 8, font: .regular, lineHeight: 8))
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
                         .lineLimit(1)
                         .minimumScaleFactor(0.01)
                         .allowsTightening(true)
@@ -676,7 +676,7 @@ private struct StockOrderChangeTile: View {
                         .frame(height: 12)
                         .overlay(
                             RoundedRectangle(cornerRadius: 2, style: .continuous)
-                                .stroke(Color("color-separator-20"), lineWidth: 0.5)
+                                .stroke(Color("color-separator2"), lineWidth: 0.5)
                         )
                 }
             }
@@ -725,7 +725,7 @@ private struct StockOrderChangeDirectionIcon: View {
                 .frame(width: 5, height: 5)
         case (.flat, .tinted):
             Circle()
-                .fill(Color("color-text-90"))
+                .fill(Color("color-text3"))
                 .frame(width: 5, height: 5)
         }
     }
@@ -740,7 +740,7 @@ private struct StockOrderMiniKLine: View {
         ZStack {
             StockOrderReferenceLine()
                 .stroke(
-                    Color("color-separator-20"),
+                    Color("color-separator2"),
                     style: StrokeStyle(lineWidth: 0.5, dash: [1.5, 2])
                 )
                 .frame(height: 1)
@@ -779,7 +779,7 @@ private struct StockOrderMarketNoticeView: View {
 
             Text(language.text(notice.titleKey))
                 .modifier(CustomFontModifier(size: 12, font: .regular, lineHeight: 16))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
 
             Text(language.text(.priceRange))
                 .modifier(CustomFontModifier(size: 12, font: .regular, lineHeight: 16))
@@ -787,17 +787,17 @@ private struct StockOrderMarketNoticeView: View {
 
             Text(notice.priceRange)
                 .modifier(CustomFontModifier(size: 12, font: .regular, lineHeight: 16))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .lineLimit(1)
                 .minimumScaleFactor(0.75)
         }
         .padding(.horizontal, 15)
         .frame(maxWidth: .infinity, alignment: .leading)
         .frame(height: 29)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .overlay(alignment: .top) {
             Rectangle()
-                .fill(Color("color-separator-10"))
+                .fill(Color("color-separator1"))
                 .frame(height: 0.5)
                 .padding(.horizontal, 16)
         }
@@ -932,7 +932,7 @@ private struct StockOrderSymbolPreviewHarness: View {
                 .modifier(CustomFontModifier(size: 14, font: .medium, lineHeight: 20))
                 .foregroundColor(Color("color-text-60"))
         }
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
     }
 }
 

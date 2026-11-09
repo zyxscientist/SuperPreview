@@ -25,20 +25,20 @@ struct AssetRatioView: View {
                                 HStack(alignment: .center, spacing: 0.0) {
                                     Text("HKD")
                                         .font(.system(size: 14, weight: .regular))
-                                        .foregroundColor(Color("color-brand-blue"))
+                                        .foregroundColor(Color("color-blue1"))
                                     Image("switch_nor")
                                 }
                             }
                             Text("12,300,201.12")
                                 .font(.system(size: 28, weight: .bold))
-                                .foregroundColor(Color("color-text-30"))
+                                .foregroundColor(Color("color-text1"))
                         }
                         Spacer()
                         VStack(alignment: .trailing, spacing: 5.0) {
                             HStack(spacing: 0.0){
                                 Text("持仓收益")
                                     .font(.system(size: 12, weight: .regular))
-                                    .foregroundColor(Color("color-text-90"))
+                                    .foregroundColor(Color("color-text3"))
                                 Image("question")
                                 }
                             VStack(alignment: .trailing) {
@@ -58,14 +58,14 @@ struct AssetRatioView: View {
                             Circle()
                                 .frame(width: 7, height: 7)
                                 .padding(.bottom, 18)
-                                .foregroundColor(Color("color-brand-blue"))
+                                .foregroundColor(Color("color-blue1"))
                             VStack(alignment: .leading){
                                 Text("股票")
                                     .font(.system(size: 12, weight: .regular))
-                                    .foregroundColor(Color("color-text-30"))
+                                    .foregroundColor(Color("color-text1"))
                                 Text("54.32%")
                                     .font(.system(size: 14, weight: .bold))
-                                    .foregroundColor(Color("color-text-30"))
+                                    .foregroundColor(Color("color-text1"))
                             }
                         }
                         Spacer()
@@ -77,10 +77,10 @@ struct AssetRatioView: View {
                             VStack(alignment: .leading){
                                 Text("基金")
                                     .font(.system(size: 12, weight: .regular))
-                                    .foregroundColor(Color("color-text-30"))
+                                    .foregroundColor(Color("color-text1"))
                                 Text("24.32%")
                                     .font(.system(size: 14, weight: .bold))
-                                    .foregroundColor(Color("color-text-30"))
+                                    .foregroundColor(Color("color-text1"))
                             }
                         }
                         Spacer()
@@ -92,10 +92,10 @@ struct AssetRatioView: View {
                             VStack(alignment: .leading){
                                 Text("有鱼额")
                                     .font(.system(size: 12, weight: .regular))
-                                    .foregroundColor(Color("color-text-30"))
+                                    .foregroundColor(Color("color-text1"))
                                 Text("14.32%")
                                     .font(.system(size: 14, weight: .bold))
-                                    .foregroundColor(Color("color-text-30"))
+                                    .foregroundColor(Color("color-text1"))
                             }
                         }
                         Spacer()
@@ -107,10 +107,10 @@ struct AssetRatioView: View {
                             VStack(alignment: .leading){
                                 Text("现金")
                                     .font(.system(size: 12, weight: .regular))
-                                    .foregroundColor(Color("color-text-30"))
+                                    .foregroundColor(Color("color-text1"))
                                 Text("10.01%")
                                     .font(.system(size: 14, weight: .bold))
-                                    .foregroundColor(Color("color-text-30"))
+                                    .foregroundColor(Color("color-text1"))
                             }
                         }
                     }
@@ -123,7 +123,7 @@ struct AssetRatioView: View {
                         Capsule().frame(width: 264, height: 6)
                             .foregroundColor(Color("color-fund-orange"))
                         Capsule().frame(width: 173, height: 6)
-                            .foregroundColor(Color("color-brand-blue"))
+                            .foregroundColor(Color("color-blue1"))
                     }.padding(.bottom,10)
                     
                     
@@ -131,7 +131,7 @@ struct AssetRatioView: View {
                 .padding(.horizontal,10)
                 .padding(.top, 10)
                 .frame(height: 150)
-                .background(Color("color-base-1"))
+                .background(Color("color-base1"))
                 .cornerRadius(13, antialiased: true)
             }
             .padding(.horizontal, 10)

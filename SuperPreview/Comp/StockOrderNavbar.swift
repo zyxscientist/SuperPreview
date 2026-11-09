@@ -50,7 +50,7 @@ struct StockOrderNavbar: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: StockOrderNavbarLayout.iconSize, height: StockOrderNavbarLayout.iconSize)
-                        .foregroundStyle(Color("color-text-30"))
+                        .foregroundStyle(Color("color-text1"))
                         .frame(
                             width: DemoNavigationBarLayout.backLabelSize,
                             height: DemoNavigationBarLayout.backLabelSize
@@ -74,7 +74,7 @@ struct StockOrderNavbar: View {
                 Button(action: onDebug) {
                     Text(language.text(.debug))
                         .modifier(CustomFontModifier(size: 13, font: .medium, lineHeight: 16))
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
                 }
                 .modifier(DemoNavigationGlassButtonStyle(shape: .capsule))
                 .frame(
@@ -93,7 +93,7 @@ struct StockOrderNavbar: View {
             minHeight: StockOrderNavbarLayout.height,
             maxHeight: StockOrderNavbarLayout.height
         )
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockOrder.navbar")
         // Let the pressed glass extend over the content below the navbar.
@@ -108,7 +108,7 @@ struct StockOrderNavbar: View {
             } else {
                 Text(accountTitle)
                     .modifier(CustomFontModifier(size: 16, font: .bold, lineHeight: 24))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
                     .frame(
@@ -134,7 +134,7 @@ struct StockOrderNavbar: View {
         VStack(alignment: .leading, spacing: 0) {
             Text(accountTitle)
                 .modifier(CustomFontModifier(size: 16, font: .bold, lineHeight: 24))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
                 .lineLimit(1)
                 .minimumScaleFactor(0.75)
                 .frame(
@@ -148,7 +148,7 @@ struct StockOrderNavbar: View {
                 Text(buyingPower.displayValue)
             }
             .modifier(CustomFontModifier(size: 12, font: .regular, lineHeight: 16))
-            .foregroundColor(Color("color-text-30"))
+            .foregroundColor(Color("color-text1"))
             .lineLimit(1)
             .minimumScaleFactor(0.75)
             .frame(
@@ -239,7 +239,7 @@ private struct StockOrderNavbarPreviewHarness: View {
             }
             .buttonStyle(PlainButtonStyle())
         }
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
     }
 
     private var accountTitle: String {

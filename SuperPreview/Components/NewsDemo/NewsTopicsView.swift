@@ -77,7 +77,7 @@ struct NewsTopicsView: View {
         VStack(alignment: .leading, spacing: 0) {
             Text(language.resolve(NewsDemoCopy.featuredTopics))
                 .font(.custom("PlusJakartaSans-Medium", size: 18, relativeTo: .headline))
-                .foregroundStyle(Color("color-text-30"))
+                .foregroundStyle(Color("color-text1"))
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 12)
@@ -183,7 +183,7 @@ private struct NewsTopicCard: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(language.resolve(topic.title))
                     .font(.custom("PlusJakartaSans-Medium", size: 16, relativeTo: .body))
-                    .foregroundStyle(Color("color-text-30"))
+                    .foregroundStyle(Color("color-text1"))
                     .lineLimit(1)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -197,7 +197,7 @@ private struct NewsTopicCard: View {
         }
         .padding(.bottom, 12)
         .frame(width: 170, height: 164, alignment: .topLeading)
-        .background(Color("color-scale-1"))
+        .background(Color("color-grayscale1"))
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         .contentShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
@@ -244,7 +244,7 @@ private struct NewsStoryRow: View {
         .padding(16)
         .frame(maxWidth: .infinity, minHeight: 104, maxHeight: 104, alignment: .topLeading)
         .contentShape(Rectangle())
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .overlay(alignment: .bottom) {
             JustifiedSeparatorView(horizontalPadding: 16)
                 .frame(height: 0.5)
@@ -265,7 +265,7 @@ private struct NewsStoryRow: View {
         Text(language.resolve(story.title))
             .font(.custom("PlusJakartaSans-Medium", size: 16, relativeTo: .body))
             .lineSpacing(8)
-            .foregroundStyle(Color("color-text-30"))
+            .foregroundStyle(Color("color-text1"))
             .lineLimit(2)
             .multilineTextAlignment(.leading)
             .fixedSize(horizontal: false, vertical: true)
@@ -279,7 +279,7 @@ private struct NewsStoryRow: View {
             Text(language.resolve(story.source.name))
         }
         .font(.custom("PlusJakartaSans-Regular", size: 12, relativeTo: .caption))
-        .foregroundStyle(Color("color-text-90"))
+        .foregroundStyle(Color("color-text3"))
         .lineLimit(1)
     }
 }
@@ -300,7 +300,7 @@ private struct NewsTopicArticleListView: View {
             .frame(maxWidth: .infinity)
         }
         .scrollIndicators(.hidden)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .ignoresSafeArea(edges: .top)
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
@@ -377,7 +377,7 @@ private struct NewsTopicArticleListView: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .clipShape(
             UnevenRoundedRectangle(
                 topLeadingRadius: 16,
@@ -411,7 +411,7 @@ private struct NewsTopicsEmptyState: View {
         VStack(spacing: 8) {
             Text(language.resolve(NewsTopicsCopy.emptyTitle))
                 .font(.custom("PlusJakartaSans-Medium", size: 16, relativeTo: .body))
-                .foregroundStyle(Color("color-text-30"))
+                .foregroundStyle(Color("color-text1"))
 
             Text(language.resolve(NewsTopicsCopy.emptyMessage))
                 .font(.custom("PlusJakartaSans-Regular", size: 12, relativeTo: .caption))

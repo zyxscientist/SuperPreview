@@ -23,7 +23,7 @@ struct SnapshotShortcutGridView: View {
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 32, height: 32)
                         Text("交易")
-                            .foregroundColor(Color("color-text-30"))
+                            .foregroundColor(Color("color-text1"))
                             .font(.system(size: 12, weight: .regular))
                             .frame(maxWidth: 375)
                     }
@@ -39,7 +39,7 @@ struct SnapshotShortcutGridView: View {
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 32, height: 32)
                     Text("今日订单")
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
                         .font(.system(size: 12, weight: .regular))
                         .frame(maxWidth: 375)
                     }
@@ -50,7 +50,7 @@ struct SnapshotShortcutGridView: View {
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 32, height: 32)
                     Text("新股中心")
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
                         .font(.system(size: 12, weight: .regular))
                         .frame(maxWidth: 375)
                 }
@@ -61,7 +61,7 @@ struct SnapshotShortcutGridView: View {
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 32, height: 32)
                     Text("入金")
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
                         .font(.system(size: 12, weight: .regular))
                         .frame(maxWidth: 375)
                 }
@@ -72,7 +72,7 @@ struct SnapshotShortcutGridView: View {
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 32, height: 32)
                     Text("更多")
-                        .foregroundColor(Color("color-text-30"))
+                        .foregroundColor(Color("color-text1"))
                         .font(.system(size: 12, weight: .regular))
                         .frame(maxWidth: 375)
                    }
@@ -80,7 +80,7 @@ struct SnapshotShortcutGridView: View {
             }.padding(.top, 12)
         }
         .frame(minWidth: 345, minHeight: 134)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         .padding(.horizontal, 15)
     }

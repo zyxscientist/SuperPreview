@@ -158,7 +158,7 @@ struct StockOrderDemoView: View {
                 .ignoresSafeArea(.container, edges: .bottom)
         }
         .ignoresSafeArea(.keyboard, edges: .bottom)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
     }
 
     private var scrollReturnGesture: some Gesture {
@@ -209,7 +209,7 @@ struct StockOrderDemoView: View {
                         bottomSafeArea: bottomSafeArea
                     )
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(Color("color-base-1"))
+                        .background(Color("color-base1"))
                         .animation(
                             StockOrderAdvancedTradingLayout.pageSwitchAnimation(
                                 reduceMotion: reduceMotion
@@ -666,7 +666,7 @@ private struct StockOrderDebugPanel: View {
             HStack {
                 Text(interfaceLanguage.text(.debug))
                     .modifier(CustomFontModifier(size: 20, font: .bold, lineHeight: 28))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .accessibilityIdentifier("stockOrder.debug.title")
 
                 Spacer()
@@ -709,7 +709,7 @@ private struct StockOrderDebugPanel: View {
         }
         .padding(.horizontal, 20)
         .padding(.top, 24)
-        .background(Color("color-base-1").ignoresSafeArea())
+        .background(Color("color-base1").ignoresSafeArea())
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockOrder.debug.panel")
     }

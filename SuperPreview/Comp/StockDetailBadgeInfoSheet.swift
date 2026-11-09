@@ -32,7 +32,7 @@ struct StockDetailBadgeInfoSheet: View {
             homeIndicatorArea
         }
         .frame(maxWidth: .infinity)
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .clipShape(
             UnevenRoundedRectangle(
                 cornerRadii: RectangleCornerRadii(
@@ -50,7 +50,7 @@ struct StockDetailBadgeInfoSheet: View {
 
     private var sheetHandle: some View {
         Capsule()
-            .fill(Color("color-scale-3"))
+            .fill(Color("color-grayscale3"))
             .frame(
                 width: StockDetailBadgeInfoSheetLayout.handleWidth,
                 height: StockDetailBadgeInfoSheetLayout.handleHeight
@@ -99,14 +99,14 @@ struct StockDetailBadgeInfoSheet: View {
             VStack(alignment: .leading, spacing: StockDetailBadgeInfoSheetLayout.textSpacing) {
                 Text(info.title.text(for: language))
                     .modifier(CustomFontModifier(size: 16, font: .regular, lineHeight: 24))
-                    .foregroundColor(Color("color-text-30"))
+                    .foregroundColor(Color("color-text1"))
                     .lineLimit(1)
                     .minimumScaleFactor(0.75)
 
                 if let subtitle = info.subtitle {
                     Text(subtitle.text(for: language))
                         .modifier(CustomFontModifier(size: 12, font: .regular, lineHeight: 16))
-                        .foregroundColor(Color("color-brand-blue"))
+                        .foregroundColor(Color("color-blue1"))
                         .lineLimit(1)
                         .minimumScaleFactor(0.75)
                 }

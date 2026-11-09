@@ -22,11 +22,11 @@ struct StockDetailNavbarQuote: Equatable {
         fileprivate func color(reversed: Bool) -> Color {
             switch self {
             case .up:
-                MarketColor.resolve("color-utility3-red", reversed: reversed)
+                MarketColor.resolve("color-red", reversed: reversed)
             case .down:
-                MarketColor.resolve("color-utility3-green", reversed: reversed)
+                MarketColor.resolve("color-green", reversed: reversed)
             case .flat:
-                Color("color-text-30")
+                Color("color-text1")
             }
         }
 
@@ -206,7 +206,7 @@ struct StockDetailNavbar: View {
                 ? StockDetailNavbarLayout.scrollHeight
                 : StockDetailNavbarLayout.height
         )
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("stockDetail.navbar")
         // Let the pressed glass extend over the content below the navbar.
@@ -225,7 +225,7 @@ struct StockDetailNavbar: View {
                 lineHeight: StockDetailNavbarLayout.scrollTitleLineHeight
             )
         )
-        .foregroundColor(Color("color-text-30"))
+        .foregroundColor(Color("color-text1"))
         .lineLimit(1)
         .minimumScaleFactor(0.75)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -265,7 +265,7 @@ struct StockDetailNavbar: View {
             Text(displayName)
         }
         .modifier(CustomFontModifier(size: 16, font: .bold, lineHeight: 24))
-        .foregroundColor(Color("color-text-30"))
+        .foregroundColor(Color("color-text1"))
         .lineLimit(1)
         .minimumScaleFactor(0.75)
         .frame(
@@ -278,7 +278,7 @@ struct StockDetailNavbar: View {
     private func quoteRow(_ quote: StockDetailNavbarQuote) -> some View {
         HStack(spacing: StockDetailNavbarLayout.quoteGroupSpacing) {
             Text(quote.localizedSessionTitle(for: language))
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
 
             HStack(spacing: StockDetailNavbarLayout.quoteValueSpacing) {
                 Text(quote.price)
@@ -315,7 +315,7 @@ struct StockDetailNavbar: View {
             .renderingMode(.template)
             .resizable()
             .scaledToFit()
-            .foregroundStyle(Color("color-text-30"))
+            .foregroundStyle(Color("color-text1"))
             .frame(
                 width: StockDetailNavbarLayout.iconSize,
                 height: StockDetailNavbarLayout.iconSize
@@ -338,7 +338,7 @@ struct StockDetailNavbar: View {
                         lineHeight: 16
                     )
                 )
-                .foregroundColor(Color("color-text-30"))
+                .foregroundColor(Color("color-text1"))
         }
     }
 
@@ -437,7 +437,7 @@ private struct StockDetailNavbarPreviewHarness: View {
             Slider(value: $revealProgress, in: 0...1)
                 .padding(.horizontal, 16)
         }
-        .background(Color("color-base-1"))
+        .background(Color("color-base1"))
     }
 }
 
