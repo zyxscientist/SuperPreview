@@ -1,6 +1,10 @@
 {
   "images" : [
     {
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
       "filename" : "market_sz_allround@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
