@@ -570,7 +570,7 @@ extension EnvironmentValues {
 
 @MainActor enum StockChartTouchRegions {
     private static let chartScopes = NSMapTable<UIView, NSUUID>.weakToStrongObjects()
-    private static let pagerScopes = NSMapTable<UIView, NSUUID>.weakToStrongObjects()
+    private static let controlScopes = NSMapTable<UIView, NSUUID>.weakToStrongObjects()
     private static let modalScopes = NSMapTable<UIView, NSUUID>.weakToStrongObjects()
 
     static func setModalScope(_ scope: UUID?, for view: UIView) {
@@ -584,11 +584,11 @@ extension EnvironmentValues {
         }
     }
 
-    static func setScope(_ scope: UUID?, for view: UIView, allowsPager: Bool) {
+    static func setScope(_ scope: UUID?, for view: UIView, blocksPager: Bool) {
         chartScopes.removeObject(forKey: view)
-        pagerScopes.removeObject(forKey: view)
+        controlScopes.removeObject(forKey: view)
         guard let scope else { return }
-        (allowsPager ? pagerScopes : chartScopes).setObject(scope as NSUUID, forKey: view)
+        (blocksPager ? controlScopes : chartScopes).setObject(scope as NSUUID, forKey: view)
     }
 
     private static func matches(_ touch: UITouch, scope: UUID, in table: NSMapTable<UIView, NSUUID>) -> Bool {
@@ -600,15 +600,18 @@ extension EnvironmentValues {
     }
 
     static func contains(_ touch: UITouch, scope: UUID) -> Bool {
-        // An overlaid control wins over the chart behind it.
-        if matches(touch, scope: scope, in: pagerScopes) { return false }
-        return matches(touch, scope: scope, in: chartScopes)
+        matches(touch, scope: scope, in: chartScopes)
+    }
+
+    static func blocksPager(_ touch: UITouch, scope: UUID) -> Bool {
+        // Floating controls own their touches even when they overlap a chart.
+        matches(touch, scope: scope, in: controlScopes)
     }
 }
 
 struct StockChartTouchRegion: UIViewRepresentable {
     let scope: UUID?
-    var allowsPager = false
+    var blocksPager = false
 
     func makeUIView(context: Context) -> UIView {
         let view = UIView()
@@ -616,10 +619,10 @@ struct StockChartTouchRegion: UIViewRepresentable {
         return view
     }
     func updateUIView(_ uiView: UIView, context: Context) {
-        StockChartTouchRegions.setScope(scope, for: uiView, allowsPager: allowsPager)
+        StockChartTouchRegions.setScope(scope, for: uiView, blocksPager: blocksPager)
     }
     static func dismantleUIView(_ uiView: UIView, coordinator: ()) {
-        StockChartTouchRegions.setScope(nil, for: uiView, allowsPager: false)
+        StockChartTouchRegions.setScope(nil, for: uiView, blocksPager: false)
     }
 }
 

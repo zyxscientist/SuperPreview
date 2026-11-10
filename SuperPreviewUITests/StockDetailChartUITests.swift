@@ -681,7 +681,7 @@ final class StockDetailChartUITests: XCTestCase {
         assertStillInScroll(scroll)
     }
 
-    func testScrollSymbolBarSwipeStillOpensOrder() {
+    func testScrollSymbolBarSwipesScrollWithoutOpeningOrder() {
         openDetail()
         element("stockDetail.bottomActionBar.scroll").tap()
         let card = element("stockDetail.scroll.card.current")
@@ -691,14 +691,47 @@ final class StockDetailChartUITests: XCTestCase {
         scopedElement("stockDetail.chart.indicator.sub.macd", in: card).tap()
         waitForStateContaining(canvas, key: "sub", value: "macd")
         let symbol = element("stockDetail.scroll.symbol.us:NVDA")
+        let nextSymbol = element("stockDetail.scroll.symbol.us:AAPL")
         XCTAssertTrue(symbol.isHittable)
         let point = CGPoint(x: symbol.frame.midX, y: symbol.frame.midY)
         XCTAssertTrue(canvas.frame.contains(point), "Symbol-bar start must overlap the current chart canvas")
         let start = symbol.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+        let initialX = nextSymbol.frame.midX
         start.press(forDuration: 0.01, thenDragTo: start.withOffset(CGVector(dx: -80, dy: 0)))
-        XCTAssertTrue(element("stockOrder.demo").exists, "A swipe on the overlaid symbol bar should open the order page")
-        XCTAssertEqual(element("stockOrder.debug.status.symbol").label, "NVDA")
-        screenshot("scroll-symbol-bar-order")
+        let scroll = element("stockDetail.scroll.root")
+        assertStillInScroll(scroll)
+        XCTAssertLessThan(nextSymbol.frame.midX, initialX - 10, "Leftward drag should scroll the symbol list")
+
+        // Start each gesture in the middle of the capsule, including repeated
+        // swipes at both ends, where the list cannot consume more movement.
+        let window = app.windows.firstMatch
+        let middle = window.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0)).withOffset(
+            CGVector(dx: window.frame.width * 0.55, dy: point.y - window.frame.minY)
+        )
+        // The default All watchlist ends with ETH/USD (funds are excluded).
+        let lastSymbol = element("stockDetail.scroll.symbol.crypto:ETH/USD")
+        for _ in 0..<20 where lastSymbol.frame.midX > window.frame.maxX - 20 {
+            middle.press(forDuration: 0.01, thenDragTo: middle.withOffset(CGVector(dx: -120, dy: 0)))
+            assertStillInScroll(scroll)
+        }
+        XCTAssertLessThan(lastSymbol.frame.midX, window.frame.maxX - 20, "Leftward drags must reveal the final symbol")
+        // A final full swipe reaches the end even if the last label first
+        // appeared partially at the capsule edge.
+        middle.press(forDuration: 0.01, thenDragTo: middle.withOffset(CGVector(dx: -120, dy: 0)))
+        assertStillInScroll(scroll)
+        let endX = lastSymbol.frame.midX
+        middle.press(forDuration: 0.01, thenDragTo: middle.withOffset(CGVector(dx: -120, dy: 0)))
+        assertStillInScroll(scroll)
+        XCTAssertEqual(lastSymbol.frame.midX, endX, accuracy: 3, "Another leftward drag at the end must remain at the boundary")
+        for _ in 0..<20 where abs(nextSymbol.frame.midX - initialX) > 3 {
+            middle.press(forDuration: 0.01, thenDragTo: middle.withOffset(CGVector(dx: 120, dy: 0)))
+            assertStillInScroll(scroll)
+        }
+        XCTAssertEqual(nextSymbol.frame.midX, initialX, accuracy: 3, "Rightward drags should return to the start of the list")
+        middle.press(forDuration: 0.01, thenDragTo: middle.withOffset(CGVector(dx: 120, dy: 0)))
+        assertStillInScroll(scroll)
+        XCTAssertEqual(nextSymbol.frame.midX, initialX, accuracy: 3, "Another rightward drag at the start must remain at the boundary")
+        screenshot("scroll-symbol-bar-drag")
     }
 
     func testOrderChartInteractionAndCollapseKeepsOrderControlsWorking() {

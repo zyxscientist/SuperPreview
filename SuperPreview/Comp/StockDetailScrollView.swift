@@ -399,8 +399,8 @@ private struct StockDetailScrollPager: View {
         .clipped()
         .contentShape(Rectangle())
         // Observe touches at the window level, scoped to this page's bounds.
-        // Nested chart/scroll recognizers and overlaid controls must not leave
-        // only the card's uncovered edge available for order entry.
+        // Chart drags are filtered by direction; floating controls keep their
+        // own touch sequences instead of also driving a page transition.
         .background(
             pagerGesture(cardHeight: cardHeight, stride: stride)
         )
@@ -837,10 +837,10 @@ private struct StockDetailScrollSymbolBar: View {
     var body: some View {
         HStack(spacing: ScrollLayout.symbolBarGap) {
             closeButton
-                .background(StockChartTouchRegion(scope: chartTouchScope, allowsPager: true))
+                .background(StockChartTouchRegion(scope: chartTouchScope, blocksPager: true))
 
             symbolCapsule
-                .background(StockChartTouchRegion(scope: chartTouchScope, allowsPager: true))
+                .background(StockChartTouchRegion(scope: chartTouchScope, blocksPager: true))
         }
         .frame(width: totalWidth, height: ScrollLayout.symbolBarHeight, alignment: .leading)
     }
@@ -1145,6 +1145,9 @@ private struct StockDetailScrollPagerPanGesture: UIViewRepresentable {
             guard canBegin(), let region, region.window != nil else { return false }
             guard !StockChartTouchRegions.hasActiveModal(scope: chartTouchScope) else { return false }
             guard region.bounds.contains(touch.location(in: region)) else { return false }
+            // Decide at touch-down so the symbol bar owns the entire drag,
+            // including overscroll and movement outside its visible bounds.
+            guard !StockChartTouchRegions.blocksPager(touch, scope: chartTouchScope) else { return false }
             // Defer the decision until the finger moves: the chart owns its
             // horizontal gestures, while vertical drags can page the stocks.
             startsInChart = StockChartTouchRegions.contains(touch, scope: chartTouchScope)
