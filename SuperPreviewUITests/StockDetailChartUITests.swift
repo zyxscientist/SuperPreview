@@ -554,7 +554,7 @@ final class StockDetailChartUITests: XCTestCase {
         addTeardownBlock { [weak self] in self?.restoreMarketColor(originalReversed) }
         for (language, intraday, daily, settings) in [
             ("简体中文", "分时", "日K", "指标设置"),
-            ("English", "1d", "Daily", "Indicator Settings"),
+            ("English", "1D", "Daily", "Indicator Settings"),
             ("繁體中文", "分時", "日K", "指標設定")
         ] {
             elementByLabel(language).tap()

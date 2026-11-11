@@ -22,8 +22,8 @@ func stockChartText(_ key: StockChartText, language: DemoLanguage) -> String {
     if language == .simplifiedChinese { return key.rawValue }
     let translated: (traditional: String, english: String)
     switch key {
-    case .intraday: translated = ("分時", "1d")
-    case .fiveDay: translated = ("五日", "5d")
+    case .intraday: translated = ("分時", "1D")
+    case .fiveDay: translated = ("五日", "5D")
     case .daily: translated = ("日K", "Daily")
     case .weekly: translated = ("週K", "Weekly")
     case .monthly: translated = ("月K", "Monthly")
