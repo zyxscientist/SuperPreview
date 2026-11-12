@@ -251,6 +251,7 @@
 		BC2600020000000000000004 /* StockChartPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC2600010000000000000004 /* StockChartPanel.swift */; };
 		BC2600020000000000000010 /* StockDetailChartUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC2600010000000000000010 /* StockDetailChartUITests.swift */; };
 		BC2600020000000000000005 /* StockChartTrades.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC2600010000000000000005 /* StockChartTrades.swift */; };
+		BC2600020000000000000006 /* StockChartCorporateActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC2600010000000000000006 /* StockChartCorporateActions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -500,6 +501,7 @@
 		BC2600010000000000000004 /* StockChartPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuperPreview/Components/StockChart/StockChartPanel.swift; sourceTree = SOURCE_ROOT; };
 		BC2600010000000000000010 /* StockDetailChartUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailChartUITests.swift; sourceTree = "<group>"; };
 		BC2600010000000000000005 /* StockChartTrades.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuperPreview/Components/StockChart/StockChartTrades.swift; sourceTree = SOURCE_ROOT; };
+		BC2600010000000000000006 /* StockChartCorporateActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuperPreview/Components/StockChart/StockChartCorporateActions.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -768,6 +770,7 @@
 				D1A4C6E0F2174A3B9C8D0022 /* StockDetailBadgeInfoSheet.swift */,
 				D1A4C6E0F2174A3B9C8D0020 /* StockDetailChart.swift */,
 				BC2600010000000000000005 /* StockChartTrades.swift */,
+				BC2600010000000000000006 /* StockChartCorporateActions.swift */,
 				BC2600010000000000000004 /* StockChartPanel.swift */,
 				BC2600010000000000000003 /* StockChartLocalization.swift */,
 				BC2600010000000000000002 /* StockChartCanvas.swift */,
@@ -1185,6 +1188,7 @@
 				D1A4C6E0F2174A3B9C8D0019 /* StockDetailRelatedInfo.swift in Sources */,
 				D1A4C6E0F2174A3B9C8D0021 /* StockDetailChart.swift in Sources */,
 				BC2600020000000000000005 /* StockChartTrades.swift in Sources */,
+				BC2600020000000000000006 /* StockChartCorporateActions.swift in Sources */,
 				BC2600020000000000000004 /* StockChartPanel.swift in Sources */,
 				BC2600020000000000000003 /* StockChartLocalization.swift in Sources */,
 				BC2600020000000000000002 /* StockChartCanvas.swift in Sources */,

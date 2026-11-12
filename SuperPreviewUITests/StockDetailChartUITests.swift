@@ -928,10 +928,10 @@ final class StockDetailChartUITests: XCTestCase {
         element("stockDetail.chart.period.day").tap()
         waitForState(canvas, key: "period", value: "day")
         setChartAnnotations(["corporate": true])
-        let dayMarkers = corporateButtons().allElementsBoundByIndex
-        guard let earning = dayMarkers.first(where: { $0.label.contains("业绩公布") }) else {
-            XCTFail("The daily chart should expose an earnings marker"); return
-        }
+        let earning = corporateMarker(date: "2026-11-02")
+        XCTAssertEqual(earning.label, "业绩公布")
+        XCTAssertEqual(earning.frame.width, 20, accuracy: 1)
+        XCTAssertEqual(earning.frame.height, 20, accuracy: 1)
         let hierarchy = XCTAttachment(string: "marker=\(earning.frame), hittable=\(earning.isHittable), canvas=\(canvas.frame), window=\(app.windows.firstMatch.frame)\n\(app.debugDescription)")
         hierarchy.name = "corporate-marker-accessibility"
         hierarchy.lifetime = .keepAlways
@@ -957,16 +957,32 @@ final class StockDetailChartUITests: XCTestCase {
         for value in ["2026/Q4", "2.10", "114.5B"] {
             XCTAssertTrue(daySheet.staticTexts[value].firstMatch.exists, "Missing daily earnings value \(value)")
         }
+        XCTAssertFalse(daySheet.buttons["分红派息"].exists, "An earnings-only event has no dividend tab")
+        screenshot("corporate-daily-earnings")
         dismissSheet(daySheet)
 
-        // The real AAPL fixture has earnings and ex-dividend events in May 2025.
-        // They share a monthly marker and should open two selectable tabs.
+        // The November 2024 ex-, record-, and payment dates differ. Its month
+        // has only a dividend, so the sheet has no earnings/currency controls.
         element("stockDetail.chart.period.month").tap()
         waitForState(canvas, key: "period", value: "month")
-        let monthMarkers = corporateButtons().allElementsBoundByIndex
-        guard let combined = monthMarkers.first(where: { $0.label.contains("业绩公布") && $0.label.contains("分红派息") }) else {
-            XCTFail("Monthly chart should expose a combined earnings/dividend marker"); return
+        let dividend = corporateMarker(date: "2024-11-08")
+        XCTAssertEqual(dividend.label, "分红派息")
+        XCTAssertTrue(dividend.isHittable, "Dividend marker must be tappable")
+        dividend.tap()
+        let dividendSheet = element("stockDetail.chart.corporate.sheet")
+        XCTAssertFalse(app.descendants(matching: .any)["stockDetail.chart.corporate.currency"].exists)
+        for value in ["0.25 USD", "2024/11/08", "2024/11/11", "2024/11/14"] {
+            XCTAssertTrue(dividendSheet.staticTexts[value].firstMatch.exists, "Missing dividend detail \(value)")
         }
+        XCTAssertFalse(dividendSheet.buttons["业绩公布"].exists)
+        screenshot("corporate-monthly-dividend")
+        dismissSheet(dividendSheet)
+
+        // Select the May 2025 bucket by its event date, independent of how
+        // many additional combined monthly markers are in the viewport.
+        let combined = corporateMarker(date: "2025-05-01")
+        XCTAssertEqual(combined.value as? String, "2025-05-01, 2025-05-12")
+        XCTAssertTrue(combined.label.contains("业绩公布") && combined.label.contains("分红派息"))
         XCTAssertTrue(combined.isHittable, "Combined marker must be tappable")
         combined.tap()
         let sheet = element("stockDetail.chart.corporate.sheet")
@@ -977,11 +993,131 @@ final class StockDetailChartUITests: XCTestCase {
         XCTAssertFalse(app.descendants(matching: .any)["stockDetail.chart.corporate.currency"].exists)
         XCTAssertTrue(sheet.staticTexts["0.26 USD"].firstMatch.exists)
         XCTAssertTrue(sheet.staticTexts["2025/05/12"].firstMatch.exists)
+        XCTAssertTrue(sheet.staticTexts["2025/05/15"].firstMatch.exists)
+        screenshot("corporate-monthly-combined-dividend")
         sheet.buttons["业绩公布"].firstMatch.tap()
         XCTAssertTrue(element("stockDetail.chart.corporate.currency").exists)
+        screenshot("corporate-monthly-combined-earnings")
         dismissSheet(sheet)
+        XCTAssertEqual(corporateButtons().matching(NSPredicate(format: "value CONTAINS %@", "2026-11-12")).count, 0,
+                       "A future ex-date must not appear before the last candle")
         setChartAnnotations(["corporate": false])
         XCTAssertEqual(corporateButtons().count, 0)
+    }
+
+    func testCorporateActionsOnOrderChart() {
+        openDetail()
+        element("stockDetail.navbar.debug").tap()
+        elementByLabel("简体中文").tap()
+        element("stockDetail.debug.done").tap()
+        element("stockDetail.bottomActionBar.trade").tap()
+        _ = element("stockOrder.demo")
+        element("stockOrder.symbolInput.expandChart").tap()
+        let canvas = element("stockDetail.chart.canvas")
+        let scroll = app.scrollViews.firstMatch
+        let month = element("stockDetail.chart.period.month")
+        for _ in 0..<6 where !month.isHittable { scroll.swipeUp() }
+        XCTAssertTrue(month.isHittable)
+        month.tap()
+        waitForState(canvas, key: "period", value: "month")
+        let combined = corporateMarker(date: "2025-05-01")
+        for _ in 0..<6 where !combined.isHittable { scroll.swipeUp() }
+        XCTAssertTrue(combined.isHittable, "The shared order chart must expose the combined marker")
+        combined.tap()
+        let sheet = element("stockDetail.chart.corporate.sheet")
+        XCTAssertTrue(sheet.staticTexts["2025/Q2"].firstMatch.exists)
+        sheet.buttons["分红派息"].firstMatch.tap()
+        XCTAssertTrue(sheet.staticTexts["0.26 USD"].firstMatch.exists)
+        XCTAssertTrue(sheet.staticTexts["2025/05/12"].firstMatch.exists)
+        screenshot("corporate-order-chart")
+        dismissSheet(sheet)
+        XCTAssertTrue(element("stockOrder.demo").exists)
+    }
+
+    func testCorporateMarkerAssetsFollowMarketColors() {
+        openDetail()
+        element("stockDetail.navbar.debug").tap()
+        elementByLabel("简体中文").tap()
+        let originalReversed = element("debug.marketColors.greenUp").isSelected
+        addTeardownBlock { [weak self] in self?.restoreMarketColor(originalReversed) }
+        element("debug.marketColors.redUp").tap()
+        element("stockDetail.debug.done").tap()
+        showChart()
+        let canvas = element("stockDetail.chart.canvas")
+        element("stockDetail.chart.period.month").tap()
+        waitForState(canvas, key: "period", value: "month")
+        setChartAnnotations(["corporate": true])
+        // These states are demo values derived from GAAP EPS YoY; they are not
+        // assertions about production server colorType or an earnings surprise.
+        let positiveFrame = corporateMarker(date: "2025-10-30").frame
+        let negativeFrame = corporateMarker(date: "2024-10-31").frame
+        let neutralFrame = corporateMarker(date: "2023-05-04").frame
+        let canvasFrame = canvas.frame
+        let redOn = canvas.screenshot().image
+        setChartAnnotations(["corporate": false])
+        let redOff = canvas.screenshot().image
+        setChartAnnotations(["corporate": true])
+
+        showDebug()
+        element("debug.marketColors.greenUp").tap()
+        element("stockDetail.debug.done").tap()
+        showChart()
+        waitForState(canvas, key: "reversed", value: "true")
+        for (date, original) in [("2025-10-30", positiveFrame), ("2024-10-31", negativeFrame), ("2023-05-04", neutralFrame)] {
+            let current = corporateMarker(date: date).frame
+            XCTAssertEqual(current.midX - canvas.frame.minX, original.midX - canvasFrame.minX, accuracy: 1)
+            XCTAssertEqual(current.midY - canvas.frame.minY, original.midY - canvasFrame.minY, accuracy: 1)
+        }
+        let greenOn = canvas.screenshot().image
+        setChartAnnotations(["corporate": false])
+        let greenOff = canvas.screenshot().image
+        assertCorporateMarkerColors(redOff, redOn, greenOff, greenOn, canvasFrame: canvasFrame,
+                                    markerFrame: positiveFrame, direction: "positive")
+        assertCorporateMarkerColors(redOff, redOn, greenOff, greenOn, canvasFrame: canvasFrame,
+                                    markerFrame: negativeFrame, direction: "negative")
+        assertCorporateMarkerColors(redOff, redOn, greenOff, greenOn, canvasFrame: canvasFrame,
+                                    markerFrame: neutralFrame, direction: "neutral")
+        attachImage(redOn, name: "corporate-markers-red-up")
+        attachImage(greenOn, name: "corporate-markers-green-up")
+    }
+
+    // Opt in only when an external simulator controller is ready to switch the
+    // running device from dark to light after seeing CORPORATE_THEME_READY.
+    func testCorporateMarkerRepaintsOnLiveAppearanceChange() throws {
+        let environment = ProcessInfo.processInfo.environment
+        guard environment["CORPORATE_THEME_TEST"] == "1" || environment["TEST_RUNNER_CORPORATE_THEME_TEST"] == "1" else {
+            throw XCTSkip("Requires an external simulator appearance switch")
+        }
+        openDetail()
+        element("stockDetail.navbar.debug").tap()
+        let originalReversed = element("debug.marketColors.greenUp").isSelected
+        addTeardownBlock { [weak self] in self?.restoreMarketColor(originalReversed) }
+        element("debug.marketColors.redUp").tap()
+        element("stockDetail.debug.done").tap()
+        showChart()
+        let canvas = element("stockDetail.chart.canvas")
+        element("stockDetail.chart.period.month").tap()
+        waitForState(canvas, key: "period", value: "month")
+        let marker = corporateMarker(date: "2025-10-30")
+        let canvasFrame = canvas.frame, markerFrame = marker.frame
+        let dark = canvas.screenshot().image
+        print("CORPORATE_THEME_READY")
+        fflush(stdout)
+        let deadline = Date().addingTimeInterval(45)
+        var light: UIImage?
+        var changed = 0
+        while Date() < deadline {
+            Thread.sleep(forTimeInterval: 1)
+            let candidate = canvas.screenshot().image
+            changed = corporateLightPixels(dark: dark, light: candidate,
+                                           canvasFrame: canvasFrame, markerFrame: markerFrame)
+            if changed > 15 { light = candidate; break }
+        }
+        XCTAssertNotNil(light, "The visible earnings icon must redraw after the device changes dark to light")
+        XCTAssertEqual(app.state, .runningForeground)
+        attachImage(dark, name: "corporate-live-switch-dark")
+        if let light { attachImage(light, name: "corporate-live-switch-light") }
+        print("CORPORATE_THEME_CHANGED_PIXELS=\(changed)")
     }
 
     func testTradeMarkerDetailsAndOrders() {
@@ -1103,6 +1239,72 @@ final class StockDetailChartUITests: XCTestCase {
 
     private func corporateButtons() -> XCUIElementQuery {
         app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "stockDetail.chart.corporate."))
+    }
+
+    private func corporateMarker(date: String) -> XCUIElement {
+        let matches = corporateButtons().matching(NSPredicate(format: "value CONTAINS %@", date))
+        let result = matches.firstMatch
+        XCTAssertTrue(result.waitForExistence(timeout: 8), "Missing corporate marker for \(date)")
+        XCTAssertEqual(matches.count, 1, "Corporate marker for \(date) must occur exactly once")
+        return result
+    }
+
+    private func assertCorporateMarkerColors(_ redOff: UIImage, _ redOn: UIImage,
+                                             _ greenOff: UIImage, _ greenOn: UIImage,
+                                             canvasFrame: CGRect, markerFrame: CGRect, direction: String) {
+        guard let a = rgba(redOff), let b = rgba(redOn), let c = rgba(greenOff), let d = rgba(greenOn),
+              a.width == b.width, b.width == c.width, c.width == d.width,
+              a.height == b.height, b.height == c.height, c.height == d.height else {
+            XCTFail("Unable to compare corporate marker screenshots"); return
+        }
+        let scale = CGFloat(b.width) / canvasFrame.width
+        // The visible icon is centered in a 20pt accessibility hit target and
+        // occupies 12pt. Restrict comparison to that marker, while subtracting
+        // the corresponding annotation-off image in each color convention.
+        let icon = markerFrame.insetBy(dx: 4, dy: 4).offsetBy(dx: -canvasFrame.minX, dy: -canvasFrame.minY)
+        let minX = max(0, Int(icon.minX * scale)), maxX = min(b.width, Int(icon.maxX * scale))
+        let minY = max(0, Int(icon.minY * scale)), maxY = min(b.height, Int(icon.maxY * scale))
+        guard minX < maxX && minY < maxY else { XCTFail("Marker is outside the canvas"); return }
+        var swapped = 0, unchangedGray = 0
+        for y in minY..<maxY {
+            for x in minX..<maxX {
+                let i = (y * b.width + x) * 4
+                let changedRed = (0..<3).contains { abs(Int(a.pixels[i + $0]) - Int(b.pixels[i + $0])) > 20 }
+                let changedGreen = (0..<3).contains { abs(Int(c.pixels[i + $0]) - Int(d.pixels[i + $0])) > 20 }
+                guard changedRed && changedGreen else { continue }
+                let br = Int(b.pixels[i]), bg = Int(b.pixels[i + 1]), bb = Int(b.pixels[i + 2])
+                let dr = Int(d.pixels[i]), dg = Int(d.pixels[i + 1]), db = Int(d.pixels[i + 2])
+                let redToGreen = br > bg + 35 && br > bb + 35 && dg > dr + 35 && dg > db + 10
+                let greenToRed = bg > br + 35 && bg > bb + 10 && dr > dg + 35 && dr > db + 35
+                if (direction == "positive" && redToGreen) || (direction == "negative" && greenToRed) { swapped += 1 }
+                if abs(br - bg) < 10 && abs(br - bb) < 10
+                    && abs(br - dr) < 10 && abs(bg - dg) < 10 && abs(bb - db) < 10 { unchangedGray += 1 }
+            }
+        }
+        if direction == "neutral" {
+            XCTAssertGreaterThan(unchangedGray, 15, "Neutral combined earnings marker should stay gray after reversal")
+        } else {
+            XCTAssertGreaterThan(swapped, 15, "\(direction) earnings marker should swap its visible red/green pixels")
+        }
+    }
+
+    private func corporateLightPixels(dark: UIImage, light: UIImage, canvasFrame: CGRect, markerFrame: CGRect) -> Int {
+        guard let a = rgba(dark), let b = rgba(light), a.width == b.width, a.height == b.height else { return 0 }
+        let scale = CGFloat(a.width) / canvasFrame.width
+        let icon = markerFrame.insetBy(dx: 4, dy: 4).offsetBy(dx: -canvasFrame.minX, dy: -canvasFrame.minY)
+        let minX = max(0, Int(icon.minX * scale)), maxX = min(a.width, Int(icon.maxX * scale))
+        let minY = max(0, Int(icon.minY * scale)), maxY = min(a.height, Int(icon.maxY * scale))
+        guard minX < maxX && minY < maxY else { return 0 }
+        var changed = 0
+        for y in minY..<maxY {
+            for x in minX..<maxX {
+                let i = (y * a.width + x) * 4
+                let dr = Int(a.pixels[i]), dg = Int(a.pixels[i + 1]), db = Int(a.pixels[i + 2])
+                let lr = Int(b.pixels[i]), lg = Int(b.pixels[i + 1]), lb = Int(b.pixels[i + 2])
+                if dr > dg + 35 && dr > db + 35 && lr > dr && lg > dg + 5 && lb > db + 5 { changed += 1 }
+            }
+        }
+        return changed
     }
 
     private func setChartAnnotations(_ values: [String: Bool]) {

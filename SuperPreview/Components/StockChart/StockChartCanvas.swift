@@ -482,6 +482,9 @@ final class StockChartCanvasView: UIView, UIGestureRecognizerDelegate {
             button.tag = index
             button.accessibilityIdentifier = "stockDetail.chart.corporate.\(marker.candleIndex)"
             button.accessibilityLabel = marker.earnings.isEmpty ? localized("分红派息", "分紅派息", "Dividends") : marker.dividends.isEmpty ? localized("业绩公布", "業績公布", "Earnings") : localized("业绩公布、分红派息", "業績公布、分紅派息", "Earnings and dividends")
+            // Announce the actual event dates, including both types when a
+            // monthly/weekly marker opens the combined sheet.
+            button.accessibilityValue = marker.eventDateSummary
         }
         // Interactive markers precede the plot's full-frame accessibility
         // element so the plot does not obscure their accessibility hit target.

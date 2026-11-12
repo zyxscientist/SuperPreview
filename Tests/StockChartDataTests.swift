@@ -10,6 +10,145 @@ struct StockChartDataTests {
     static func candle(_ high: Double, _ low: Double, _ close: Double) -> StockChartCandle {
         StockChartCandle(date: Date(timeIntervalSince1970: 0), open: close, high: high, low: low, close: close, volume: 1)
     }
+    static func testCorporateAggregation() {
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.timeZone = TimeZone(identifier: "America/New_York")!
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy-MM-dd"
+        func date(_ value: String) -> Date { formatter.date(from: value)! }
+        func bar(_ value: String) -> StockChartCandle {
+            StockChartCandle(date: date(value), open: 1, high: 1, low: 1, close: 1, volume: 1)
+        }
+        func earning(_ value: String, _ color: Int?) -> StockChartCorporateEarning {
+            StockChartCorporateEarning(id: value, date: date(value), period: value, colorType: color,
+                                       defaultCurrency: "USD", values: [:])
+        }
+        func dividend(_ value: String) -> StockChartCorporateDividend {
+            StockChartCorporateDividend(id: value, date: date(value), amount: "1 USD",
+                                       recordDate: date(value), payDate: date(value))
+        }
+        func ids(_ markers: [StockChartCorporateMarker]) -> [String] {
+            markers.flatMap { $0.earnings.map(\.id) }
+        }
+
+        let daily = StockChartCorporateMock.markers(
+            for: .day, candles: [bar("2021-02-26"), bar("2021-03-01"), bar("2021-03-02")],
+            earnings: [earning("2021-02-26", 1), earning("2021-03-01", -1), earning("2021-03-02", 1)],
+            dividends: [dividend("2021-03-01")])
+        precondition(daily.map(\.candleIndex) == [0, 1, 2], "Daily boundary must not duplicate next-day events")
+        precondition(ids(daily) == ["2021-02-26", "2021-03-01", "2021-03-02"])
+        precondition(daily[1].dividends.map(\.id) == ["2021-03-01"], "Same-day events share one marker")
+
+        let early = earning("2021-03-01", 1), late = earning("2021-03-04", -1)
+        let weekly = StockChartCorporateMock.markers(
+            for: .week, candles: [bar("2021-02-26"), bar("2021-03-05"), bar("2021-03-08")],
+            earnings: [late, earning("2021-03-08", 1), earning("2021-02-26", 1), early],
+            dividends: [dividend("2021-03-01"), dividend("2021-03-03")])
+        precondition(weekly.map(\.candleIndex) == [0, 1, 2])
+        precondition(ids(weekly) == ["2021-02-26", "2021-03-04", "2021-03-01", "2021-03-08"],
+                     "Monday belongs only to its new week and events are newest first")
+        precondition(weekly[1].dividends.map(\.id) == ["2021-03-03", "2021-03-01"])
+        precondition(weekly[1].colorType == -1, "Combined marker uses the most recent earnings color")
+        let unordered = StockChartCorporateMarker(candleIndex: 1, earnings: [early, late], dividends: [])
+        precondition(unordered.colorType == -1, "Most recent color must not depend on input order")
+
+        let monthly = StockChartCorporateMock.markers(
+            for: .month, candles: [bar("2021-02-26"), bar("2021-03-31"), bar("2021-04-30")],
+            earnings: [earning("2021-04-01", 1), earning("2021-03-31", -1),
+                       earning("2021-02-26", 1), earning("2021-03-01", 1)],
+            dividends: [dividend("2021-03-01"), dividend("2021-04-01")])
+        precondition(monthly.map(\.candleIndex) == [0, 1, 2])
+        precondition(ids(monthly) == ["2021-02-26", "2021-03-31", "2021-03-01", "2021-04-01"],
+                     "First-of-month events belong only to the new month")
+        precondition(monthly[1].colorType == -1 && monthly[1].dividends.map(\.id) == ["2021-03-01"])
+        precondition(monthly[2].dividends.map(\.id) == ["2021-04-01"])
+
+        for period in [StockChartPeriod.day, .week, .month] {
+            let truncated = StockChartCorporateMock.markers(
+                for: period, candles: [bar("2021-02-26"), bar("2021-03-05")],
+                earnings: [earning("2021-03-05", 1), earning("2021-03-06", -1)],
+                dividends: [dividend("2021-03-05"), dividend("2021-03-06")])
+            precondition(ids(truncated) == ["2021-03-05"], "\(period): do not draw future earnings")
+            precondition(truncated.flatMap { $0.dividends.map(\.id) } == ["2021-03-05"],
+                         "\(period): do not draw future dividends")
+        }
+        for period in [StockChartPeriod.intraday, .fiveDays, .minute1, .minute5, .minute15, .minute30, .minute60] {
+            precondition(StockChartCorporateMock.markers(for: period, candles: [bar("2021-03-05")],
+                                                        earnings: [late], dividends: []).isEmpty,
+                         "Corporate markers belong only on day/week/month charts")
+        }
+        precondition(StockChartCorporateMock.markers(for: .day, candles: [], earnings: [late], dividends: []).isEmpty)
+    }
+    static func testCorporateFixture() {
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.timeZone = TimeZone(identifier: "America/New_York")!
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy-MM-dd"
+        func date(_ value: String) -> Date { formatter.date(from: value)! }
+        let events = StockChartCorporateMock.events
+        precondition(events.earnings.count == 28 && events.dividends.count == 28)
+        precondition(events.earnings.first!.date == date("2020-01-28"))
+        precondition(events.earnings.last!.date == date("2026-11-02"))
+        precondition(events.dividends.first!.date == date("2020-02-07"))
+        precondition(events.dividends.last!.date == date("2026-11-12"))
+        precondition(zip(events.earnings, events.earnings.dropFirst()).allSatisfy { $0.date < $1.date })
+        precondition(zip(events.dividends, events.dividends.dropFirst()).allSatisfy { $0.date < $1.date })
+
+        // The marker belongs on ex-date, not on record/payment date. The
+        // declared pre- and post-split amounts retain their source precision.
+        for (ex, record, payment, amount) in [
+            ("2020-02-07", "2020-02-10", "2020-02-13", "0.77 USD"),
+            ("2020-11-06", "2020-11-09", "2020-11-12", "0.205 USD"),
+            ("2024-11-08", "2024-11-11", "2024-11-14", "0.25 USD"),
+            ("2025-05-12", "2025-05-12", "2025-05-15", "0.26 USD")
+        ] {
+            guard let dividend = events.dividends.first(where: { $0.date == date(ex) }) else {
+                preconditionFailure("Missing dividend ex-date \(ex)")
+            }
+            precondition(dividend.recordDate == date(record) && dividend.payDate == date(payment)
+                         && dividend.amount == amount, "Incorrect dividend details for \(ex)")
+        }
+        precondition(StockChartCorporateMock.mockColorType(epsYoY: nil) == nil)
+        precondition(StockChartCorporateMock.mockColorType(epsYoY: .nan) == nil)
+        precondition(StockChartCorporateMock.mockColorType(epsYoY: .infinity) == nil)
+        precondition(StockChartCorporateMock.mockColorType(epsYoY: 0) == 0)
+        precondition(StockChartCorporateMock.mockColorType(epsYoY: -0.1) == -1)
+        precondition(StockChartCorporateMock.mockColorType(epsYoY: 0.1) == 1)
+        for (day, expected) in [("2024-10-31", -1), ("2025-10-30", 1), ("2023-05-04", 0)] {
+            precondition(events.earnings.first(where: { $0.date == date(day) })?.colorType == expected,
+                         "Incorrect demo EPS direction for \(day)")
+        }
+
+        let lastDay = date("2026-11-05")
+        let expectedEarnings = Set(events.earnings.filter { $0.date <= lastDay }.map(\.id))
+        let expectedDividends = Set(events.dividends.filter { $0.date <= lastDay }.map(\.id))
+        precondition(expectedEarnings.count == 28 && expectedDividends.count == 27)
+        for period in [StockChartPeriod.day, .week, .month] {
+            let candles = StockChartMock.dataset(for: period).candles
+            let markers = StockChartCorporateMock.markers(for: period, candles: candles)
+            let earnings = markers.flatMap { $0.earnings.map(\.id) }
+            let dividends = markers.flatMap { $0.dividends.map(\.id) }
+            precondition(earnings.count == Set(earnings).count && Set(earnings) == expectedEarnings,
+                         "\(period): each in-range earnings event must occur once")
+            precondition(dividends.count == Set(dividends).count && Set(dividends) == expectedDividends,
+                         "\(period): each in-range dividend ex-date must occur once")
+            precondition(!dividends.contains("dividend-2026-11-12"), "Future dividend must not be drawn")
+            precondition(markers.allSatisfy { candles.indices.contains($0.candleIndex) })
+            if period == .day {
+                let ex = markers.first { $0.dividends.contains(where: { $0.id == "dividend-2024-11-08" }) }!
+                precondition(formatter.string(from: candles[ex.candleIndex].date) == "2024-11-08")
+                precondition(!markers.contains { formatter.string(from: candles[$0.candleIndex].date) == "2024-11-11" },
+                             "Record date must not acquire a dividend marker")
+            }
+            if period == .month {
+                let may = markers.first { $0.earnings.contains(where: { $0.id == "earning-2025-05-01" }) }!
+                precondition(may.dividends.map(\.id) == ["dividend-2025-05-12"])
+                precondition(may.eventDateSummary == "2025-05-01, 2025-05-12")
+            }
+        }
+    }
     static func main() {
         let daily = StockChartMock.dataset(for: .day).candles
         precondition(daily.count > 1700)
@@ -295,6 +434,8 @@ struct StockChartDataTests {
             precondition(StockChartCorporateAppearance.imageName(colorType: type, reversed: reversed) == asset,
                          "Corporate marker color type \(String(describing: type)), reversed \(reversed)")
         }
+        testCorporateAggregation()
+        testCorporateFixture()
         print("StockChartDataTests passed")
     }
 }

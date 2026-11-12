@@ -1003,118 +1003,11 @@ private struct StockChartAnnotationsPage: View {
     }
 }
 
-// Offline AAPL events, sourced from Apple earnings releases and dividend history.
-// Ex-dividend dates are cross-checked against published market dividend histories.
-struct StockChartCorporateEarning: Identifiable {
-    let id: String
-    let date: Date
-    let period: String
-    // nil means the public reference did not provide the app's server colorType.
-    let colorType: Int?
-    let defaultCurrency: String
-    let values: [String: StockChartCorporateEarningValues]
-}
-
-struct StockChartCorporateEarningValues {
-    let eps: String?
-    let epsYoY: Double?
-    let revenue: String?
-    let revenueYoY: Double?
-}
-
-struct StockChartCorporateDividend: Identifiable {
-    let id: String
-    let date: Date
-    let amount: String
-    let recordDate: Date
-    let payDate: Date
-}
-
-struct StockChartCorporateMarker: Identifiable {
-    let candleIndex: Int
-    let earnings: [StockChartCorporateEarning]
-    let dividends: [StockChartCorporateDividend]
-    var id: Int { candleIndex }
-    var colorType: Int? { earnings.first?.colorType }
+private extension StockChartCorporateMarker {
     var preferredHeight: CGFloat {
         let header: CGFloat = earnings.isEmpty || dividends.isEmpty ? 92 : 134
         return min(UIScreen.main.bounds.height - 120,
                    header + max(CGFloat(earnings.count) * 188, CGFloat(dividends.count) * 180) + 16)
-    }
-}
-
-enum StockChartCorporateMock {
-    private static let events: (earnings: [StockChartCorporateEarning], dividends: [StockChartCorporateDividend]) = {
-        // Revenue is the one-decimal-billion figure in Apple's press releases.
-        // The return uses only the matching quarter present in this fixture.
-        let earningsData: [(date: String, year: Int, quarter: Int, eps: Double?, revenue: Double?)] = [
-            ("2024-10-31", 2024, 4, 0.97, 94.9),
-            ("2025-01-30", 2025, 1, 2.40, 124.3),
-            ("2025-05-01", 2025, 2, 1.65, 95.4),
-            ("2025-07-31", 2025, 3, 1.57, 94.0),
-            ("2025-10-30", 2025, 4, 1.85, 102.5),
-            ("2026-01-29", 2026, 1, 2.84, 143.8),
-            ("2026-04-30", 2026, 2, 2.01, 111.2),
-            ("2026-07-30", 2026, 3, 2.02, 109.4),
-            ("2026-11-02", 2026, 4, 2.10, 114.5)
-        ]
-        let dividendData: [(ex: String, record: String, pay: String, amount: Double)] = [
-            ("2024-11-08", "2024-11-11", "2024-11-14", 0.25),
-            ("2025-02-10", "2025-02-10", "2025-02-13", 0.25),
-            ("2025-05-12", "2025-05-12", "2025-05-15", 0.26),
-            ("2025-08-11", "2025-08-11", "2025-08-14", 0.26),
-            ("2025-11-10", "2025-11-10", "2025-11-13", 0.26),
-            ("2026-02-09", "2026-02-09", "2026-02-12", 0.26),
-            ("2026-05-11", "2026-05-11", "2026-05-14", 0.27),
-            ("2026-08-10", "2026-08-10", "2026-08-13", 0.27),
-            ("2026-11-12", "2026-11-12", "2026-11-16", 0.27)
-        ]
-        let formatter = DateFormatter()
-        formatter.calendar = Calendar(identifier: .gregorian)
-        formatter.timeZone = TimeZone(identifier: "America/New_York")!
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.dateFormat = "yyyy-MM-dd"
-        func date(_ string: String) -> Date { formatter.date(from: string)! }
-        func change(_ value: Double?, _ previous: Double?) -> Double? {
-            guard let value, let previous, previous != 0 else { return nil }
-            return (value / previous - 1) * 100
-        }
-        let earnings = earningsData.map { item in
-            let prior = earningsData.first { $0.year == item.year - 1 && $0.quarter == item.quarter }
-            let values = StockChartCorporateEarningValues(
-                eps: item.eps.map { String(format: "%.2f", $0) },
-                epsYoY: change(item.eps, prior?.eps),
-                revenue: item.revenue.map { String(format: "%.1fB", $0) },
-                revenueYoY: change(item.revenue, prior?.revenue))
-            // No analyst estimate is available to support an earnings-surprise color.
-            return StockChartCorporateEarning(id: "earning-\(item.date)", date: date(item.date),
-                period: "\(item.year)/Q\(item.quarter)", colorType: nil, defaultCurrency: "USD",
-                values: ["USD": values])
-        }
-        let dividends = dividendData.map { item in
-            StockChartCorporateDividend(id: "dividend-\(item.ex)", date: date(item.ex),
-                amount: String(format: "%.2f USD", item.amount),
-                recordDate: date(item.record), payDate: date(item.pay))
-        }
-        return (earnings, dividends)
-    }()
-
-    static func markers(for period: StockChartPeriod, candles: [StockChartCandle]) -> [StockChartCorporateMarker] {
-        guard [.day, .week, .month].contains(period) else { return [] }
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = TimeZone(identifier: "America/New_York")!
-        calendar.firstWeekday = 2
-        calendar.minimumDaysInFirstWeek = 4
-        let component: Calendar.Component = period == .day ? .day : (period == .week ? .weekOfYear : .month)
-        guard let lastCandle = candles.last,
-              let lastDay = calendar.dateInterval(of: .day, for: lastCandle.date) else { return [] }
-        return candles.enumerated().compactMap { index, candle in
-            guard let interval = calendar.dateInterval(of: component, for: candle.date) else { return nil }
-            let earnings = events.earnings.filter { interval.contains($0.date) && $0.date < lastDay.end }.sorted { $0.date > $1.date }
-            let dividends = events.dividends.filter { interval.contains($0.date) && $0.date < lastDay.end }.sorted { $0.date > $1.date }
-            guard !earnings.isEmpty || !dividends.isEmpty else { return nil }
-            return StockChartCorporateMarker(candleIndex: index, earnings: earnings, dividends: dividends)
-        }
     }
 }
 
@@ -1216,7 +1109,7 @@ private struct StockChartCorporateSheet: View {
                 metricRow(text("项目", "項目", "Item"), text("本期", "本期", "Current Period"), text("同比", "同比", "YoY"), header: true)
                 VStack(spacing: 12) {
                     metricRow(text("每股收益", "每股收益", "EPS"), values?.eps ?? "--", percent(values?.epsYoY), change: values?.epsYoY)
-                    metricRow(text("总营收", "總營收", "Total Revenue"), values?.revenue ?? "--", percent(values?.revenueYoY, approximate: true), change: values?.revenueYoY)
+                    metricRow(text("总营收", "總營收", "Total Revenue"), values?.revenue ?? "--", percent(values?.revenueYoY), change: values?.revenueYoY)
                 }.padding(.vertical, 16)
             }
             .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color("color-separator1"), lineWidth: 1))
@@ -1265,8 +1158,8 @@ private struct StockChartCorporateSheet: View {
         return formatter
     }()
 
-    private func percent(_ value: Double?, approximate: Bool = false) -> String {
-        value.map { (approximate ? "≈" : "") + String(format: "%+.2f%%", $0) } ?? "--"
+    private func percent(_ value: Double?) -> String {
+        value.map { String(format: $0 > 0 ? "+%.2f%%" : "%.2f%%", $0) } ?? "--"
     }
     private func changeColor(_ value: Double?) -> Color {
         guard let value, value != 0 else { return Color("color-text1") }
