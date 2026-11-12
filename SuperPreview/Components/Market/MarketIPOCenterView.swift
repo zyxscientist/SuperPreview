@@ -18,7 +18,7 @@ struct MarketIPOSubscription: Identifiable, Hashable {
     let id: String
     let name: String
     let code: String
-    let remainingTimeHours: Int
+    let remainingTimeSeconds: Int
     let promotion: Promotion?
 
     static let figmaReference: [Self] = [
@@ -26,21 +26,21 @@ struct MarketIPOSubscription: Identifiable, Hashable {
             id: "subscription-1",
             name: "奕斯伟计算",
             code: "01256",
-            remainingTimeHours: 23,
+            remainingTimeSeconds: 59 * 60,
             promotion: .leverage(10)
         ),
         Self(
             id: "subscription-2",
             name: "大疆创新",
             code: "01234",
-            remainingTimeHours: 71,
+            remainingTimeSeconds: 71 * 60 * 60,
             promotion: .zeroCashSubscriptionFee
         ),
         Self(
             id: "subscription-3",
             name: "大疆创新",
             code: "01234",
-            remainingTimeHours: 143,
+            remainingTimeSeconds: 143 * 60 * 60,
             promotion: nil
         )
     ]
@@ -251,7 +251,7 @@ struct MarketIPOCenterView: View {
     ) -> some View {
         let localizedName = language.ipoCompanyName(id: subscription.id, fallback: subscription.name)
         let nameAndCode = String(format: language.text(.ipoNameAndCodeFormat), localizedName, subscription.code)
-        let remainingTime = language.ipoRemainingTime(hours: subscription.remainingTimeHours)
+        let remainingTime = language.ipoRemainingTime(seconds: subscription.remainingTimeSeconds)
 
         return HStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 6) {

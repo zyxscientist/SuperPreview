@@ -158,7 +158,7 @@ enum DemoCopyKey {
     case marketRankingAccessibilityFormat
     case ipoTodaySubscriptionsFormat, ipoUpcomingListingsFormat, ipoNameAndCodeFormat
     case ipoSubscribeAccessibilityFormat
-    case ipoSubscribe, ipoRemainingHoursFormat, ipoRemainingDaysHoursFormat
+    case ipoSubscribe, ipoRemainingMinutesFormat, ipoRemainingHoursFormat, ipoRemainingDaysHoursFormat
     case ipoGreyMarketTradingTime, ipoListingTime, ipoAddToWatchlist
     case ipoUpTo, ipoLeverage, ipoCashSubscriptionFeeZero
     case marketSanFrancisco, marketNewYork, marketToronto, marketLondon
@@ -323,11 +323,23 @@ extension DemoLanguage {
         return securityName(id: id, fallback: fallback)
     }
 
-    func ipoRemainingTime(hours: Int) -> String {
+    func ipoRemainingTime(seconds: Int) -> String {
+        let seconds = max(0, seconds)
+        let hours = seconds / 3_600
         let days = hours / 24
         let remainingHours = hours % 24
-        let key: DemoCopyKey = days == 0 ? .ipoRemainingHoursFormat : .ipoRemainingDaysHoursFormat
-        let arguments: [CVarArg] = days == 0 ? [hours] : [days, remainingHours]
+        let key: DemoCopyKey
+        let arguments: [CVarArg]
+        if hours == 0 {
+            key = .ipoRemainingMinutesFormat
+            arguments = [seconds / 60]
+        } else if days == 0 {
+            key = .ipoRemainingHoursFormat
+            arguments = [hours]
+        } else {
+            key = .ipoRemainingDaysHoursFormat
+            arguments = [days, remainingHours]
+        }
 
         return String(
             format: text(key),
@@ -478,6 +490,7 @@ private enum DemoCopy {
         .ipoNameAndCodeFormat: ("%@（%@）", "%@（%@）", "%@ (%@)"),
         .ipoSubscribeAccessibilityFormat: ("认购%@，%@", "認購%@，%@", "Subscribe to %@. Time remaining: %@"),
         .ipoSubscribe: ("认购", "認購", "Subscribe"),
+        .ipoRemainingMinutesFormat: ("剩余 %d 分钟", "剩餘 %d 分鐘", "%dM left"),
         .ipoRemainingHoursFormat: ("剩余%d小时", "剩餘%d小時", "%dH left"),
         .ipoRemainingDaysHoursFormat: ("剩余%d天%d小时", "剩餘%d天%d小時", "%dD %dH left"),
         .ipoGreyMarketTradingTime: ("暗盘交易时间：", "暗盤交易時間：", "Grey Market Trading: "),
