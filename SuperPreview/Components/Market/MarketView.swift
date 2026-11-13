@@ -7,6 +7,7 @@
 //  用于：主 Tab 的市场入口。
 //
 
+import Observation
 import SwiftUI
 import UIKit
 
@@ -22,6 +23,9 @@ struct MarketView: View {
     @State private var marketGlobeOrientation = MarketGlobeOrientation()
     @State private var globeRotation: MarketGlobeRotation?
     @State private var globeExposingPages: Set<String> = ["港股"]
+    @State private var globeScrollState = MarketGlobeScrollState()
+    @AppStorage(MarketIndexCardSurface.storageKey) private var indexCardSurface: MarketIndexCardSurface = .liquidGlass
+    @AppStorage(MarketIndexCardFrostedThickness.storageKey) private var indexCardFrostedThickness: MarketIndexCardFrostedThickness = .regular
     @EnvironmentObject private var demoLanguageStore: DemoLanguageStore
     @EnvironmentObject private var demoAppearanceStore: DemoAppearanceStore
 
@@ -60,6 +64,8 @@ struct MarketView: View {
             MarketDebugPanel(
                 language: demoLanguageBinding,
                 isReducedLiquidGlassUsageEnabled: reducedLiquidGlassUsageBinding,
+                indexCardSurface: $indexCardSurface,
+                indexCardFrostedThickness: $indexCardFrostedThickness,
                 isShaderOnly: $isShaderOnly,
                 globeOrientation: { globeRotation?.value(at: Date()) ?? marketGlobeOrientation },
                 selectedTab: selectedTab
@@ -113,8 +119,8 @@ struct MarketView: View {
 
     private func marketContent(bottomContentClearance: CGFloat) -> some View {
         GeometryReader { viewport in
-            // One fixed Metal surface remains behind the scrolling pages, so
-            // neither scrolling nor horizontal paging recreates the globe.
+            // Keep one shared Metal surface behind the pages. Pull-down only
+            // translates it; scrolling and paging never recreate the renderer.
             ZStack(alignment: .top) {
                 MarketGlobeView(
                     isActive: isActive && showsGlobe,
@@ -123,6 +129,11 @@ struct MarketView: View {
                     orientation: $marketGlobeOrientation,
                     rotation: $globeRotation
                 )
+                .modifier(MarketGlobePullDownOffset(
+                    scrollState: globeScrollState,
+                    tab: selectedTab,
+                    isEnabled: !isShaderOnly && hasGlobe(for: selectedTab)
+                ))
                 .opacity(showsGlobe ? 1 : 0)
                 .animation(nil, value: showsGlobe)
                 .allowsHitTesting(showsGlobe && isShaderOnly)
@@ -144,6 +155,9 @@ struct MarketView: View {
                             connectDirection: $connectDirection,
                             onGlobeExposureChange: { isExposed in
                                 updateGlobeExposure(for: tab, isExposed: isExposed)
+                            },
+                            onGlobePullDownChange: { distance in
+                                globeScrollState.pullDownOffsets[tab] = distance
                             }
                         ) {
                             marketPage(for: tab)
@@ -168,7 +182,9 @@ struct MarketView: View {
             if !indices.isEmpty {
                 MarketIndexCards(
                     indices: indices,
-                    reducesGlass: demoAppearanceStore.isReducedLiquidGlassUsageEnabled
+                    reducesGlass: demoAppearanceStore.isReducedLiquidGlassUsageEnabled,
+                    surface: indexCardSurface,
+                    frostedThickness: indexCardFrostedThickness
                 )
                 .padding(.horizontal, 16)
 
@@ -225,6 +241,24 @@ struct MarketView: View {
     }
 }
 
+/// Only the globe's translation observes these frequent scroll updates;
+/// the market pager and its content do not rebuild for every pull-down frame.
+@MainActor
+@Observable
+private final class MarketGlobeScrollState {
+    var pullDownOffsets: [String: CGFloat] = [:]
+}
+
+private struct MarketGlobePullDownOffset: ViewModifier {
+    let scrollState: MarketGlobeScrollState
+    let tab: String
+    let isEnabled: Bool
+
+    func body(content: Content) -> some View {
+        content.offset(y: isEnabled ? scrollState.pullDownOffsets[tab, default: 0] : 0)
+    }
+}
+
 /// Vertical scroll state stays local to a category. Pulling down never
 /// invalidates the market pager or the shared Metal globe's ownership.
 private struct MarketScrollingPage<Content: View>: View {
@@ -237,6 +271,7 @@ private struct MarketScrollingPage<Content: View>: View {
     @Binding var rotation: MarketGlobeRotation?
     @Binding var connectDirection: MarketConnectDirection
     let onGlobeExposureChange: (Bool) -> Void
+    let onGlobePullDownChange: (CGFloat) -> Void
     let content: Content
     @State private var pullDownDistance: CGFloat = 0
     @State private var isGlobeExposed: Bool?
@@ -252,6 +287,7 @@ private struct MarketScrollingPage<Content: View>: View {
         rotation: Binding<MarketGlobeRotation?>,
         connectDirection: Binding<MarketConnectDirection>,
         onGlobeExposureChange: @escaping (Bool) -> Void,
+        onGlobePullDownChange: @escaping (CGFloat) -> Void,
         @ViewBuilder content: () -> Content
     ) {
         self.tab = tab
@@ -263,6 +299,7 @@ private struct MarketScrollingPage<Content: View>: View {
         self._rotation = rotation
         self._connectDirection = connectDirection
         self.onGlobeExposureChange = onGlobeExposureChange
+        self.onGlobePullDownChange = onGlobePullDownChange
         self.content = content()
     }
 
@@ -320,7 +357,7 @@ private struct MarketScrollingPage<Content: View>: View {
             }
             .frame(minHeight: viewportHeight, alignment: .top)
             .background(scrollingBackground)
-            .offset(y: pullDownDistance * 0.75)
+            .offset(y: pullDownDistance * MarketGlobeLayout.pullDownExpansion)
         }
         // A category without a globe must cover its own part of the shared
         // Metal surface while a neighboring page is still visible mid-swipe.
@@ -330,6 +367,9 @@ private struct MarketScrollingPage<Content: View>: View {
             max(-(scroll.contentOffset.y + scroll.contentInsets.top), 0)
         } action: { _, distance in
             pullDownDistance = distance
+            // The shared backdrop sits outside the ScrollView, so include
+            // its native rubber-band distance as well as our extra offset.
+            onGlobePullDownChange(distance * (1 + MarketGlobeLayout.pullDownExpansion))
         }
         .onAppear {
             if let isGlobeExposed {
@@ -338,6 +378,7 @@ private struct MarketScrollingPage<Content: View>: View {
         }
         .onDisappear {
             onGlobeExposureChange(false)
+            onGlobePullDownChange(0)
         }
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("market.scroll.\(tab)")
@@ -376,6 +417,8 @@ private struct MarketScrollingPage<Content: View>: View {
 private struct MarketDebugPanel: View {
     @Binding var language: DemoLanguage
     @Binding var isReducedLiquidGlassUsageEnabled: Bool
+    @Binding var indexCardSurface: MarketIndexCardSurface
+    @Binding var indexCardFrostedThickness: MarketIndexCardFrostedThickness
     @Binding var isShaderOnly: Bool
     let globeOrientation: () -> MarketGlobeOrientation
     let selectedTab: String
@@ -414,6 +457,8 @@ private struct MarketDebugPanel: View {
                     isReducedLiquidGlassUsageEnabled: $isReducedLiquidGlassUsageEnabled
                 )
                 .accessibilityIdentifier("market.debug.reduceLiquidGlass")
+
+                indexCardMaterialControls
 
                 Toggle(interfaceLanguage.text(.showShaderOnly), isOn: $isShaderOnly)
                     .font(.system(size: 16, weight: .medium))
@@ -458,6 +503,45 @@ private struct MarketDebugPanel: View {
                 message: Text(interfaceLanguage.text(.marketGlobeExportFailedMessage)),
                 dismissButton: .default(Text(interfaceLanguage.text(.done)))
             )
+        }
+    }
+
+    private var indexCardMaterialControls: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(interfaceLanguage.text(.marketIndexCardMaterial))
+                .modifier(CustomFontModifier(size: 16, font: .medium, lineHeight: 24))
+                .foregroundColor(Color("color-text1"))
+
+            Picker(interfaceLanguage.text(.marketIndexCardMaterial), selection: $indexCardSurface) {
+                ForEach(MarketIndexCardSurface.allCases) { surface in
+                    Text(interfaceLanguage.text(surface.titleKey))
+                        .tag(surface)
+                        .accessibilityIdentifier("market.debug.indexCardSurface.\(surface.rawValue)")
+                }
+            }
+            .pickerStyle(.segmented)
+            .accessibilityIdentifier("market.debug.indexCardSurface")
+
+            if indexCardSurface == .frostedGlass {
+                HStack {
+                    Text(interfaceLanguage.text(.marketIndexFrostedThickness))
+                        .modifier(CustomFontModifier(size: 16, font: .regular, lineHeight: 24))
+                        .foregroundColor(Color("color-text1"))
+
+                    Spacer(minLength: 12)
+
+                    Picker(interfaceLanguage.text(.marketIndexFrostedThickness), selection: $indexCardFrostedThickness) {
+                        ForEach(MarketIndexCardFrostedThickness.allCases) { thickness in
+                            Text(interfaceLanguage.text(thickness.titleKey))
+                                .tag(thickness)
+                                .accessibilityIdentifier("market.debug.indexCardThickness.\(thickness.rawValue)")
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .tint(Color("color-blue1"))
+                    .accessibilityIdentifier("market.debug.indexCardThickness")
+                }
+            }
         }
     }
 

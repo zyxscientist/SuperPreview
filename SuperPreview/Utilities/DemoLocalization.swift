@@ -133,6 +133,10 @@ enum DemoCopyKey {
     case marketIndexHangSeng, marketIndexEnterprises, marketIndexRedChips
     case marketIndexDowJones, marketIndexNasdaq, marketIndexSP500
     case marketIndexShanghai, marketIndexShenzhen, marketIndexCSI300
+    case marketIndexCardMaterial, marketIndexLiquidGlass, marketIndexFrostedGlass
+    case marketIndexFrostedThickness
+    case marketIndexMaterialUltraThin, marketIndexMaterialThin, marketIndexMaterialRegular
+    case marketIndexMaterialThick, marketIndexMaterialUltraThick
     case marketCryptoBitcoin, marketCryptoEthereum, marketCryptoSolana
     case crypto24hRankings, cryptoMarketCap, cryptoGainers, cryptoLosers, cryptoTurnover
     case marketGlobeAccessibility, exportMarketGlobeParameters, showShaderOnly
@@ -383,6 +387,15 @@ private enum DemoCopy {
         .toastOrderCancelled: ("订单已撤销", "訂單已撤銷", "Order cancelled"),
         .interfaceLanguage: ("界面语言", "介面語言", "Interface Language"),
         .marketColors: ("涨跌色", "漲跌色", "Market Colors"),
+        .marketIndexCardMaterial: ("指数卡片材质", "指數卡片材質", "Index Card Material"),
+        .marketIndexLiquidGlass: ("液态玻璃", "液態玻璃", "Liquid Glass"),
+        .marketIndexFrostedGlass: ("毛玻璃", "毛玻璃", "Frosted Glass"),
+        .marketIndexFrostedThickness: ("毛玻璃厚度", "毛玻璃厚度", "Material Thickness"),
+        .marketIndexMaterialUltraThin: ("超薄", "超薄", "Ultra Thin"),
+        .marketIndexMaterialThin: ("薄", "薄", "Thin"),
+        .marketIndexMaterialRegular: ("常规", "常規", "Regular"),
+        .marketIndexMaterialThick: ("厚", "厚", "Thick"),
+        .marketIndexMaterialUltraThick: ("超厚", "超厚", "Ultra Thick"),
         .redUpGreenDown: ("红涨绿跌", "紅漲綠跌", "Red Up, Green Down"),
         .greenUpRedDown: ("绿涨红跌", "綠漲紅跌", "Green Up, Red Down"),
         .reduceLiquidGlassUsage: ("减少液态玻璃使用", "減少液態玻璃使用", "Reduce Liquid Glass"),

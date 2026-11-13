@@ -1,6 +1,48 @@
 // Shared quote cards for equity and cryptocurrency tabs.
 import SwiftUI
 
+enum MarketIndexCardSurface: String, CaseIterable, Identifiable {
+    case liquidGlass
+    case frostedGlass
+
+    static let storageKey = "demo.market.indexCardSurface"
+    var id: String { rawValue }
+
+    var titleKey: DemoCopyKey {
+        switch self {
+        case .liquidGlass: return .marketIndexLiquidGlass
+        case .frostedGlass: return .marketIndexFrostedGlass
+        }
+    }
+}
+
+enum MarketIndexCardFrostedThickness: String, CaseIterable, Identifiable {
+    case ultraThin, thin, regular, thick, ultraThick
+
+    static let storageKey = "demo.market.indexCardFrostedThickness"
+    var id: String { rawValue }
+
+    var titleKey: DemoCopyKey {
+        switch self {
+        case .ultraThin: return .marketIndexMaterialUltraThin
+        case .thin: return .marketIndexMaterialThin
+        case .regular: return .marketIndexMaterialRegular
+        case .thick: return .marketIndexMaterialThick
+        case .ultraThick: return .marketIndexMaterialUltraThick
+        }
+    }
+
+    var material: Material {
+        switch self {
+        case .ultraThin: return .ultraThin
+        case .thin: return .thin
+        case .regular: return .regular
+        case .thick: return .thick
+        case .ultraThick: return .ultraThick
+        }
+    }
+}
+
 struct MarketIndexQuote: Identifiable {
     let id: String
     let title: DemoCopyKey
@@ -43,13 +85,15 @@ struct MarketIndexQuote: Identifiable {
 struct MarketIndexCards: View {
     let indices: [MarketIndexQuote]
     let reducesGlass: Bool
+    let surface: MarketIndexCardSurface
+    let frostedThickness: MarketIndexCardFrostedThickness
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
 
     var body: some View {
         // Only the background surfaces belong to the glass compositor.
         // Render all labels and charts afterwards, outside that container.
         ZStack {
-            if #available(iOS 26.0, *), !reducesGlass && !reduceTransparency {
+            if #available(iOS 26.0, *), surface == .liquidGlass && !reducesGlass && !reduceTransparency {
                 GlassEffectContainer(spacing: 0) {
                     surfaces(usesGlass: true)
                 }
@@ -78,6 +122,13 @@ struct MarketIndexCards: View {
                         .frame(maxWidth: .infinity)
                         .frame(height: 133)
                         .glassEffect(.regular, in: shape)
+                } else if surface == .frostedGlass && !reduceTransparency {
+                    shape.fill(frostedThickness.material)
+                        .overlay {
+                            shape.strokeBorder(Color("color-separator1"), lineWidth: 0.5)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 133)
                 } else {
                     shape.fill(Color("color-grayscale1"))
                         .frame(maxWidth: .infinity)

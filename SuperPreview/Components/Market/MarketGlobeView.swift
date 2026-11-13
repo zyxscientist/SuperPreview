@@ -253,7 +253,7 @@ struct MarketGlobeView: View {
     }
 }
 
-/// Share the original mask between the fixed globe's standalone mode and the
+/// Share the original mask between the shared globe's standalone mode and the
 /// scrolling card backdrop, with only one visible copy in either mode.
 struct MarketGlobeBottomFade: View {
     var body: some View {
@@ -269,7 +269,7 @@ struct MarketGlobeBottomFade: View {
 }
 
 /// The same rotation interaction can live on a transparent scrolling region
-/// while the Metal view itself remains fixed behind the content.
+/// while the shared Metal view follows pull-down behind the content.
 struct MarketGlobeRotationInteraction: ViewModifier {
     let isCrypto: Bool
     @Binding var orientation: MarketGlobeOrientation
@@ -668,6 +668,7 @@ enum MarketGlobeLayout {
     static let visibleHeight: CGFloat = 140
     static let bottomFadeHeight: CGFloat = 32
     static let contentTopInset = visibleHeight - bottomFadeHeight
+    static let pullDownExpansion: CGFloat = 0.75
 
     static let horizontalInset: CGFloat = 16
     static let globeTopInset: CGFloat = 8
