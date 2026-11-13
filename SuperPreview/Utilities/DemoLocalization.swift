@@ -150,7 +150,7 @@ enum DemoCopyKey {
     case connectAShares, connectHKShares, connectNorthOverview, connectSouthOverview
     case connectUpdated, connectPreviousTurnover, connectTotalValue, connectSegmentValue
     case connectShanghaiNorth, connectShenzhenNorth, connectShanghaiSouth, connectShenzhenSouth
-    case connectRemainingQuota, connectQuotaSufficient
+    case connectRemainingQuota, connectQuotaSufficient, connectQuotaInsufficient
     case connectRankingsTab, connectTopTurnover, connectAHShares, connectShanghaiFilter, connectShenzhenFilter
     case marketIndustrySectors, marketHeatmapTitle, marketRankingsTitle, viewAll
     case marketMainBoard, marketGemBoard
@@ -470,7 +470,8 @@ private enum DemoCopy {
         .connectShanghaiSouth: ("港股通(沪)", "港股通(滬)", "HK Connect (SH)"),
         .connectShenzhenSouth: ("港股通(深)", "港股通(深)", "HK Connect (SZ)"),
         .connectRemainingQuota: ("当日剩余额度", "當日剩餘額度", "Remaining Quota"),
-        .connectQuotaSufficient: ("充足", "充足", "Available"),
+        .connectQuotaSufficient: ("充足", "充足", "Sufficient"),
+        .connectQuotaInsufficient: ("不充足", "不充足", "Insufficient"),
         .connectRankingsTab: ("沪深港通", "滬深港通", "Stock Connect"),
         .connectTopTurnover: ("十大成交", "十大成交", "Top Turnover"),
         .connectAHShares: ("AH股", "AH股", "A/H Shares"),

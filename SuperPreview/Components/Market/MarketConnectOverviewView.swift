@@ -49,9 +49,18 @@ struct MarketConnectOverviewView: View {
                     .frame(height: 8)
 
                     HStack(alignment: .top, spacing: 8) {
-                        detail(selected == .north ? .connectShanghaiNorth : .connectShanghaiSouth, alignment: .leading)
+                        detail(
+                            selected == .north ? .connectShanghaiNorth : .connectShanghaiSouth,
+                            quotaSufficient: true,
+                            alignment: .leading
+                        )
                         Spacer(minLength: 0)
-                        detail(selected == .north ? .connectShenzhenNorth : .connectShenzhenSouth, alignment: .trailing)
+                        // The southbound mock shows both quota states.
+                        detail(
+                            selected == .north ? .connectShenzhenNorth : .connectShenzhenSouth,
+                            quotaSufficient: selected == .north,
+                            alignment: .trailing
+                        )
                     }
                 }
             }
@@ -112,14 +121,16 @@ struct MarketConnectOverviewView: View {
         .accessibilityHidden(true)
     }
 
-    private func detail(_ title: DemoCopyKey, alignment: HorizontalAlignment) -> some View {
+    private func detail(_ title: DemoCopyKey, quotaSufficient: Bool, alignment: HorizontalAlignment) -> some View {
         VStack(alignment: alignment, spacing: 4) {
             (Text(language.text(title) + " ") + Text(language.text(.connectSegmentValue)).font(.custom("PlusJakartaSans-Bold", size: 14)))
                 .modifier(CustomFontModifier(size: 14, font: .regular, lineHeight: 20))
                 .foregroundStyle(Color("color-text1"))
                 .lineLimit(1).minimumScaleFactor(0.7)
             (Text(language.text(.connectRemainingQuota) + " ").foregroundColor(Color("color-text-60"))
-             + Text(language.text(.connectQuotaSufficient)).font(.custom("PlusJakartaSans-Bold", size: 12)).foregroundColor(Color("color-green")))
+             + Text(language.text(quotaSufficient ? .connectQuotaSufficient : .connectQuotaInsufficient))
+                .font(.custom("PlusJakartaSans-Bold", size: 12))
+                .foregroundColor(Color(quotaSufficient ? "color-green" : "color-02-error")))
                 .modifier(CustomFontModifier(size: 12, font: .regular, lineHeight: 16))
                 .lineLimit(1).minimumScaleFactor(0.7)
         }
