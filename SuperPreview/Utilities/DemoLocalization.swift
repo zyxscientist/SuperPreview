@@ -118,7 +118,7 @@ enum MarketColor {
 enum DemoCopyKey {
     case newWatchlist, newTrade, stockOrderPage, debug, done, interfaceLanguage
     case simulateToast, simulateToastQueue
-    case toastOrderSubmitted, toastAddedToWatchlist, toastOrderCancelled
+    case toastOrderSubmitted, toastAddedToWatchlist, toastDeletedFromWatchlist, toastOrderCancelled
     case marketColors, redUpGreenDown, greenUpRedDown
     case reduceLiquidGlassUsage, reduceLiquidGlassUsageDetails
     case reduceLiquidGlassUsageUnavailableDetails
@@ -207,6 +207,7 @@ enum DemoCopyKey {
     case buy, sell, unlockTrading, orderPendingSubmission, orderPendingFill, orderPartiallyFilled
     case orderFilled, orderFailed, orderExpired, orderCancelled, amendOrder, cancelOrder
     case addToWatchlist, editWatchlist
+    case watchlistFavoriteAnimation, editWatchlistGroup, defaultWatchlistGroup, deleteFromWatchlist
     case adrConversionPrice, relativeToHKStock, relativeToUSStock
     case resultsAnnouncement, exDividendInformation, extendedHoursQuote
     case addEarningsCalendarReminder, removeEarningsCalendarReminder, added, notAdded
@@ -383,7 +384,8 @@ private enum DemoCopy {
         .simulateToast: ("循环播放 Toast", "循環播放 Toast", "Loop Toast"),
         .simulateToastQueue: ("排队播放 3 条 Toast", "排隊播放 3 則 Toast", "Queue 3 Toasts"),
         .toastOrderSubmitted: ("订单已提交", "訂單已提交", "Order submitted"),
-        .toastAddedToWatchlist: ("已添加到自选", "已加入自選", "Added to Watchlist"),
+        .toastAddedToWatchlist: ("已添加自选", "已加入自選", "Added to Watchlist"),
+        .toastDeletedFromWatchlist: ("已删除自选", "已刪除自選", "Deleted from Watchlist"),
         .toastOrderCancelled: ("订单已撤销", "訂單已撤銷", "Order cancelled"),
         .interfaceLanguage: ("界面语言", "介面語言", "Interface Language"),
         .marketColors: ("涨跌色", "漲跌色", "Market Colors"),
@@ -667,6 +669,10 @@ private enum DemoCopy {
         .cancelOrder: ("撤单", "撤單", "Cancel"),
         .addToWatchlist: ("添加自选", "加入自選", "Add to Watchlist"),
         .editWatchlist: ("编辑自选", "編輯自選", "Edit Watchlist"),
+        .watchlistFavoriteAnimation: ("加自选按钮动画", "加入自選按鈕動畫", "Add to Watchlist Animation"),
+        .editWatchlistGroup: ("编辑分组", "編輯分組", "Edit Group"),
+        .defaultWatchlistGroup: ("默认分组", "預設分組", "Default Group"),
+        .deleteFromWatchlist: ("删除自选", "刪除自選", "Delete from Watchlist"),
         .adrConversionPrice: ("ADR换算价", "ADR換算價", "ADR conversion price"),
         .relativeToHKStock: ("相对港股", "相對港股", "vs HK stock"),
         .relativeToUSStock: ("相对美股", "相對美股", "vs US stock"),

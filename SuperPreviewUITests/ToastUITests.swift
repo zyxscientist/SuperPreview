@@ -7,9 +7,12 @@ final class ToastUITests: XCTestCase {
         continueAfterFailure = false
         XCUIDevice.shared.orientation = .portrait
         app = XCUIApplication()
+    }
+
+    private func launchApp(language: String = "zh-Hans") {
         app.launchArguments += [
             "-UITesting",
-            "-compare.demo.interfaceLanguage", "zh-Hans",
+            "-compare.demo.interfaceLanguage", language,
             "-UIPreferredContentSizeCategory", "UICTContentSizeCategoryL"
         ]
         app.launch()
@@ -60,11 +63,12 @@ final class ToastUITests: XCTestCase {
     }
 
     func testQueuedToastsWaitWhileHeldAndFollowAutomaticAndSwipeDismissal() {
+        launchApp()
         element("watchlist.debug.open").tap()
         element("debug.toast.queue").tap()
 
         let submitted = toast(labeled: "订单已提交")
-        let addedToWatchlist = toast(labeled: "已添加到自选")
+        let addedToWatchlist = toast(labeled: "已添加自选")
         let cancelled = toast(labeled: "订单已撤销")
         XCTAssertTrue(submitted.exists || submitted.waitForExistence(timeout: 3))
 
@@ -82,6 +86,57 @@ final class ToastUITests: XCTestCase {
         XCTAssertEqual(toasts.count, 1)
         XCTAssertTrue(cancelled.waitForNonExistence(timeout: 5))
         XCTAssertFalse(toast.exists, "The one-shot queue should end after its last message")
+    }
+
+    func testFavoriteDemoRevealsEditGroupAndShowsAddAndDeleteToasts() {
+        openFavoriteDemo()
+        let heart = element("favoriteDemo.XOMO.toggle")
+        let name = element("favoriteDemo.XOMO.name")
+        let edit = app.buttons["favoriteDemo.XOMO.edit"]
+        let otherHeart = element("favoriteDemo.BTC/HKD.toggle")
+        let originalNameFrame = name.frame
+        let originalHeartCenter = heart.frame.midX
+        XCTAssertFalse(edit.exists)
+
+        heart.tap()
+        XCTAssertTrue(toast(labeled: "已添加自选").waitForExistence(timeout: 4))
+        XCTAssertTrue(edit.waitForExistence(timeout: 2))
+        XCTAssertTrue(heart.isSelected)
+        XCTAssertFalse(otherHeart.isSelected)
+        XCTAssertEqual(heart.frame.midX, originalHeartCenter, accuracy: 1)
+        XCTAssertLessThanOrEqual(name.frame.maxX, edit.frame.minX + 1)
+        if originalNameFrame.maxX > edit.frame.minX {
+            XCTAssertLessThan(name.frame.width, originalNameFrame.width)
+        }
+
+        edit.tap()
+        let customGroup = app.buttons["自定义"].firstMatch
+        XCTAssertTrue(customGroup.waitForExistence(timeout: 3))
+        customGroup.tap()
+        XCTAssertEqual(edit.value as? String, "自定义")
+
+        heart.tap()
+        XCTAssertTrue(toast(labeled: "已删除自选").waitForExistence(timeout: 6))
+        XCTAssertFalse(heart.isSelected)
+        XCTAssertFalse(edit.exists)
+        XCTAssertEqual(heart.frame.midX, originalHeartCenter, accuracy: 1)
+        XCTAssertEqual(name.frame.width, originalNameFrame.width, accuracy: 1)
+    }
+
+    func testFavoriteDemoUsesDeleteForEnglishActionAndToast() {
+        openFavoriteDemo(language: "en")
+        let heart = element("favoriteDemo.XOMO.toggle")
+        XCTAssertTrue(heart.label.hasSuffix("Add to Watchlist"))
+
+        heart.tap()
+        let added = toast(labeled: "Added to Watchlist")
+        XCTAssertTrue(added.waitForExistence(timeout: 3))
+        XCTAssertTrue(heart.label.hasSuffix("Delete from Watchlist"))
+        swipeUp(on: added)
+
+        heart.tap()
+        XCTAssertTrue(toast(labeled: "Deleted from Watchlist").waitForExistence(timeout: 4))
+        XCTAssertTrue(heart.label.hasSuffix("Add to Watchlist"))
     }
 
     private var toasts: XCUIElementQuery {
@@ -102,12 +157,27 @@ final class ToastUITests: XCTestCase {
     }
 
     private func startToastLoop() {
+        launchApp()
         element("watchlist.debug.open").tap()
         let toggle = app.switches["debug.toast.simulation"]
         XCTAssertTrue(toggle.waitForExistence(timeout: 4))
         XCTAssertEqual(toggle.value as? String, "0")
         toggle.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
         XCTAssertTrue(toast.waitForExistence(timeout: 3), "The toast should appear with the Debug sheet still open")
+    }
+
+    private func openFavoriteDemo(language: String = "zh-Hans") {
+        launchApp(language: language)
+        element("mainTab.tab6").tap()
+        let library = element("compare.componentLibrary")
+        let demo = app.descendants(matching: .any)["compare.watchlistFavoriteDemo"].firstMatch
+        let tabBarTop = element("mainTab.tab6").frame.minY
+        for _ in 0..<4 {
+            if demo.exists && demo.frame.midY < tabBarTop && demo.frame.midY > library.frame.minY { break }
+            library.swipeUp()
+        }
+        XCTAssertTrue(demo.exists)
+        demo.tap()
     }
 
     private func element(_ identifier: String) -> XCUIElement {

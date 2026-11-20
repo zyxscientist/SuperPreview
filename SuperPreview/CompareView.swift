@@ -436,6 +436,12 @@ struct CompareTab5View: View {
                 }
             }
             .accessibilityIdentifier("compare.rotateBeam")
+
+            NavigationLink(destination: WatchlistFavoriteDemoView()) {
+                Text(demoLanguage.text(.watchlistFavoriteAnimation))
+                    .font(.system(size: 16, weight: .semibold))
+            }
+            .accessibilityIdentifier("compare.watchlistFavoriteDemo")
             
             // 结束
             

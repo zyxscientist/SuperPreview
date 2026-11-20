@@ -274,6 +274,14 @@ struct ModalDemoView: View {
     }
 }
 
+enum ModalMotion {
+    static func entrance(bounceMultiplier: Double = 1) -> Animation {
+        .spring(duration: 0.28, bounce: 0.34 * bounceMultiplier)
+    }
+
+    static let dismissal = Animation.easeIn(duration: 0.28)
+}
+
 private struct ModalPresentation: View {
     private enum Phase {
         case initial, presented, dismissing
@@ -285,16 +293,15 @@ private struct ModalPresentation: View {
     @State private var phase = Phase.initial
 
     private let fadeDuration: TimeInterval = 0.1
-    private let scaleDuration: TimeInterval = 0.28
     private var isVisible: Bool { phase == .presented }
 
     private var dismissalAnimation: Animation {
-        reduceMotion ? .linear(duration: fadeDuration) : .easeIn(duration: scaleDuration)
+        reduceMotion ? .linear(duration: fadeDuration) : ModalMotion.dismissal
     }
 
     private var cardScaleAnimation: Animation? {
         guard !reduceMotion else { return nil }
-        return phase == .dismissing ? dismissalAnimation : .spring(duration: scaleDuration, bounce: 0.34)
+        return phase == .dismissing ? dismissalAnimation : ModalMotion.entrance()
     }
 
     var body: some View {

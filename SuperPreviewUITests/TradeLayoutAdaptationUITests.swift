@@ -65,18 +65,22 @@ final class TradeLayoutAdaptationUITests: XCTestCase {
         let componentLibrary = waitFor("compare.componentLibrary")
         assertWidth(of: componentLibrary, equals: expectedViewportWidth)
 
-        XCTAssertTrue(waitFor("compare.newWatchlist").isHittable)
-        let newTrade = waitFor("compare.newTrade")
-        XCTAssertTrue(newTrade.isHittable)
+        let tabBarTop = waitFor("mainTab.tab6").frame.minY
+        for identifier in ["compare.newWatchlist", "compare.newTrade"] {
+            let entry = waitFor(identifier)
+            XCTAssertGreaterThan(entry.frame.midY, componentLibrary.frame.minY)
+            XCTAssertLessThan(entry.frame.midY, tabBarTop)
+            let destination = app.navigationBars[entry.staticTexts.firstMatch.label]
+            entry.tap()
+            XCTAssertTrue(destination.waitForExistence(timeout: 5))
+            destination.buttons.firstMatch.tap()
+        }
 
         componentLibrary.swipeUp()
-        XCTAssertTrue(waitFor("compare.newTrade").exists)
         let lastComponent = app.staticTexts["Liquid Glass 调研"].firstMatch
         XCTAssertTrue(lastComponent.waitForExistence(timeout: 5))
-        XCTAssertTrue(lastComponent.isHittable)
-
-        waitFor("compare.newTrade").tap()
-        XCTAssertTrue(waitFor("trade.root").exists)
+        lastComponent.tap()
+        XCTAssertTrue(app.navigationBars["Liquid Glass 调研"].waitForExistence(timeout: 5))
     }
 
     func testCompareComponentLibraryOpensSystemSegmentedControlDemo() throws {
