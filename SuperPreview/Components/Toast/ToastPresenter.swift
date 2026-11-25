@@ -1,7 +1,7 @@
 import SwiftUI
 import UIKit
 
-/// Presents one toast at a time above the app's navigation and sheets.
+/// Presents toasts above the app's navigation and sheets.
 @MainActor
 final class ToastPresenter: NSObject {
     private enum Phase {
@@ -14,7 +14,8 @@ final class ToastPresenter: NSObject {
 
     private weak var scene: UIWindowScene?
     private var overlay: ToastWindow?
-    // The queue keeps its head until that toast finishes exiting.
+    private var fadingOverlays: [ToastWindow] = []
+    // The current queued toast remains at the head until it is replaced or dismissed.
     private var queue: [String] = []
     private var demoMessage: String?
     private var source: Source?
@@ -30,7 +31,11 @@ final class ToastPresenter: NSObject {
 
     func show(_ message: String) {
         queue.append(message)
-        presentIfPossible()
+        if phase == .visible || phase == .exiting {
+            presentNextToast()
+        } else {
+            presentIfPossible()
+        }
     }
 
     func setDemoMessage(_ message: String?) {
@@ -50,10 +55,13 @@ final class ToastPresenter: NSObject {
         isSceneActive = isActive
         if isActive {
             presentIfPossible()
-        } else if phase == .exiting {
-            finishDismissal()
         } else {
-            resetOverlay()
+            clearFadingOverlays()
+            if phase == .exiting {
+                finishDismissal()
+            } else {
+                resetOverlay()
+            }
         }
     }
 
@@ -76,9 +84,13 @@ final class ToastPresenter: NSObject {
         let didEnter = { [weak self, weak window] in
             guard let self, let window, self.overlay === window, self.phase == .entering else { return }
             self.phase = .visible
-            window.card?.isUserInteractionEnabled = true
-            window.card?.accessibilityElementsHidden = false
-            self.scheduleDismissal()
+            if self.hasWaitingToast {
+                self.presentNextToast()
+            } else {
+                window.card?.isUserInteractionEnabled = true
+                window.card?.accessibilityElementsHidden = false
+                self.scheduleDismissal()
+            }
         }
 
         if UIAccessibility.isReduceMotionEnabled {
@@ -94,6 +106,49 @@ final class ToastPresenter: NSObject {
                 completion: { _ in didEnter() }
             )
         }
+    }
+
+    private var hasWaitingToast: Bool {
+        source == .queued ? queue.count > 1 : !queue.isEmpty
+    }
+
+    private func presentNextToast() {
+        guard isSceneActive, hasWaitingToast, phase == .visible || phase == .exiting,
+              let window = overlay, let card = window.card else { return }
+
+        cancelWait()
+        if source == .queued {
+            queue.removeFirst()
+        }
+        overlay = nil
+        source = nil
+        phase = .hidden
+        touchStartY = nil
+        card.isUserInteractionEnabled = false
+        card.accessibilityElementsHidden = true
+
+        // Freeze an in-progress swipe or dismissal where it is before fading.
+        if let presentation = card.layer.presentation() {
+            let transform = presentation.affineTransform()
+            UIView.performWithoutAnimation {
+                card.transform = transform
+                card.layer.removeAllAnimations()
+            }
+        }
+
+        fadingOverlays.append(window)
+        UIView.animate(
+            withDuration: 0.2,
+            delay: 0,
+            options: [.curveLinear, .beginFromCurrentState, .allowUserInteraction],
+            animations: { card.alpha = 0 },
+            completion: { [weak self, weak window] _ in
+                guard let window else { return }
+                window.isHidden = true
+                self?.fadingOverlays.removeAll { $0 === window }
+            }
+        )
+        presentIfPossible()
     }
 
     private func dismissCurrent() {
@@ -246,6 +301,13 @@ final class ToastPresenter: NSObject {
         touchStartY = nil
         overlay?.isHidden = true
         overlay = nil
+    }
+
+    private func clearFadingOverlays() {
+        for window in fadingOverlays {
+            window.isHidden = true
+        }
+        fadingOverlays.removeAll()
     }
 }
 

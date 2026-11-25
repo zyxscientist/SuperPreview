@@ -62,7 +62,7 @@ final class ToastUITests: XCTestCase {
         XCTAssertFalse(toast.waitForExistence(timeout: 2), "Disabling the preview must cancel the next playback")
     }
 
-    func testQueuedToastsWaitWhileHeldAndFollowAutomaticAndSwipeDismissal() {
+    func testQueuedToastsAdvanceAfterEntranceAndLeaveLastToastInteractive() {
         launchApp()
         element("watchlist.debug.open").tap()
         element("debug.toast.queue").tap()
@@ -70,22 +70,13 @@ final class ToastUITests: XCTestCase {
         let submitted = toast(labeled: "订单已提交")
         let addedToWatchlist = toast(labeled: "已添加自选")
         let cancelled = toast(labeled: "订单已撤销")
-        XCTAssertTrue(submitted.exists || submitted.waitForExistence(timeout: 3))
-
-        submitted.press(forDuration: 3.25)
-        XCTAssertTrue(submitted.exists, "The queued messages must wait while the first toast is held")
+        XCTAssertTrue(cancelled.waitForExistence(timeout: 3), "Queued messages should advance after each entrance")
+        XCTAssertFalse(submitted.exists)
+        XCTAssertFalse(addedToWatchlist.exists)
         XCTAssertEqual(toasts.count, 1)
 
-        Thread.sleep(forTimeInterval: 1.75)
-        XCTAssertTrue(submitted.exists, "The first toast still gets a fresh countdown on release")
-        XCTAssertTrue(addedToWatchlist.waitForExistence(timeout: 3), "The second toast should follow the first timeout")
-        XCTAssertEqual(toasts.count, 1)
-
-        swipeUp(on: addedToWatchlist)
-        XCTAssertTrue(cancelled.waitForExistence(timeout: 2), "The third toast should follow the swipe dismissal")
-        XCTAssertEqual(toasts.count, 1)
-        XCTAssertTrue(cancelled.waitForNonExistence(timeout: 5))
-        XCTAssertFalse(toast.exists, "The one-shot queue should end after its last message")
+        swipeUp(on: cancelled)
+        XCTAssertTrue(cancelled.waitForNonExistence(timeout: 2))
     }
 
     func testFavoriteDemoRevealsEditGroupAndShowsAddAndDeleteToasts() {
